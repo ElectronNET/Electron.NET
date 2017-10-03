@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Notification } = require('electron');
 const io = require('socket.io')(3000);
 const path = require('path');
 
@@ -18,7 +18,7 @@ app.on('ready', () => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('ASP.NET Core Application connected...');
 
     socket.on('createBrowserWindow', (options) => {
         console.log(options);
@@ -31,6 +31,11 @@ io.on('connection', (socket) => {
             mainWindow = null;
             apiProcess = null;
         });
+    });
+
+    socket.on('createNotification', (options) => {
+        const notification = new Notification(options);
+        notification.show();
     });
 });
 

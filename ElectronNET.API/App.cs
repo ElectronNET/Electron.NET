@@ -31,6 +31,7 @@ namespace ElectronNET.API
                 };
 
                 socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
+                socket.Emit("createNotification");
             });
         }
     }
