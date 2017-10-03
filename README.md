@@ -29,3 +29,11 @@ The WebApp now has referenced the API NuGet package and via the .csproj referenc
 Navigate to the WebApp folder and type this in a command prompt:
 
    dotnet electronize
+   
+# Dev Notes: Dev Workflow (at least for the CLI extension is this a must)
+
+* Change something in the CLI project
+* rebuild the project (a nuget package should now appear in the /artifacts directory)
+* make sure there is no ElectronNET.CLI package in your %userprofile%\.nuget\packages cache with the same version 
+* execute dotnet restore in the WebApp
+* execute dotnet electronize
