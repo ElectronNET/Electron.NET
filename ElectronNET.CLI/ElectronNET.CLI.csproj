@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>dotnet-electronize</AssemblyName>
+    
+    <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
-    <PackageId>ElectronNET.API</PackageId>
+    <PackageId>ElectronNET.CLI</PackageId>
+    <Version>1.0.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SocketIoClientDotNet" Version="1.0.3" />
-  </ItemGroup>
-
 
 </Project>
