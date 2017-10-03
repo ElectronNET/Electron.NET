@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ElectronNET.API;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +29,8 @@ namespace ElectronNET.WebApp
             {
                 await context.Response.WriteAsync("Hello World!");
             });
+
+            var electronApp = new App(800, 600);
         }
     }
 }

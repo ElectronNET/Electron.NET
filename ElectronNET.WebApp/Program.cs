@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using System.Net.Sockets;
+using System.Net;
+using System.Text;
+using System.Diagnostics;
 
 namespace ElectronNET.WebApp
 {

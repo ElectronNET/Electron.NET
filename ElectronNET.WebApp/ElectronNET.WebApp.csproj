@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" />
+  </ItemGroup>
+
 </Project>
