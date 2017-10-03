@@ -7,20 +7,20 @@ using System;
 
 namespace ElectronNET.API
 {
-    public class App
+    public static class App
     {
-        private readonly Socket _socket;
-        private readonly JsonSerializer _jsonSerializer;
+        private static Socket _socket;
+        private static JsonSerializer _jsonSerializer;
 
-        public App(int width, int height, bool show)
+        public static void OpenWindow(int width, int height, bool show)
         {
             _jsonSerializer = new JsonSerializer()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            var socket = IO.Socket("http://localhost:3000");
-            socket.On(Socket.EVENT_CONNECT, () =>
+            _socket = IO.Socket("http://localhost:3000");
+            _socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Verbunden!");
 
@@ -30,9 +30,13 @@ namespace ElectronNET.API
                     Show = show
                 };
 
-                socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
-                socket.Emit("createNotification");
+                _socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
             });
+        }
+
+        public static void CreateNotification(NotificationOptions notificationOptions)
+        {
+            _socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
         }
     }
 }

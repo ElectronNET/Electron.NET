@@ -35,7 +35,7 @@ namespace ElectronNET.WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            var electronApp = new App(800, 600, true);
+            App.OpenWindow(800, 600, true);
         }
     }
 }
