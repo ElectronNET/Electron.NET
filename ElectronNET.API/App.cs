@@ -12,7 +12,7 @@ namespace ElectronNET.API
         private readonly Socket _socket;
         private readonly JsonSerializer _jsonSerializer;
 
-        public App(int width, int height)
+        public App(int width, int height, bool show)
         {
             _jsonSerializer = new JsonSerializer()
             {
@@ -26,7 +26,8 @@ namespace ElectronNET.API
 
                 var browserWindowOptions = new BrowserWindowOptions() {
                     Height = height,
-                    Width = width
+                    Width = width,
+                    Show = show
                 };
 
                 socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
