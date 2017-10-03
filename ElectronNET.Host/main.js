@@ -13,7 +13,8 @@ app.on('ready', () => {
     apiProcess = process(apipath);
 
     apiProcess.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        var text = data.toString();
+        console.log(`stdout: ${data.toString()}`);
     });
 });
 

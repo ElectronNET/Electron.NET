@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace ElectronNET.WebApp
 {
@@ -12,6 +13,7 @@ namespace ElectronNET.WebApp
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseContentRoot(Path.Combine(Directory.GetCurrentDirectory(), "..", "ElectronNET.WebApp"))
                 .UseStartup<Startup>()
                 .Build();
     }
