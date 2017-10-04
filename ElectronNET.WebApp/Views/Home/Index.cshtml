@@ -8,6 +8,12 @@
 <body>
     <h3>Hello from ASP.NET Core MVC!</h3>
 
+    We are using node
+    <script>document.write(process.versions.node)</script>,
+    Chrome
+    <script>document.write(process.versions.chrome)</script>,
+    and Electron
+    <script>document.write(process.versions.electron)</script>.
     <br /><br />
     <input type="button" value="Call Notification" onclick="location.href='@Url.Action("SayHello", "Home")'" />
 </body>
