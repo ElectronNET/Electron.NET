@@ -12,4 +12,13 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ElectronHost\main.js" />
+    <None Remove="ElectronHost\package-lock.json" />
+    <None Remove="ElectronHost\package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
 </Project>
