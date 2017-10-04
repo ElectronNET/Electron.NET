@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="ElectronHost\main.js" />
+    <EmbeddedResource Include="ElectronHost\package-lock.json" />
+    <EmbeddedResource Include="ElectronHost\package.json" />
   </ItemGroup>
 
 </Project>
