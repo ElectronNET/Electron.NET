@@ -35,9 +35,9 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(targetPath);
                 }
 
-                DeployEmbeddedFile(targetPath, "main.js");
-                DeployEmbeddedFile(targetPath, "package.json");
-                DeployEmbeddedFile(targetPath, "package-lock.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetPath, "main.js");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetPath, "package.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetPath, "package-lock.json");
 
                 Console.WriteLine("Start npm install...");
                 using (Process cmd = new Process())
@@ -60,15 +60,6 @@ namespace ElectronNET.CLI.Commands
 
                 return true;
             });
-        }
-
-        private static void DeployEmbeddedFile(string targetPath, string file)
-        {
-            using (var fileStream = File.Create(Path.Combine(targetPath, file)))
-            {
-                var streamFromEmbeddedFile = EmbeddedFileHelper.GetTestResourceFileStream("ElectronHost." + file);
-                streamFromEmbeddedFile.CopyTo(fileStream);
-            }
         }
     }
 }

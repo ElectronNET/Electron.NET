@@ -24,10 +24,9 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                Console.WriteLine("Start Electron...");
+                Console.WriteLine("Start Electron Desktop Application...");
 
                 string aspCoreProjectPath = "";
-                string electronHostProjectPath = "";
 
                 if (_args.Length > 0)
                 {
@@ -41,30 +40,19 @@ namespace ElectronNET.CLI.Commands
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
                 }
 
-                using (Process cmd = new Process())
-                {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
+                string currentAssemblyPath = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = Path.Combine(currentAssemblyPath, "Host");
+                ProcessHelper.CmdExecute("dotnet publish -r win10-x64 --output " + Path.Combine(tempPath, "bin"), aspCoreProjectPath);
 
-                    cmd.Start();
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
-                    cmd.StandardInput.WriteLine("cd " + aspCoreProjectPath);
-                    cmd.StandardInput.Flush();
+                Console.WriteLine("Start npm install...");
+                ProcessHelper.CmdExecute("npm install", tempPath);
+                ProcessHelper.CmdExecute("npm install electron@1.7.8", tempPath);
 
-                    cmd.StandardInput.WriteLine("dotnet restore");
-                    cmd.StandardInput.Flush();
-
-                    cmd.StandardInput.WriteLine("dotnet publish -r win10-x64 --output bin/dist/win");
-                    cmd.StandardInput.Flush();
-
-                    cmd.StandardInput.WriteLine(@"..\ElectronNET.Host\node_modules\.bin\electron.cmd ""..\ElectronNET.Host\main.js""");
-                    cmd.StandardInput.Flush();
-
-                    cmd.StandardInput.Close();
-                }
+                ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", Path.Combine(tempPath, "node_modules", ".bin"));
 
                 return true;
             });

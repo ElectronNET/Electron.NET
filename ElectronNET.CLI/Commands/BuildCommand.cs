@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ElectronNET.CLI.Commands
@@ -21,104 +19,32 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Build Windows Application...");
 
                 string currentAssemblyPath = AppDomain.CurrentDomain.BaseDirectory;
-                string targetPath = Path.Combine(currentAssemblyPath, "Host");
+                string tempPath = Path.Combine(currentAssemblyPath, "Host");
+                ProcessHelper.CmdExecute("dotnet publish -r win10-x64 --output " + Path.Combine(tempPath, "bin"), Directory.GetCurrentDirectory());
 
-                Console.WriteLine("Target: " + targetPath);
-
-                using (Process cmd = new Process())
+                if (Directory.Exists(tempPath) == false)
                 {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
-                    cmd.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
-
-                    cmd.Start();
-
-                    cmd.StandardInput.WriteLine("dotnet publish -r win10-x64 --output " + Path.Combine(targetPath, "bin"));
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.Close();
-                    cmd.WaitForExit();
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                    Directory.CreateDirectory(tempPath);
                 }
 
-                if (Directory.Exists(targetPath) == false)
-                {
-                    Directory.CreateDirectory(targetPath);
-                }
-
-                DeployEmbeddedFile(targetPath, "main.js");
-                DeployEmbeddedFile(targetPath, "package.json");
-                DeployEmbeddedFile(targetPath, "package-lock.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
                 Console.WriteLine("Start npm install...");
-                using (Process cmd = new Process())
-                {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
-                    cmd.StartInfo.WorkingDirectory = targetPath;
+                ProcessHelper.CmdExecute("npm install", tempPath);
 
-                    cmd.Start();
+                Console.WriteLine("Start npm install electron-packager...");
+                ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
 
-                    cmd.StandardInput.WriteLine("npm install");
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.Close();
-                    cmd.WaitForExit();
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-                }
-
-                using (Process cmd = new Process())
-                {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
-                    cmd.StartInfo.WorkingDirectory = targetPath;
-
-                    cmd.Start();
-
-                    cmd.StandardInput.WriteLine("npm install electron-packager --global");
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.Close();
-                    cmd.WaitForExit();
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-                }
-
-                using (Process cmd = new Process())
-                {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
-                    cmd.StartInfo.WorkingDirectory = targetPath;
-
-                    cmd.Start();
-
-                    string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop"); 
-                    cmd.StandardInput.WriteLine($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite");
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.Close();
-                    cmd.WaitForExit();
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-                }
+                Console.WriteLine("Build Electron Desktop Application...");
+                string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --electronVersion=1.7.8 --out=\"{buildPath}\" --overwrite", tempPath);
 
                 return true;
             });
         }
 
-        private static void DeployEmbeddedFile(string targetPath, string file)
-        {
-            using (var fileStream = File.Create(Path.Combine(targetPath, file)))
-            {
-                var streamFromEmbeddedFile = EmbeddedFileHelper.GetTestResourceFileStream("ElectronHost." + file);
-                streamFromEmbeddedFile.CopyTo(fileStream);
-            }
-        }
+
     }
 }
