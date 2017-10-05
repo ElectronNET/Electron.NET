@@ -39,7 +39,8 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Build Electron Desktop Application...");
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
-                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --electronVersion=1.7.8 --out=\"{buildPath}\" --overwrite --asar", tempPath);
+                // Need a solution for --asar support
+                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --electronVersion=1.7.8 --out=\"{buildPath}\" --overwrite", tempPath);
 
                 return true;
             });
