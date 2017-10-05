@@ -18,8 +18,10 @@ namespace ElectronNET.CLI.Commands
             {
                 Console.WriteLine("Build Windows Application...");
 
-                string currentAssemblyPath = AppDomain.CurrentDomain.BaseDirectory;
-                string tempPath = Path.Combine(currentAssemblyPath, "Host");
+                string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop");
+
+                Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
+
                 ProcessHelper.CmdExecute("dotnet publish -r win10-x64 --output " + Path.Combine(tempPath, "bin"), Directory.GetCurrentDirectory());
 
                 if (Directory.Exists(tempPath) == false)
@@ -39,6 +41,8 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Build Electron Desktop Application...");
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+                Console.WriteLine("Executing electron magic in this directory: " + buildPath);
+
                 // Need a solution for --asar support
                 ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --electronVersion=1.7.8 --out=\"{buildPath}\" --overwrite", tempPath);
 
