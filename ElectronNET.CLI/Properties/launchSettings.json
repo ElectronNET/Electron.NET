@@ -2,7 +2,7 @@
   "profiles": {
     "ElectronNET.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "start \"C:\\Users\\Gregor\\Documents\\Visual Studio 2017\\Projects\\ElectronNET\\ElectronNET.WebApp\""
+      "commandLineArgs": "build \"C:\\Users\\Gregor\\Documents\\Visual Studio 2017\\Projects\\ElectronNET\\ElectronNET.WebApp\""
     }
   }
 }

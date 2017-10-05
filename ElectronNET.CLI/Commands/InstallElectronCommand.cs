@@ -12,8 +12,6 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_DESCRIPTION = "install";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        public bool DisableInteractive { get; set; }
-
         private string[] _args;
 
         public InstallElectronCommand(string[] args)

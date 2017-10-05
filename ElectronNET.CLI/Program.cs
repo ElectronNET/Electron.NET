@@ -28,6 +28,9 @@ namespace ElectronNET.CLI
                 case InstallElectronCommand.COMMAND_NAME:
                     command = new InstallElectronCommand(args.Skip(1).ToArray());
                     break;
+                case BuildCommand.COMMAND_NAME:
+                    command = new BuildCommand();
+                    break;
                 case "--help":
                 case "--h":
                 case "help":
@@ -79,7 +82,7 @@ namespace ElectronNET.CLI
             Console.WriteLine("\t");
             Console.WriteLine("Commands to build the Electron Application:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{InstallElectronCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InstallElectronCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{BuildCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {BuildCommand.COMMAND_DESCRIPTION}");
 
 
             Console.WriteLine("\t");
@@ -94,6 +97,9 @@ namespace ElectronNET.CLI
             {
                 case StartElectronCommand.COMMAND_NAME:
                     PrintUsage(StartElectronCommand.COMMAND_NAME, StartElectronCommand.COMMAND_DESCRIPTION, StartElectronCommand.CommandOptions, StartElectronCommand.COMMAND_ARGUMENTS);
+                    break;
+                case BuildCommand.COMMAND_NAME:
+                    PrintUsage(BuildCommand.COMMAND_NAME, BuildCommand.COMMAND_DESCRIPTION, BuildCommand.CommandOptions, BuildCommand.COMMAND_ARGUMENTS);
                     break;
                 default:
                     Console.Error.WriteLine($"Unknown command {command}");
