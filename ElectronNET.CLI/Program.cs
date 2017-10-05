@@ -25,9 +25,6 @@ namespace ElectronNET.CLI
                 case StartElectronCommand.COMMAND_NAME:
                     command = new StartElectronCommand(args.Skip(1).ToArray());
                     break;
-                case InstallElectronCommand.COMMAND_NAME:
-                    command = new InstallElectronCommand(args.Skip(1).ToArray());
-                    break;
                 case BuildCommand.COMMAND_NAME:
                     command = new BuildCommand();
                     break;
