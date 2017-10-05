@@ -77,6 +77,12 @@ namespace ElectronNET.CLI
             Console.WriteLine($"\t{StartElectronCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {StartElectronCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
+            Console.WriteLine("Commands to build the Electron Application:");
+            Console.WriteLine("\t");
+            Console.WriteLine($"\t{InstallElectronCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InstallElectronCommand.COMMAND_DESCRIPTION}");
+
+
+            Console.WriteLine("\t");
             Console.WriteLine("\t");
             Console.WriteLine("To get help on individual commands execute:");
             Console.WriteLine("\tdotnet electronize help <command>");

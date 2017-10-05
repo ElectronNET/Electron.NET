@@ -9,7 +9,7 @@ app.on('ready', () => {
     const process = require('child_process').spawn;
 
     //  run server
-    var apipath = path.join(__dirname, '\\bin\\ElectronNET.WebApp.exe');
+    var apipath = path.join(__dirname, '..\\ElectronNET.WebApp\\bin\\dist\\win\\ElectronNET.WebApp.exe');
     apiProcess = process(apipath);
 
     apiProcess.stdout.on('data', (data) => {
@@ -40,19 +40,3 @@ io.on('connection', (socket) => {
     });
 });
 
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
-
-app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (win === null) {
-        createWindow();
-    }
-});

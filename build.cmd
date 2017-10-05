@@ -1,8 +1,6 @@
-echo Bundle ASP.NET Core Project into EXE
-
 cd ElectronNET.WebApp
 dotnet restore
-dotnet publish -r win10-x64 --output bin/dist/win
+dotnet publish -r win10-x64 --output ../ElectronNET.Host/bin/
 
-echo Start Electron with bundled EXE
-..\ElectronNET.Host\node_modules\.bin\electron.cmd "..\ElectronNET.Host\main.js"
+cd ..\ElectronNET.Host
+electron-packager . --platform=win32 --arch=x64 --out=../ElectronNET.WebApp/bin/desktop/ --overwrite

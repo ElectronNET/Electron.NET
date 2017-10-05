@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using System.IO;
+using System;
 
 namespace ElectronNET.WebApp
 {
@@ -11,9 +11,11 @@ namespace ElectronNET.WebApp
             BuildWebHost(args).Run();
         }
 
+        // WICHTIG! UseContentRoot auf Assembly Ordner Essentiell!
+        // Ggf. kann man via Parameter den Content Root durchreichen?
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseContentRoot(Path.Combine(Directory.GetCurrentDirectory(), "..", "ElectronNET.WebApp"))
+            .UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                 .UseStartup<Startup>()
                 .Build();
     }

@@ -12,6 +12,5 @@
   "dependencies": {
     "electron": "^1.7.8",
     "socket.io": "^2.0.3"
-  },
-  "devDependencies": {}
+  }
 }

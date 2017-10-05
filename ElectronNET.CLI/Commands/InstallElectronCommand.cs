@@ -28,7 +28,6 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Install Electron Host...");
 
                 string currentPath = Directory.GetCurrentDirectory();
-
                 string targetPath = Path.Combine(currentPath, "..", "CLIDeploy");
 
                 Console.WriteLine("Target: " + targetPath);
