@@ -1,13 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp", "ElectronNET.WebApp\ElectronNET.WebApp.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.API", "ElectronNET.API\ElectronNET.API.csproj", "{A78157BA-B754-45F1-969F-D6A513CA0E72}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.CLI", "ElectronNET.CLI\ElectronNET.CLI.csproj", "{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "ElectronNET.Host\", "{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_56840"
+		Debug.AspNetCompiler.PhysicalPath = "ElectronNET.Host\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56840\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_56840"
+		Release.AspNetCompiler.PhysicalPath = "ElectronNET.Host\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56840\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "56840"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +47,10 @@ Global
 		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
