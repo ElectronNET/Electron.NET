@@ -26,4 +26,8 @@
     <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="$(ProjectDir)devCleanup.cmd" />
+  </Target>
+
 </Project>
