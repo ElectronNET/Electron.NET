@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "detect-port": "^1.2.1",
     "electron": "^1.7.8",
-    "portfinder": "^1.0.13",
     "socket.io": "^2.0.3"
   }
 }

@@ -2,12 +2,11 @@ const { app, BrowserWindow, Notification } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
-let io, window, apiProcess;
-
-const portfinder = require('portfinder');
+const portfinder = require('detect-port');
+let io, window, apiProcess, loadURL;
 
 app.on('ready', () => {
-    portfinder.getPort((error, port) => {
+    portfinder(8000, (error, port) => {
         startSocketApiBridge(port);
     });
 });
@@ -24,7 +23,7 @@ function startSocketApiBridge(port) {
             options.show = true;
 
             window = new BrowserWindow(options);
-            window.loadURL('http://localhost:5000');
+            window.loadURL(loadURL);
 
             window.on('closed', function () {
                 mainWindow = null;
@@ -39,18 +38,22 @@ function startSocketApiBridge(port) {
     });
 }
 
-function startAspCoreBackend(port) {
-    //  run server
-    var binPath = path.join(__dirname, 'bin');
-    fs.readdir(binPath, (error, files) => {
-        const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
-        const exeFileName = exeFiles[0];
-        const apipath = path.join(binPath, exeFileName);
-        apiProcess = process(apipath, ['/electronPort=' + port]);
+function startAspCoreBackend(electronPort) {
+    portfinder(8000, (error, electronWebPort) => {
+        loadURL = `http://localhost:${electronWebPort}`
+        const arguments = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
 
-        apiProcess.stdout.on('data', (data) => {
-            var text = data.toString();
-            console.log(`stdout: ${data.toString()}`);
+        var binPath = path.join(__dirname, 'bin');
+        fs.readdir(binPath, (error, files) => {
+            const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
+            const exeFileName = exeFiles[0];
+            const apipath = path.join(binPath, exeFileName);
+            apiProcess = process(apipath, arguments);
+    
+            apiProcess.stdout.on('data', (data) => {
+                var text = data.toString();
+                console.log(`stdout: ${data.toString()}`);
+            });
         });
     });
 }

@@ -13,12 +13,16 @@ namespace ElectronNET.API
                 {
                     BridgeSettings.SocketPort = argument.ToUpper().Replace("/ELECTRONPORT=", "");
                     Console.WriteLine("Use Electron Port: " + BridgeSettings.SocketPort);
+                } else if(argument.ToUpper().Contains("ELECTRONWEBPORT"))
+                {
+                    BridgeSettings.WebPort = argument.ToUpper().Replace("/ELECTRONWEBPORT=", "");
                 }
             }
 
             if(IsElectronActive())
             {
-                builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory);
+                builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
+                    .UseUrls("http://0.0.0.0:" + BridgeSettings.WebPort);
             }
 
             return builder;
