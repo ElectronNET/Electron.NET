@@ -10,7 +10,7 @@ app.on('ready', () => {
 
     //  run server
     // ToDo: The .exe name may vary. The most simple solution would be to locate the first .exe in the given directory
-    var apipath = path.join(__dirname, '\\bin\\ElectronNET.WebApp.exe /electronized=true');
+    var apipath = path.join(__dirname, '\\bin\\ElectronNET.WebApp.exe');
     apiProcess = process(apipath);
 
     apiProcess.stdout.on('data', (data) => {

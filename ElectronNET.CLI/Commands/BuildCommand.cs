@@ -22,7 +22,8 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
-                ProcessHelper.CmdExecute("dotnet publish -r win10-x64 --output " + Path.Combine(tempPath, "bin"), Directory.GetCurrentDirectory());
+                string tempBinPath = Path.Combine(tempPath, "bin");
+                ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
 
                 if (Directory.Exists(tempPath) == false)
                 {

@@ -5,7 +5,7 @@ namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
-        public static void CmdExecute(string command, string workingDirectoryPath, bool output = true)
+        public static void CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
         {
             using (Process cmd = new Process())
             {
@@ -21,7 +21,11 @@ namespace ElectronNET.CLI
                 cmd.StandardInput.WriteLine(command);
                 cmd.StandardInput.Flush();
                 cmd.StandardInput.Close();
-                cmd.WaitForExit();
+
+                if(waitForExit)
+                {
+                    cmd.WaitForExit();
+                }
 
                 if (output)
                 {

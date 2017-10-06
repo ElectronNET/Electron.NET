@@ -40,9 +40,14 @@ namespace ElectronNET.CLI.Commands
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
                 }
 
-                string currentAssemblyPath = AppDomain.CurrentDomain.BaseDirectory;
-                string tempPath = Path.Combine(currentAssemblyPath, "Host");
-                ProcessHelper.CmdExecute("dotnet publish -r win10-x64 --output " + Path.Combine(tempPath, "bin"), aspCoreProjectPath);
+                string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
+                if (Directory.Exists(tempPath) == false)
+                {
+                    Directory.CreateDirectory(tempPath);
+                }
+
+                string tempBinPath = Path.Combine(tempPath, "bin");
+                ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", aspCoreProjectPath);
 
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
@@ -52,7 +57,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute("npm install", tempPath);
                 ProcessHelper.CmdExecute("npm install electron@1.7.8", tempPath);
 
-                ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", Path.Combine(tempPath, "node_modules", ".bin"));
+                ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", Path.Combine(tempPath, "node_modules", ".bin"), false, false);
 
                 return true;
             });
