@@ -15,6 +15,18 @@
     and Electron
     <script>document.write(process.versions.electron)</script>.
     <br /><br />
-    <input type="button" value="Call Notification" onclick="location.href='@Url.Action("SayHello", "Home")'" />
+    <input id="callButton" type="button" value="Call Notification" />
+
+    <script>
+        const { ipcRenderer } = require("electron");
+
+        document.getElementById("callButton").addEventListener("click", () => {
+            ipcRenderer.send("SayHello");
+        });
+
+        ipcRenderer.on("Goodbye", (sender, data) => {
+            alert('Goodbye ' + data);
+        });
+    </script>
 </body>
 </html>

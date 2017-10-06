@@ -53,6 +53,13 @@ namespace ElectronNET.CLI.Commands
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
+                string hostApiFolder = Path.Combine(tempPath, "api");
+                if (Directory.Exists(hostApiFolder) == false)
+                {
+                    Directory.CreateDirectory(hostApiFolder);
+                }
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
+
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
 

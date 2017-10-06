@@ -15,11 +15,11 @@ namespace ElectronNET.CLI
 
             return asm.GetManifestResourceStream(resource);
         }
-        public static void DeployEmbeddedFile(string targetPath, string file)
+        public static void DeployEmbeddedFile(string targetPath, string file, string namespacePath = "")
         {
             using (var fileStream = File.Create(Path.Combine(targetPath, file)))
             {
-                var streamFromEmbeddedFile = GetTestResourceFileStream("ElectronHost." + file);
+                var streamFromEmbeddedFile = GetTestResourceFileStream("ElectronHost." + namespacePath + file);
                 streamFromEmbeddedFile.CopyTo(fileStream);
             }
         }

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL;
+let io, window, apiProcess, loadURL, ipc;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -14,7 +14,7 @@ app.on('ready', () => {
 function startSocketApiBridge(port) {
     io = require('socket.io')(port);
     startAspCoreBackend(port);
-    
+
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
 
@@ -29,12 +29,15 @@ function startSocketApiBridge(port) {
                 mainWindow = null;
                 apiProcess = null;
             });
+
+            ipc = require('./api/ipc')(socket, window);
         });
 
         socket.on('createNotification', (options) => {
             const notification = new Notification(options);
             notification.show();
         });
+
     });
 }
 
@@ -49,7 +52,7 @@ function startAspCoreBackend(electronPort) {
             const exeFileName = exeFiles[0];
             const apipath = path.join(binPath, exeFileName);
             apiProcess = process(apipath, arguments);
-    
+
             apiProcess.stdout.on('data', (data) => {
                 var text = data.toString();
                 console.log(`stdout: ${data.toString()}`);

@@ -13,5 +13,8 @@
     "detect-port": "^1.2.1",
     "electron": "^1.7.8",
     "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^1.4.31"
   }
 }

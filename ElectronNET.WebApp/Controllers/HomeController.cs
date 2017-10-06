@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
@@ -12,17 +8,17 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            return View();
-        }
+            App.IpcMain.On("SayHello", (args) => {
+                App.CreateNotification(new NotificationOptions
+                {
+                    Title = "Hallo Robert",
+                    Body = "Nachricht von ASP.NET Core App"
+                });
 
-        public IActionResult SayHello()
-        {
-            App.CreateNotification(new NotificationOptions {
-                Title = "Hallo Robert",
-                Body = "Nachricht von ASP.NET Core App"
+                App.IpcMain.Send("Goodbye", "Elephant!");
             });
 
-            return RedirectToAction("Index");
+            return View();
         }
     }
 }

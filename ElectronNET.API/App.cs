@@ -12,6 +12,8 @@ namespace ElectronNET.API
         private static Socket _socket;
         private static JsonSerializer _jsonSerializer;
 
+        public static IpcMain IpcMain { get; private set; }
+
         public static void OpenWindow(int width, int height, bool show)
         {
             _jsonSerializer = new JsonSerializer()
@@ -32,6 +34,8 @@ namespace ElectronNET.API
 
                 _socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
             });
+
+            IpcMain = new IpcMain(_socket);
         }
 
         public static void CreateNotification(NotificationOptions notificationOptions)

@@ -26,4 +26,12 @@
     <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ElectronHost\api\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
+  </ItemGroup>
+
 </Project>
