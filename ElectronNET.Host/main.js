@@ -1,22 +1,27 @@
 const { app, BrowserWindow, Notification } = require('electron');
 const io = require('socket.io')(3000);
+const fs = require('fs');
 const path = require('path');
-
+const process = require('child_process').spawn;
 let window;
 let apiProcess;
 
 app.on('ready', () => {
-    const process = require('child_process').spawn;
 
     //  run server
-    // ToDo: The .exe name may vary. The most simple solution would be to locate the first .exe in the given directory
-    var apipath = path.join(__dirname, '\\bin\\ElectronNET.WebApp.exe');
-    apiProcess = process(apipath);
+    var binPath = path.join(__dirname, 'bin');
+    fs.readdir(binPath, (error, files) => {
+        const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
+        const exeFileName = exeFiles[0];
+        const apipath = path.join(binPath, exeFileName);
+        apiProcess = process(apipath);
 
-    apiProcess.stdout.on('data', (data) => {
-        var text = data.toString();
-        console.log(`stdout: ${data.toString()}`);
+        apiProcess.stdout.on('data', (data) => {
+            var text = data.toString();
+            console.log(`stdout: ${data.toString()}`);
+        });
     });
+
 });
 
 io.on('connection', (socket) => {
