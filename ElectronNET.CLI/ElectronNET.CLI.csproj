@@ -34,4 +34,8 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="$(ProjectDir)devCleanup.cmd" />
+  </Target>
+
 </Project>

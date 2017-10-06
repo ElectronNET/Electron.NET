@@ -8,14 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.0" />
     <PackageReference Include="SocketIoClientDotNet" Version="1.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions">
-      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.hosting.abstractions\2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Hosting.Abstractions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="$(ProjectDir)devCleanup.cmd" />
+  </Target>
 
 
 </Project>
