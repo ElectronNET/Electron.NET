@@ -10,13 +10,14 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
+      "commandLineArgs": "/electronPort=3000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "ElectronNET.WebApp": {
       "commandName": "Project",
+      "commandLineArgs": "/electronPort=3000",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

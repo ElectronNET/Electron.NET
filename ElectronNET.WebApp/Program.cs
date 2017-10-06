@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using ElectronNET.API;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Diagnostics;
@@ -22,7 +23,7 @@ namespace ElectronNET.WebApp
             //{
                 //Console.WriteLine("Test Switch for Electron detection: " + args[0]);
                 return WebHost.CreateDefaultBuilder(args)
-                    .UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
+                    .UseElectron(args)
                     .UseStartup<Startup>()
                     .Build();
             //}

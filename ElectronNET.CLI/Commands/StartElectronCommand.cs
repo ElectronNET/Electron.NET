@@ -55,7 +55,6 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
-                ProcessHelper.CmdExecute("npm install electron@1.7.8", tempPath);
 
                 ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", Path.Combine(tempPath, "node_modules", ".bin"), false, false);
 

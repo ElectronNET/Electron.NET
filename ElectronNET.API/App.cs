@@ -19,7 +19,7 @@ namespace ElectronNET.API
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            _socket = IO.Socket("http://localhost:3000");
+            _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
             _socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Verbunden!");

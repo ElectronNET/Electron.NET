@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ElectronHost\package-lock.json" />
-    <EmbeddedResource Include="ElectronHost\package.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\package-lock.json" Link="ElectronHost\package-lock.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\package.json" Link="ElectronHost\package.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -45,7 +45,7 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // Need a solution for --asar support
-                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --electronVersion=1.7.8 --out=\"{buildPath}\" --overwrite", tempPath);
+                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
 
                 return true;
             });
