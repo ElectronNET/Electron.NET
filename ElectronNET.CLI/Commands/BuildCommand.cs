@@ -67,8 +67,9 @@ namespace ElectronNET.CLI.Commands
                 }
                 else
                 {
-                    // ToDo: check if it is safe to use sudo npm... 
-                    Console.WriteLine("Electron Packager - make sure you invoke 'npm install electron - packager--global' at " + tempPath + " manually. Sry.");
+                    // ToDo: find another solution or document it proper
+                    // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
+                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron - packager--global' at " + tempPath + " manually. Sry.");
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
@@ -84,7 +85,7 @@ namespace ElectronNET.CLI.Commands
                 }
                 else
                 {
-                    Console.WriteLine("Package Electron App for Windows...");
+                    Console.WriteLine("Package Electron App for OSX...");
 
                     // ToDo: Linux... (or maybe via an argument, but this is just for development)
                     ProcessHelper.CmdExecute($"electron-packager . --platform=darwin --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
