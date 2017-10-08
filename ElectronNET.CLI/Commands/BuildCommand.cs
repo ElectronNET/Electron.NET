@@ -60,14 +60,35 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute("npm install", tempPath);
 
                 Console.WriteLine("Start npm install electron-packager...");
-                ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
+
+                if (isWindows)
+                {
+                    ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
+                }
+                else
+                {
+                    // ToDo: check if it is safe to use sudo npm... 
+                    Console.WriteLine("Electron Packager - make sure you invoke 'npm install electron - packager--global' at " + tempPath + " manually. Sry.");
+                }
 
                 Console.WriteLine("Build Electron Desktop Application...");
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
-                // Need a solution for --asar support
-                ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                // ToDo: Need a solution for --asar support
+                if (isWindows)
+                {
+                    Console.WriteLine("Package Electron App for Windows...");
+
+                    ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                }
+                else
+                {
+                    Console.WriteLine("Package Electron App for Windows...");
+
+                    // ToDo: Linux... (or maybe via an argument, but this is just for development)
+                    ProcessHelper.CmdExecute($"electron-packager . --platform=darwin --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                }
 
                 return true;
             });
