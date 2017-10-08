@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ElectronNET.CLI.Commands
@@ -16,14 +17,28 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                Console.WriteLine("Build Windows Application...");
+                Console.WriteLine("Build Electron Application...");
 
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop");
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+
+                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                if (isWindows)
+                {
+                    Console.WriteLine("Build ASP.NET Core App for Windows...");
+
+                    ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                }
+                else
+                {
+                    Console.WriteLine("Build ASP.NET Core App for OSX...");
+
+                    // ToDo: Linux... (or maybe via an argument, but this is just for development)
+                    ProcessHelper.CmdExecute($"dotnet publish -r osx-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                }
 
                 if (Directory.Exists(tempPath) == false)
                 {
