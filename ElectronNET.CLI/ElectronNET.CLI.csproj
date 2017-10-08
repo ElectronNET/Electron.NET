@@ -34,7 +34,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="$(ProjectDir)devCleanup.cmd" />
   </Target>
 
