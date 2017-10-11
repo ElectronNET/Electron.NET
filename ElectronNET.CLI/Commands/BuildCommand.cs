@@ -25,19 +25,25 @@ namespace ElectronNET.CLI.Commands
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
-                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                if (isWindows)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     Console.WriteLine("Build ASP.NET Core App for Windows...");
 
                     ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
                 }
-                else
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     Console.WriteLine("Build ASP.NET Core App for OSX...");
 
-                    // ToDo: Linux... (or maybe via an argument, but this is just for development)
                     ProcessHelper.CmdExecute($"dotnet publish -r osx-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Console.WriteLine("Build ASP.NET Core App for Linux (Ubuntu x64)...");
+
+                    ProcessHelper.CmdExecute($"dotnet publish -r ubuntu-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
                 }
 
                 if (Directory.Exists(tempPath) == false)
@@ -61,8 +67,9 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Start npm install electron-packager...");
 
-                if (isWindows)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
+                    // Works proper on Windows...
                     ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
                 }
                 else
@@ -77,18 +84,25 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // ToDo: Need a solution for --asar support
-                if (isWindows)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     Console.WriteLine("Package Electron App for Windows...");
 
                     ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
-                else
+                
+                if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     Console.WriteLine("Package Electron App for OSX...");
 
-                    // ToDo: Linux... (or maybe via an argument, but this is just for development)
                     ProcessHelper.CmdExecute($"electron-packager . --platform=darwin --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Console.WriteLine("Package Electron App for Linux...");
+
+                    ProcessHelper.CmdExecute($"electron-packager . --platform=linux --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
 
                 return true;

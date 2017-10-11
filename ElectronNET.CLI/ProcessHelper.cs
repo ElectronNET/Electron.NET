@@ -18,8 +18,7 @@ namespace ElectronNET.CLI
                 }
                 else
                 {
-                    // ToDo: Linux...
-
+                    // works for OSX and Linux (at least on Ubuntu)
                     cmd.StartInfo.FileName = "bash";
                 }
 
