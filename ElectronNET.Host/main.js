@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL, ipc;
+let io, window, apiProcess, loadURL, ipc, appApi;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -17,6 +17,7 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
+        appApi = require('./api/app')(socket, app);
 
         socket.on('createBrowserWindow', (options) => {
             console.log(options);

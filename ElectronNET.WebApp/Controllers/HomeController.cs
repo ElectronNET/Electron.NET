@@ -18,6 +18,12 @@ namespace ElectronNET.WebApp.Controllers
                 App.IpcMain.Send("Goodbye", "Elephant!");
             });
 
+            App.IpcMain.On("GetPath", async (args) =>
+            {
+                string pathName = await App.GetPathAsync(PathName.pictures);
+                App.IpcMain.Send("GetPathComplete", pathName);
+            });
+
             return View();
         }
     }
