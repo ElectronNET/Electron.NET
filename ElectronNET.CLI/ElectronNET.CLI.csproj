@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="$(ProjectDir)devCleanup.cmd" />
+    <Exec Command="$(ProjectDir)devCleanup.cmd" IgnoreExitCode="true" />
   </Target>
 
 </Project>
