@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using System;
+using System.IO;
 
 namespace ElectronNET.WebApp.Controllers
 {
@@ -21,7 +23,13 @@ namespace ElectronNET.WebApp.Controllers
             App.IpcMain.On("GetPath", async (args) =>
             {
                 string pathName = await App.GetPathAsync(PathName.pictures);
-                App.IpcMain.Send("GetPathComplete", pathName);
+                //App.IpcMain.Send("GetPathComplete", pathName);
+
+                var result = await App.GetPathAsync(PathName.exe);
+                //var imagePath = Path.Combine(result, "Electron.png");
+                App.IpcMain.Send("GetPathComplete", result);
+
+                var image = await App.GetFileIconAsync(result);
             });
 
             return View();
