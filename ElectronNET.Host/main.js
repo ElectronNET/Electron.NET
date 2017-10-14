@@ -48,6 +48,10 @@ function startAspCoreBackend(electronPort) {
 
         var binPath = path.join(__dirname, 'bin');
         fs.readdir(binPath, (error, files) => {
+
+            // ToDo: Read 'electronnet.json and use the exectuable'
+            // add '.exe' to the exectuable name on windows and leave as is on linux/mac and we are done
+
             const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
             const exeFileName = exeFiles[0];
             const apipath = path.join(binPath, exeFileName);
