@@ -3,9 +3,9 @@ using Quobject.SocketIoClientDotNet.Client;
 
 namespace ElectronNET.API
 {
-    //
-    // Summary:
-    //     Communicate asynchronously from the main process to renderer processes.
+    /// <summary>
+    /// Communicate asynchronously from the main process to renderer processes.
+    /// </summary>
     public class IpcMain
     {
         private Socket _socket;
@@ -27,50 +27,35 @@ namespace ElectronNET.API
             _socket.On(channel, listener);
         }
 
-        // Summary:
-        //     Adds a one time listener method for the event. This listener is invoked only
-        //     the next time a message is sent to channel, after which it is removed.
-        //
-        // Parameters:
-        //   channel:
-        //     Channelname.
-        //
-        //   listener:
-        //     Callback Method.
-        //
+        /// <summary>
+        /// Adds a one time listener method for the event. This listener is invoked only
+        ///  the next time a message is sent to channel, after which it is removed.
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
         public void Once(string channel, Action<object> listener)
         {
             _socket.Emit("registerOnceIpcMainChannel", channel);
             _socket.On(channel, listener);
         }
 
-        //
-        // Summary:
-        //     Removes listeners of the specified channel.
-        //
-        // Parameters:
-        //   channel:
-        //     Channelname.
-        //
+        /// <summary>
+        /// Removes listeners of the specified channel.
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
         public void RemoveAllListeners(string channel)
         {
             _socket.Emit("removeAllListenersIpcMainChannel", channel);
         }
 
-        //
-        // Summary:
-        //     Send a message to the renderer process asynchronously via channel, you can also send
-        //     arbitrary arguments. Arguments will be serialized in JSON internally and hence
-        //     no functions or prototype chain will be included. The renderer process handles it by
-        //     listening for channel with ipcRenderer module.
-        //
-        // Parameters:
-        //   channel:
-        //     Channelname.
-        //
-        //   data:
-        //     Arguments data.
-        //
+        /// <summary>
+        /// Send a message to the renderer process asynchronously via channel, you can also send
+        /// arbitrary arguments. Arguments will be serialized in JSON internally and hence
+        /// no functions or prototype chain will be included. The renderer process handles it by
+        /// listening for channel with ipcRenderer module.
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="data">Arguments data.</param>
         public void Send(string channel, params object[] data)
         {
             _socket.Emit("sendToIpcRenderer", channel, data);

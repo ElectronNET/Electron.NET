@@ -29,7 +29,9 @@ namespace ElectronNET.WebApp.Controllers
                 //var imagePath = Path.Combine(result, "Electron.png");
                 App.IpcMain.Send("GetPathComplete", result);
 
-                var image = await App.GetFileIconAsync(result);
+              
+                //var image = await App.GetFileIconAsync(result);
+                
             });
 
             return View();
