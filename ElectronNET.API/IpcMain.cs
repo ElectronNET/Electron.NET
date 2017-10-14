@@ -1,20 +1,29 @@
 ﻿using System;
-using Quobject.SocketIoClientDotNet.Client;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
-    public class IpcMain
+    public sealed class IpcMain
     {
-        private Socket _socket;
+        private static IpcMain _ipcMain;
 
-        public IpcMain(Socket socket)
+        private IpcMain() { }
+
+        public static IpcMain Instance
         {
-            _socket = socket;
+            get
+            {
+                if(_ipcMain == null)
+                {
+                    _ipcMain = new IpcMain();
+                }
+
+                return _ipcMain;
+            }
         }
- 
+
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
         ///  listener(event, args...).
@@ -23,8 +32,8 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public void On(string channel, Action<object> listener)
         {
-            _socket.Emit("registerIpcMainChannel", channel);
-            _socket.On(channel, listener);
+            BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
+            BridgeConnector.Socket.On(channel, listener);
         }
 
         /// <summary>
@@ -35,8 +44,8 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public void Once(string channel, Action<object> listener)
         {
-            _socket.Emit("registerOnceIpcMainChannel", channel);
-            _socket.On(channel, listener);
+            BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
+            BridgeConnector.Socket.On(channel, listener);
         }
 
         /// <summary>
@@ -45,7 +54,7 @@ namespace ElectronNET.API
         /// <param name="channel">Channelname.</param>
         public void RemoveAllListeners(string channel)
         {
-            _socket.Emit("removeAllListenersIpcMainChannel", channel);
+            BridgeConnector.Socket.Emit("removeAllListenersIpcMainChannel", channel);
         }
 
         /// <summary>
@@ -58,7 +67,7 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(string channel, params object[] data)
         {
-            _socket.Emit("sendToIpcRenderer", channel, data);
+            BridgeConnector.Socket.Emit("sendToIpcRenderer", channel, data);
         }
     }
 }

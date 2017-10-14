@@ -2,50 +2,50 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
-    public static class App
+    public sealed class App
     {
-        /// <summary>
-        /// Communicate asynchronously from the main process to renderer processes.
-        /// </summary>
-        public static IpcMain IpcMain { get; private set; }
+        private static App _app;
 
-        private static Socket _socket;
-        private static JsonSerializer _jsonSerializer;
+        private App() { }
 
-        public static void OpenWindow(int width, int height, bool show)
+        public static App Instance
         {
-            _jsonSerializer = new JsonSerializer()
+            get
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
-            _socket.On(Socket.EVENT_CONNECT, () =>
-            {
-                Console.WriteLine("Verbunden!");
-
-                var browserWindowOptions = new BrowserWindowOptions()
+                if (_app == null)
                 {
-                    Height = height,
-                    Width = width,
-                    Show = show
-                };
+                    _app = new App();
+                }
 
-                _socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
-            });
-
-            IpcMain = new IpcMain(_socket);
+                return _app;
+            }
         }
 
-        public static void CreateNotification(NotificationOptions notificationOptions)
+        private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
-            _socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        public void OpenWindow(int width, int height, bool show)
+        {
+            var browserWindowOptions = new BrowserWindowOptions()
+            {
+                Height = height,
+                Width = width,
+                Show = show
+            };
+
+            BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
+        }
+
+        public void CreateNotification(NotificationOptions notificationOptions)
+        {
+            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace ElectronNET.API
         /// that a window cancels the quitting by returning false in the beforeunload event
         /// handler.
         /// </summary>
-        public static void Quit()
+        public void Quit()
         {
-            _socket.Emit("appQuit");
+            BridgeConnector.Socket.Emit("appQuit");
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace ElectronNET.API
         /// the before-quit and will-quit events will not be emitted.
         /// </summary>
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
-        public static void Exit(int exitCode = 0)
+        public void Exit(int exitCode = 0)
         {
-            _socket.Emit("appExit", exitCode);
+            BridgeConnector.Socket.Emit("appExit", exitCode);
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace ElectronNET.API
         /// make the app restart. When app.relaunch is called for multiple times, multiple
         /// instances will be started after current instance exited.
         /// </summary>
-        public static void Relaunch()
+        public void Relaunch()
         {
-            _socket.Emit("appRelaunch");
+            BridgeConnector.Socket.Emit("appRelaunch");
         }
 
         /// <summary>
@@ -97,51 +97,51 @@ namespace ElectronNET.API
         /// instances will be started after current instance exited.
         /// </summary>
         /// <param name="relaunchOptions"></param>
-        public static void Relaunch(RelaunchOptions relaunchOptions)
+        public void Relaunch(RelaunchOptions relaunchOptions)
         {
-            _socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
         }
 
         /// <summary>
         /// On Linux, focuses on the first visible window. On macOS, makes the application
         /// the active app.On Windows, focuses on the application's first window.
         /// </summary>
-        public static void Focus()
+        public void Focus()
         {
-            _socket.Emit("appFocus");
+            BridgeConnector.Socket.Emit("appFocus");
         }
 
         /// <summary>
         /// Hides all application windows without minimizing them.
         /// </summary>
-        public static void Hide()
+        public void Hide()
         {
-            _socket.Emit("appHide");
+            BridgeConnector.Socket.Emit("appHide");
         }
 
         /// <summary>
         /// Shows application windows after they were hidden. Does not automatically focus them.
         /// </summary>
-        public static void Show()
+        public void Show()
         {
-            _socket.Emit("appShow");
+            BridgeConnector.Socket.Emit("appShow");
         }
 
         /// <summary>
         /// The current application directory.
         /// </summary>
         /// <returns></returns>
-        public async static Task<string> GetAppPathAsync()
+        public async Task<string> GetAppPathAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetAppPathCompleted", (path) =>
+            BridgeConnector.Socket.On("appGetAppPathCompleted", (path) =>
             {
-                _socket.Off("appGetAppPathCompleted");
+                BridgeConnector.Socket.Off("appGetAppPathCompleted");
                 taskCompletionSource.SetResult(path.ToString());
             });
 
-            _socket.Emit("appGetAppPath");
+            BridgeConnector.Socket.Emit("appGetAppPath");
 
             return await taskCompletionSource.Task;
         }
@@ -151,18 +151,18 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="pathName"></param>
         /// <returns>A path to a special directory or file associated with name.</returns>
-        public async static Task<string> GetPathAsync(PathName pathName)
+        public async Task<string> GetPathAsync(PathName pathName)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetPathCompleted", (path) =>
+            BridgeConnector.Socket.On("appGetPathCompleted", (path) =>
                     {
-                        _socket.Off("appGetPathCompleted");
+                        BridgeConnector.Socket.Off("appGetPathCompleted");
 
                         taskCompletionSource.SetResult(path.ToString());
                     });
 
-            _socket.Emit("appGetPath", pathName.ToString());
+            BridgeConnector.Socket.Emit("appGetPath", pathName.ToString());
 
             return await taskCompletionSource.Task;
         }
@@ -178,9 +178,9 @@ namespace ElectronNET.API
         //{
         //    var taskCompletionSource = new TaskCompletionSource<NativeImage>();
 
-        //    _socket.On("appGetFileIconCompleted", (results) =>
+        //    BridgeConnector.Socket.On("appGetFileIconCompleted", (results) =>
         //    {
-        //        _socket.Off("appGetFileIconCompleted");
+        //        BridgeConnector.Socket.Off("appGetFileIconCompleted");
 
         //        byte[] test = ((JArray)results).Last.ToObject<byte[]>();
 
@@ -189,7 +189,7 @@ namespace ElectronNET.API
         //        //NativeImage nativeImage = (NativeImage)result[1];
         //        //taskCompletionSource.SetResult(nativeImage);
         //    });
-        //    _socket.Emit("appGetFileIcon", filePath);
+        //    BridgeConnector.Socket.Emit("appGetFileIcon", filePath);
 
         //    return await taskCompletionSource.Task;
         //}
@@ -207,15 +207,15 @@ namespace ElectronNET.API
         //{
         //    var taskCompletionSource = new TaskCompletionSource<NativeImage>();
 
-        //    _socket.On("appGetFileIconCompleted", (results) =>
+        //    BridgeConnector.Socket.On("appGetFileIconCompleted", (results) =>
         //    {
-        //        _socket.Off("appGetFileIconCompleted");
+        //        BridgeConnector.Socket.Off("appGetFileIconCompleted");
 
         //        object[] result = results as object[];
         //        NativeImage nativeImage = (NativeImage)result[1];
         //        taskCompletionSource.SetResult(nativeImage);
         //    });
-        //    _socket.Emit("appGetFileIcon", filePath, JObject.FromObject(fileIconOptions, _jsonSerializer));
+        //    BridgeConnector.Socket.Emit("appGetFileIcon", filePath, JObject.FromObject(fileIconOptions, _jsonSerializer));
 
         //    return await taskCompletionSource.Task;
         //}
@@ -230,9 +230,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="name"></param>
         /// <param name="path"></param>
-        public static void SetPath(string name, string path)
+        public void SetPath(string name, string path)
         {
-            _socket.Emit("appSetPath", name, path);
+            BridgeConnector.Socket.Emit("appSetPath", name, path);
         }
 
         /// <summary>
@@ -241,17 +241,17 @@ namespace ElectronNET.API
         /// the version of the current bundle or executable is returned.
         /// </summary>
         /// <returns></returns>
-        public async static Task<string> GetVersionAsync()
+        public async Task<string> GetVersionAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetVersionCompleted", (version) =>
+            BridgeConnector.Socket.On("appGetVersionCompleted", (version) =>
             {
-                _socket.Off("appGetVersionCompleted");
+                BridgeConnector.Socket.Off("appGetVersionCompleted");
                 taskCompletionSource.SetResult(version.ToString());
             });
 
-            _socket.Emit("appGetVersion");
+            BridgeConnector.Socket.Emit("appGetVersion");
 
             return await taskCompletionSource.Task;
         }
@@ -263,17 +263,17 @@ namespace ElectronNET.API
         /// name by Electron.
         /// </summary>
         /// <returns>The current application’s name, which is the name in the application’s package.json file.</returns>
-        public async static Task<string> GetNameAsync()
+        public async Task<string> GetNameAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetNameCompleted", (name) =>
+            BridgeConnector.Socket.On("appGetNameCompleted", (name) =>
             {
-                _socket.Off("appGetNameCompleted");
+                BridgeConnector.Socket.Off("appGetNameCompleted");
                 taskCompletionSource.SetResult(name.ToString());
             });
 
-            _socket.Emit("appGetName");
+            BridgeConnector.Socket.Emit("appGetName");
 
             return await taskCompletionSource.Task;
         }
@@ -282,9 +282,9 @@ namespace ElectronNET.API
         /// Overrides the current application's name.
         /// </summary>
         /// <param name="name">Application's name</param>
-        public static void SetName(string name)
+        public void SetName(string name)
         {
-            _socket.Emit("appSetName", name);
+            BridgeConnector.Socket.Emit("appSetName", name);
         }
 
         /// <summary>
@@ -293,17 +293,17 @@ namespace ElectronNET.API
         ///  folder.Note: On Windows you have to call it after the ready events gets emitted.
         /// </summary>
         /// <returns></returns>
-        public async static Task<string> GetLocaleAsync()
+        public async Task<string> GetLocaleAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetLocaleCompleted", (locale) =>
+            BridgeConnector.Socket.On("appGetLocaleCompleted", (locale) =>
             {
-                _socket.Off("appGetLocaleCompleted");
+                BridgeConnector.Socket.Off("appGetLocaleCompleted");
                 taskCompletionSource.SetResult(locale.ToString());
             });
 
-            _socket.Emit("appGetLocale");
+            BridgeConnector.Socket.Emit("appGetLocale");
 
             return await taskCompletionSource.Task;
         }
@@ -314,17 +314,17 @@ namespace ElectronNET.API
         /// from dock menu.
         /// </summary>
         /// <param name="path"></param>
-        public static void AddRecentDocument(string path)
+        public void AddRecentDocument(string path)
         {
-            _socket.Emit("appAddRecentDocument", path);
+            BridgeConnector.Socket.Emit("appAddRecentDocument", path);
         }
 
         /// <summary>
         /// Clears the recent documents list.
         /// </summary>
-        public static void ClearRecentDocuments()
+        public void ClearRecentDocuments()
         {
-            _socket.Emit("appClearRecentDocuments");
+            BridgeConnector.Socket.Emit("appClearRecentDocuments");
         }
 
         /// <summary>
@@ -345,17 +345,17 @@ namespace ElectronNET.API
         /// If you want your app to handle electron:// links, 
         /// call this method with electron as the parameter.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> SetAsDefaultProtocolClientAsync(string protocol)
+        public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appSetAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appSetAsDefaultProtocolClient", protocol);
+            BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol);
 
             return await taskCompletionSource.Task;
         }
@@ -379,17 +379,17 @@ namespace ElectronNET.API
         /// call this method with electron as the parameter.</param>
         /// <param name="path">Defaults to process.execPath</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path)
+        public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appSetAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appSetAsDefaultProtocolClient", protocol, path);
+            BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path);
 
             return await taskCompletionSource.Task;
         }
@@ -414,17 +414,17 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath</param>
         /// <param name="args">Defaults to an empty array</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args)
+        public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appSetAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
+            BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
 
             return await taskCompletionSource.Task;
         }
@@ -435,17 +435,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol)
+        public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appRemoveAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appRemoveAsDefaultProtocolClient", protocol);
+            BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol);
 
             return await taskCompletionSource.Task;
         }
@@ -457,17 +457,17 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="path">Defaults to process.execPath.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path)
+        public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appRemoveAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path);
+            BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path);
 
             return await taskCompletionSource.Task;
         }
@@ -480,17 +480,17 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="args">Defaults to an empty array.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args)
+        public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appRemoveAsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
+            BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
 
             return await taskCompletionSource.Task;
         }
@@ -506,17 +506,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <returns>Returns Boolean</returns>
-        public async static Task<bool> IsDefaultProtocolClientAsync(string protocol)
+        public async Task<bool> IsDefaultProtocolClientAsync(string protocol)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appIsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appIsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appIsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appIsDefaultProtocolClient", protocol);
+            BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol);
 
             return await taskCompletionSource.Task;
         }
@@ -533,17 +533,17 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="path">Defaults to process.execPath.</param>
         /// <returns>Returns Boolean</returns>
-        public async static Task<bool> IsDefaultProtocolClientAsync(string protocol, string path)
+        public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appIsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appIsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appIsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appIsDefaultProtocolClient", protocol, path);
+            BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path);
 
             return await taskCompletionSource.Task;
         }
@@ -561,17 +561,17 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="args">Defaults to an empty array.</param>
         /// <returns>Returns Boolean</returns>
-        public async static Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args)
+        public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appIsDefaultProtocolClientCompleted", (success) =>
+            BridgeConnector.Socket.On("appIsDefaultProtocolClientCompleted", (success) =>
             {
-                _socket.Off("appIsDefaultProtocolClientCompleted");
+                BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
+            BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
 
             return await taskCompletionSource.Task;
         }
@@ -583,17 +583,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="userTasks">Array of Task objects.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> SetUserTasksAsync(UserTask[] userTasks)
+        public async Task<bool> SetUserTasksAsync(UserTask[] userTasks)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appSetUserTasksCompleted", (success) =>
+            BridgeConnector.Socket.On("appSetUserTasksCompleted", (success) =>
             {
-                _socket.Off("appSetUserTasksCompleted");
+                BridgeConnector.Socket.Off("appSetUserTasksCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appSetUserTasks", JObject.FromObject(userTasks, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetUserTasks", JObject.FromObject(userTasks, _jsonSerializer));
 
             return await taskCompletionSource.Task;
         }
@@ -602,17 +602,17 @@ namespace ElectronNET.API
         /// Jump List settings for the application.
         /// </summary>
         /// <returns></returns>
-        public async static Task<JumpListSettings> GetJumpListSettingsAsync()
+        public async Task<JumpListSettings> GetJumpListSettingsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<JumpListSettings>();
 
-            _socket.On("appGetJumpListSettingsCompleted", (success) =>
+            BridgeConnector.Socket.On("appGetJumpListSettingsCompleted", (success) =>
             {
-                _socket.Off("appGetJumpListSettingsCompleted");
+                BridgeConnector.Socket.Off("appGetJumpListSettingsCompleted");
                 taskCompletionSource.SetResult(JObject.Parse(success.ToString()).ToObject<JumpListSettings>());
             });
 
-            _socket.Emit("appGetJumpListSettings");
+            BridgeConnector.Socket.Emit("appGetJumpListSettings");
 
             return await taskCompletionSource.Task;
         }
@@ -632,9 +632,9 @@ namespace ElectronNET.API
         /// obtained using app.getJumpListSettings(). 
         /// </summary>
         /// <param name="jumpListCategories"></param>
-        public static void SetJumpList(JumpListCategory[] jumpListCategories)
+        public void SetJumpList(JumpListCategory[] jumpListCategories)
         {
-            _socket.Emit("appSetJumpList", JObject.FromObject(jumpListCategories, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetJumpList", JObject.FromObject(jumpListCategories, _jsonSerializer));
         }
 
         /// <summary>
@@ -661,18 +661,18 @@ namespace ElectronNET.API
         /// <returns>This method returns false if your process is the primary instance of 
         /// the application and your app should continue loading. And returns true if your 
         /// process has sent its parameters to another instance, and you should immediately quit.</returns>
-        public async static Task<bool> MakeSingleInstanceAsync(Action<string[], string> newInstanceOpened)
+        public async Task<bool> MakeSingleInstanceAsync(Action<string[], string> newInstanceOpened)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appMakeSingleInstanceCompleted", (success) =>
+            BridgeConnector.Socket.On("appMakeSingleInstanceCompleted", (success) =>
             {
-                _socket.Off("appMakeSingleInstanceCompleted");
+                BridgeConnector.Socket.Off("appMakeSingleInstanceCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Off("newInstanceOpened");
-            _socket.On("newInstanceOpened", (result) =>
+            BridgeConnector.Socket.Off("newInstanceOpened");
+            BridgeConnector.Socket.On("newInstanceOpened", (result) =>
             {
                 JArray results = (JArray)result;
                 string[] args = results.First.ToObject<string[]>();
@@ -681,7 +681,7 @@ namespace ElectronNET.API
                 newInstanceOpened(args, workdirectory);
             });
 
-            _socket.Emit("appMakeSingleInstance");
+            BridgeConnector.Socket.Emit("appMakeSingleInstance");
 
             return await taskCompletionSource.Task;
         }
@@ -690,9 +690,9 @@ namespace ElectronNET.API
         /// Releases all locks that were created by makeSingleInstance. This will allow
         /// multiple instances of the application to once again run side by side.
         /// </summary>
-        public static void ReleaseSingleInstance()
+        public void ReleaseSingleInstance()
         {
-            _socket.Emit("appReleaseSingleInstance");
+            BridgeConnector.Socket.Emit("appReleaseSingleInstance");
         }
 
         /// <summary>
@@ -701,9 +701,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type">Uniquely identifies the activity. Maps to NSUserActivity.activityType.</param>
         /// <param name="userInfo">App-specific state to store for use by another device.</param>
-        public static void SetUserActivity(string type, object userInfo)
+        public void SetUserActivity(string type, object userInfo)
         {
-            _socket.Emit("appSetUserActivity", type, userInfo);
+            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo);
         }
 
         /// <summary>
@@ -713,26 +713,26 @@ namespace ElectronNET.API
         /// <param name="type">Uniquely identifies the activity. Maps to NSUserActivity.activityType.</param>
         /// <param name="userInfo">App-specific state to store for use by another device.</param>
         /// <param name="webpageURL">The webpage to load in a browser if no suitable app is installed on the resuming device. The scheme must be http or https.</param>
-        public static void SetUserActivity(string type, object userInfo, string webpageURL)
+        public void SetUserActivity(string type, object userInfo, string webpageURL)
         {
-            _socket.Emit("appSetUserActivity", type, userInfo, webpageURL);
+            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo, webpageURL);
         }
 
         /// <summary>
         /// The type of the currently running activity.
         /// </summary>
         /// <returns></returns>
-        public async static Task<string> GetCurrentActivityTypeAsync()
+        public async Task<string> GetCurrentActivityTypeAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appGetCurrentActivityTypeCompleted", (activityType) =>
+            BridgeConnector.Socket.On("appGetCurrentActivityTypeCompleted", (activityType) =>
             {
-                _socket.Off("appGetCurrentActivityTypeCompleted");
+                BridgeConnector.Socket.Off("appGetCurrentActivityTypeCompleted");
                 taskCompletionSource.SetResult(activityType.ToString());
             });
 
-            _socket.Emit("appGetCurrentActivityType");
+            BridgeConnector.Socket.Emit("appGetCurrentActivityType");
 
             return await taskCompletionSource.Task;
         }
@@ -741,9 +741,9 @@ namespace ElectronNET.API
         /// Changes the Application User Model ID to id.
         /// </summary>
         /// <param name="id"></param>
-        public static void SetAppUserModelId(string id)
+        public void SetAppUserModelId(string id)
         {
-            _socket.Emit("appSetAppUserModelId", id);
+            BridgeConnector.Socket.Emit("appSetAppUserModelId", id);
         }
 
         /// <summary>
@@ -753,17 +753,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns>Result of import. Value of 0 indicates success.</returns>
-        public async static Task<int> ImportCertificateAsync(ImportCertificateOptions options)
+        public async Task<int> ImportCertificateAsync(ImportCertificateOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
 
-            _socket.On("appImportCertificateCompleted", (result) =>
+            BridgeConnector.Socket.On("appImportCertificateCompleted", (result) =>
             {
-                _socket.Off("appImportCertificateCompleted");
+                BridgeConnector.Socket.Off("appImportCertificateCompleted");
                 taskCompletionSource.SetResult((int)result);
             });
 
-            _socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
 
             return await taskCompletionSource.Task;
         }
@@ -772,19 +772,19 @@ namespace ElectronNET.API
         /// Memory and cpu usage statistics of all the processes associated with the app.
         /// </summary>
         /// <returns></returns>
-        public async static Task<ProcessMetric[]> GetAppMetricsAsync()
+        public async Task<ProcessMetric[]> GetAppMetricsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<ProcessMetric[]>();
 
-            _socket.On("appGetAppMetricsCompleted", (result) =>
+            BridgeConnector.Socket.On("appGetAppMetricsCompleted", (result) =>
             {
-                _socket.Off("appGetAppMetricsCompleted");
+                BridgeConnector.Socket.Off("appGetAppMetricsCompleted");
                 var processMetrics = ((JArray)result).ToObject<ProcessMetric[]>();
 
                 taskCompletionSource.SetResult(processMetrics);
             });
 
-            _socket.Emit("appGetAppMetrics");
+            BridgeConnector.Socket.Emit("appGetAppMetrics");
 
             return await taskCompletionSource.Task;
         }
@@ -793,19 +793,19 @@ namespace ElectronNET.API
         /// The Graphics Feature Status from chrome://gpu/.
         /// </summary>
         /// <returns></returns>
-        public async static Task<GPUFeatureStatus> GetGpuFeatureStatusAsync()
+        public async Task<GPUFeatureStatus> GetGpuFeatureStatusAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<GPUFeatureStatus>();
 
-            _socket.On("appGetGpuFeatureStatusCompleted", (result) =>
+            BridgeConnector.Socket.On("appGetGpuFeatureStatusCompleted", (result) =>
             {
-                _socket.Off("appGetGpuFeatureStatusCompleted");
+                BridgeConnector.Socket.Off("appGetGpuFeatureStatusCompleted");
                 var gpuFeatureStatus = ((JObject)result).ToObject<GPUFeatureStatus>();
 
                 taskCompletionSource.SetResult(gpuFeatureStatus);
             });
 
-            _socket.Emit("appGetGpuFeatureStatus");
+            BridgeConnector.Socket.Emit("appGetGpuFeatureStatus");
 
             return await taskCompletionSource.Task;
         }
@@ -818,17 +818,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="count"></param>
         /// <returns>Whether the call succeeded.</returns>
-        public async static Task<bool> SetBadgeCountAsync(int count)
+        public async Task<bool> SetBadgeCountAsync(int count)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appSetBadgeCountCompleted", (success) =>
+            BridgeConnector.Socket.On("appSetBadgeCountCompleted", (success) =>
             {
-                _socket.Off("appSetBadgeCountCompleted");
+                BridgeConnector.Socket.Off("appSetBadgeCountCompleted");
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            _socket.Emit("appSetBadgeCount", count);
+            BridgeConnector.Socket.Emit("appSetBadgeCount", count);
 
             return await taskCompletionSource.Task;
         }
@@ -837,17 +837,17 @@ namespace ElectronNET.API
         /// The current value displayed in the counter badge.
         /// </summary>
         /// <returns></returns>
-        public async static Task<int> GetBadgeCountAsync()
+        public async Task<int> GetBadgeCountAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
 
-            _socket.On("appGetBadgeCountCompleted", (count) =>
+            BridgeConnector.Socket.On("appGetBadgeCountCompleted", (count) =>
             {
-                _socket.Off("appGetBadgeCountCompleted");
+                BridgeConnector.Socket.Off("appGetBadgeCountCompleted");
                 taskCompletionSource.SetResult((int)count);
             });
 
-            _socket.Emit("appGetBadgeCount");
+            BridgeConnector.Socket.Emit("appGetBadgeCount");
 
             return await taskCompletionSource.Task;
         }
@@ -856,17 +856,17 @@ namespace ElectronNET.API
         /// Whether the current desktop environment is Unity launcher.
         /// </summary>
         /// <returns></returns>
-        public async static Task<bool> IsUnityRunningAsync()
+        public async Task<bool> IsUnityRunningAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appIsUnityRunningCompleted", (isUnityRunning) =>
+            BridgeConnector.Socket.On("appIsUnityRunningCompleted", (isUnityRunning) =>
             {
-                _socket.Off("appIsUnityRunningCompleted");
+                BridgeConnector.Socket.Off("appIsUnityRunningCompleted");
                 taskCompletionSource.SetResult((bool)isUnityRunning);
             });
 
-            _socket.Emit("appIsUnityRunning");
+            BridgeConnector.Socket.Emit("appIsUnityRunning");
 
             return await taskCompletionSource.Task;
         }
@@ -877,17 +877,17 @@ namespace ElectronNET.API
         /// API has no effect on MAS builds.
         /// </summary>
         /// <returns></returns>
-        public async static Task<LoginItemSettings> GetLoginItemSettingsAsync()
+        public async Task<LoginItemSettings> GetLoginItemSettingsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>();
 
-            _socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
+            BridgeConnector.Socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
             {
-                _socket.Off("appGetLoginItemSettingsCompleted");
+                BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
                 taskCompletionSource.SetResult((LoginItemSettings)loginItemSettings);
             });
 
-            _socket.Emit("appGetLoginItemSettings");
+            BridgeConnector.Socket.Emit("appGetLoginItemSettings");
 
             return await taskCompletionSource.Task;
         }
@@ -899,17 +899,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public async static Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options)
+        public async Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>();
 
-            _socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
+            BridgeConnector.Socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
             {
-                _socket.Off("appGetLoginItemSettingsCompleted");
+                BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
                 taskCompletionSource.SetResult((LoginItemSettings)loginItemSettings);
             });
 
-            _socket.Emit("appGetLoginItemSettings", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appGetLoginItemSettings", JObject.FromObject(options, _jsonSerializer));
 
             return await taskCompletionSource.Task;
         }
@@ -920,9 +920,9 @@ namespace ElectronNET.API
         /// and pass arguments that specify your application name.
         /// </summary>
         /// <param name="loginSettings"></param>
-        public static void SetLoginItemSettings(LoginSettings loginSettings)
+        public void SetLoginItemSettings(LoginSettings loginSettings)
         {
-            _socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
         }
 
         /// <summary>
@@ -931,17 +931,17 @@ namespace ElectronNET.API
         /// See https://www.chromium.org/developers/design-documents/accessibility for more details.
         /// </summary>
         /// <returns>true if Chrome’s accessibility support is enabled, false otherwise.</returns>
-        public async static Task<bool> IsAccessibilitySupportEnabledAsync()
+        public async Task<bool> IsAccessibilitySupportEnabledAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appIsAccessibilitySupportEnabledCompleted", (isAccessibilitySupportEnabled) =>
+            BridgeConnector.Socket.On("appIsAccessibilitySupportEnabledCompleted", (isAccessibilitySupportEnabled) =>
             {
-                _socket.Off("appIsAccessibilitySupportEnabledCompleted");
+                BridgeConnector.Socket.Off("appIsAccessibilitySupportEnabledCompleted");
                 taskCompletionSource.SetResult((bool)isAccessibilitySupportEnabled);
             });
 
-            _socket.Emit("appIsAccessibilitySupportEnabled");
+            BridgeConnector.Socket.Emit("appIsAccessibilitySupportEnabled");
 
             return await taskCompletionSource.Task;
         }
@@ -951,9 +951,9 @@ namespace ElectronNET.API
         /// .plist file. See the Apple docs for more details.
         /// </summary>
         /// <param name="options"></param>
-        public static void SetAboutPanelOptions(AboutPanelOptions options)
+        public void SetAboutPanelOptions(AboutPanelOptions options)
         {
-            _socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -962,9 +962,9 @@ namespace ElectronNET.API
         /// low-level Chromium behaviors.
         /// </summary>
         /// <param name="theSwtich">A command-line switch.</param>
-        public static void CommandLineAppendSwitch(string theSwtich)
+        public void CommandLineAppendSwitch(string theSwtich)
         {
-            _socket.Emit("appCommandLineAppendSwitch", theSwtich);
+            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", theSwtich);
         }
 
         /// <summary>
@@ -974,9 +974,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="theSwtich">A command-line switch.</param>
         /// <param name="value">A value for the given switch.</param>
-        public static void CommandLineAppendSwitch(string theSwtich, string value)
+        public void CommandLineAppendSwitch(string theSwtich, string value)
         {
-            _socket.Emit("appCommandLineAppendSwitch", theSwtich, value);
+            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", theSwtich, value);
         }
 
         /// <summary>
@@ -984,17 +984,17 @@ namespace ElectronNET.API
         /// correctly.Note: This will not affect process.argv.
         /// </summary>
         /// <param name="value">The argument to append to the command line.</param>
-        public static void CommandLineAppendArgument(string value)
+        public void CommandLineAppendArgument(string value)
         {
-            _socket.Emit("appCommandLineAppendArgument", value);
+            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
         }
 
         /// <summary>
         /// Enables mixed sandbox mode on the app. This method can only be called before app is ready.
         /// </summary>
-        public static void EnableMixedSandbox()
+        public void EnableMixedSandbox()
         {
-            _socket.Emit("appEnableMixedSandbox");
+            BridgeConnector.Socket.Emit("appEnableMixedSandbox");
         }
 
         /// <summary>
@@ -1005,17 +1005,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async static Task<int> DockBounceAsync(DockBounceType type)
+        public async Task<int> DockBounceAsync(DockBounceType type)
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
 
-            _socket.On("appDockBounceCompleted", (id) =>
+            BridgeConnector.Socket.On("appDockBounceCompleted", (id) =>
             {
-                _socket.Off("appDockBounceCompleted");
+                BridgeConnector.Socket.Off("appDockBounceCompleted");
                 taskCompletionSource.SetResult((int)id);
             });
 
-            _socket.Emit("appDockBounce", type.ToString());
+            BridgeConnector.Socket.Emit("appDockBounce", type.ToString());
 
             return await taskCompletionSource.Task;
         }
@@ -1024,44 +1024,44 @@ namespace ElectronNET.API
         /// Cancel the bounce of id.
         /// </summary>
         /// <param name="id"></param>
-        public static void DockCancelBounce(int id)
+        public void DockCancelBounce(int id)
         {
-            _socket.Emit("appDockCancelBounce", id);
+            BridgeConnector.Socket.Emit("appDockCancelBounce", id);
         }
 
         /// <summary>
         /// Bounces the Downloads stack if the filePath is inside the Downloads folder.
         /// </summary>
         /// <param name="filePath"></param>
-        public static void DockDownloadFinished(string filePath)
+        public void DockDownloadFinished(string filePath)
         {
-            _socket.Emit("appDockDownloadFinished", filePath);
+            BridgeConnector.Socket.Emit("appDockDownloadFinished", filePath);
         }
 
         /// <summary>
         /// Sets the string to be displayed in the dock’s badging area.
         /// </summary>
         /// <param name="text"></param>
-        public static void DockSetBadge(string text)
+        public void DockSetBadge(string text)
         {
-            _socket.Emit("appDockSetBadge", text);
+            BridgeConnector.Socket.Emit("appDockSetBadge", text);
         }
 
         /// <summary>
         /// Gets the string to be displayed in the dock’s badging area.
         /// </summary>
         /// <returns></returns>
-        public async static Task<string> DockGetBadgeAsync()
+        public async Task<string> DockGetBadgeAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            _socket.On("appDockGetBadgeCompleted", (text) =>
+            BridgeConnector.Socket.On("appDockGetBadgeCompleted", (text) =>
             {
-                _socket.Off("appDockGetBadgeCompleted");
+                BridgeConnector.Socket.Off("appDockGetBadgeCompleted");
                 taskCompletionSource.SetResult((string)text);
             });
 
-            _socket.Emit("appDockGetBadge");
+            BridgeConnector.Socket.Emit("appDockGetBadge");
 
             return await taskCompletionSource.Task;
         }
@@ -1069,17 +1069,17 @@ namespace ElectronNET.API
         /// <summary>
         /// Hides the dock icon.
         /// </summary>
-        public static void DockHide()
+        public void DockHide()
         {
-            _socket.Emit("appDockHide");
+            BridgeConnector.Socket.Emit("appDockHide");
         }
 
         /// <summary>
         /// Shows the dock icon.
         /// </summary>
-        public static void DockShow()
+        public void DockShow()
         {
-            _socket.Emit("appDockShow");
+            BridgeConnector.Socket.Emit("appDockShow");
         }
 
         /// <summary>
@@ -1087,17 +1087,17 @@ namespace ElectronNET.API
         /// so this method might not return true immediately after that call.
         /// </summary>
         /// <returns></returns>
-        public async static Task<bool> DockIsVisibleAsync()
+        public async Task<bool> DockIsVisibleAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _socket.On("appDockIsVisibleCompleted", (isVisible) =>
+            BridgeConnector.Socket.On("appDockIsVisibleCompleted", (isVisible) =>
             {
-                _socket.Off("appDockIsVisibleCompleted");
+                BridgeConnector.Socket.Off("appDockIsVisibleCompleted");
                 taskCompletionSource.SetResult((bool)isVisible);
             });
 
-            _socket.Emit("appDockIsVisible");
+            BridgeConnector.Socket.Emit("appDockIsVisible");
 
             return await taskCompletionSource.Task;
         }
@@ -1106,18 +1106,18 @@ namespace ElectronNET.API
         /// <summary>
         /// Sets the application's dock menu.
         /// </summary>
-        public static void DockSetMenu()
+        public void DockSetMenu()
         {
-            _socket.Emit("appDockSetMenu");
+            BridgeConnector.Socket.Emit("appDockSetMenu");
         }
 
         /// <summary>
         /// Sets the image associated with this dock icon.
         /// </summary>
         /// <param name="image"></param>
-        public static void DockSetIcon(string image)
+        public void DockSetIcon(string image)
         {
-            _socket.Emit("appDockSetIcon", image);
+            BridgeConnector.Socket.Emit("appDockSetIcon", image);
         }
 
         /// <summary>
@@ -1126,7 +1126,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         //public static void DockSetIcon(NativeImage image)
         //{
-        //    _socket.Emit("appDockSetIcon", JObject.FromObject(image, _jsonSerializer));
+        //    BridgeConnector.Socket.Emit("appDockSetIcon", JObject.FromObject(image, _jsonSerializer));
         //}
     }
 }
