@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="ElectronHost\package-lock.json" />
     <None Remove="ElectronHost\package.json" />
+    <None Remove="electronnet.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
+    <EmbeddedResource Include="electronnet.json" />
   </ItemGroup>
 
   <ItemGroup>

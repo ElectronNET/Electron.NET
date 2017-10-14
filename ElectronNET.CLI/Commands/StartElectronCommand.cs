@@ -49,16 +49,16 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", aspCoreProjectPath);
 
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js", "ElectronHost.");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json", "ElectronHost.");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json", "ElectronHost.");
 
                 string hostApiFolder = Path.Combine(tempPath, "api");
                 if (Directory.Exists(hostApiFolder) == false)
                 {
                     Directory.CreateDirectory(hostApiFolder);
                 }
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "ElectronHost.api.");
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
