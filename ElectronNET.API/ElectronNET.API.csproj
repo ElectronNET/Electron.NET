@@ -12,9 +12,5 @@
     <PackageReference Include="SocketIoClientDotNet" Version="1.0.3" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(ProjectDir)devCleanup.cmd" />
-  </Target>
-
 
 </Project>

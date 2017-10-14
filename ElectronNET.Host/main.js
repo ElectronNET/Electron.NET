@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL, ipc;
+let io, window, apiProcess, loadURL, ipc, appApi;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -17,11 +17,9 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
+        appApi = require('./api/app')(socket, app);
 
         socket.on('createBrowserWindow', (options) => {
-            console.log(options);
-            options.show = true;
-
             window = new BrowserWindow(options);
             window.loadURL(loadURL);
 
@@ -44,14 +42,14 @@ function startSocketApiBridge(port) {
 function startAspCoreBackend(electronPort) {
     portfinder(8000, (error, electronWebPort) => {
         loadURL = `http://localhost:${electronWebPort}`
-        const arguments = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+        const params = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
 
         var binPath = path.join(__dirname, 'bin');
         fs.readdir(binPath, (error, files) => {
             const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
             const exeFileName = exeFiles[0];
             const apipath = path.join(binPath, exeFileName);
-            apiProcess = process(apipath, arguments);
+            apiProcess = process(apipath, params);
 
             apiProcess.stdout.on('data', (data) => {
                 var text = data.toString();

@@ -8,14 +8,20 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            App.IpcMain.On("SayHello", (args) => {
-                App.CreateNotification(new NotificationOptions
+            Electron.IpcMain.On("SayHello", (args) => {
+                Electron.App.CreateNotification(new NotificationOptions
                 {
                     Title = "Hallo Robert",
                     Body = "Nachricht von ASP.NET Core App"
                 });
 
-                App.IpcMain.Send("Goodbye", "Elephant!");
+                Electron.IpcMain.Send("Goodbye", "Elephant!");
+            });
+
+            Electron.IpcMain.On("GetPath", async (args) =>
+            {
+                string pathName = await Electron.App.GetPathAsync(PathName.pictures);
+                Electron.IpcMain.Send("GetPathComplete", pathName);
             });
 
             return View();

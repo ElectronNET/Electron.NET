@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API;
+using ElectronNET.API.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +36,7 @@ namespace ElectronNET.WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            App.OpenWindow(800, 600, true);
+            Electron.App.OpenWindow(800, 600, true);
         }
     }
 }
