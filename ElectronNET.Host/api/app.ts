@@ -1,6 +1,60 @@
 import { nativeImage as NativeImage } from 'electron';
 
 module.exports = (socket: SocketIO.Server, app: Electron.App) => {
+    
+    socket.on('register-app-window-all-closed-event', () => {
+        app.on('window-all-closed', () => {
+            socket.emit('app-window-all-closed');
+        });
+    });
+
+    socket.on('register-app-before-quit-event', () => {
+        app.on('before-quit', () => {
+            socket.emit('app-before-quit');
+        });
+    });
+
+    socket.on('register-app-will-quit-event', () => {
+        app.on('will-quit', () => {
+            socket.emit('app-will-quit');
+        });
+    });
+
+    socket.on('register-app-quit-event', () => {
+        app.on('quit', () => {
+            socket.emit('app-quit');
+        });
+    });
+
+    socket.on('register-app-browser-window-blur-event', () => {
+        app.on('browser-window-blur', () => {
+            socket.emit('app-browser-window-blur');
+        });
+    });
+
+    socket.on('register-app-browser-window-focus-event', () => {
+        app.on('browser-window-focus', () => {
+            socket.emit('app-browser-window-focus');
+        });
+    });
+
+    socket.on('register-app-browser-window-created-event', () => {
+        app.on('browser-window-created', () => {
+            socket.emit('app-browser-window-created');
+        });
+    });
+
+    socket.on('register-app-web-contents-created-event', () => {
+        app.on('web-contents-created', () => {
+            socket.emit('app-web-contents-created');
+        });
+    });
+
+    socket.on('register-app-accessibility-support-changed-event', () => {
+        app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
+            socket.emit('app-accessibility-support-changed', accessibilitySupportEnabled);
+        });
+    });
 
     socket.on('appQuit', () => {
         app.quit();

@@ -9,7 +9,254 @@ namespace ElectronNET.API
 {
     public sealed class App
     {
-        private static App _app;
+        /// <summary>
+        /// Emitted when all windows have been closed.
+        ///
+        /// If you do not subscribe to this event and all windows are closed, 
+        /// the default behavior is to quit the app; however, if you subscribe, 
+        /// you control whether the app quits or not.If the user pressed Cmd + Q, 
+        /// or the developer called app.quit(), Electron will first try to close 
+        /// all the windows and then emit the will-quit event, and in this case the
+        /// window-all-closed event would not be emitted.
+        /// </summary>
+        public event Action WindowAllClosed
+        {
+            add
+            {
+                if (_windowAllClosed == null)
+                {
+                    BridgeConnector.Socket.On("app-window-all-closed", () =>
+                    {
+                        _windowAllClosed();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event");
+                }
+                _windowAllClosed += value;
+            }
+            remove
+            {
+                _windowAllClosed -= value;
+            }
+        }
+
+        private event Action _windowAllClosed;
+
+        /// <summary>
+        /// Emitted before the application starts closing its windows. 
+        /// 
+        /// Note: If application quit was initiated by autoUpdater.quitAndInstall() then before-quit is emitted after
+        /// emitting close event on all windows and closing them.
+        /// </summary>
+        public event Action BeforeQuit
+        {
+            add
+            {
+                if (_beforeQuit == null)
+                {
+                    BridgeConnector.Socket.On("app-before-quit", () =>
+                    {
+                        _beforeQuit();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-before-quit-event");
+                }
+                _beforeQuit += value;
+            }
+            remove
+            {
+                _beforeQuit -= value;
+            }
+        }
+
+        private event Action _beforeQuit;
+
+        /// <summary>
+        /// Emitted when all windows have been closed and the application will quit. 
+        ///
+        /// See the description of the window-all-closed event for the differences between the will-quit and 
+        /// window-all-closed events.
+        /// </summary>
+        public event Action WillQuit
+        {
+            add
+            {
+                if (_willQuit == null)
+                {
+                    BridgeConnector.Socket.On("app-will-quit", () =>
+                    {
+                        _willQuit();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-will-quit-event");
+                }
+                _willQuit += value;
+            }
+            remove
+            {
+                _willQuit -= value;
+            }
+        }
+
+        private event Action _willQuit;
+
+        /// <summary>
+        /// Emitted when the application is quitting.
+        /// </summary>
+        public event Action Quitting
+        {
+            add
+            {
+                if (_quitting == null)
+                {
+                    BridgeConnector.Socket.On("app-quit", () =>
+                    {
+                        _quitting();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-quit-event");
+                }
+                _quitting += value;
+            }
+            remove
+            {
+                _quitting -= value;
+            }
+        }
+
+        private event Action _quitting;
+
+        /// <summary>
+        /// Emitted when a BrowserWindow gets blurred.
+        /// </summary>
+        public event Action BrowserWindowBlur
+        {
+            add
+            {
+                if (_browserWindowBlur == null)
+                {
+                    BridgeConnector.Socket.On("app-browser-window-blur", () =>
+                    {
+                        _browserWindowBlur();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event");
+                }
+                _browserWindowBlur += value;
+            }
+            remove
+            {
+                _browserWindowBlur -= value;
+            }
+        }
+
+        private event Action _browserWindowBlur;
+
+        /// <summary>
+        /// Emitted when a BrowserWindow gets focused.
+        /// </summary>
+        public event Action BrowserWindowFocus
+        {
+            add
+            {
+                if (_browserWindowFocus == null)
+                {
+                    BridgeConnector.Socket.On("app-browser-window-focus", () =>
+                    {
+                        _browserWindowFocus();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event");
+                }
+                _browserWindowFocus += value;
+            }
+            remove
+            {
+                _browserWindowFocus -= value;
+            }
+        }
+
+        private event Action _browserWindowFocus;
+
+        /// <summary>
+        /// Emitted when a new BrowserWindow is created.
+        /// </summary>
+        public event Action BrowserWindowCreated
+        {
+            add
+            {
+                if (_browserWindowCreated == null)
+                {
+                    BridgeConnector.Socket.On("app-browser-window-created", () =>
+                    {
+                        _browserWindowCreated();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event");
+                }
+                _browserWindowCreated += value;
+            }
+            remove
+            {
+                _browserWindowCreated -= value;
+            }
+        }
+
+        private event Action _browserWindowCreated;
+
+        /// <summary>
+        /// Emitted when a new webContents is created.
+        /// </summary>
+        public event Action WebContentsCreated
+        {
+            add
+            {
+                if (_webContentsCreated == null)
+                {
+                    BridgeConnector.Socket.On("app-web-contents-created", () =>
+                    {
+                        _webContentsCreated();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event");
+                }
+                _webContentsCreated += value;
+            }
+            remove
+            {
+                _webContentsCreated -= value;
+            }
+        }
+
+        private event Action _webContentsCreated;
+
+        /// <summary>
+        /// Emitted when Chrome’s accessibility support changes. 
+        /// This event fires when assistive technologies, such as screen readers, are enabled or disabled. 
+        /// See https://www.chromium.org/developers/design-documents/accessibility for more details.
+        /// </summary>
+        public event Action<bool> AccessibilitySupportChanged
+        {
+            add
+            {
+                if (_accessibilitySupportChanged == null)
+                {
+                    BridgeConnector.Socket.On("app-accessibility-support-changed", (state) =>
+                    {
+                        _accessibilitySupportChanged((bool)state);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event");
+                }
+                _accessibilitySupportChanged += value;
+            }
+            remove
+            {
+                _accessibilitySupportChanged -= value;
+            }
+        }
+
+        private event Action<bool> _accessibilitySupportChanged;
 
         private App() { }
 
@@ -26,11 +273,14 @@ namespace ElectronNET.API
             }
         }
 
+        private static App _app;
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+        // TODO: Auslagern in eigenes Window-Management
         public void OpenWindow(int width, int height, bool show)
         {
             var browserWindowOptions = new BrowserWindowOptions()
@@ -43,6 +293,7 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
         }
 
+        // TODO: Auslagern in eigenes Notification-API
         public void CreateNotification(NotificationOptions notificationOptions)
         {
             BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));

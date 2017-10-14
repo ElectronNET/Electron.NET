@@ -1,6 +1,51 @@
 "use strict";
 exports.__esModule = true;
 module.exports = function (socket, app) {
+    socket.on('register-app-window-all-closed-event', function () {
+        app.on('window-all-closed', function () {
+            socket.emit('app-window-all-closed');
+        });
+    });
+    socket.on('register-app-before-quit-event', function () {
+        app.on('before-quit', function () {
+            socket.emit('app-before-quit');
+        });
+    });
+    socket.on('register-app-will-quit-event', function () {
+        app.on('will-quit', function () {
+            socket.emit('app-will-quit');
+        });
+    });
+    socket.on('register-app-quit-event', function () {
+        app.on('quit', function () {
+            socket.emit('app-quit');
+        });
+    });
+    socket.on('register-app-browser-window-blur-event', function () {
+        app.on('browser-window-blur', function () {
+            socket.emit('app-browser-window-blur');
+        });
+    });
+    socket.on('register-app-browser-window-focus-event', function () {
+        app.on('browser-window-focus', function () {
+            socket.emit('app-browser-window-focus');
+        });
+    });
+    socket.on('register-app-browser-window-created-event', function () {
+        app.on('browser-window-created', function () {
+            socket.emit('app-browser-window-created');
+        });
+    });
+    socket.on('register-app-web-contents-created-event', function () {
+        app.on('web-contents-created', function () {
+            socket.emit('app-web-contents-created');
+        });
+    });
+    socket.on('register-app-accessibility-support-changed-event', function () {
+        app.on('accessibility-support-changed', function (event, accessibilitySupportEnabled) {
+            socket.emit('app-accessibility-support-changed', accessibilitySupportEnabled);
+        });
+    });
     socket.on('appQuit', function () {
         app.quit();
     });
@@ -28,6 +73,15 @@ module.exports = function (socket, app) {
         var path = app.getPath(name);
         socket.emit('appGetPathCompleted', path);
     });
+    // const nativeImages = {};
+    // function addNativeImage(nativeImage: Electron.NativeImage) {
+    //     if(Object.keys(nativeImages).length === 0) {
+    //         nativeImage['1'] = nativeImage;
+    //     } else {
+    //         let indexCount = Object.keys(nativeImages).length + 1;
+    //         nativeImage[indexCount] = nativeImage;
+    //     }
+    // }
     socket.on('appGetFileIcon', function (path, options) {
         if (options) {
             app.getFileIcon(path, options, function (error, nativeImage) {
