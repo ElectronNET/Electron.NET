@@ -60,7 +60,13 @@ namespace ElectronNET.CLI.Commands
                 {
                     Directory.CreateDirectory(hostApiFolder);
                 }
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "ElectronHost.api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "dialog.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "menu.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "notification.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "tray.js", "api.");
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);

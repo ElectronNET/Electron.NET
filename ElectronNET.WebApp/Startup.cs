@@ -1,9 +1,12 @@
 ﻿using ElectronNET.API;
+using ElectronNET.API.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Threading;
 
 namespace ElectronNET.WebApp
 {
@@ -35,7 +38,40 @@ namespace ElectronNET.WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            App.OpenWindow(800, 600, true);
+            Bootstrap();
+        }
+
+        public async void Bootstrap()
+        {
+            var menuItems = new MenuItem[] {
+                new MenuItem {
+                    Label = "File",
+                    Submenu = new MenuItem[] {
+                        new MenuItem {
+                            Label = "Exit",
+                            Click = () =>
+                            {
+                                Electron.App.Exit();
+                            }
+                        }
+                    }
+                },
+                new MenuItem
+                {
+                    Label = "About",
+                    Click = async () => {
+                        await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("(c) 2017 Gregor Biswanger & Robert Muehsig") {
+                            Title = "About us...",
+                            Type = "info"
+                        });
+                    }
+                }
+            };
+
+            Electron.Menu.SetApplicationMenu(menuItems);
+            Electron.Tray.Show("/Assets/electron_32x32.png", menuItems);
+
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync();
         }
     }
 }

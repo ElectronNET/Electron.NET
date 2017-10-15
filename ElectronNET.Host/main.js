@@ -1,8 +1,9 @@
-const { app, BrowserWindow, Notification } = require('electron');
+const { app } = require('electron');
+const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL, ipc;
+let io, browserWindows, ipc, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -16,27 +17,14 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
-
-        socket.on('createBrowserWindow', (options) => {
-            console.log(options);
-            options.show = true;
-
-            window = new BrowserWindow(options);
-            window.loadURL(loadURL);
-
-            window.on('closed', function () {
-                mainWindow = null;
-                apiProcess = null;
-            });
-
-            ipc = require('./api/ipc')(socket, window);
-        });
-
-        socket.on('createNotification', (options) => {
-            const notification = new Notification(options);
-            notification.show();
-        });
-
+        
+        appApi = require('./api/app')(socket, app);
+        browserWindows = require('./api/browserWindows')(socket);
+        ipc = require('./api/ipc')(socket);        
+        menu = require('./api/menu')(socket);
+        dialog = require('./api/dialog')(socket);
+        notification = require('./api/notification')(socket);
+        tray = require('./api/tray')(socket);
     });
 }
 

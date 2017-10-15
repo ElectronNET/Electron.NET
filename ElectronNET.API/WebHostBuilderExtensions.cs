@@ -23,6 +23,8 @@ namespace ElectronNET.API
             {
                 builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                     .UseUrls("http://0.0.0.0:" + BridgeSettings.WebPort);
+
+                BridgeConnector.StartConnection();
             }
 
             return builder;

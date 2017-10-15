@@ -3,7 +3,6 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Home</title>
 </head>
 <body>
     <h3>Hello from ASP.NET Core MVC!</h3>
@@ -17,6 +16,11 @@
     <br /><br />
     <input id="callButton" type="button" value="Call Notification" />
 
+    <div>
+        <p id="picturesPathLabel"></p>
+        <input id="picturesButton" type="button" value="Get Pictures-Path" />
+    </div>
+
     <script>
         const { ipcRenderer } = require("electron");
 
@@ -27,6 +31,15 @@
         ipcRenderer.on("Goodbye", (sender, data) => {
             alert('Goodbye ' + data);
         });
+
+        document.getElementById("picturesButton").addEventListener("click", () => {
+            ipcRenderer.send("GetPath");
+        });
+
+        ipcRenderer.on("GetPathComplete", (sender, data) => {
+            document.getElementById("picturesPathLabel").innerText = data;
+        });
+
     </script>
 </body>
 </html>
