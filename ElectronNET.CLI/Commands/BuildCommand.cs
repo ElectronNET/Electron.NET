@@ -82,7 +82,7 @@ namespace ElectronNET.CLI.Commands
                 {
                     // ToDo: find another solution or document it proper
                     // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron - packager--global' at " + tempPath + " manually. Sry.");
+                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " + tempPath + " manually. Sry.");
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
