@@ -1,7 +1,9 @@
 ﻿using ElectronNET.API.Entities;
+using ElectronNET.API.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace ElectronNET.API
 {
@@ -24,9 +26,19 @@ namespace ElectronNET.API
             }
         }
 
+        public IReadOnlyCollection<MenuItem> Items { get { return _items.AsReadOnly(); } }
+        private List<MenuItem> _items = new List<MenuItem>();
+
         public void Show(string image, MenuItem[] menuItems)
         {
+            menuItems.AddMenuItemsId();
             BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            _items.AddRange(menuItems);
+
+            BridgeConnector.Socket.On("trayMenuItemClicked", (id) => {
+                MenuItem menuItem = _items.GetMenuItem(id.ToString());
+                menuItem?.Click();
+            });
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

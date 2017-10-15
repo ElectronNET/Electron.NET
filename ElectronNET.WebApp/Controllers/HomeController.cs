@@ -12,16 +12,21 @@ namespace ElectronNET.WebApp.Controllers
             Electron.IpcMain.On("SayHello", (args) => {
                 Electron.Notification.Show(new NotificationOptions("Hallo Robert","Nachricht von ASP.NET Core App"));
 
-                Electron.IpcMain.Send("Goodbye", "Elephant!");
+                Electron.IpcMain.Send(Electron.WindowManager.BrowserWindows.First(), "Goodbye", "Elephant!");
             });
 
             Electron.IpcMain.On("GetPath", async (args) =>
             {
-                string pathName = await Electron.App.GetPathAsync(PathName.pictures);
-                Electron.IpcMain.Send("GetPathComplete", pathName);
+                var currentBrowserWindow = Electron.WindowManager.BrowserWindows.First();
 
-                Electron.WindowManager.BrowserWindows.First().Minimize();
-                await Electron.WindowManager.CreateWindowAsync("http://www.google.de");
+                string pathName = await Electron.App.GetPathAsync(PathName.pictures);
+                Electron.IpcMain.Send(currentBrowserWindow, "GetPathComplete", pathName);
+
+                currentBrowserWindow.Minimize();
+                await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions {
+                    Title = "My second Window",
+                    AutoHideMenuBar = true
+                },"http://www.google.de");
             });
             
 

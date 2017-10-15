@@ -6,12 +6,12 @@ module.exports = function (socket) {
         if ("id" in browserWindow) {
             var window = electron_1.BrowserWindow.fromId(browserWindow.id);
             electron_1.dialog.showMessageBox(window, options, function (response, checkboxChecked) {
-                socket.emit('showMessageBoxComplete', response, checkboxChecked);
+                socket.emit('showMessageBoxComplete', [response, checkboxChecked]);
             });
         }
         else {
             electron_1.dialog.showMessageBox(browserWindow, function (response, checkboxChecked) {
-                socket.emit('showMessageBoxComplete', response, checkboxChecked);
+                socket.emit('showMessageBoxComplete', [response, checkboxChecked]);
             });
         }
     });

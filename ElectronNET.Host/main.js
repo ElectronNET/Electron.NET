@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, browserWindows, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
+let io, browserWindows, ipc, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -20,13 +20,13 @@ function startSocketApiBridge(port) {
         
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket);
+        ipc = require('./api/ipc')(socket);        
         menu = require('./api/menu')(socket);
         dialog = require('./api/dialog')(socket);
         notification = require('./api/notification')(socket);
         tray = require('./api/tray')(socket);
     });
 }
-
 
 function startAspCoreBackend(electronPort) {
     portfinder(8000, (error, electronWebPort) => {

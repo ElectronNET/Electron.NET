@@ -1,6 +1,6 @@
-const { ipcMain } = require('electron');
+import { ipcMain, BrowserWindow } from 'electron';
 
-module.exports = (socket: SocketIO.Server, window) => {
+module.exports = (socket: SocketIO.Server) => {
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
             socket.emit(channel, [event.preventDefault(), args]);
@@ -17,7 +17,9 @@ module.exports = (socket: SocketIO.Server, window) => {
         ipcMain.removeAllListeners(channel);
     });
 
-    socket.on('sendToIpcRenderer', (channel, ...data) => {
+    socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
+        const window = BrowserWindow.fromId(browserWindow.id);
+        
         if (window) {
             window.webContents.send(channel, data);
         }

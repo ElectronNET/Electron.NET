@@ -43,7 +43,7 @@ namespace ElectronNET.WebApp
 
         public async void Bootstrap()
         {
-            Electron.Menu.SetApplicationMenu(new MenuItem[] {
+            var menuItems = new MenuItem[] {
                 new MenuItem {
                     Label = "File",
                     Submenu = new MenuItem[] {
@@ -66,19 +66,12 @@ namespace ElectronNET.WebApp
                         });
                     }
                 }
-            });
+            };
+
+            Electron.Menu.SetApplicationMenu(menuItems);
+            Electron.Tray.Show("/Assets/electron_32x32.png", menuItems);
 
             var browserWindow = await Electron.WindowManager.CreateWindowAsync();
-
-            Electron.Tray.Show("/Assets/electron_32x32.png", new MenuItem[] {
-                new MenuItem {
-                            Label = "Exit",
-                            Click = () =>
-                            {
-                                Electron.App.Exit();
-                            }
-                        }
-            });
         }
     }
 }

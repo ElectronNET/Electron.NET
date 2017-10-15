@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using ElectronNET.API.Extensions;
 
 namespace ElectronNET.API
 {
@@ -32,54 +33,14 @@ namespace ElectronNET.API
 
         public void SetApplicationMenu(MenuItem[] menuItems)
         {
-            AddMenuItemsId(menuItems);
+            menuItems.AddMenuItemsId();
             BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.On("menuItemClicked", (id) => {
-                MenuItem menuItem = GetMenuItem(_items, id.ToString());
+                MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
             });
-        }
-
-        private void AddMenuItemsId(MenuItem[] menuItems)
-        {
-            for (int index = 0; index < menuItems.Length; index++)
-            {
-                var menuItem = menuItems[index];
-                if(menuItem?.Submenu?.Length > 0)
-                {
-                    AddMenuItemsId(menuItem.Submenu);
-                }
-
-                if(string.IsNullOrEmpty(menuItem.Role))
-                {
-                    menuItem.Id = Guid.NewGuid().ToString();
-                }
-            }
-        }
-
-        private MenuItem GetMenuItem(List<MenuItem> menuItems, string id)
-        {
-            MenuItem result = new MenuItem();
-
-            foreach (var item in menuItems)
-            {
-                if(item.Id == id)
-                {
-                    result = item;
-                }
-                else if(item?.Submenu?.Length > 0)
-                {
-                    var menuItem = GetMenuItem(item.Submenu.ToList(), id);
-                    if(menuItem.Id == id)
-                    {
-                        result = menuItem;
-                    }
-                }
-            }
-
-            return result;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using System;
 
 namespace ElectronNET.API
 {
@@ -63,11 +66,19 @@ namespace ElectronNET.API
         /// no functions or prototype chain will be included. The renderer process handles it by
         /// listening for channel with ipcRenderer module.
         /// </summary>
+        /// <param name="browserWindow">BrowserWindow with channel.</param>
         /// <param name="channel">Channelname.</param>
         /// <param name="data">Arguments data.</param>
-        public void Send(string channel, params object[] data)
+        public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            BridgeConnector.Socket.Emit("sendToIpcRenderer", channel, data);
+            BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
         }
+
+        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
     }
 }

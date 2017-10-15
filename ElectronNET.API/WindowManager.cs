@@ -31,15 +31,17 @@ namespace ElectronNET.API
 
         public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost")
         {
-            return await CreateWindowAsync(new BrowserWindowConstructorOptions(), loadUrl);
+            return await CreateWindowAsync(new BrowserWindowOptions(), loadUrl);
         }
 
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowConstructorOptions options, string loadUrl = "http://localhost")
+        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
 
             BridgeConnector.Socket.On("BrowserWindowCreated", (id) =>
             {
+                BridgeConnector.Socket.Off("BrowserWindowCreated");
+
                 string windowId = id.ToString();
                 BrowserWindow browserWindow = new BrowserWindow(int.Parse(windowId));
                 _browserWindows.Add(browserWindow);
