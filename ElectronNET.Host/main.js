@@ -1,5 +1,4 @@
 const { app, BrowserWindow, Notification } = require('electron');
-const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
@@ -44,23 +43,22 @@ function startSocketApiBridge(port) {
 function startAspCoreBackend(electronPort) {
     portfinder(8000, (error, electronWebPort) => {
         loadURL = `http://localhost:${electronWebPort}`
-        const arguments = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
 
-        var binPath = path.join(__dirname, 'bin');
-        fs.readdir(binPath, (error, files) => {
+        const manifestFile = require("./bin/electronnet.json");
+        let binaryFile = manifestFile.executable;
+        
+        const os = require("os");
+        if(os.platform() === "win32") {
+            binaryFile = binaryFile + '.exe';
+        }
+        
+        const binFilePath = path.join(__dirname, 'bin', binaryFile);
+        apiProcess = process(binFilePath, parameters);
 
-            // ToDo: Read 'electronnet.json and use the exectuable'
-            // add '.exe' to the exectuable name on windows and leave as is on linux/mac and we are done
-
-            const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
-            const exeFileName = exeFiles[0];
-            const apipath = path.join(binPath, exeFileName);
-            apiProcess = process(apipath, arguments);
-
-            apiProcess.stdout.on('data', (data) => {
-                var text = data.toString();
-                console.log(`stdout: ${data.toString()}`);
-            });
+        apiProcess.stdout.on('data', (data) => {
+            var text = data.toString();
+            console.log(`stdout: ${data.toString()}`);
         });
     });
 }
