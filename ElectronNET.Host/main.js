@@ -1,9 +1,9 @@
-const { app, Notification, Menu } = require('electron');
+const { app } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, browserWindows, apiProcess, loadURL, appApi;
+let io, browserWindows, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -17,36 +17,13 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
+        
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket);
-
-        socket.on('menu-setApplicationMenu', (menuItems) => {
-            const menu = Menu.buildFromTemplate(menuItems);
-
-            addMenuItemClickConnector(menu.items, (id) => {
-                socket.emit("menuItemClicked", id);
-            });
-
-            Menu.setApplicationMenu(menu);
-        });
-
-        socket.on('createNotification', (options) => {
-            const notification = new Notification(options);
-            notification.show();
-        });
-
-    });
-}
-
-function addMenuItemClickConnector(menuItems, callback) {
-    menuItems.forEach((item) => {
-        if(item.submenu && item.submenu.items.length > 0) {
-            addMenuItemClickConnector(item.submenu.items, callback);
-        }
-
-        if("id" in item && item.id) {
-            item.click = () => { callback(item.id); };
-        }
+        menu = require('./api/menu')(socket);
+        dialog = require('./api/dialog')(socket);
+        notification = require('./api/notification')(socket);
+        tray = require('./api/tray')(socket);
     });
 }
 

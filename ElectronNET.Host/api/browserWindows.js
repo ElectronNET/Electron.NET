@@ -19,6 +19,7 @@ module.exports = function (socket) {
                 }
             }
         });
+        // TODO: IPC Lösung für mehrere Fenster finden 
         if (ipc == undefined) {
             ipc = require('./ipc')(socket, window);
         }

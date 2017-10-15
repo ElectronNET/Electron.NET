@@ -280,12 +280,6 @@ namespace ElectronNET.API
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        // TODO: Auslagern in eigenes Notification-API
-        public void CreateNotification(NotificationOptions notificationOptions)
-        {
-            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
-        }
-
         /// <summary>
         /// Try to close all windows. The before-quit event will be emitted first. If all
         /// windows are successfully closed, the will-quit event will be emitted and by

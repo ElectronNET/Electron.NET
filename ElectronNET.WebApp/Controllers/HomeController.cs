@@ -10,11 +10,7 @@ namespace ElectronNET.WebApp.Controllers
         public IActionResult Index()
         {
             Electron.IpcMain.On("SayHello", (args) => {
-                Electron.App.CreateNotification(new NotificationOptions
-                {
-                    Title = "Hallo Robert",
-                    Body = "Nachricht von ASP.NET Core App"
-                });
+                Electron.Notification.Show(new NotificationOptions("Hallo Robert","Nachricht von ASP.NET Core App"));
 
                 Electron.IpcMain.Send("Goodbye", "Elephant!");
             });

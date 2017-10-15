@@ -45,20 +45,40 @@ namespace ElectronNET.WebApp
         {
             Electron.Menu.SetApplicationMenu(new MenuItem[] {
                 new MenuItem {
-                    Label = "Datei",
+                    Label = "File",
                     Submenu = new MenuItem[] {
                         new MenuItem {
-                            Label = "Beenden",
+                            Label = "Exit",
                             Click = () =>
                             {
                                 Electron.App.Exit();
                             }
                         }
                     }
+                },
+                new MenuItem
+                {
+                    Label = "About",
+                    Click = async () => {
+                        await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("(c) 2017 Gregor Biswanger & Robert Muehsig") {
+                            Title = "About us...",
+                            Type = "info"
+                        });
+                    }
                 }
             });
 
             var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+
+            Electron.Tray.Show("/Assets/electron_32x32.png", new MenuItem[] {
+                new MenuItem {
+                            Label = "Exit",
+                            Click = () =>
+                            {
+                                Electron.App.Exit();
+                            }
+                        }
+            });
         }
     }
 }
