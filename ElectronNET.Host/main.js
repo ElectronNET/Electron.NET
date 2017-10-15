@@ -31,19 +31,22 @@ function startSocketApiBridge(port) {
 function startAspCoreBackend(electronPort) {
     portfinder(8000, (error, electronWebPort) => {
         loadURL = `http://localhost:${electronWebPort}`
-        const params = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
 
-        var binPath = path.join(__dirname, 'bin');
-        fs.readdir(binPath, (error, files) => {
-            const exeFiles = files.filter((name) => name.indexOf('.exe') > -1);
-            const exeFileName = exeFiles[0];
-            const apipath = path.join(binPath, exeFileName);
-            apiProcess = process(apipath, params);
+        const manifestFile = require("./bin/electronnet.json");
+        let binaryFile = manifestFile.executable;
+        
+        const os = require("os");
+        if(os.platform() === "win32") {
+            binaryFile = binaryFile + '.exe';
+        }
+        
+        const binFilePath = path.join(__dirname, 'bin', binaryFile);
+        apiProcess = process(binFilePath, parameters);
 
-            apiProcess.stdout.on('data', (data) => {
-                var text = data.toString();
-                console.log(`stdout: ${data.toString()}`);
-            });
+        apiProcess.stdout.on('data', (data) => {
+            var text = data.toString();
+            console.log(`stdout: ${data.toString()}`);
         });
     });
 }
@@ -57,10 +60,10 @@ app.on('window-all-closed', () => {
     }
 });
 
-// app.on('activate', () => {
-//     // On macOS it's common to re-create a window in the app when the
-//     // dock icon is clicked and there are no other windows open.
-//     if (window === null) {
-//         createWindow();
-//     }
-// });
+//app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+//    if (win === null) {
+//        createWindow();
+//    }
+//});

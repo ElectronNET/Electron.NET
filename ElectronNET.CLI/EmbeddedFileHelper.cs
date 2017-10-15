@@ -19,7 +19,7 @@ namespace ElectronNET.CLI
         {
             using (var fileStream = File.Create(Path.Combine(targetPath, file)))
             {
-                var streamFromEmbeddedFile = GetTestResourceFileStream("ElectronHost." + namespacePath + file);
+                var streamFromEmbeddedFile = GetTestResourceFileStream(namespacePath + file);
                 streamFromEmbeddedFile.CopyTo(fileStream);
             }
         }

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ElectronNET.CLI
 {
+ 
     class Program
     {
         static void Main(string[] args)
@@ -27,6 +29,9 @@ namespace ElectronNET.CLI
                     break;
                 case BuildCommand.COMMAND_NAME:
                     command = new BuildCommand();
+                    break;
+                case InitCommand.COMMAND_NAME:
+                    command = new InitCommand();
                     break;
                 case "--help":
                 case "--h":

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ElectronNET.CLI
 {
@@ -9,7 +10,18 @@ namespace ElectronNET.CLI
         {
             using (Process cmd = new Process())
             {
-                cmd.StartInfo.FileName = "cmd.exe";
+                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+                if (isWindows)
+                {
+                    cmd.StartInfo.FileName = "cmd.exe";
+                }
+                else
+                {
+                    // works for OSX and Linux (at least on Ubuntu)
+                    cmd.StartInfo.FileName = "bash";
+                }
+
                 cmd.StartInfo.RedirectStandardInput = true;
                 cmd.StartInfo.RedirectStandardOutput = true;
                 cmd.StartInfo.CreateNoWindow = true;
