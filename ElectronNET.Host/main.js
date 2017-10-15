@@ -1,9 +1,9 @@
-const { app, BrowserWindow, Notification } = require('electron');
+const { app } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL, ipc, appApi;
+let io, browserWindows, ipc, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -17,25 +17,14 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
+        
         appApi = require('./api/app')(socket, app);
-
-        socket.on('createBrowserWindow', (options) => {
-            window = new BrowserWindow(options);
-            window.loadURL(loadURL);
-
-            window.on('closed', function () {
-                mainWindow = null;
-                apiProcess = null;
-            });
-
-            ipc = require('./api/ipc')(socket, window);
-        });
-
-        socket.on('createNotification', (options) => {
-            const notification = new Notification(options);
-            notification.show();
-        });
-
+        browserWindows = require('./api/browserWindows')(socket);
+        ipc = require('./api/ipc')(socket);        
+        menu = require('./api/menu')(socket);
+        dialog = require('./api/dialog')(socket);
+        notification = require('./api/notification')(socket);
+        tray = require('./api/tray')(socket);
     });
 }
 
@@ -68,10 +57,10 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (win === null) {
-        createWindow();
-    }
-});
+// app.on('activate', () => {
+//     // On macOS it's common to re-create a window in the app when the
+//     // dock icon is clicked and there are no other windows open.
+//     if (window === null) {
+//         createWindow();
+//     }
+// });
