@@ -9,9 +9,9 @@ namespace ElectronNET.API
     {
         private static IpcMain _ipcMain;
 
-        private IpcMain() { }
+        internal IpcMain() { }
 
-        public static IpcMain Instance
+        internal static IpcMain Instance
         {
             get
             {

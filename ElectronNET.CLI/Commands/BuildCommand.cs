@@ -40,6 +40,8 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(hostApiFolder);
                 }
                 EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using System.Linq;
 
 namespace ElectronNET.WebApp.Controllers
 {
@@ -22,7 +23,11 @@ namespace ElectronNET.WebApp.Controllers
             {
                 string pathName = await Electron.App.GetPathAsync(PathName.pictures);
                 Electron.IpcMain.Send("GetPathComplete", pathName);
+
+                Electron.WindowManager.BrowserWindows.First().Minimize();
+                await Electron.WindowManager.CreateWindowAsync("http://www.google.de");
             });
+            
 
             return View();
         }

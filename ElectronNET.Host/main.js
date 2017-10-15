@@ -1,9 +1,9 @@
-const { app, BrowserWindow, Notification } = require('electron');
+const { app, Notification, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, window, apiProcess, loadURL, ipc, appApi;
+let io, browserWindows, apiProcess, loadURL, appApi;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -18,17 +18,16 @@ function startSocketApiBridge(port) {
     io.on('connection', (socket) => {
         console.log('ASP.NET Core Application connected...');
         appApi = require('./api/app')(socket, app);
+        browserWindows = require('./api/browserWindows')(socket);
 
-        socket.on('createBrowserWindow', (options) => {
-            window = new BrowserWindow(options);
-            window.loadURL(loadURL);
+        socket.on('menu-setApplicationMenu', (menuItems) => {
+            const menu = Menu.buildFromTemplate(menuItems);
 
-            window.on('closed', function () {
-                mainWindow = null;
-                apiProcess = null;
+            addMenuItemClickConnector(menu.items, (id) => {
+                socket.emit("menuItemClicked", id);
             });
 
-            ipc = require('./api/ipc')(socket, window);
+            Menu.setApplicationMenu(menu);
         });
 
         socket.on('createNotification', (options) => {
@@ -38,6 +37,19 @@ function startSocketApiBridge(port) {
 
     });
 }
+
+function addMenuItemClickConnector(menuItems, callback) {
+    menuItems.forEach((item) => {
+        if(item.submenu && item.submenu.items.length > 0) {
+            addMenuItemClickConnector(item.submenu.items, callback);
+        }
+
+        if("id" in item && item.id) {
+            item.click = () => { callback(item.id); };
+        }
+    });
+}
+
 
 function startAspCoreBackend(electronPort) {
     portfinder(8000, (error, electronWebPort) => {
@@ -68,10 +80,10 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (win === null) {
-        createWindow();
-    }
-});
+// app.on('activate', () => {
+//     // On macOS it's common to re-create a window in the app when the
+//     // dock icon is clicked and there are no other windows open.
+//     if (window === null) {
+//         createWindow();
+//     }
+// });

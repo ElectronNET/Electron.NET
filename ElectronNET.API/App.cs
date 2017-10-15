@@ -258,9 +258,9 @@ namespace ElectronNET.API
 
         private event Action<bool> _accessibilitySupportChanged;
 
-        private App() { }
+        internal App() { }
 
-        public static App Instance
+        internal static App Instance
         {
             get
             {
@@ -279,19 +279,6 @@ namespace ElectronNET.API
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
-
-        // TODO: Auslagern in eigenes Window-Management
-        public void OpenWindow(int width, int height, bool show)
-        {
-            var browserWindowOptions = new BrowserWindowOptions()
-            {
-                Height = height,
-                Width = width,
-                Show = show
-            };
-
-            BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(browserWindowOptions, _jsonSerializer));
-        }
 
         // TODO: Auslagern in eigenes Notification-API
         public void CreateNotification(NotificationOptions notificationOptions)

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Threading;
 
 namespace ElectronNET.WebApp
 {
@@ -36,7 +38,27 @@ namespace ElectronNET.WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            Electron.App.OpenWindow(800, 600, true);
+            Bootstrap();
+        }
+
+        public async void Bootstrap()
+        {
+            Electron.Menu.SetApplicationMenu(new MenuItem[] {
+                new MenuItem {
+                    Label = "Datei",
+                    Submenu = new MenuItem[] {
+                        new MenuItem {
+                            Label = "Beenden",
+                            Click = () =>
+                            {
+                                Electron.App.Exit();
+                            }
+                        }
+                    }
+                }
+            });
+
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync();
         }
     }
 }
