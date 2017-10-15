@@ -51,9 +51,9 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js", "ElectronHost.");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json", "ElectronHost.");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json", "ElectronHost.");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
                 string hostApiFolder = Path.Combine(tempPath, "api");
                 if (Directory.Exists(hostApiFolder) == false)
