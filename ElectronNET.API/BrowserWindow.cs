@@ -14,7 +14,11 @@ namespace ElectronNET.API
     {
         public int Id { get; private set; }
 
-        public event Action ReadyToShow
+        /// <summary>
+        /// Emitted when the web page has been rendered (while not being shown) and 
+        /// window can be displayed without a visual flash.
+        /// </summary>
+        public event Action OnReadyToShow
         {
             add
             {
@@ -37,6 +41,770 @@ namespace ElectronNET.API
 
         private event Action _readyToShow;
 
+        /// <summary>
+        /// Emitted when the document changed its title.
+        /// </summary>
+        public event Action<string> OnPageTitleUpdated
+        {
+            add
+            {
+                if (_pageTitleUpdated == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-page-title-updated", (title) =>
+                    {
+                        _pageTitleUpdated(title.ToString());
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-page-title-updated", Id);
+                }
+                _pageTitleUpdated += value;
+            }
+            remove
+            {
+                _pageTitleUpdated -= value;
+            }
+        }
+
+        private event Action<string> _pageTitleUpdated;
+
+        /// <summary>
+        /// Emitted when the window is going to be closed.
+        /// </summary>
+        public event Action OnClose
+        {
+            add
+            {
+                if (_close == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-close", () =>
+                    {
+                        _close();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-close", Id);
+                }
+                _close += value;
+            }
+            remove
+            {
+                _close -= value;
+            }
+        }
+
+        private event Action _close;
+
+        /// <summary>
+        /// Emitted when the window is closed. 
+        /// After you have received this event you should remove the 
+        /// reference to the window and avoid using it any more.
+        /// </summary>
+        public event Action OnClosed
+        {
+            add
+            {
+                if (_closed == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-closed", () =>
+                    {
+                        _closed();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-closed", Id);
+                }
+                _closed += value;
+            }
+            remove
+            {
+                _closed -= value;
+            }
+        }
+
+        private event Action _closed;
+
+        /// <summary>
+        /// Emitted when window session is going to end due to force shutdown or machine restart or session log off.
+        /// </summary>
+        public event Action OnSessionEnd
+        {
+            add
+            {
+                if (_sessionEnd == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-session-end", () =>
+                    {
+                        _sessionEnd();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-session-end", Id);
+                }
+                _sessionEnd += value;
+            }
+            remove
+            {
+                _sessionEnd -= value;
+            }
+        }
+
+        private event Action _sessionEnd;
+
+        /// <summary>
+        /// Emitted when the web page becomes unresponsive.
+        /// </summary>
+        public event Action OnUnresponsive
+        {
+            add
+            {
+                if (_unresponsive == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-unresponsive", () =>
+                    {
+                        _unresponsive();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-unresponsive", Id);
+                }
+                _unresponsive += value;
+            }
+            remove
+            {
+                _unresponsive -= value;
+            }
+        }
+
+        private event Action _unresponsive;
+
+        /// <summary>
+        /// Emitted when the unresponsive web page becomes responsive again.
+        /// </summary>
+        public event Action OnResponsive
+        {
+            add
+            {
+                if (_responsive == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-responsive", () =>
+                    {
+                        _responsive();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-responsive", Id);
+                }
+                _responsive += value;
+            }
+            remove
+            {
+                _responsive -= value;
+            }
+        }
+
+        private event Action _responsive;
+
+        /// <summary>
+        /// Emitted when the window loses focus.
+        /// </summary>
+        public event Action OnBlur
+        {
+            add
+            {
+                if (_blur == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-blur", () =>
+                    {
+                        _blur();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-blur", Id);
+                }
+                _blur += value;
+            }
+            remove
+            {
+                _blur -= value;
+            }
+        }
+
+        private event Action _blur;
+
+        /// <summary>
+        /// Emitted when the window gains focus.
+        /// </summary>
+        public event Action OnFocus
+        {
+            add
+            {
+                if (_focus == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-focus", () =>
+                    {
+                        _focus();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-focus", Id);
+                }
+                _focus += value;
+            }
+            remove
+            {
+                _focus -= value;
+            }
+        }
+
+        private event Action _focus;
+
+        /// <summary>
+        /// Emitted when the window is shown.
+        /// </summary>
+        public event Action OnShow
+        {
+            add
+            {
+                if (_show == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-show", () =>
+                    {
+                        _show();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-show", Id);
+                }
+                _show += value;
+            }
+            remove
+            {
+                _show -= value;
+            }
+        }
+
+        private event Action _show;
+
+        /// <summary>
+        /// Emitted when the window is hidden.
+        /// </summary>
+        public event Action OnHide
+        {
+            add
+            {
+                if (_hide == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-hide", () =>
+                    {
+                        _hide();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-hide", Id);
+                }
+                _hide += value;
+            }
+            remove
+            {
+                _hide -= value;
+            }
+        }
+
+        private event Action _hide;
+
+        /// <summary>
+        /// Emitted when window is maximized.
+        /// </summary>
+        public event Action OnMaximize
+        {
+            add
+            {
+                if (_maximize == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-maximize", () =>
+                    {
+                        _maximize();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-maximize", Id);
+                }
+                _maximize += value;
+            }
+            remove
+            {
+                _maximize -= value;
+            }
+        }
+
+        private event Action _maximize;
+
+        /// <summary>
+        /// Emitted when the window exits from a maximized state.
+        /// </summary>
+        public event Action OnUnmaximize
+        {
+            add
+            {
+                if (_unmaximize == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-unmaximize", () =>
+                    {
+                        _unmaximize();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-unmaximize", Id);
+                }
+                _unmaximize += value;
+            }
+            remove
+            {
+                _unmaximize -= value;
+            }
+        }
+
+        private event Action _unmaximize;
+
+        /// <summary>
+        /// Emitted when the window is minimized.
+        /// </summary>
+        public event Action OnMinimize
+        {
+            add
+            {
+                if (_minimize == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-minimize", () =>
+                    {
+                        _minimize();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-minimize", Id);
+                }
+                _minimize += value;
+            }
+            remove
+            {
+                _minimize -= value;
+            }
+        }
+
+        private event Action _minimize;
+
+        /// <summary>
+        /// Emitted when the window is restored from a minimized state.
+        /// </summary>
+        public event Action OnRestore
+        {
+            add
+            {
+                if (_restore == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-restore", () =>
+                    {
+                        _restore();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-restore", Id);
+                }
+                _restore += value;
+            }
+            remove
+            {
+                _restore -= value;
+            }
+        }
+
+        private event Action _restore;
+
+        /// <summary>
+        /// Emitted when the window is being resized.
+        /// </summary>
+        public event Action OnResize
+        {
+            add
+            {
+                if (_resize == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-resize", () =>
+                    {
+                        _resize();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-resize", Id);
+                }
+                _resize += value;
+            }
+            remove
+            {
+                _resize -= value;
+            }
+        }
+
+        private event Action _resize;
+
+        /// <summary>
+        /// Emitted when the window is being moved to a new position.
+        /// 
+        /// Note: On macOS this event is just an alias of moved.
+        /// </summary>
+        public event Action OnMove
+        {
+            add
+            {
+                if (_move == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-move", () =>
+                    {
+                        _move();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-move", Id);
+                }
+                _move += value;
+            }
+            remove
+            {
+                _move -= value;
+            }
+        }
+
+        private event Action _move;
+
+        /// <summary>
+        /// Emitted once when the window is moved to a new position.
+        /// </summary>
+        public event Action OnMoved
+        {
+            add
+            {
+                if (_moved == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-moved", () =>
+                    {
+                        _moved();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-moved", Id);
+                }
+                _moved += value;
+            }
+            remove
+            {
+                _moved -= value;
+            }
+        }
+
+        private event Action _moved;
+
+        /// <summary>
+        /// Emitted when the window enters a full-screen state.
+        /// </summary>
+        public event Action OnEnterFullScreen
+        {
+            add
+            {
+                if (_enterFullScreen == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-enter-full-screen", () =>
+                    {
+                        _enterFullScreen();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-enter-full-screen", Id);
+                }
+                _enterFullScreen += value;
+            }
+            remove
+            {
+                _enterFullScreen -= value;
+            }
+        }
+
+        private event Action _enterFullScreen;
+
+        /// <summary>
+        /// Emitted when the window leaves a full-screen state.
+        /// </summary>
+        public event Action OnLeaveFullScreen
+        {
+            add
+            {
+                if (_leaveFullScreen == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-leave-full-screen", () =>
+                    {
+                        _leaveFullScreen();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-leave-full-screen", Id);
+                }
+                _leaveFullScreen += value;
+            }
+            remove
+            {
+                _leaveFullScreen -= value;
+            }
+        }
+
+        private event Action _leaveFullScreen;
+
+        /// <summary>
+        /// Emitted when the window enters a full-screen state triggered by HTML API.
+        /// </summary>
+        public event Action OnEnterHtmlFullScreen
+        {
+            add
+            {
+                if (_enterHtmlFullScreen == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-enter-html-full-screen", () =>
+                    {
+                        _enterHtmlFullScreen();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-enter-html-full-screen", Id);
+                }
+                _enterHtmlFullScreen += value;
+            }
+            remove
+            {
+                _enterHtmlFullScreen -= value;
+            }
+        }
+
+        private event Action _enterHtmlFullScreen;
+
+        /// <summary>
+        /// Emitted when the window leaves a full-screen state triggered by HTML API.
+        /// </summary>
+        public event Action OnLeaveHtmlFullScreen
+        {
+            add
+            {
+                if (_leaveHtmlFullScreen == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-leave-html-full-screen", () =>
+                    {
+                        _leaveHtmlFullScreen();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-leave-html-full-screen", Id);
+                }
+                _leaveHtmlFullScreen += value;
+            }
+            remove
+            {
+                _leaveHtmlFullScreen -= value;
+            }
+        }
+
+        private event Action _leaveHtmlFullScreen;
+
+        /// <summary>
+        /// Emitted when an App Command is invoked. These are typically related to 
+        /// keyboard media keys or browser commands, as well as the “Back” button 
+        /// built into some mice on Windows.
+        /// 
+        /// Commands are lowercased, underscores are replaced with hyphens, 
+        /// and the APPCOMMAND_ prefix is stripped off.e.g.APPCOMMAND_BROWSER_BACKWARD 
+        /// is emitted as browser-backward.
+        /// </summary>
+        public event Action<string> OnAppCommand
+        {
+            add
+            {
+                if (_appCommand == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-app-command", (command) =>
+                    {
+                        _appCommand(command.ToString());
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-app-command", Id);
+                }
+                _appCommand += value;
+            }
+            remove
+            {
+                _appCommand -= value;
+            }
+        }
+
+        private event Action<string> _appCommand;
+
+        /// <summary>
+        /// Emitted when scroll wheel event phase has begun.
+        /// </summary>
+        public event Action OnScrollTouchBegin
+        {
+            add
+            {
+                if (_scrollTouchBegin == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-begin", () =>
+                    {
+                        _scrollTouchBegin();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-begin", Id);
+                }
+                _scrollTouchBegin += value;
+            }
+            remove
+            {
+                _scrollTouchBegin -= value;
+            }
+        }
+
+        private event Action _scrollTouchBegin;
+
+        /// <summary>
+        /// Emitted when scroll wheel event phase has ended.
+        /// </summary>
+        public event Action OnScrollTouchEnd
+        {
+            add
+            {
+                if (_scrollTouchEnd == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-end", () =>
+                    {
+                        _scrollTouchEnd();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-end", Id);
+                }
+                _scrollTouchEnd += value;
+            }
+            remove
+            {
+                _scrollTouchEnd -= value;
+            }
+        }
+
+        private event Action _scrollTouchEnd;
+
+        /// <summary>
+        /// Emitted when scroll wheel event phase filed upon reaching the edge of element.
+        /// </summary>
+        public event Action OnScrollTouchEdge
+        {
+            add
+            {
+                if (_scrollTouchEdge == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-edge", () =>
+                    {
+                        _scrollTouchEdge();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-edge", Id);
+                }
+                _scrollTouchEdge += value;
+            }
+            remove
+            {
+                _scrollTouchEdge -= value;
+            }
+        }
+
+        private event Action _scrollTouchEdge;
+
+        /// <summary>
+        /// Emitted on 3-finger swipe. Possible directions are up, right, down, left.
+        /// </summary>
+        public event Action<string> OnSwipe
+        {
+            add
+            {
+                if (_swipe == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-swipe", (direction) =>
+                    {
+                        _swipe(direction.ToString());
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-swipe", Id);
+                }
+                _swipe += value;
+            }
+            remove
+            {
+                _swipe -= value;
+            }
+        }
+
+        private event Action<string> _swipe;
+
+        /// <summary>
+        /// Emitted when the window opens a sheet.
+        /// </summary>
+        public event Action OnSheetBegin
+        {
+            add
+            {
+                if (_sheetBegin == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-sheet-begin", () =>
+                    {
+                        _sheetBegin();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-sheet-begin", Id);
+                }
+                _sheetBegin += value;
+            }
+            remove
+            {
+                _sheetBegin -= value;
+            }
+        }
+
+        private event Action _sheetBegin;
+
+        /// <summary>
+        /// Emitted when the window has closed a sheet.
+        /// </summary>
+        public event Action OnSheetEnd
+        {
+            add
+            {
+                if (_sheetEnd == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-sheet-end", () =>
+                    {
+                        _sheetEnd();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-sheet-end", Id);
+                }
+                _sheetEnd += value;
+            }
+            remove
+            {
+                _sheetEnd -= value;
+            }
+        }
+
+        private event Action _sheetEnd;
+
+        /// <summary>
+        /// Emitted when the native new tab button is clicked.
+        /// </summary>
+        public event Action OnNewWindowForTab
+        {
+            add
+            {
+                if (_newWindowForTab == null)
+                {
+                    BridgeConnector.Socket.On("browserWindow-new-window-for-tab", () =>
+                    {
+                        _newWindowForTab();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-browserWindow-new-window-for-tab", Id);
+                }
+                _newWindowForTab += value;
+            }
+            remove
+            {
+                _newWindowForTab -= value;
+            }
+        }
+
+        private event Action _newWindowForTab;
+
         internal BrowserWindow(int id) {
             Id = id;
         }
@@ -48,7 +816,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Destroy()
         {
-            BridgeConnector.Socket.Emit("browserWindow-destroy", Id);
+            BridgeConnector.Socket.Emit("browserWindowDestroy", Id);
         }
 
         /// <summary>
@@ -57,7 +825,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Close()
         {
-            BridgeConnector.Socket.Emit("browserWindow-close", Id);
+            BridgeConnector.Socket.Emit("browserWindowClose", Id);
         }
 
         /// <summary>
@@ -65,7 +833,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus()
         {
-            BridgeConnector.Socket.Emit("browserWindow-focus", Id);
+            BridgeConnector.Socket.Emit("browserWindowFocus", Id);
         }
 
         /// <summary>
@@ -73,7 +841,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Blur()
         {
-            BridgeConnector.Socket.Emit("browserWindow-blur", Id);
+            BridgeConnector.Socket.Emit("browserWindowBlur", Id);
         }
 
         /// <summary>
@@ -90,7 +858,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isFocused);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isFocused", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsFocused", Id);
 
             return taskCompletionSource.Task;
         }
@@ -109,7 +877,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isDestroyed);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isDestroyed", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsDestroyed", Id);
 
             return taskCompletionSource.Task;
         }
@@ -119,7 +887,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Show()
         {
-            BridgeConnector.Socket.Emit("browserWindow-show", Id);
+            BridgeConnector.Socket.Emit("browserWindowShow", Id);
         }
 
         /// <summary>
@@ -127,7 +895,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ShowInactive()
         {
-            BridgeConnector.Socket.Emit("browserWindow-showInactive", Id);
+            BridgeConnector.Socket.Emit("browserWindowShowInactive", Id);
         }
 
         /// <summary>
@@ -135,7 +903,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Hide()
         {
-            BridgeConnector.Socket.Emit("browserWindow-hide", Id);
+            BridgeConnector.Socket.Emit("browserWindowHide", Id);
         }
 
         /// <summary>
@@ -152,7 +920,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isVisible);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isVisible", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsVisible", Id);
 
             return taskCompletionSource.Task;
         }
@@ -171,7 +939,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isModal);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isModal", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsModal", Id);
 
             return taskCompletionSource.Task;
         }
@@ -181,7 +949,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Maximize()
         {
-            BridgeConnector.Socket.Emit("browserWindow-maximize", Id);
+            BridgeConnector.Socket.Emit("browserWindowMaximize", Id);
         }
 
         /// <summary>
@@ -189,7 +957,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Unmaximize()
         {
-            BridgeConnector.Socket.Emit("browserWindow-unmaximize", Id);
+            BridgeConnector.Socket.Emit("browserWindowUnmaximize", Id);
         }
 
         /// <summary>
@@ -206,7 +974,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isMaximized);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMaximized", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMaximized", Id);
 
             return taskCompletionSource.Task;
         }
@@ -216,7 +984,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Minimize()
         {
-            BridgeConnector.Socket.Emit("browserWindow-minimize", Id);
+            BridgeConnector.Socket.Emit("browserWindowMinimize", Id);
         }
 
         /// <summary>
@@ -224,7 +992,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Restore()
         {
-            BridgeConnector.Socket.Emit("browserWindow-restore", Id);
+            BridgeConnector.Socket.Emit("browserWindowRestore", Id);
         }
 
         /// <summary>
@@ -241,7 +1009,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isMinimized);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMinimized", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMinimized", Id);
 
             return taskCompletionSource.Task;
         }
@@ -251,7 +1019,7 @@ namespace ElectronNET.API
         /// </summary>
         public void SetFullScreen(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setFullScreen", Id, flag);
+            BridgeConnector.Socket.Emit("browserWindowSetFullScreen", Id, flag);
         }
 
         /// <summary>
@@ -268,7 +1036,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isFullScreen);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isFullScreen", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsFullScreen", Id);
 
             return taskCompletionSource.Task;
         }
@@ -289,7 +1057,7 @@ namespace ElectronNET.API
         /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
         public void SetAspectRatio(int aspectRatio, Size extraSize)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
         }
 
         /// <summary>
@@ -300,7 +1068,7 @@ namespace ElectronNET.API
         /// file to open.</param>
         public void PreviewFile(string path)
         {
-            BridgeConnector.Socket.Emit("browserWindow-previewFile", Id, path);
+            BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path);
         }
 
         /// <summary>
@@ -313,7 +1081,7 @@ namespace ElectronNET.API
         /// purely visual and does not affect the content type of the file. Defaults to path.</param>
         public void PreviewFile(string path, string displayname)
         {
-            BridgeConnector.Socket.Emit("browserWindow-previewFile", Id, path, displayname);
+            BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path, displayname);
         }
 
         /// <summary>
@@ -321,7 +1089,7 @@ namespace ElectronNET.API
         /// </summary>
         public void CloseFilePreview()
         {
-            BridgeConnector.Socket.Emit("browserWindow-closeFilePreview", Id);
+            BridgeConnector.Socket.Emit("browserWindowCloseFilePreview", Id);
         }
 
         /// <summary>
@@ -330,7 +1098,7 @@ namespace ElectronNET.API
         /// <param name="bounds"></param>
         public void SetBounds(Rectangle bounds)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
         }
 
         /// <summary>
@@ -340,7 +1108,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
         public Task<Rectangle> GetBoundsAsync()
@@ -353,7 +1121,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)getBounds).ToObject<Rectangle>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getBounds", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetBounds", Id);
 
             return taskCompletionSource.Task;
         }
@@ -364,7 +1132,7 @@ namespace ElectronNET.API
         /// <param name="bounds"></param>
         public void SetContentBounds(Rectangle bounds)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
         }
 
         /// <summary>
@@ -374,7 +1142,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetContentBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
         public Task<Rectangle> GetContentBoundsAsync()
@@ -387,7 +1155,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)getContentBounds).ToObject<Rectangle>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getContentBounds", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetContentBounds", Id);
 
             return taskCompletionSource.Task;
         }
@@ -400,7 +1168,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setSize", Id, width, height);
+            BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height);
         }
 
         /// <summary>
@@ -411,7 +1179,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetSize(int width, int height, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setSize", Id, width, height, animate);
+            BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height, animate);
         }
 
         /// <summary>
@@ -428,7 +1196,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getSize", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetSize", Id);
 
             return taskCompletionSource.Task;
         }
@@ -441,7 +1209,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetContentSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setContentSize", Id, width, height);
+            BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height);
         }
 
         /// <summary>
@@ -452,7 +1220,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetContentSize(int width, int height, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setContentSize", Id, width, height, animate);
+            BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height, animate);
         }
 
         /// <summary>
@@ -469,7 +1237,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getContentSize", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetContentSize", Id);
 
             return taskCompletionSource.Task;
         }
@@ -481,7 +1249,7 @@ namespace ElectronNET.API
         /// <param name="height"></param>
         public void SetMinimumSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMinimumSize", Id, width, height);
+            BridgeConnector.Socket.Emit("browserWindowSetMinimumSize", Id, width, height);
         }
 
         /// <summary>
@@ -498,7 +1266,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getMinimumSize", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetMinimumSize", Id);
 
             return taskCompletionSource.Task;
         }
@@ -510,7 +1278,7 @@ namespace ElectronNET.API
         /// <param name="height"></param>
         public void SetMaximumSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMaximumSize", Id, width, height);
+            BridgeConnector.Socket.Emit("browserWindowSetMaximumSize", Id, width, height);
         }
 
         /// <summary>
@@ -527,7 +1295,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getMaximumSize", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetMaximumSize", Id);
 
             return taskCompletionSource.Task;
         }
@@ -538,7 +1306,7 @@ namespace ElectronNET.API
         /// <param name="resizable"></param>
         public void SetResizable(bool resizable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setResizable", Id, resizable);
+            BridgeConnector.Socket.Emit("browserWindowSetResizable", Id, resizable);
         }
 
         /// <summary>
@@ -555,7 +1323,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)resizable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isResizable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsResizable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -566,7 +1334,7 @@ namespace ElectronNET.API
         /// <param name="movable"></param>
         public void SetMovable(bool movable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMovable", Id, movable);
+            BridgeConnector.Socket.Emit("browserWindowSetMovable", Id, movable);
         }
 
         /// <summary>
@@ -585,7 +1353,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)movable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMovable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMovable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -596,7 +1364,7 @@ namespace ElectronNET.API
         /// <param name="minimizable"></param>
         public void SetMinimizable(bool minimizable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMinimizable", Id, minimizable);
+            BridgeConnector.Socket.Emit("browserWindowSetMinimizable", Id, minimizable);
         }
 
         /// <summary>
@@ -615,7 +1383,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)minimizable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMinimizable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMinimizable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -626,7 +1394,7 @@ namespace ElectronNET.API
         /// <param name="maximizable"></param>
         public void SetMaximizable(bool maximizable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMaximizable", Id, maximizable);
+            BridgeConnector.Socket.Emit("browserWindowSetMaximizable", Id, maximizable);
         }
 
         /// <summary>
@@ -645,7 +1413,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)maximizable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMaximizable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMaximizable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -656,7 +1424,7 @@ namespace ElectronNET.API
         /// <param name="fullscreenable"></param>
         public void SetFullScreenable(bool fullscreenable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setFullScreenable", Id, fullscreenable);
+            BridgeConnector.Socket.Emit("browserWindowSetFullScreenable", Id, fullscreenable);
         }
 
         /// <summary>
@@ -673,7 +1441,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)fullscreenable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isFullScreenable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsFullScreenable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -684,7 +1452,7 @@ namespace ElectronNET.API
         /// <param name="closable"></param>
         public void SetClosable(bool closable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setClosable", Id, closable);
+            BridgeConnector.Socket.Emit("browserWindowSetClosable", Id, closable);
         }
 
         /// <summary>
@@ -703,7 +1471,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)closable);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isClosable", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsClosable", Id);
 
             return taskCompletionSource.Task;
         }
@@ -716,7 +1484,7 @@ namespace ElectronNET.API
         /// <param name="flag"></param>
         public void SetAlwaysOnTop(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAlwaysOnTop", Id, flag);
+            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag);
         }
 
         /// <summary>
@@ -730,7 +1498,7 @@ namespace ElectronNET.API
         /// See the macOS docs</param>
         public void SetAlwaysOnTop(bool flag, string level)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAlwaysOnTop", Id, flag, level);
+            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level);
         }
 
         /// <summary>
@@ -746,7 +1514,7 @@ namespace ElectronNET.API
         /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
         public void SetAlwaysOnTop(bool flag, string level, int relativeLevel)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAlwaysOnTop", Id, flag, level, relativeLevel);
+            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level, relativeLevel);
         }
 
         /// <summary>
@@ -763,7 +1531,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isAlwaysOnTop);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isAlwaysOnTop", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsAlwaysOnTop", Id);
 
             return taskCompletionSource.Task;
         }
@@ -773,7 +1541,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Center()
         {
-            BridgeConnector.Socket.Emit("browserWindow-center", Id);
+            BridgeConnector.Socket.Emit("browserWindowCenter", Id);
         }
 
         /// <summary>
@@ -783,7 +1551,7 @@ namespace ElectronNET.API
         /// <param name="y"></param>
         public void SetPosition(int x, int y)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setPosition", Id, x, y);
+            BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y);
         }
 
         /// <summary>
@@ -794,7 +1562,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetPosition(int x, int y, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setPosition", Id, x, y, animate);
+            BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate);
         }
 
         /// <summary>
@@ -811,7 +1579,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)position).ToObject<int[]>());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getPosition", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetPosition", Id);
 
             return taskCompletionSource.Task;
         }
@@ -822,7 +1590,7 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         public void SetTitle(string title)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setTitle", Id, title);
+            BridgeConnector.Socket.Emit("browserWindowSetTitle", Id, title);
         }
 
         /// <summary>
@@ -841,7 +1609,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(title.ToString());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getTitle", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetTitle", Id);
 
             return taskCompletionSource.Task;
         }
@@ -854,7 +1622,7 @@ namespace ElectronNET.API
         /// <param name="offsetY"></param>
         public void SetSheetOffset(float offsetY)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setSheetOffset", Id, offsetY);
+            BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY);
         }
 
         /// <summary>
@@ -866,7 +1634,7 @@ namespace ElectronNET.API
         /// <param name="offsetX"></param>
         public void SetSheetOffset(float offsetY, float offsetX)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setSheetOffset", Id, offsetY, offsetX);
+            BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY, offsetX);
         }
 
         /// <summary>
@@ -875,7 +1643,7 @@ namespace ElectronNET.API
         /// <param name="flag"></param>
         public void FlashFrame(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindow-flashFrame", Id, flag);
+            BridgeConnector.Socket.Emit("browserWindowFlashFrame", Id, flag);
         }
 
         /// <summary>
@@ -884,7 +1652,7 @@ namespace ElectronNET.API
         /// <param name="skip"></param>
         public void SetSkipTaskbar(bool skip)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setSkipTaskbar", Id, skip);
+            BridgeConnector.Socket.Emit("browserWindowSetSkipTaskbar", Id, skip);
         }
 
         /// <summary>
@@ -893,7 +1661,7 @@ namespace ElectronNET.API
         /// <param name="flag"></param>
         public void SetKiosk(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setKiosk", Id, flag);
+            BridgeConnector.Socket.Emit("browserWindowSetKiosk", Id, flag);
         }
 
         /// <summary>
@@ -910,7 +1678,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isKiosk);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isKiosk", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsKiosk", Id);
 
             return taskCompletionSource.Task;
         }
@@ -922,7 +1690,7 @@ namespace ElectronNET.API
         /// <param name="filename"></param>
         public void SetRepresentedFilename(string filename)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setRepresentedFilename", Id, filename);
+            BridgeConnector.Socket.Emit("browserWindowSetRepresentedFilename", Id, filename);
         }
 
         /// <summary>
@@ -939,7 +1707,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(pathname.ToString());
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getRepresentedFilename", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetRepresentedFilename", Id);
 
             return taskCompletionSource.Task;
         }
@@ -951,7 +1719,7 @@ namespace ElectronNET.API
         /// <param name="edited"></param>
         public void SetDocumentEdited(bool edited)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setDocumentEdited", Id, edited);
+            BridgeConnector.Socket.Emit("browserWindowSetDocumentEdited", Id, edited);
         }
 
         /// <summary>
@@ -968,19 +1736,19 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)edited);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isDocumentEdited", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsDocumentEdited", Id);
 
             return taskCompletionSource.Task;
         }
 
         public void FocusOnWebView()
         {
-            BridgeConnector.Socket.Emit("browserWindow-focusOnWebView", Id);
+            BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id);
         }
 
         public void BlurWebView()
         {
-            BridgeConnector.Socket.Emit("browserWindow-blurWebView", Id);
+            BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id);
         }
 
         /// <summary>
@@ -990,7 +1758,7 @@ namespace ElectronNET.API
         /// <param name="url"></param>
         public void LoadURL(string url)
         {
-            BridgeConnector.Socket.Emit("browserWindow-loadURL", Id, url);
+            BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url);
         }
 
         /// <summary>
@@ -1001,7 +1769,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void LoadURL(string url, LoadURLOptions options)
         {
-            BridgeConnector.Socket.Emit("browserWindow-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -1009,7 +1777,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Reload()
         {
-            BridgeConnector.Socket.Emit("browserWindow-reload", Id);
+            BridgeConnector.Socket.Emit("browserWindowReload", Id);
         }
 
         public IReadOnlyCollection<MenuItem> Items { get { return _items.AsReadOnly(); } }
@@ -1023,7 +1791,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("browserWindow-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("windowMenuItemClicked");
@@ -1046,7 +1814,7 @@ namespace ElectronNET.API
         /// <param name="progress"></param>
         public void SetProgressBar(int progress)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setProgressBar", Id, progress);
+            BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress);
         }
 
         /// <summary>
@@ -1063,7 +1831,7 @@ namespace ElectronNET.API
         /// <param name="progressBarOptions"></param>
         public void SetProgressBar(int progress, ProgressBarOptions progressBarOptions)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -1072,7 +1840,7 @@ namespace ElectronNET.API
         /// <param name="hasShadow"></param>
         public void SetHasShadow(bool hasShadow)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setHasShadow", Id, hasShadow);
+            BridgeConnector.Socket.Emit("browserWindowSetHasShadow", Id, hasShadow);
         }
 
         /// <summary>
@@ -1091,9 +1859,68 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)hasShadow);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-hasShadow", Id);
+            BridgeConnector.Socket.Emit("browserWindowHasShadow", Id);
 
             return taskCompletionSource.Task;
+        }
+
+        public IReadOnlyCollection<ThumbarButton> ThumbarButtons { get { return _thumbarButtons.AsReadOnly(); } }
+        private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
+
+        /// <summary>
+        /// Add a thumbnail toolbar with a specified set of buttons to the thumbnail 
+        /// image of a window in a taskbar button layout. Returns a Boolean object 
+        /// indicates whether the thumbnail has been added successfully.
+        /// 
+        /// The number of buttons in thumbnail toolbar should be no greater than 7 due 
+        /// to the limited room.Once you setup the thumbnail toolbar, the toolbar cannot
+        /// be removed due to the platform’s limitation.But you can call the API with an
+        /// empty array to clean the buttons.
+        /// </summary>
+        /// <param name="thumbarButtons"></param>
+        /// <returns>Whether the buttons were added successfully.</returns>
+        public Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            BridgeConnector.Socket.On("browserWindowSetThumbarButtons-completed", (success) => {
+                BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
+
+                taskCompletionSource.SetResult((bool)success);
+            });
+
+            thumbarButtons.AddThumbarButtonsId();
+            BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+            _thumbarButtons.Clear();
+            _thumbarButtons.AddRange(thumbarButtons);
+
+            BridgeConnector.Socket.Off("thumbarButtonClicked");
+            BridgeConnector.Socket.On("thumbarButtonClicked", (id) => {
+                ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.ToString());
+                thumbarButton?.Click();
+            });
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Sets the region of the window to show as the thumbnail image displayed when hovering over
+        /// the window in the taskbar. You can reset the thumbnail to be the entire window by specifying
+        /// an empty region: {x: 0, y: 0, width: 0, height: 0}.
+        /// </summary>
+        /// <param name="rectangle"></param>
+        public void SetThumbnailClip(Rectangle rectangle)
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetThumbnailClip", Id, rectangle);
+        }
+
+        /// <summary>
+        /// Sets the toolTip that is displayed when hovering over the window thumbnail in the taskbar.
+        /// </summary>
+        /// <param name="tooltip"></param>
+        public void SetThumbnailToolTip(string tooltip)
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetThumbnailToolTip", Id, tooltip);
         }
 
         /// <summary>
@@ -1105,7 +1932,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAppDetails(AppDetailsOptions options)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -1113,7 +1940,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ShowDefinitionForSelection()
         {
-            BridgeConnector.Socket.Emit("browserWindow-showDefinitionForSelection", Id);
+            BridgeConnector.Socket.Emit("browserWindowShowDefinitionForSelection", Id);
         }
 
         /// <summary>
@@ -1125,7 +1952,7 @@ namespace ElectronNET.API
         /// <param name="hide"></param>
         public void SetAutoHideMenuBar(bool hide)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAutoHideMenuBar", Id, hide);
+            BridgeConnector.Socket.Emit("browserWindowSetAutoHideMenuBar", Id, hide);
         }
 
         /// <summary>
@@ -1142,7 +1969,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isMenuBarAutoHide);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMenuBarAutoHide", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMenuBarAutoHide", Id);
 
             return taskCompletionSource.Task;
         }
@@ -1154,7 +1981,7 @@ namespace ElectronNET.API
         /// <param name="visible"></param>
         public void SetMenuBarVisibility(bool visible)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setMenuBarVisibility", Id, visible);
+            BridgeConnector.Socket.Emit("browserWindowSetMenuBarVisibility", Id, visible);
         }
 
         /// <summary>
@@ -1171,7 +1998,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isMenuBarVisible);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isMenuBarVisible", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsMenuBarVisible", Id);
 
             return taskCompletionSource.Task;
         }
@@ -1184,7 +2011,7 @@ namespace ElectronNET.API
         /// <param name="visible"></param>
         public void SetVisibleOnAllWorkspaces(bool visible)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setVisibleOnAllWorkspaces", Id, visible);
+            BridgeConnector.Socket.Emit("browserWindowSetVisibleOnAllWorkspaces", Id, visible);
         }
 
         /// <summary>
@@ -1203,7 +2030,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isVisibleOnAllWorkspaces);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-isVisibleOnAllWorkspaces", Id);
+            BridgeConnector.Socket.Emit("browserWindowIsVisibleOnAllWorkspaces", Id);
 
             return taskCompletionSource.Task;
         }
@@ -1217,7 +2044,7 @@ namespace ElectronNET.API
         /// <param name="ignore"></param>
         public void SetIgnoreMouseEvents(bool ignore)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setIgnoreMouseEvents", Id, ignore);
+            BridgeConnector.Socket.Emit("browserWindowSetIgnoreMouseEvents", Id, ignore);
         }
 
         /// <summary>
@@ -1229,7 +2056,7 @@ namespace ElectronNET.API
         /// <param name="ignore"></param>
         public void SetContentProtection(bool enable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setContentProtection", Id, enable);
+            BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable);
         }
 
         /// <summary>
@@ -1238,7 +2065,7 @@ namespace ElectronNET.API
         /// <param name="focusable"></param>
         public void SetFocusable(bool focusable)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setFocusable", Id, focusable);
+            BridgeConnector.Socket.Emit("browserWindowSetFocusable", Id, focusable);
         }
 
         /// <summary>
@@ -1248,7 +2075,7 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         public void SetParentWindow(BrowserWindow parent)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
         }
 
         /// <summary>
@@ -1267,7 +2094,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getParentWindow", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetParentWindow", Id);
 
             return taskCompletionSource.Task;
         }
@@ -1295,7 +2122,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(browserWindows);
             });
 
-            BridgeConnector.Socket.Emit("browserWindow-getChildWindows", Id);
+            BridgeConnector.Socket.Emit("browserWindowGetChildWindows", Id);
 
             return taskCompletionSource.Task;
         }
@@ -1306,7 +2133,7 @@ namespace ElectronNET.API
         /// <param name="autoHide"></param>
         public void SetAutoHideCursor(bool autoHide)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setAutoHideCursor", Id, autoHide);
+            BridgeConnector.Socket.Emit("browserWindowSetAutoHideCursor", Id, autoHide);
         }
 
         /// <summary>
@@ -1318,7 +2145,7 @@ namespace ElectronNET.API
         /// See the macOS documentation for more details.</param>
         public void SetVibrancy(string type)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setVibrancy", Id, type);
+            BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

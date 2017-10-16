@@ -71,12 +71,33 @@ namespace ElectronNET.WebApp
             Electron.Menu.SetApplicationMenu(menuItems);
             Electron.Tray.Show("/Assets/electron_32x32.png", menuItems);
 
-            var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions {
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+            {
                 Show = false
             });
 
-            browserWindow.ReadyToShow += () => {
+            browserWindow.OnReadyToShow += async () =>
+            {
                 browserWindow.Show();
+
+                await browserWindow.SetThumbarButtonsAsync(new ThumbarButton[] {
+                    new ThumbarButton("/Assets/electron.ico")
+                    {
+                        Tooltip = "Hello World",
+                        Click = async () => {
+                            await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Hallo von Thumbar Button!"));
+                        }
+                    },
+                    new ThumbarButton("/Assets/electron.ico")
+                    {
+                        Tooltip = "Hello World 2",
+                        Click = async () => {
+                            await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Hallo von Thumbar Button 2!"));
+                        }
+                    }
+                });
+
+                browserWindow.SetThumbnailToolTip("Electron.NET rocks!");
             };
         }
     }

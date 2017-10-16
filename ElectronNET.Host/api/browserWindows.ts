@@ -1,10 +1,185 @@
-import { BrowserWindow, Menu } from "electron";
+import { BrowserWindow, Menu, nativeImage } from "electron";
+const path = require('path');
 const windows: Electron.BrowserWindow[] = []
 
 module.exports = (socket: SocketIO.Server) => {
     socket.on('register-browserWindow-ready-to-show', (id) => {
         getWindowById(id).on('ready-to-show', () => {
             socket.emit('browserWindow-ready-to-show');
+        });
+    });
+
+    socket.on('register-browserWindow-page-title-updated', (id) => {
+        getWindowById(id).on('page-title-updated', (event, title) => {
+            socket.emit('browserWindow-page-title-updated', title);
+        });
+    });
+
+    socket.on('register-browserWindow-close', (id) => {
+        getWindowById(id).on('close', () => {
+            socket.emit('browserWindow-close');
+        });
+    });
+
+    socket.on('register-browserWindow-closed', (id) => {
+        getWindowById(id).on('closed', () => {
+            socket.emit('browserWindow-closed');
+        });
+    });
+
+    socket.on('register-browserWindow-session-end', (id) => {
+        getWindowById(id).on('session-end', () => {
+            socket.emit('browserWindow-session-end');
+        });
+    });
+
+    socket.on('register-browserWindow-unresponsive', (id) => {
+        getWindowById(id).on('unresponsive', () => {
+            socket.emit('browserWindow-unresponsive');
+        });
+    });
+
+    socket.on('register-browserWindow-responsive', (id) => {
+        getWindowById(id).on('responsive', () => {
+            socket.emit('browserWindow-responsive');
+        });
+    });
+
+    socket.on('register-browserWindow-blur', (id) => {
+        getWindowById(id).on('blur', () => {
+            socket.emit('browserWindow-blur');
+        });
+    });
+
+    socket.on('register-browserWindow-focus', (id) => {
+        getWindowById(id).on('focus', () => {
+            socket.emit('browserWindow-focus');
+        });
+    });
+
+    socket.on('register-browserWindow-show', (id) => {
+        getWindowById(id).on('show', () => {
+            socket.emit('browserWindow-show');
+        });
+    });
+
+    socket.on('register-browserWindow-hide', (id) => {
+        getWindowById(id).on('hide', () => {
+            socket.emit('browserWindow-hide');
+        });
+    });
+
+    socket.on('register-browserWindow-maximize', (id) => {
+        getWindowById(id).on('maximize', () => {
+            socket.emit('browserWindow-maximize');
+        });
+    });
+
+    socket.on('register-browserWindow-unmaximize', (id) => {
+        getWindowById(id).on('unmaximize', () => {
+            socket.emit('browserWindow-unmaximize');
+        });
+    });
+
+    socket.on('register-browserWindow-minimize', (id) => {
+        getWindowById(id).on('minimize', () => {
+            socket.emit('browserWindow-minimize');
+        });
+    });
+
+    socket.on('register-browserWindow-restore', (id) => {
+        getWindowById(id).on('restore', () => {
+            socket.emit('browserWindow-restore');
+        });
+    });
+
+    socket.on('register-browserWindow-resize', (id) => {
+        getWindowById(id).on('resize', () => {
+            socket.emit('browserWindow-resize');
+        });
+    });
+
+    socket.on('register-browserWindow-move', (id) => {
+        getWindowById(id).on('move', () => {
+            socket.emit('browserWindow-move');
+        });
+    });
+
+    socket.on('register-browserWindow-moved', (id) => {
+        getWindowById(id).on('moved', () => {
+            socket.emit('browserWindow-moved');
+        });
+    });
+
+    socket.on('register-browserWindow-enter-full-screen', (id) => {
+        getWindowById(id).on('enter-full-screen', () => {
+            socket.emit('browserWindow-enter-full-screen');
+        });
+    });
+
+    socket.on('register-browserWindow-leave-full-screen', (id) => {
+        getWindowById(id).on('leave-full-screen', () => {
+            socket.emit('browserWindow-leave-full-screen');
+        });
+    });
+
+    socket.on('register-browserWindow-enter-html-full-screen', (id) => {
+        getWindowById(id).on('enter-html-full-screen', () => {
+            socket.emit('browserWindow-enter-html-full-screen');
+        });
+    });
+
+    socket.on('register-browserWindow-leave-html-full-screen', (id) => {
+        getWindowById(id).on('leave-html-full-screen', () => {
+            socket.emit('browserWindow-leave-html-full-screen');
+        });
+    });
+    
+    socket.on('register-browserWindow-app-command', (id) => {
+        getWindowById(id).on('app-command', (event, command) => {
+            socket.emit('browserWindow-app-command', command);
+        });
+    });
+    
+    socket.on('register-browserWindow-scroll-touch-begin', (id) => {
+        getWindowById(id).on('scroll-touch-begin', () => {
+            socket.emit('browserWindow-scroll-touch-begin');
+        });
+    });
+
+    socket.on('register-browserWindow-scroll-touch-end', (id) => {
+        getWindowById(id).on('scroll-touch-end', () => {
+            socket.emit('browserWindow-scroll-touch-end');
+        });
+    });
+
+    socket.on('register-browserWindow-scroll-touch-edge', (id) => {
+        getWindowById(id).on('scroll-touch-edge', () => {
+            socket.emit('browserWindow-scroll-touch-edge');
+        });
+    });
+
+    socket.on('register-browserWindow-swipe', (id) => {
+        getWindowById(id).on('swipe', (event, direction) => {
+            socket.emit('browserWindow-swipe', direction);
+        });
+    });
+
+    socket.on('register-browserWindow-sheet-begin', (id) => {
+        getWindowById(id).on('sheet-begin', () => {
+            socket.emit('browserWindow-sheet-begin');
+        });
+    });
+
+    socket.on('register-browserWindow-sheet-end', (id) => {
+        getWindowById(id).on('sheet-end', () => {
+            socket.emit('browserWindow-sheet-end');
+        });
+    });
+
+    socket.on('register-browserWindow-new-window-for-tab', (id) => {
+        getWindowById(id).on('new-window-for-tab', () => {
+            socket.emit('browserWindow-new-window-for-tab');
         });
     });
 
@@ -36,267 +211,267 @@ module.exports = (socket: SocketIO.Server) => {
         socket.emit('BrowserWindowCreated', window.id);
     });
 
-    socket.on('browserWindow-destroy', (id) => {
+    socket.on('browserWindowDestroy', (id) => {
         getWindowById(id).destroy();
     });
 
-    socket.on('browserWindow-close', (id) => {
+    socket.on('browserWindowClose', (id) => {
         getWindowById(id).close();
     });
 
-    socket.on('browserWindow-focus', (id) => {
+    socket.on('browserWindowFocus', (id) => {
         getWindowById(id).focus();
     });
 
-    socket.on('browserWindow-blur', (id) => {
+    socket.on('browserWindowBlur', (id) => {
         getWindowById(id).blur();
     });
 
-    socket.on('browserWindow-isFocused', (id) => {
+    socket.on('browserWindowIsFocused', (id) => {
         const isFocused = getWindowById(id).isFocused();
 
         socket.emit('browserWindow-isFocused-completed', isFocused);
     });
 
-    socket.on('browserWindow-isDestroyed', (id) => {
+    socket.on('browserWindowIsDestroyed', (id) => {
         const isDestroyed = getWindowById(id).isDestroyed();
 
         socket.emit('browserWindow-isDestroyed-completed', isDestroyed);
     });
 
-    socket.on('browserWindow-show', (id) => {
+    socket.on('browserWindowShow', (id) => {
         getWindowById(id).show();
     });
 
-    socket.on('browserWindow-showInactive', (id) => {
+    socket.on('browserWindowShowInactive', (id) => {
         getWindowById(id).showInactive();
     });
 
-    socket.on('browserWindow-hide', (id) => {
+    socket.on('browserWindowHide', (id) => {
         getWindowById(id).hide();
     });
 
-    socket.on('browserWindow-isVisible', (id) => {
+    socket.on('browserWindowIsVisible', (id) => {
         const isVisible = getWindowById(id).isVisible();
 
         socket.emit('browserWindow-isVisible-completed', isVisible);
     });
 
-    socket.on('browserWindow-isModal', (id) => {
+    socket.on('browserWindowIsModal', (id) => {
         const isModal = getWindowById(id).isModal();
 
         socket.emit('browserWindow-isModal-completed', isModal);
     });
 
-    socket.on('browserWindow-maximize', (id) => {
+    socket.on('browserWindowMaximize', (id) => {
         getWindowById(id).maximize();
     });
 
-    socket.on('browserWindow-unmaximize', (id) => {
+    socket.on('browserWindowUnmaximize', (id) => {
         getWindowById(id).unmaximize();
     });
 
-    socket.on('browserWindow-isMaximized', (id) => {
+    socket.on('browserWindowIsMaximized', (id) => {
         const isMaximized = getWindowById(id).isMaximized();
 
         socket.emit('browserWindow-isMaximized-completed', isMaximized);
     });
 
-    socket.on('browserWindow-minimize', (id) => {
+    socket.on('browserWindowMinimize', (id) => {
         getWindowById(id).minimize();
     });
 
-    socket.on('browserWindow-restore', (id) => {
+    socket.on('browserWindowRestore', (id) => {
         getWindowById(id).restore();
     });
 
-    socket.on('browserWindow-isMinimized', (id) => {
+    socket.on('browserWindowIsMinimized', (id) => {
         const isMinimized = getWindowById(id).isMinimized();
 
         socket.emit('browserWindow-isMinimized-completed', isMinimized);
     });
 
-    socket.on('browserWindow-setFullScreen', (id, fullscreen) => {
+    socket.on('browserWindowSetFullScreen', (id, fullscreen) => {
         getWindowById(id).setFullScreen(fullscreen);
     });
 
-    socket.on('browserWindow-isFullScreen', (id) => {
+    socket.on('browserWindowIsFullScreen', (id) => {
         const isFullScreen = getWindowById(id).isFullScreen();
 
         socket.emit('browserWindow-isFullScreen-completed', isFullScreen);
     });
 
-    socket.on('browserWindow-setAspectRatio', (id, aspectRatio, extraSize) => {
+    socket.on('browserWindowSetAspectRatio', (id, aspectRatio, extraSize) => {
         getWindowById(id).setAspectRatio(aspectRatio, extraSize);
     });
 
-    socket.on('browserWindow-previewFile', (id, path, displayname) => {
+    socket.on('browserWindowPreviewFile', (id, path, displayname) => {
         getWindowById(id).previewFile(path, displayname);
     });
 
-    socket.on('browserWindow-closeFilePreview', (id) => {
+    socket.on('browserWindowCloseFilePreview', (id) => {
         getWindowById(id).closeFilePreview();
     });
 
-    socket.on('browserWindow-setBounds', (id, bounds, animate) => {
+    socket.on('browserWindowSetBounds', (id, bounds, animate) => {
         getWindowById(id).setBounds(bounds, animate);
     });
 
-    socket.on('browserWindow-getBounds', (id) => {
+    socket.on('browserWindowGetBounds', (id) => {
         const rectangle = getWindowById(id).getBounds();
 
         socket.emit('browserWindow-getBounds-completed', rectangle);
     });
 
-    socket.on('browserWindow-setContentBounds', (id, bounds, animate) => {
+    socket.on('browserWindowSetContentBounds', (id, bounds, animate) => {
         getWindowById(id).setContentBounds(bounds, animate);
     });
 
-    socket.on('browserWindow-getContentBounds', (id) => {
+    socket.on('browserWindowGetContentBounds', (id) => {
         const rectangle = getWindowById(id).getContentBounds();
 
         socket.emit('browserWindow-getContentBounds-completed', rectangle);
     });
 
-    socket.on('browserWindow-setSize', (id, width, height, animate) => {
+    socket.on('browserWindowSetSize', (id, width, height, animate) => {
         getWindowById(id).setSize(width, height, animate);
     });
 
-    socket.on('browserWindow-getSize', (id) => {
+    socket.on('browserWindowGetSize', (id) => {
         const size = getWindowById(id).getSize();
 
         socket.emit('browserWindow-getSize-completed', size);
     });
 
-    socket.on('browserWindow-setContentSize', (id, width, height, animate) => {
+    socket.on('browserWindowSetContentSize', (id, width, height, animate) => {
         getWindowById(id).setContentSize(width, height, animate);
     });
 
-    socket.on('browserWindow-getContentSize', (id) => {
+    socket.on('browserWindowGetContentSize', (id) => {
         const size = getWindowById(id).getContentSize();
 
         socket.emit('browserWindow-getContentSize-completed', size);
     });
 
-    socket.on('browserWindow-setMinimumSize', (id, width, height) => {
+    socket.on('browserWindowSetMinimumSize', (id, width, height) => {
         getWindowById(id).setMinimumSize(width, height);
     });
 
-    socket.on('browserWindow-getMinimumSize', (id) => {
+    socket.on('browserWindowGetMinimumSize', (id) => {
         const size = getWindowById(id).getMinimumSize();
 
         socket.emit('browserWindow-getMinimumSize-completed', size);
     });
 
-    socket.on('browserWindow-setMaximumSize', (id, width, height) => {
+    socket.on('browserWindowSetMaximumSize', (id, width, height) => {
         getWindowById(id).setMaximumSize(width, height);
     });
     
-    socket.on('browserWindow-getMaximumSize', (id) => {
+    socket.on('browserWindowGetMaximumSize', (id) => {
         const size = getWindowById(id).getMaximumSize();
         
         socket.emit('browserWindow-getMaximumSize-completed', size);
     });
     
-    socket.on('browserWindow-setResizable', (id, resizable) => {
+    socket.on('browserWindowSetResizable', (id, resizable) => {
         getWindowById(id).setResizable(resizable);
     });
     
-    socket.on('browserWindow-isResizable', (id) => {
+    socket.on('browserWindowIsResizable', (id) => {
         const resizable = getWindowById(id).isResizable();
         
         socket.emit('browserWindow-isResizable-completed', resizable);
     });
     
-    socket.on('browserWindow-setMovable', (id, movable) => {
+    socket.on('browserWindowSetMovable', (id, movable) => {
         getWindowById(id).setMovable(movable);
     });
     
-    socket.on('browserWindow-isMovable', (id) => {
+    socket.on('browserWindowIsMovable', (id) => {
         const movable = getWindowById(id).isMovable();
         
         socket.emit('browserWindow-isMovable-completed', movable);
     });
     
-    socket.on('browserWindow-setMinimizable', (id, minimizable) => {
+    socket.on('browserWindowSetMinimizable', (id, minimizable) => {
         getWindowById(id).setMinimizable(minimizable);
     });
     
-    socket.on('browserWindow-isMinimizable', (id) => {
+    socket.on('browserWindowIsMinimizable', (id) => {
         const minimizable = getWindowById(id).isMinimizable();
         
         socket.emit('browserWindow-isMinimizable-completed', minimizable);
     });
     
-    socket.on('browserWindow-setMaximizable', (id, maximizable) => {
+    socket.on('browserWindowSetMaximizable', (id, maximizable) => {
         getWindowById(id).setMaximizable(maximizable);
     });
     
-    socket.on('browserWindow-isMaximizable', (id) => {
+    socket.on('browserWindowIsMaximizable', (id) => {
         const maximizable = getWindowById(id).isMaximizable();
         
         socket.emit('browserWindow-isMaximizable-completed', maximizable);
     });
     
-    socket.on('browserWindow-setFullScreenable', (id, fullscreenable) => {
+    socket.on('browserWindowSetFullScreenable', (id, fullscreenable) => {
         getWindowById(id).setFullScreenable(fullscreenable);
     });
     
-    socket.on('browserWindow-isFullScreenable', (id) => {
+    socket.on('browserWindowIsFullScreenable', (id) => {
         const fullscreenable = getWindowById(id).isFullScreenable();
         
         socket.emit('browserWindow-isFullScreenable-completed', fullscreenable);
     });
 
-    socket.on('browserWindow-setClosable', (id, closable) => {
+    socket.on('browserWindowSetClosable', (id, closable) => {
         getWindowById(id).setClosable(closable);
     });
     
-    socket.on('browserWindow-isClosable', (id) => {
+    socket.on('browserWindowIsClosable', (id) => {
         const closable = getWindowById(id).isClosable();
         
         socket.emit('browserWindow-isClosable-completed', closable);
     });
     
-    socket.on('browserWindow-setAlwaysOnTop', (id, flag, level, relativeLevel) => {
+    socket.on('browserWindowSetAlwaysOnTop', (id, flag, level, relativeLevel) => {
         getWindowById(id).setAlwaysOnTop(flag, level, relativeLevel);
     });
     
-    socket.on('browserWindow-isAlwaysOnTop', (id) => {
+    socket.on('browserWindowIsAlwaysOnTop', (id) => {
         const isAlwaysOnTop = getWindowById(id).isAlwaysOnTop();
         
         socket.emit('browserWindow-isAlwaysOnTop-completed', isAlwaysOnTop);
     });
     
-    socket.on('browserWindow-center', (id) => {
+    socket.on('browserWindowCenter', (id) => {
         getWindowById(id).center();
     });
     
-    socket.on('browserWindow-setPosition', (id, x, y, animate) => {
+    socket.on('browserWindowSetPosition', (id, x, y, animate) => {
         getWindowById(id).setPosition(x, y, animate);
     });
     
-    socket.on('browserWindow-getPosition', (id) => {
+    socket.on('browserWindowGetPosition', (id) => {
         const position = getWindowById(id).getPosition();
         
         socket.emit('browserWindow-getPosition-completed', position);
     });
     
-    socket.on('browserWindow-setTitle', (id, title) => {
+    socket.on('browserWindowSetTitle', (id, title) => {
         getWindowById(id).setTitle(title);
     });
     
-    socket.on('browserWindow-getTitle', (id) => {
+    socket.on('browserWindowGetTitle', (id) => {
         const title = getWindowById(id).getTitle();
         
         socket.emit('browserWindow-getTitle-completed', title);
     });
 
-    socket.on('browserWindow-setTitle', (id, title) => {
+    socket.on('browserWindowSetTitle', (id, title) => {
         getWindowById(id).setTitle(title);
     });
     
-    socket.on('browserWindow-setSheetOffset', (id, offsetY, offsetX) => {
+    socket.on('browserWindowSetSheetOffset', (id, offsetY, offsetX) => {
         if(offsetX) {
             getWindowById(id).setSheetOffset(offsetY, offsetX);
         } else {
@@ -304,61 +479,61 @@ module.exports = (socket: SocketIO.Server) => {
         }
     });
     
-    socket.on('browserWindow-flashFrame', (id, flag) => {
+    socket.on('browserWindowFlashFrame', (id, flag) => {
         getWindowById(id).flashFrame(flag);
     });
 
-    socket.on('browserWindow-setSkipTaskbar', (id, skip) => {
+    socket.on('browserWindowSetSkipTaskbar', (id, skip) => {
         getWindowById(id).setSkipTaskbar(skip);
     });
 
-    socket.on('browserWindow-setKiosk', (id, flag) => {
+    socket.on('browserWindowSetKiosk', (id, flag) => {
         getWindowById(id).setKiosk(flag);
     });
     
-    socket.on('browserWindow-isKiosk', (id) => {
+    socket.on('browserWindowIsKiosk', (id) => {
         const isKiosk = getWindowById(id).isKiosk();
         
         socket.emit('browserWindow-isKiosk-completed', isKiosk);
     });
     
-    socket.on('browserWindow-setRepresentedFilename', (id, filename) => {
+    socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
         getWindowById(id).setRepresentedFilename(filename);
     });
     
-    socket.on('browserWindow-getRepresentedFilename', (id) => {
+    socket.on('browserWindowGetRepresentedFilename', (id) => {
         const pathname = getWindowById(id).getRepresentedFilename();
         
         socket.emit('browserWindow-getRepresentedFilename-completed', pathname);
     });
     
-    socket.on('browserWindow-setDocumentEdited', (id, edited) => {
+    socket.on('browserWindowSetDocumentEdited', (id, edited) => {
         getWindowById(id).setDocumentEdited(edited);
     });
     
-    socket.on('browserWindow-isDocumentEdited', (id) => {
+    socket.on('browserWindowIsDocumentEdited', (id) => {
         const edited = getWindowById(id).isDocumentEdited();
         
         socket.emit('browserWindow-isDocumentEdited-completed', edited);
     });
     
-    socket.on('browserWindow-focusOnWebView', (id) => {
+    socket.on('browserWindowFocusOnWebView', (id) => {
         getWindowById(id).focusOnWebView();
     });
 
-    socket.on('browserWindow-blurWebView', (id) => {
+    socket.on('browserWindowBlurWebView', (id) => {
         getWindowById(id).blurWebView();
     });
 
-    socket.on('browserWindow-loadURL', (id, url, options) => {
+    socket.on('browserWindowLoadURL', (id, url, options) => {
         getWindowById(id).loadURL(url, options);
     });
 
-    socket.on('browserWindow-reload', (id) => {
+    socket.on('browserWindowReload', (id) => {
         getWindowById(id).reload();
     });
     
-    socket.on('browserWindow-setMenu', (id, menuItems) => {
+    socket.on('browserWindowSetMenu', (id, menuItems) => {
         let menu = null;
         
         if(menuItems) {
@@ -384,83 +559,104 @@ module.exports = (socket: SocketIO.Server) => {
         });
     }
     
-    socket.on('browserWindow-setProgressBar', (id, progress) => {
+    socket.on('browserWindowSetProgressBar', (id, progress) => {
         getWindowById(id).setProgressBar(progress);
     });
 
-    socket.on('browserWindow-setHasShadow', (id, hasShadow) => {
+    socket.on('browserWindowSetHasShadow', (id, hasShadow) => {
         getWindowById(id).setHasShadow(hasShadow);
     });
     
-    socket.on('browserWindow-hasShadow', (id) => {
+    socket.on('browserWindowHasShadow', (id) => {
         const hasShadow = getWindowById(id).hasShadow();
         
         socket.emit('browserWindow-hasShadow-completed', hasShadow);
     });
+
+    socket.on('browserWindowSetThumbarButtons', (id, thumbarButtons: Electron.ThumbarButton[]) => {
+        thumbarButtons.forEach(thumbarButton => {
+            const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());            
+            thumbarButton.icon = nativeImage.createFromPath(imagePath);
+            thumbarButton.click = () => {
+                socket.emit("thumbarButtonClicked", thumbarButton["id"]);
+            };
+        });
+
+        const success = getWindowById(id).setThumbarButtons(thumbarButtons);
+        socket.emit('browserWindowSetThumbarButtons-completed', success);
+    });
+
+    socket.on('browserWindowSetThumbnailClip', (id, rectangle) => {
+        getWindowById(id).setThumbnailClip(rectangle);
+    });
+
+    socket.on('browserWindowSetThumbnailToolTip', (id, toolTip) => {
+        getWindowById(id).setThumbnailToolTip(toolTip);
+    });
     
-    socket.on('browserWindow-setAppDetails', (id, options) => {
+    socket.on('browserWindowSetAppDetails', (id, options) => {
         getWindowById(id).setAppDetails(options);
     });
     
-    socket.on('browserWindow-showDefinitionForSelection', (id) => {
+    socket.on('browserWindowShowDefinitionForSelection', (id) => {
         getWindowById(id).showDefinitionForSelection();
     });
     
-    socket.on('browserWindow-setAutoHideMenuBar', (id, hide) => {
+    socket.on('browserWindowSetAutoHideMenuBar', (id, hide) => {
         getWindowById(id).setAutoHideMenuBar(hide);
     });
     
-    socket.on('browserWindow-isMenuBarAutoHide', (id) => {
+    socket.on('browserWindowIsMenuBarAutoHide', (id) => {
         const isMenuBarAutoHide = getWindowById(id).isMenuBarAutoHide();
         
         socket.emit('browserWindow-isMenuBarAutoHide-completed', isMenuBarAutoHide);
     });
     
-    socket.on('browserWindow-setMenuBarVisibility', (id, visible) => {
+    socket.on('browserWindowSetMenuBarVisibility', (id, visible) => {
         getWindowById(id).setMenuBarVisibility(visible);
     });
     
-    socket.on('browserWindow-isMenuBarVisible', (id) => {
+    socket.on('browserWindowIsMenuBarVisible', (id) => {
         const isMenuBarVisible = getWindowById(id).isMenuBarVisible();
         
         socket.emit('browserWindow-isMenuBarVisible-completed', isMenuBarVisible);
     });
     
-    socket.on('browserWindow-setVisibleOnAllWorkspaces', (id, visible) => {
+    socket.on('browserWindowSetVisibleOnAllWorkspaces', (id, visible) => {
         getWindowById(id).setVisibleOnAllWorkspaces(visible);
     });
     
-    socket.on('browserWindow-isVisibleOnAllWorkspaces', (id) => {
+    socket.on('browserWindowIsVisibleOnAllWorkspaces', (id) => {
         const isVisibleOnAllWorkspaces = getWindowById(id).isVisibleOnAllWorkspaces();
         
         socket.emit('browserWindow-isVisibleOnAllWorkspaces-completed', isVisibleOnAllWorkspaces);
     });
     
-    socket.on('browserWindow-setIgnoreMouseEvents', (id, ignore) => {
+    socket.on('browserWindowSetIgnoreMouseEvents', (id, ignore) => {
         getWindowById(id).setIgnoreMouseEvents(ignore);
     });
 
-    socket.on('browserWindow-setContentProtection', (id, enable) => {
+    socket.on('browserWindowSetContentProtection', (id, enable) => {
         getWindowById(id).setContentProtection(enable);
     });
 
-    socket.on('browserWindow-setFocusable', (id, focusable) => {
+    socket.on('browserWindowSetFocusable', (id, focusable) => {
         getWindowById(id).setFocusable(focusable);
     });
 
-    socket.on('browserWindow-setParentWindow', (id, parent) => {
+    socket.on('browserWindowSetParentWindow', (id, parent) => {
         const browserWindow = BrowserWindow.fromId(parent.id);
 
         getWindowById(id).setParentWindow(browserWindow);
     });
 
-    socket.on('browserWindow-getParentWindow', (id) => {
+    socket.on('browserWindowGetParentWindow', (id) => {
         const browserWindow = getWindowById(id).getParentWindow();
         
         socket.emit('browserWindow-getParentWindow-completed', browserWindow.id);
     });
 
-    socket.on('browserWindow-getChildWindows', (id) => {
+    socket.on('browserWindowGetChildWindows', (id) => {
         const browserWindows = getWindowById(id).getChildWindows();
 
         const ids = [];
@@ -472,11 +668,11 @@ module.exports = (socket: SocketIO.Server) => {
         socket.emit('browserWindow-getChildWindows-completed', ids);
     });
 
-    socket.on('browserWindow-setAutoHideCursor', (id, autoHide) => {
+    socket.on('browserWindowSetAutoHideCursor', (id, autoHide) => {
         getWindowById(id).setAutoHideCursor(autoHide);
     });
 
-    socket.on('browserWindow-setVibrancy', (id, type) => {
+    socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
     });
 
