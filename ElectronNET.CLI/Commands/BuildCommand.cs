@@ -96,8 +96,8 @@ namespace ElectronNET.CLI.Commands
 
                     ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
-                
-                if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     Console.WriteLine("Package Electron App for OSX...");
 
@@ -110,6 +110,8 @@ namespace ElectronNET.CLI.Commands
 
                     ProcessHelper.CmdExecute($"electron-packager . --platform=linux --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
+
+                Console.WriteLine("... done");
 
                 return true;
             });
