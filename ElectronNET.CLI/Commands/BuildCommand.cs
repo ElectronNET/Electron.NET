@@ -51,9 +51,9 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js", "ElectronHost.");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json", "ElectronHost.");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json", "ElectronHost.");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
+                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
                 string hostApiFolder = Path.Combine(tempPath, "api");
                 if (Directory.Exists(hostApiFolder) == false)
@@ -82,7 +82,7 @@ namespace ElectronNET.CLI.Commands
                 {
                     // ToDo: find another solution or document it proper
                     // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron - packager--global' at " + tempPath + " manually. Sry.");
+                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " + tempPath + " manually. Sry.");
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
@@ -96,8 +96,8 @@ namespace ElectronNET.CLI.Commands
 
                     ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
-                
-                if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     Console.WriteLine("Package Electron App for OSX...");
 
@@ -110,6 +110,8 @@ namespace ElectronNET.CLI.Commands
 
                     ProcessHelper.CmdExecute($"electron-packager . --platform=linux --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
                 }
+
+                Console.WriteLine("... done");
 
                 return true;
             });

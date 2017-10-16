@@ -15,7 +15,10 @@
   <ItemGroup>
     <None Remove="ElectronHost\package-lock.json" />
     <None Remove="ElectronHost\package.json" />
-    <None Remove="electronnet.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +28,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
-    <EmbeddedResource Include="electronnet.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,5 +52,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="$(ProjectDir)devCleanup.cmd" IgnoreExitCode="true" />
   </Target>
-
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' != 'Windows_NT'">
+    <Exec Command="$(ProjectDir)devCleanup.sh" IgnoreExitCode="true" />
+  </Target>
 </Project>
