@@ -5,3 +5,6 @@ branches:
 image: Visual Studio 2017
 build_script:
 - cmd: buildAll.cmd
+artifacts:
+- path: ElectronNET.WebApp\bin\desktop
+  name: Desktop
