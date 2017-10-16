@@ -1,16 +1,7 @@
-# Test against the latest version of this Node.js version
-environment:
-  nodejs_version: "6"
-
-# Install scripts. (runs after repo cloning)
-install:
-  # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version
-  # install modules
-  - npm install
-
-# Post-install test scripts.
-test_script:
-  # Output useful info for debugging.
-  - node --version
-  - npm --version
+version: 1.0.{build}
+branches:
+  only:
+  - cli-etc
+image: Visual Studio 2017
+build_script:
+- cmd: buildAll.cmd
