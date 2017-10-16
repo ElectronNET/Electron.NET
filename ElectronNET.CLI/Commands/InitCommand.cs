@@ -15,7 +15,7 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private const string ConfigName = "electronnet.json";
+        private const string ConfigName = "electron.manifest.json";
 
         public Task<bool> ExecuteAsync()
         {

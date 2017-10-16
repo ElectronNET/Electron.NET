@@ -33,7 +33,7 @@ function startAspCoreBackend(electronPort) {
         loadURL = `http://localhost:${electronWebPort}`
         const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
 
-        const manifestFile = require("./bin/electronnet.json");
+        const manifestFile = require("./bin/electron.manifest.json");
         let binaryFile = manifestFile.executable;
         
         const os = require("os");

@@ -1,0 +1,1 @@
+rm -rf ~/.nuget/packages/electronnet.cli

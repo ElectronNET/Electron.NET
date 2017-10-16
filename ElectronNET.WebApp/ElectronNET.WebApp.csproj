@@ -22,7 +22,6 @@
   <ItemGroup>
     <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
   </ItemGroup>
-  
   <ItemGroup>
     <None Update="Assets\electron.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -32,7 +31,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="electronnet.json">
+    <Content Update="electron.manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
