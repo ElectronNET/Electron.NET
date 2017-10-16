@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -47,6 +48,20 @@ namespace ElectronNET.API
                 _browserWindows.Add(browserWindow);
 
                 taskCompletionSource.SetResult(browserWindow);
+            });
+
+            BridgeConnector.Socket.Off("BrowserWindowClosed");
+            BridgeConnector.Socket.On("BrowserWindowClosed", (ids) =>
+            {
+                var browserWindowIds = ((JArray)ids).ToObject<int[]>();
+
+                for (int index = 0; index < _browserWindows.Count; index++)
+                {
+                    if (!browserWindowIds.Contains(_browserWindows[index].Id))
+                    {
+                        _browserWindows.RemoveAt(index);
+                    }
+                }
             });
 
             if (loadUrl.ToUpper() == "HTTP://LOCALHOST")

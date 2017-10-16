@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
-using System;
-using System.Linq;
 using ElectronNET.API.Extensions;
 
 namespace ElectronNET.API
@@ -37,6 +35,7 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
+            BridgeConnector.Socket.Off("menuItemClicked");
             BridgeConnector.Socket.On("menuItemClicked", (id) => {
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
