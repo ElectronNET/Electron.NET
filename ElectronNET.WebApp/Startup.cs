@@ -71,7 +71,13 @@ namespace ElectronNET.WebApp
             Electron.Menu.SetApplicationMenu(menuItems);
             Electron.Tray.Show("/Assets/electron_32x32.png", menuItems);
 
-            var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions {
+                Show = false
+            });
+
+            browserWindow.ReadyToShow += () => {
+                browserWindow.Show();
+            };
         }
     }
 }

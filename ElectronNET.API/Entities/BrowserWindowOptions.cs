@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.ComponentModel;
+
+namespace ElectronNET.API.Entities
 {
     public class BrowserWindowOptions
     {
@@ -26,7 +28,7 @@
 
         /// <summary>
         /// The width and height would be used as web page's size, which means the actual
-        /// window's size will include window frame's size and be slightly larger.Default
+        /// window's size will include window frame's size and be slightly larger. Default
         /// is false.
         /// </summary>
         public bool UseContentSize { get; set; }
@@ -59,27 +61,32 @@
         /// <summary>
         /// Whether window is resizable. Default is true.
         /// </summary>
-        public bool Resizable { get; set; }
+        [DefaultValue(true)]
+        public bool Resizable { get; set; } = true;
 
         /// <summary>
         /// Whether window is movable. This is not implemented on Linux. Default is true.
         /// </summary>
-        public bool Movable { get; set; }
+        [DefaultValue(true)]
+        public bool Movable { get; set; } = true;
 
         /// <summary>
         /// Whether window is minimizable. This is not implemented on Linux. Default is true.
         /// </summary>
-        public bool Minimizable { get; set; }
+        [DefaultValue(true)]
+        public bool Minimizable { get; set; } = true;
 
         /// <summary>
         /// Whether window is maximizable. This is not implemented on Linux. Default is true.
         /// </summary>
-        public bool Maximizable { get; set; }
+        [DefaultValue(true)]
+        public bool Maximizable { get; set; } = true;
 
         /// <summary>
         /// Whether window is closable. This is not implemented on Linux. Default is true.
         /// </summary>
-        public bool Closable { get; set; }
+        [DefaultValue(true)]
+        public bool Closable { get; set; } = true;
 
         /// <summary>
         /// Whether the window can be focused. Default is true. On Windows setting
@@ -87,7 +94,8 @@
         /// focusable: false makes the window stop interacting with wm, so the window will
         /// always stay on top in all workspaces.
         /// </summary>
-        public bool Focusable { get; set; }
+        [DefaultValue(true)]
+        public bool Focusable { get; set; } = true;
 
         /// <summary>
         /// Whether the window should always stay on top of other windows. Default is false.
@@ -131,12 +139,14 @@
         /// <summary>
         /// Whether window should be shown when created. Default is true.
         /// </summary>
-        public bool Show { get; set; }
+        [DefaultValue(true)]
+        public bool Show { get; set; } = true;
 
         /// <summary>
         /// Specify false to create a . Default is true.
         /// </summary>
-        public bool Frame { get; set; }
+        [DefaultValue(true)]
+        public bool Frame { get; set; } = true;
 
         /// <summary>
         /// Whether this is a modal window. This only works when the window is a child
@@ -208,9 +218,10 @@
         /// <summary>
         /// Use WS_THICKFRAME style for frameless windows on Windows, which adds standard
         /// window frame.Setting it to false will remove window shadow and window
-        /// animations.Default is true.
+        /// animations. Default is true.
         /// </summary>
-        public bool ThickFrame { get; set; }
+        [DefaultValue(true)]
+        public bool ThickFrame { get; set; } = true;
 
         /// <summary>
         /// Add a type of vibrancy effect to the window, only on macOS. Can be

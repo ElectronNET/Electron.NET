@@ -35,6 +35,7 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
+            BridgeConnector.Socket.Off("trayMenuItemClicked");
             BridgeConnector.Socket.On("trayMenuItemClicked", (id) => {
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
