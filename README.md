@@ -1,4 +1,6 @@
-# Electron.NET [![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/cli-etc?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/cli-etc)
+[![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/tree/master/assets/images/electron.net-logo.png)]
+
+[![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/cli-etc?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/cli-etc)
 
 Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
 
