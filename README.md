@@ -1,4 +1,4 @@
-[![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/tree/master/assets/images/electron.net-logo.png)]
+[![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/GregorBiswanger/Electron.NET)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/cli-etc?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/cli-etc)
 
