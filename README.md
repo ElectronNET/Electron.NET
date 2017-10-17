@@ -10,15 +10,19 @@ Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
 
 * For the tooling you will need your dotnet-electronize package [ElectronNET.CLI NuGet package](https://www.nuget.org/packages/ElectronNET.CLI/). This package __must__ be referenced in the .csproj like this:
 
+```
     <ItemGroup>
        <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
     </ItemGroup>
-    
+```
+
 * Make sure you have node.js and on OSX/Ubuntu the electron-packager installed (via "sudo npm install electron-packager --global")
 * In your ASP.NET Core folder run:
 
+```
     dotnet electronize init
-    
+```
+
 * Now a electronnet.manifest.json should appear in your ASP.NET Core project
 * Now run the following:
 
@@ -26,9 +30,11 @@ Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
     
 * In your default setting we just build the application for the OS you are running (Windows builds Windows, OSX builds OSX etc.), but this can be changed with:
 
+```
     dotnet electronize build win
     dotnet electronize build osx
     dotnet electronize build linux
+```
 
 * The end result should be a electron app under your /bin/desktop folder
 
