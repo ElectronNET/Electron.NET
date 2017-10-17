@@ -5,6 +5,17 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
+    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Company />
+    <Product>Electron.NET</Product>
+    <PackageLicenseUrl>https://github.com/GregorBiswanger/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/GregorBiswanger/Electron.NET/</PackageProjectUrl>
+    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
+This package contains the API to access the "native" electron API.</Description>
+    <RepositoryUrl>https://github.com/GregorBiswanger/Electron.NET/</RepositoryUrl>
+    <PackageTags>electron aspnetcore</PackageTags>
+    <PackageReleaseNotes>#0.0.1
+- alpha release</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
