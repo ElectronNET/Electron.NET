@@ -31,7 +31,7 @@ namespace ElectronNET.API
         /// and a directory selector, so if you set properties to ['openFile', 'openDirectory'] 
         /// on these platforms, a directory selector will be shown.
         /// </summary>
-        /// <param name="browserWindow"></param>
+        /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
         /// <param name="options"></param>
         /// <returns>An array of file paths chosen by the user</returns>
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
@@ -49,6 +49,30 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Emit("showOpenDialog", 
                 JObject.FromObject(browserWindow, _jsonSerializer), 
                 JObject.FromObject(options, _jsonSerializer));
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Dialog for save files.
+        /// </summary>
+        /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
+        /// <param name="options"></param>
+        /// <returns>Returns String, the path of the file chosen by the user, if a callback is provided it returns an empty string.</returns>
+        public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
+        {
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("showSaveDialogComplete", (filename) =>
+            {
+                BridgeConnector.Socket.Off("showSaveDialogComplete");
+
+                taskCompletionSource.SetResult(filename.ToString());
+            });
+
+            BridgeConnector.Socket.Emit("showSaveDialog",
+            JObject.FromObject(browserWindow, _jsonSerializer),
+            JObject.FromObject(options, _jsonSerializer));
 
             return taskCompletionSource.Task;
         }
@@ -102,6 +126,58 @@ namespace ElectronNET.API
                     JObject.FromObject(browserWindow, _jsonSerializer),
                     JObject.FromObject(messageBoxOptions, _jsonSerializer));
             }
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Displays a modal dialog that shows an error message.
+        /// 
+        /// This API can be called safely before the ready event the app module emits, 
+        /// it is usually used to report errors in early stage of startup.If called 
+        /// before the app readyevent on Linux, the message will be emitted to stderr, 
+        /// and no GUI dialog will appear.
+        /// </summary>
+        /// <param name="title">The title to display in the error box.</param>
+        /// <param name="content">The text content to display in the error box.</param>
+        public void ShowErrorBox(string title, string content)
+        {
+            BridgeConnector.Socket.Emit("showErrorBox", title, content);
+        }
+
+        /// <summary>
+        /// On macOS, this displays a modal dialog that shows a message and certificate information,
+        /// and gives the user the option of trusting/importing the certificate. If you provide a 
+        /// browserWindow argument the dialog will be attached to the parent window, making it modal.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task ShowCertificateTrustDialogAsync(CertificateTrustDialogOptions options)
+        {
+            return ShowCertificateTrustDialogAsync(null, options);
+        }
+
+        /// <summary>
+        /// On macOS, this displays a modal dialog that shows a message and certificate information,
+        /// and gives the user the option of trusting/importing the certificate. If you provide a 
+        /// browserWindow argument the dialog will be attached to the parent window, making it modal.
+        /// </summary>
+        /// <param name="browserWindow"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
+        {
+            var taskCompletionSource = new TaskCompletionSource<object>();
+
+            BridgeConnector.Socket.On("showCertificateTrustDialogComplete", () =>
+            {
+                BridgeConnector.Socket.Off("showCertificateTrustDialogComplete");
+                taskCompletionSource.SetResult(null);
+            });
+
+            BridgeConnector.Socket.Emit("showCertificateTrustDialog",
+                JObject.FromObject(browserWindow, _jsonSerializer),
+                JObject.FromObject(options, _jsonSerializer));
 
             return taskCompletionSource.Task;
         }
