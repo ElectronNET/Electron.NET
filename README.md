@@ -1,6 +1,6 @@
 [![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/GregorBiswanger/Electron.NET)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/cli-etc?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/cli-etc)
+Master: [![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
 Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
 
@@ -13,7 +13,8 @@ Currently there are two main projects and a "WebApp" that serves as a demo playg
 
 Both projects create their own nuget package. The resulting nuget packages are saved under "/artifacts".
 
-__Currently__ the packages are just build with version 1.0.0. If you change something you need to clear the nuget cache under this directory (because the version number doesn't change):
+__Currently__ the packages are just build with version 1.0.0.
+If you change something you need to clear the nuget cache under this directory (because the version number doesn't change):
 
     %userprofile%\.nuget\packages
 
@@ -33,7 +34,9 @@ Navigate to the WebApp folder and type this in a command prompt:
 
    dotnet electronize
    
-# Dev Notes: Dev Workflow (at least for the CLI extension is this a must)
+# Dev Notes: Dev Workflow 
+
+(at least for the CLI extension)
 
 * Change something in the CLI project
 * rebuild the project (a nuget package should now appear in the /artifacts directory)
