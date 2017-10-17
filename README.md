@@ -68,5 +68,5 @@ The WebApp now has referenced the API NuGet package and via the .csproj referenc
 * Change something in the CLI project
 * rebuild the project (a nuget package should now appear in the /artifacts directory)
 * make sure there is no ElectronNET.CLI package in your %userprofile%\.nuget\packages cache with the same version 
-* execute dotnet restore in the WebApp
+* execute dotnet restore in the WebApp 
 * execute dotnet electronize
