@@ -26,8 +26,10 @@ Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
 * Now a electronnet.manifest.json should appear in your ASP.NET Core project
 * Now run the following:
 
+```
     dotnet electronize build
-    
+```
+
 * In your default setting we just build the application for the OS you are running (Windows builds Windows, OSX builds OSX etc.), but this can be changed with:
 
 ```
