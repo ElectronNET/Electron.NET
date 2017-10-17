@@ -1496,9 +1496,9 @@ namespace ElectronNET.API
         /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
         /// status, pop-up-menu and screen-saver. The default is floating. 
         /// See the macOS docs</param>
-        public void SetAlwaysOnTop(bool flag, string level)
+        public void SetAlwaysOnTop(bool flag, OnTopLevel level)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level);
+            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
         }
 
         /// <summary>
@@ -1512,9 +1512,9 @@ namespace ElectronNET.API
         /// See the macOS docs</param>
         /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level. 
         /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
-        public void SetAlwaysOnTop(bool flag, string level, int relativeLevel)
+        public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level, relativeLevel);
+            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
         }
 
         /// <summary>
@@ -2143,9 +2143,9 @@ namespace ElectronNET.API
         /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
         /// menu, popover, sidebar, medium-light or ultra-dark. 
         /// See the macOS documentation for more details.</param>
-        public void SetVibrancy(string type)
+        public void SetVibrancy(Vibrancy type)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type);
+            BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

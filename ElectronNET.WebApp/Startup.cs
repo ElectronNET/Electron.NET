@@ -62,7 +62,7 @@ namespace ElectronNET.WebApp
                     Click = async () => {
                         await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("(c) 2017 Gregor Biswanger & Robert Muehsig") {
                             Title = "About us...",
-                            Type = "info"
+                            Type = MessageBoxType.info
                         });
                     }
                 }

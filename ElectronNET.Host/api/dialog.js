@@ -15,5 +15,11 @@ module.exports = function (socket) {
             });
         }
     });
+    socket.on('showOpenDialog', function (browserWindow, options) {
+        var window = electron_1.BrowserWindow.fromId(browserWindow.id);
+        electron_1.dialog.showOpenDialog(window, options, function (filePaths) {
+            socket.emit('showOpenDialogComplete', filePaths || []);
+        });
+    });
 };
 //# sourceMappingURL=dialog.js.map

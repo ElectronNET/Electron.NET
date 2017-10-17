@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 
 namespace ElectronNET.API.Entities
@@ -20,7 +21,8 @@ namespace ElectronNET.API.Entities
         /// hidden - The button is not shown to the user.
         /// noninteractive - The button is enabled but not interactive; no pressed button state is drawn.This value is intended for instances where the button is used in a notification.
         /// </summary>
-        public string[] Flags { get; set; }
+        [JsonProperty("flags", ItemConverterType = typeof(StringEnumConverter))]
+        public ThumbarButtonFlag[] Flags { get; set; }
 
         /// <summary>
         /// The icon showing in thumbnail toolbar.

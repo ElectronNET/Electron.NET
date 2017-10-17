@@ -1,4 +1,7 @@
-﻿namespace ElectronNET.API.Entities
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace ElectronNET.API.Entities
 {
     public class WebPreferences
     {
@@ -120,6 +123,11 @@
         /// disable.The full list of supported feature strings can be found in the file.
         /// </summary>
         public string DisableBlinkFeatures { get; set; }
+
+        /// <summary>
+        /// Sets the default font for the font-family.
+        /// </summary>
+        public DefaultFontFamily DefaultFontFamily { get; set; }
 
         /// <summary>
         /// Defaults to 16.
