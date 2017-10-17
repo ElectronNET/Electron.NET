@@ -17,11 +17,32 @@ namespace ElectronNET.CLI.Commands
 
         private const string ConfigName = "electron.manifest.json";
 
+        private string[] _args;
+
+        public InitCommand(string[] args)
+        {
+            _args = args;
+        }
+
         public Task<bool> ExecuteAsync()
         {
             return Task.Run(() =>
             {
-                var currentDirectory = Directory.GetCurrentDirectory();
+                string aspCoreProjectPath = "";
+
+                if (_args.Length > 0)
+                {
+                    if (Directory.Exists(_args[0]))
+                    {
+                        aspCoreProjectPath = _args[0];
+                    }
+                }
+                else
+                {
+                    aspCoreProjectPath = Directory.GetCurrentDirectory();
+                }
+
+                var currentDirectory = aspCoreProjectPath;
 
                 Console.WriteLine("Adding our config file to your project...");
 

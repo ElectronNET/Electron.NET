@@ -28,10 +28,10 @@ namespace ElectronNET.CLI
                     command = new StartElectronCommand(args.Skip(1).ToArray());
                     break;
                 case BuildCommand.COMMAND_NAME:
-                    command = new BuildCommand();
+                    command = new BuildCommand(args.Skip(1).ToArray());
                     break;
                 case InitCommand.COMMAND_NAME:
-                    command = new InitCommand();
+                    command = new InitCommand(args.Skip(1).ToArray());
                     break;
                 case "--help":
                 case "--h":
