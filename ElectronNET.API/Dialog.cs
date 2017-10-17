@@ -27,6 +27,33 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Note: On Windows and Linux an open dialog can not be both a file selector 
+        /// and a directory selector, so if you set properties to ['openFile', 'openDirectory'] 
+        /// on these platforms, a directory selector will be shown.
+        /// </summary>
+        /// <param name="browserWindow"></param>
+        /// <param name="options"></param>
+        /// <returns>An array of file paths chosen by the user</returns>
+        public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
+        {
+            var taskCompletionSource = new TaskCompletionSource<string[]>();
+
+            BridgeConnector.Socket.On("showOpenDialogComplete", (filePaths) =>
+            {
+                BridgeConnector.Socket.Off("showOpenDialogComplete");
+
+                var result = ((JArray)filePaths).ToObject<string[]>();
+                taskCompletionSource.SetResult(result);
+            });
+
+                BridgeConnector.Socket.Emit("showOpenDialog", 
+                JObject.FromObject(browserWindow, _jsonSerializer), 
+                JObject.FromObject(options, _jsonSerializer));
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
         /// Shows a message box, it will block the process until the message box is closed.
         /// It returns the index of the clicked button. The browserWindow argument allows
         /// the dialog to attach itself to a parent window, making it modal. If a callback

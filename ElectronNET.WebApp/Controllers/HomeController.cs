@@ -9,10 +9,21 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            Electron.IpcMain.On("SayHello", (args) => {
-                Electron.Notification.Show(new NotificationOptions("Hallo Robert","Nachricht von ASP.NET Core App"));
-
+            Electron.IpcMain.On("SayHello", async (args) =>
+            {
+                Electron.Notification.Show(new NotificationOptions("Hallo Robert", "Nachricht von ASP.NET Core App"));
                 Electron.IpcMain.Send(Electron.WindowManager.BrowserWindows.First(), "Goodbye", "Elephant!");
+
+                var currentBrowserWindow = Electron.WindowManager.BrowserWindows.First();
+                var openDialogOptions = new OpenDialogOptions
+                {
+                    Title = "Wuhuuu",
+                    ButtonLabel = "Mhh Okay",
+                    DefaultPath = await Electron.App.GetPathAsync(PathName.pictures),
+                    Message = "Hello World",
+                    Properties = new OpenDialogProperty[] { OpenDialogProperty.openDirectory }
+                };
+                var filePaths = await Electron.Dialog.ShowOpenDialogAsync(currentBrowserWindow, openDialogOptions);
             });
 
             Electron.IpcMain.On("GetPath", async (args) =>

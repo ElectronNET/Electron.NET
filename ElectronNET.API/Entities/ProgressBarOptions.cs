@@ -1,10 +1,14 @@
-﻿namespace ElectronNET.API.Entities
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace ElectronNET.API.Entities
 {
     public class ProgressBarOptions
     {
         /// <summary>
         /// Mode for the progress bar. Can be 'none' | 'normal' | 'indeterminate' | 'error' | 'paused'.
         /// </summary>
-        public string Mode { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ProgressBarMode Mode { get; set; }
     }
 }

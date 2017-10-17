@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.ComponentModel;
 
 namespace ElectronNET.API.Entities
 {
@@ -205,9 +207,10 @@ namespace ElectronNET.API.Entities
 
         /// <summary>
         /// The style of window title bar. Default is default. Possible values are:
-        /// 'default' | 'hidden' | 'hidden-inset' | 'hiddenInset' | 'customButtonsOnHover'
+        /// 'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover'
         /// </summary>
-        public string TitleBarStyle { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
         /// Shows the title in the tile bar in full screen mode on macOS for all
@@ -228,7 +231,8 @@ namespace ElectronNET.API.Entities
         /// appearance-based, light, dark, titlebar, selection, menu, popover, sidebar,
         /// medium-light or ultra-dark.
         /// </summary>
-        public string Vibrancy { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Vibrancy Vibrancy { get; set; }
 
         /// <summary>
         /// Controls the behavior on macOS when option-clicking the green stoplight button

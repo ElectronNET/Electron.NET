@@ -14,4 +14,11 @@ module.exports = (socket: SocketIO.Server) => {
             });
         }
     });
+
+    socket.on('showOpenDialog', (browserWindow, options) => {
+            var window = BrowserWindow.fromId(browserWindow.id);
+            dialog.showOpenDialog(window, options, (filePaths) => {
+                socket.emit('showOpenDialogComplete', filePaths || []);
+            });
+    });
 }

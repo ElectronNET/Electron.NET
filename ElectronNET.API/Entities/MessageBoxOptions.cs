@@ -1,13 +1,17 @@
-﻿namespace ElectronNET.API.Entities
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace ElectronNET.API.Entities
 {
     public class MessageBoxOptions
     {
         /// <summary>
         ///  Can be "none", "info", "error", "question" or "warning". On Windows, "question"
         ///  displays the same icon as "info", unless you set an icon using the "icon"
-        ///  option.On macOS, both "warning" and "error" display the same warning icon.
+        ///  option. On macOS, both "warning" and "error" display the same warning icon.
         /// </summary>
-        public string Type { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public MessageBoxType Type { get; set; }
 
         /// <summary>
         /// Array of texts for buttons. On Windows, an empty array will result in one button
