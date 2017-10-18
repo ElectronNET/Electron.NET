@@ -3,12 +3,182 @@ using ElectronNET.API.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
     public sealed class Tray
     {
+        /// <summary>
+        /// Emitted when the tray icon is clicked.
+        /// </summary>
+        public event Action<TrayClickEventArgs, Rectangle> OnClick
+        {
+            add
+            {
+                if (_click == null)
+                {
+                    BridgeConnector.Socket.On("tray-click-event", (result) =>
+                    {
+                        var args = ((JArray)result).ToObject<object[]>();
+                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
+                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
+                        _click(trayClickEventArgs, bounds);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-click");
+                }
+                _click += value;
+            }
+            remove
+            {
+                _click -= value;
+            }
+        }
+
+        private event Action<TrayClickEventArgs, Rectangle> _click;
+
+        /// <summary>
+        /// macOS, Windows: Emitted when the tray icon is right clicked.
+        /// </summary>
+        public event Action<TrayClickEventArgs, Rectangle> OnRightClick
+        {
+            add
+            {
+                if (_rightClick == null)
+                {
+                    BridgeConnector.Socket.On("tray-right-click-event", (result) =>
+                    {
+                        var args = ((JArray)result).ToObject<object[]>();
+                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
+                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
+                        _rightClick(trayClickEventArgs, bounds);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-right-click");
+                }
+                _rightClick += value;
+            }
+            remove
+            {
+                _rightClick -= value;
+            }
+        }
+
+        private event Action<TrayClickEventArgs, Rectangle> _rightClick;
+
+        /// <summary>
+        /// macOS, Windows: Emitted when the tray icon is double clicked.
+        /// </summary>
+        public event Action<TrayClickEventArgs, Rectangle> OnDoubleClick
+        {
+            add
+            {
+                if (_doubleClick == null)
+                {
+                    BridgeConnector.Socket.On("tray-double-click-event", (result) =>
+                    {
+                        var args = ((JArray)result).ToObject<object[]>();
+                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
+                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
+                        _doubleClick(trayClickEventArgs, bounds);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-double-click");
+                }
+                _doubleClick += value;
+            }
+            remove
+            {
+                _doubleClick -= value;
+            }
+        }
+
+        private event Action<TrayClickEventArgs, Rectangle> _doubleClick;
+
+        /// <summary>
+        /// Windows: Emitted when the tray balloon shows.
+        /// </summary>
+        public event Action OnBalloonShow
+        {
+            add
+            {
+                if (_balloonShow == null)
+                {
+                    BridgeConnector.Socket.On("tray-balloon-show-event", () =>
+                    {
+                        _balloonShow();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-balloon-show");
+                }
+                _balloonShow += value;
+            }
+            remove
+            {
+                _balloonShow -= value;
+            }
+        }
+
+        private event Action _balloonShow;
+
+        /// <summary>
+        /// Windows: Emitted when the tray balloon is clicked.
+        /// </summary>
+        public event Action OnBalloonClick
+        {
+            add
+            {
+                if (_balloonClick == null)
+                {
+                    BridgeConnector.Socket.On("tray-balloon-click-event", () =>
+                    {
+                        _balloonClick();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-balloon-click");
+                }
+                _balloonClick += value;
+            }
+            remove
+            {
+                _balloonClick -= value;
+            }
+        }
+
+        private event Action _balloonClick;
+
+        /// <summary>
+        /// Windows: Emitted when the tray balloon is closed 
+        /// because of timeout or user manually closes it.
+        /// </summary>
+        public event Action OnBalloonClosed
+        {
+            add
+            {
+                if (_balloonClosed == null)
+                {
+                    BridgeConnector.Socket.On("tray-balloon-closed-event", () =>
+                    {
+                        _balloonClosed();
+                    });
+
+                    BridgeConnector.Socket.Emit("register-tray-balloon-closed");
+                }
+                _balloonClosed += value;
+            }
+            remove
+            {
+                _balloonClosed -= value;
+            }
+        }
+
+        private event Action _balloonClosed;
+
+        // TODO: Implement macOS Events
+
         private static Tray _tray;
 
         internal Tray() { }
@@ -40,6 +210,91 @@ namespace ElectronNET.API
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
             });
+        }
+
+        /// <summary>
+        /// Destroys the tray icon immediately.
+        /// </summary>
+        public void Destroy()
+        {
+            BridgeConnector.Socket.Emit("tray-destroy");
+        }
+
+        /// <summary>
+        /// Sets the image associated with this tray icon.
+        /// </summary>
+        /// <param name="image"></param>
+        public void SetImage(string image)
+        {
+            BridgeConnector.Socket.Emit("tray-setImage", image);
+        }
+
+        /// <summary>
+        /// Sets the image associated with this tray icon when pressed on macOS.
+        /// </summary>
+        /// <param name="image"></param>
+        public void SetPressedImage(string image)
+        {
+            BridgeConnector.Socket.Emit("tray-setPressedImage", image);
+        }
+
+        /// <summary>
+        /// Sets the hover text for this tray icon.
+        /// </summary>
+        /// <param name="toolTip"></param>
+        public void SetToolTip(string toolTip)
+        {
+            BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
+        }
+
+        /// <summary>
+        /// macOS: Sets the title displayed aside of the tray icon in the status bar.
+        /// </summary>
+        /// <param name="title"></param>
+        public void SetTitle(string title)
+        {
+            BridgeConnector.Socket.Emit("tray-setTitle", title);
+        }
+
+        /// <summary>
+        /// macOS: Sets when the tray’s icon background becomes highlighted (in blue).
+        ///
+        /// Note: You can use highlightMode with a BrowserWindow by toggling between 
+        /// 'never' and 'always' modes when the window visibility changes.
+        /// </summary>
+        /// <param name="highlightMode"></param>
+        public void SetHighlightMode(HighlightMode highlightMode)
+        {
+            BridgeConnector.Socket.Emit("tray-setHighlightMode", highlightMode.ToString());
+        }
+
+        /// <summary>
+        /// Windows: Displays a tray balloon.
+        /// </summary>
+        /// <param name="options"></param>
+        public void DisplayBalloon(DisplayBalloonOptions options)
+        {
+            BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+        }
+
+        /// <summary>
+        /// Whether the tray icon is destroyed.
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> IsDestroyedAsync()
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            BridgeConnector.Socket.On("tray-isDestroyedCompleted", (isDestroyed) =>
+            {
+                BridgeConnector.Socket.Off("tray-isDestroyedCompleted");
+
+                taskCompletionSource.SetResult((bool)isDestroyed);
+            });
+
+            BridgeConnector.Socket.Emit("tray-isDestroyed");
+
+            return taskCompletionSource.Task;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
