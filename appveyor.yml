@@ -1,7 +1,4 @@
 version: 1.0.{build}
-branches:
-  only:
-  - cli-etc
 image: Visual Studio 2017
 build_script:
 - cmd: buildAll.cmd

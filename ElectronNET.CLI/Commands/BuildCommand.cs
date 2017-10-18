@@ -10,8 +10,15 @@ namespace ElectronNET.CLI.Commands
     {
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
-        public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
+        public const string COMMAND_ARGUMENTS = "<Platform> to build (default is current OS, possible values are: win,osx,linux)";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
+
+        private string[] _args;
+
+        public BuildCommand(string[] args)
+        {
+            _args = args;
+        }
 
         public Task<bool> ExecuteAsync()
         {
@@ -19,32 +26,61 @@ namespace ElectronNET.CLI.Commands
             {
                 Console.WriteLine("Build Electron Application...");
 
+                string desiredPlatform = "";
+
+                if (_args.Length > 0)
+                {
+                    desiredPlatform = _args[0];
+                }
+
+
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop");
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Console.WriteLine("Build ASP.NET Core App for Windows...");
+                string netCorePublishRid = string.Empty;
+                string electronPackerPlatform = string.Empty;
 
-                    ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                switch (desiredPlatform)
+                {
+                    case "win":
+                        netCorePublishRid = "win10-x64";
+                        electronPackerPlatform = "win32";
+                        break;
+                    case "osx":
+                        netCorePublishRid = "osx-x64";
+                        electronPackerPlatform = "darwin";
+                        break;
+                    case "linux":
+                        netCorePublishRid = "ubuntu-x64";
+                        electronPackerPlatform = "linux";
+                        break;
+                    default:
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            netCorePublishRid = "win10-x64";
+                            electronPackerPlatform = "win32";
+                        }
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        {
+                            netCorePublishRid = "osx-x64";
+                            electronPackerPlatform = "darwin";
+                        }
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        {
+                            netCorePublishRid = "ubuntu-x64";
+                            electronPackerPlatform = "linux";
+                        }
+
+                        break;
                 }
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Console.WriteLine("Build ASP.NET Core App for OSX...");
+                Console.WriteLine($"Build ASP.NET Core App for {netCorePublishRid}...");
 
-                    ProcessHelper.CmdExecute($"dotnet publish -r osx-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
-                }
+                ProcessHelper.CmdExecute($"dotnet publish -r {netCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Console.WriteLine("Build ASP.NET Core App for Linux (Ubuntu x64)...");
-
-                    ProcessHelper.CmdExecute($"dotnet publish -r ubuntu-x64 --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
-                }
 
                 if (Directory.Exists(tempPath) == false)
                 {
@@ -90,26 +126,8 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // ToDo: Need a solution for --asar support
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Console.WriteLine("Package Electron App for Windows...");
-
-                    ProcessHelper.CmdExecute($"electron-packager . --platform=win32 --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Console.WriteLine("Package Electron App for OSX...");
-
-                    ProcessHelper.CmdExecute($"electron-packager . --platform=darwin --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Console.WriteLine("Package Electron App for Linux...");
-
-                    ProcessHelper.CmdExecute($"electron-packager . --platform=linux --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
-                }
+                Console.WriteLine($"Package Electron App for Platform {electronPackerPlatform}...");
+                ProcessHelper.CmdExecute($"electron-packager . --platform={electronPackerPlatform} --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
 
                 Console.WriteLine("... done");
 

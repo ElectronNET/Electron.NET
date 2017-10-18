@@ -10,6 +10,18 @@
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
     <Version>1.0.0</Version>
+    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Product>Electron.NET</Product>
+    <Company />
+    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
+This package contains the dotnet tooling to electronize your application.</Description>
+    <PackageLicenseUrl>https://github.com/GregorBiswanger/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/GregorBiswanger/Electron.NET/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GregorBiswanger/Electron.NET/</RepositoryUrl>
+    <PackageTags>electron aspnetcore</PackageTags>
+    <PackageReleaseNotes>#0.0.1
+- alpha release</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/GregorBiswanger/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
