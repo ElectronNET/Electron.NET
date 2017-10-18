@@ -29,6 +29,14 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <None Remove="ElectronHost\package.json" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+  </PropertyGroup>
+  
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
   </ItemGroup>

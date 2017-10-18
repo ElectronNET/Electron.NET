@@ -19,6 +19,14 @@ This package contains the API to access the "native" electron API.</Description>
     <PackageIconUrl>https://raw.githubusercontent.com/GregorBiswanger/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.0" />
     <PackageReference Include="SocketIoClientDotNet" Version="1.0.3" />
