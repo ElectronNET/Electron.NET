@@ -16,6 +16,15 @@ This package contains the API to access the "native" electron API.</Description>
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>#0.0.1
 - alpha release</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/GregorBiswanger/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

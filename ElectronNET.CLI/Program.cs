@@ -86,6 +86,10 @@ namespace ElectronNET.CLI
             Console.WriteLine("\t");
             Console.WriteLine($"\t{BuildCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {BuildCommand.COMMAND_DESCRIPTION}");
 
+            Console.WriteLine("\t");
+            Console.WriteLine("Commands to init the Electron Application:");
+            Console.WriteLine("\t");
+            Console.WriteLine($"\t{InitCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InitCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("\t");
@@ -102,6 +106,9 @@ namespace ElectronNET.CLI
                     break;
                 case BuildCommand.COMMAND_NAME:
                     PrintUsage(BuildCommand.COMMAND_NAME, BuildCommand.COMMAND_DESCRIPTION, BuildCommand.CommandOptions, BuildCommand.COMMAND_ARGUMENTS);
+                    break;
+                case InitCommand.COMMAND_NAME:
+                    PrintUsage(InitCommand.COMMAND_NAME, InitCommand.COMMAND_DESCRIPTION, InitCommand.CommandOptions, InitCommand.COMMAND_ARGUMENTS);
                     break;
                 default:
                     Console.Error.WriteLine($"Unknown command {command}");
