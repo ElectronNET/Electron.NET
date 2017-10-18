@@ -11,13 +11,7 @@ namespace ElectronNET.WebApp.Controllers
         {
             Electron.IpcMain.On("SayHello", async (args) =>
             {
-                Electron.Notification.Show(new NotificationOptions("Hallo Robert", "Nachricht von ASP.NET Core App") {
-                    OnClick = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification clicked")); },
-                    OnShow = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification show")); },
-                    OnClose = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification closed")); },
-                    OnAction = async (value) => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification Action")); },
-                    OnReply = async (value) => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification Reply")); }
-                });
+                Electron.Notification.Show(new NotificationOptions("Hallo Robert", "Nachricht von ASP.NET Core App"));
                 Electron.IpcMain.Send(Electron.WindowManager.BrowserWindows.First(), "Goodbye", "Elephant!");
 
                 var currentBrowserWindow = Electron.WindowManager.BrowserWindows.First();

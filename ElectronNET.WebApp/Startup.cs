@@ -100,6 +100,7 @@ namespace ElectronNET.WebApp
 
                 browserWindow.SetThumbnailToolTip("Electron.NET rocks!");
             };
+
         }
     }
 }

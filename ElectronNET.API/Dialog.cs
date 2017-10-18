@@ -84,11 +84,38 @@ namespace ElectronNET.API
         /// is passed, the dialog will not block the process.The API call will be
         /// asynchronous and the result will be passed via callback(response).
         /// </summary>
+        /// <param name="message"></param>
+        /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
+        public async Task<MessageBoxResult> ShowMessageBoxAsync(string message)
+        {
+            return await ShowMessageBoxAsync(null, new MessageBoxOptions(message));
+        }
+
+        /// <summary>
+        /// Shows a message box, it will block the process until the message box is closed.
+        /// It returns the index of the clicked button. The browserWindow argument allows
+        /// the dialog to attach itself to a parent window, making it modal. If a callback
+        /// is passed, the dialog will not block the process.The API call will be
+        /// asynchronous and the result will be passed via callback(response).
+        /// </summary>
         /// <param name="messageBoxOptions"></param>
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public async Task<MessageBoxResult> ShowMessageBoxAsync(MessageBoxOptions messageBoxOptions)
         {
             return await ShowMessageBoxAsync(null, messageBoxOptions);
+        }
+
+        /// <summary>
+        /// Shows a message box, it will block the process until the message box is closed.
+        /// It returns the index of the clicked button. If a callback
+        /// is passed, the dialog will not block the process.
+        /// </summary>
+        /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
+        /// <param name="message"></param>
+        /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
+        public async Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, string message)
+        {
+            return await ShowMessageBoxAsync(browserWindow, new MessageBoxOptions(message));
         }
 
         /// <summary>

@@ -462,7 +462,7 @@ namespace ElectronNET.API
         private event Action _move;
 
         /// <summary>
-        /// Emitted once when the window is moved to a new position.
+        /// macOS: Emitted once when the window is moved to a new position.
         /// </summary>
         public event Action OnMoved
         {
