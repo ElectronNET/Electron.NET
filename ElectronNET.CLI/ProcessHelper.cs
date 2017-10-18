@@ -24,24 +24,27 @@ namespace ElectronNET.CLI
 
                 cmd.StartInfo.RedirectStandardInput = true;
                 cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.RedirectStandardError = true;
                 cmd.StartInfo.CreateNoWindow = true;
                 cmd.StartInfo.UseShellExecute = false;
                 cmd.StartInfo.WorkingDirectory = workingDirectoryPath;
+                if (output)
+                {
+                    cmd.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
+                    cmd.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
+                }
 
                 cmd.Start();
+                cmd.BeginOutputReadLine();
+                cmd.BeginErrorReadLine();
 
                 cmd.StandardInput.WriteLine(command);
                 cmd.StandardInput.Flush();
                 cmd.StandardInput.Close();
 
-                if(waitForExit)
+                if (waitForExit)
                 {
                     cmd.WaitForExit();
-                }
-
-                if (output)
-                {
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
                 }
             }
         }
