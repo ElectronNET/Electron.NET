@@ -11,7 +11,13 @@ namespace ElectronNET.WebApp.Controllers
         {
             Electron.IpcMain.On("SayHello", async (args) =>
             {
-                Electron.Notification.Show(new NotificationOptions("Hallo Robert", "Nachricht von ASP.NET Core App"));
+                Electron.Notification.Show(new NotificationOptions("Hallo Robert", "Nachricht von ASP.NET Core App") {
+                    OnClick = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification clicked")); },
+                    OnShow = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification show")); },
+                    OnClose = async () => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification closed")); },
+                    OnAction = async (value) => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification Action")); },
+                    OnReply = async (value) => { await Electron.Dialog.ShowMessageBoxAsync(new MessageBoxOptions("Notification Reply")); }
+                });
                 Electron.IpcMain.Send(Electron.WindowManager.BrowserWindows.First(), "Goodbye", "Elephant!");
 
                 var currentBrowserWindow = Electron.WindowManager.BrowserWindows.First();
@@ -28,6 +34,8 @@ namespace ElectronNET.WebApp.Controllers
 
             Electron.IpcMain.On("GetPath", async (args) =>
             {
+                Electron.Notification.Show(new NotificationOptions("test", "test2"));
+
                 var currentBrowserWindow = Electron.WindowManager.BrowserWindows.First();
 
                 string pathName = await Electron.App.GetPathAsync(PathName.pictures);

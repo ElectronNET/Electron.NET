@@ -1,4 +1,7 @@
-﻿namespace ElectronNET.API.Entities
+﻿using Newtonsoft.Json;
+using System;
+
+namespace ElectronNET.API.Entities
 {
     public class NotificationOptions
     {
@@ -43,6 +46,63 @@
         /// The name of the sound file to play when the notification is shown.
         /// </summary>
         public string Sound { get; set; }
+
+        /// <summary>
+        /// Actions to add to the notification. Please read the available actions and
+        /// limitations in the NotificationAction documentation
+        /// </summary>
+        public NotificationAction Actions { get; set; }
+
+        /// <summary>
+        /// Emitted when the notification is shown to the user, 
+        /// note this could be fired multiple times as a notification 
+        /// can be shown multiple times through the Show() method.
+        /// </summary>
+        [JsonIgnore]
+        public Action OnShow { get; set; }
+
+        [JsonProperty]
+        internal string ShowID { get; set; }
+
+        /// <summary>
+        /// Emitted when the notification is clicked by the user.
+        /// </summary>
+        [JsonIgnore]
+        public Action OnClick { get; set; }
+
+        [JsonProperty]
+        internal string ClickID { get; set; }
+
+        /// <summary>
+        /// Emitted when the notification is closed by manual intervention from the user.
+        ///
+        /// This event is not guarunteed to be emitted in all cases where the notification is closed.
+        /// </summary>
+        [JsonIgnore]
+        public Action OnClose { get; set; }
+
+        [JsonProperty]
+        internal string CloseID { get; set; }
+
+        /// <summary>
+        /// macOS only: Emitted when the user clicks the “Reply” button on a notification with hasReply: true.
+        /// 
+        /// The string the user entered into the inline reply field
+        /// </summary>
+        [JsonIgnore]
+        public Action<string> OnReply { get; set; }
+
+        [JsonProperty]
+        internal string ReplyID { get; set; }
+
+        /// <summary>
+        /// macOS only - The index of the action that was activated
+        /// </summary>
+        [JsonIgnore]
+        public Action<string> OnAction { get; set; }
+
+        [JsonProperty]
+        internal string ActionID { get; set; }
 
         public NotificationOptions(string title, string body)
         {
