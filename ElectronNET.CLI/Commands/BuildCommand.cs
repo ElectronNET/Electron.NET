@@ -127,7 +127,7 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
-                string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin");
+                string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
