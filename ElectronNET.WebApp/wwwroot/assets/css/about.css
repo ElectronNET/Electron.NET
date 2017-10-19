@@ -1,7 +1,7 @@
 /* Welcome ------------------------ */
 
 .about {
-  --about-space: 4rem;
+  --about-space: 2rem;
 
   position: absolute;
   display: flex;

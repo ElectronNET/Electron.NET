@@ -42,6 +42,8 @@ namespace ElectronNET.WebApp
         {
             var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
             {
+                Width = 1152,
+                Height = 864,
                 Show = false
             });
 

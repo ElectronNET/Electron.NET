@@ -2,24 +2,34 @@
     <div id="about-modal" class="about modal">
         <div class="about-wrapper">
             <header class="about-header">
-                <img class="about-logo" src="assets/img/about.png" srcset="assets/img/about.png 1x, assets/img/about@2x.png 2x" alt="Electron API Demos">
+                <img class="about-logo" src="assets/img/about.png" srcset="assets/img/about.png 1x, assets/img/about@2x.png 2x" alt="Electron.NET API Demos">
             </header>
             <main class="about-sections">
                 <section class="about-section play-along">
                     <h2>Play Along</h2>
-                    <p>Use the demo snippets in an Electron app of your own. The <a href="https://github.com/electron/electron-quick-start">Electron Quick Start<span class="u-visible-to-screen-reader">(opens in new window)</span></a> app is a bare-bones setup that pairs with these demos. Follow the instructions here to get it going. You'll need <a href="https://desktop.github.com/">Git<span class="u-visible-to-screen-reader">(opens in new window)</span></a> and <a href="https://nodejs.org/">Node.js<span class="u-visible-to-screen-reader">(opens in new window)</span></a> on your computer to do this.</p>
-<pre><code class="language-bash">$ git clone https://github.com/electron/electron-quick-start
-$ cd electron-quick-start
-$ npm install &amp;&amp; npm start
-</code></pre>
+                    <p>Use the demo snippets in an Electron app of your own. The <a href="https://github.com/electron/electron-quick-start">Electron Quick Start<span class="u-visible-to-screen-reader">(opens in new window)</span></a> app is a bare-bones setup that pairs with these demos. Follow the instructions here to get it going.
+                    To activate Electron.NET include the <a href="https://www.nuget.org/packages/ElectronNET.API/" target="_blank">ElectronNET.API NuGet package</a> in your ASP.NET Core app.
+                    <p>
+                        <code class="language-bash">PM> Install-Package ElectronNET.API</code>
+                    </p>
+
+                    Then include the UseElectron WebHostBuilder-Extension into the Program.cs-file of your ASP.NET Core project.
+
+                    <pre>
+                        <code class="csharp">public static IWebHost BuildWebHost(string[] args)
+{
+    return WebHost.CreateDefaultBuilder(args)
+        .UseElectron(args)
+        .UseStartup<Startup>()
+        .Build();
+}</code>
+                    </pre>
                 </section>
                 <section class="about-section about-code">
                     <h2>About the Code</h2>
-                    <p>The <a href="https://github.com/electron/electron-api-demos">source code of this app<span class="u-visible-to-screen-reader">(opens in new window)</span></a> has been organized with ease of navigation in mind.</p>
-
-                    <p>Nearly all (over 90%) of <a href="http://babeljs.io/docs/learn-es2015/">ES2015<span class="u-visible-to-screen-reader">(opens in new window)</span></a> is available to use in Electron <em>without the use of pre-processors</em> because it's a part of <a href="https://developers.google.com/v8/">V8<span class="u-visible-to-screen-reader">(opens in new window)</span></a> which is built into Electron.</p>
-
-                    <p>To illustrate this we've made use of <code>const</code>, for unchanging declarations; <code>let</code> for scoped declarations; and template strings like: <code>`Result is ${output}`</code> in the demo snippets.</p>
+                    <p>The source code of this app has been organized with ease of navigation in mind.
+                    You will find for each API Category the source code into the Controllers. 
+                    This Demo-App based on the <a href="https://github.com/electron/electron-api-demos" target="_blank">Electron API Demos</a>.</p> 
                 </section>
                 <footer class="about-section footer">
                     <div class="rainbow-button-wrapper">
