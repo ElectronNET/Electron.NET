@@ -116,7 +116,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    // Works proper on Windows...
+                    // Works proper on Windows... 
                     ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
                 }
                 else
