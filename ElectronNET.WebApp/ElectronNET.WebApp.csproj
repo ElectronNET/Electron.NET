@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\assets\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ElectronNET.API" Version="1.0.0" />

@@ -1,45 +1,98 @@
 ﻿<!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/nativize.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/about.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/section.css">
+    <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="stylesheet" href="assets/css/github.css">
+    <link rel="stylesheet" href="assets/css/highlight.min.css">
+
+    <link rel="import" href="about">
+    <link rel="import" href="windows">
 </head>
 <body>
-    <h3>Hello from ASP.NET Core MVC!</h3>
 
-    We are using node
-    <script>document.write(process.versions.node)</script>,
-    Chrome
-    <script>document.write(process.versions.chrome)</script>,
-    and Electron
-    <script>document.write(process.versions.electron)</script>.
-    <br /><br />
-    <input id="callButton" type="button" value="Call Notification" />
+    <nav class="nav js-nav">
+        <header class="nav-header">
+            <h1 class="nav-title">Electron.NET <strong>API Demos</strong></h1>
+        </header>
 
-    <div>
-        <p id="picturesPathLabel"></p>
-        <input id="picturesButton" type="button" value="Get Pictures-Path" />
-    </div>
+        <div class="nav-item u-category-windows">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-windows"></use></svg>
+                Windows
+            </h5>
+            <button type="button" id="button-windows" data-section="windows" class="nav-button">Create and manage <em>windows</em></button>
+            <button type="button" id="button-crash-hang" data-section="crash-hang" class="nav-button">Handling window <em>crashes and hangs</em></button>
+        </div>
 
-    <script>
-        const { ipcRenderer } = require("electron");
+        <div class="nav-item u-category-menu">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-menu"></use></svg>
+                Menus
+            </h5>
+            <button type="button" id="button-menus" data-section="menus" class="nav-button">Customize <em>menus</em> </button>
+            <button type="button" id="button-shortcuts" data-section="shortcuts" class="nav-button">Register keyboard <em>shortcuts</em></button>
+        </div>
 
-        document.getElementById("callButton").addEventListener("click", () => {
-            ipcRenderer.send("SayHello");
-        });
+        <div class="nav-item u-category-native-ui">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-native-ui"></use></svg>
+                Native User Interface
+            </h5>
+            <button type="button" id="button-ex-links-file-manager" data-section="ex-links-file-manager" class="nav-button">Open <em>external links</em> or system <em>file manager</em></button>
+            <button type="button" id="button-notifications" data-section="notifications" class="nav-button"> Notifications with and without custom <em>image</em></button>
+            <button type="button" id="button-dialogs" data-section="dialogs" class="nav-button">Use system <em>dialogs</em></button>
+            <button type="button" id="button-tray" data-section="tray" class="nav-button">Put your app in the <em>tray</em></button>
+        </div>
 
-        ipcRenderer.on("Goodbye", (sender, data) => {
-            alert('Goodbye ' + data);
-        });
+        <div class="nav-item u-category-communication">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-communication"></use></svg>
+                Communication
+            </h5>
+            <button type="button" id="button-ipc" data-section="ipc" class="nav-button">Communicate between the <em>two processes</em></button>
+        </div>
 
-        document.getElementById("picturesButton").addEventListener("click", () => {
-            ipcRenderer.send("GetPath");
-        });
+        <div class="nav-item u-category-system">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-system"></use></svg>
+                System
+            </h5>
+            <button type="button" id="button-app-sys-information" data-section="app-sys-information" class="nav-button">Get app or user <em>system information</em></button>
+            <button type="button" id="button-clipboard" data-section="clipboard" class="nav-button">Copy and paste from the <em>clipboard</em></button>
+            <button type="button" id="button-protocol" data-section="protocol" class="nav-button">Launch app from <em>protocol handler</em></button>
+        </div>
 
-        ipcRenderer.on("GetPathComplete", (sender, data) => {
-            document.getElementById("picturesPathLabel").innerText = data;
-        });
+        <div class="nav-item u-category-media">
+            <h5 class="nav-category">
+                <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-media"></use></svg>
+                Media
+            </h5>
+            <button type="button" id="button-pdf" data-section="pdf" class="nav-button"><em>Print</em> to PDF</button>
+            <button type="button" id="button-desktop-capturer" data-section="desktop-capturer" class="nav-button">Take a <em>screenshot</em></button>
+        </div>
 
-    </script>
+        <footer class="nav-footer">
+            <button type="button" id="button-about" data-modal="about" class="nav-footer-button">About</button>
+            <a class="nav-footer-logo" href="https://github.com" aria-label="Homepage">
+                <svg class="nav-footer-icon"><use xlink:href="assets/img/icons.svg#icon-love"></use></svg>
+            </a>
+        </footer>
+    </nav>
+
+    <main class="content js-content is-shown"></main>
+
+    <script src="~/assets/imports.js"></script>
+    <script src="~/assets/ex-links.js"></script>
+    <script src="~/assets/nav.js"></script>
+    <script src="~/assets/demo-btns.js"></script>
+    <script src="~/assets/highlight.min.js"></script>
+    <script src="~/assets/code-blocks.js"></script>
 </body>
 </html>

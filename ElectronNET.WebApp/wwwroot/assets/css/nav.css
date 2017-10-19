@@ -1,0 +1,149 @@
+/* Nav */
+
+.nav {
+  width: 340px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--color-subtle);
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  visibility: hidden;
+  opacity: 0;
+}
+.nav.is-shown {
+  visibility: visible;;
+  opacity: 1;
+}
+
+.nav-header {
+  position: relative;
+  padding: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-title {
+  text-transform: uppercase;
+  font-weight: 300;
+  line-height: 1;
+  margin: 0;
+}
+
+.nav-title strong {
+  font-weight: 600;
+  color: var(--color-strong);
+}
+
+.nav-header-icon {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  top: 1.5rem; /* magic */
+  right: 1.75rem; /* magic */
+}
+
+
+
+.nav-item {
+  padding: .5em 0;
+}
+
+.nav-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: top;
+  margin-right: .25rem;
+}
+
+.nav-category {
+  margin: .2em 0;
+  padding-left: 2rem;
+  font-size: 11px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.nav-button {
+  display: block;
+  width: 100%;
+  padding: .3rem;
+  padding-left: calc(2rem + 16px + .5rem); /* padding + icon + magic */
+  line-height: 2;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  color: inherit;
+  border: none;
+  background-color: transparent;
+  cursor: default;
+  outline: none;
+}
+.nav-button:hover,
+.nav-button:focus:not(.is-selected) {
+  background-color: hsla(0,0%,0%,.1);
+}
+.nav-button.is-selected {
+  background-color: var(--color-accent);
+}
+.nav-button.is-selected,
+.nav-button.is-selected em {
+  color: #fff;
+}
+.nav-button.is-selected:focus {
+  opacity: .8;
+}
+
+.nav-button em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--color-strong);
+  pointer-events: none; /* makes it invisible to clicks */
+}
+
+.nav-footer {
+  margin-top: 1rem;
+  padding: 2rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.nav-footer-icon {
+  width: calc(770px / 6.5);
+  height: calc(88px / 6.5);
+}
+
+.nav-footer a {
+  outline: none;
+}
+
+.nav-footer-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: .75rem;
+  line-height: 2;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  color: inherit;
+  border: none;
+  background-color: transparent;
+  cursor: default;
+  outline: none;
+  text-align: center;
+}
+.nav-footer-button:focus {
+  color: var(--color-strong);
+}
+
+.nav-footer-logo {
+  color: hsl(0,0%,66%);
+}
+.nav-footer-logo:focus {
+  color: hsl(0,0%,33%);
+}
+
+/* Remove border on the logo */
+.nav-footer-logo.nav-footer-logo {
+  border-bottom: none;
+}
