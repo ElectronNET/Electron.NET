@@ -7,6 +7,18 @@ module.exports = (socket: SocketIO.Server) => {
         });
     });
 
+    socket.on('registerSyncIpcMainChannel', (channel) => {
+        ipcMain.on(channel, (event, args) => {
+            let x = <any>socket;
+            x.removeAllListeners(channel + 'Sync');
+            socket.on(channel + 'Sync', (result) => {
+                event.returnValue = result;
+            });
+
+            socket.emit(channel, [event.preventDefault(), args]);
+        });
+    });
+
     socket.on('registerOnceIpcMainChannel', (channel) => {
         ipcMain.once(channel, (event, args) => {
             socket.emit(channel, [event.preventDefault(), args]);

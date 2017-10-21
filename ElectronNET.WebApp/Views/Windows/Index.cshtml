@@ -156,44 +156,45 @@ await Electron.WindowManager.CreateWindowAsync(options);</code></pre>
         </div>
 
         <script>
-        const { ipcRenderer } = require("electron");
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("new-window").addEventListener("click", () => {
+                    ipcRenderer.send("new-window");
+                });
 
-            document.getElementById("new-window").addEventListener("click", () => {
-                ipcRenderer.send("new-window");
-            });
+                document.getElementById("manage-window").addEventListener("click", () => {
+                    ipcRenderer.send("manage-window");
+                });
 
-            document.getElementById("manage-window").addEventListener("click", () => {
-                ipcRenderer.send("manage-window");
-            });
+                ipcRenderer.on("manage-window-reply", (sender, data) => {
+                    document.getElementById("manage-window-reply").innerText = data;
+                });
+                
+                document.getElementById("listen-to-window").addEventListener("click", () => {
+                    ipcRenderer.send("listen-to-window");
+                });
 
-            ipcRenderer.on("manage-window-reply", (sender, data) => {
-                document.getElementById("manage-window-reply").innerText = data;
-            });
-            
-            document.getElementById("listen-to-window").addEventListener("click", () => {
-                ipcRenderer.send("listen-to-window");
-            });
+                document.getElementById('focus-on-modal-window').addEventListener("click", () => {
+                    ipcRenderer.send("listen-to-window-set-focus");
+                });
 
-            document.getElementById('focus-on-modal-window').addEventListener("click", () => {
-                ipcRenderer.send("listen-to-window-set-focus");
-            });
+                ipcRenderer.on("listen-to-window-focus", (sender, data) => {
+                    const focusModalBtn = document.getElementById('focus-on-modal-window');
+                    focusModalBtn.classList.add('disappear');
+                    focusModalBtn.classList.remove('smooth-appear');
+                });
 
-            ipcRenderer.on("listen-to-window-focus", (sender, data) => {
-                const focusModalBtn = document.getElementById('focus-on-modal-window');
-                focusModalBtn.classList.add('disappear');
-                focusModalBtn.classList.remove('smooth-appear');
-            });
+                ipcRenderer.on("listen-to-window-blur", (sender, data) => {
+                    const focusModalBtn = document.getElementById('focus-on-modal-window');
+                    focusModalBtn.classList.add('smooth-appear');
+                    focusModalBtn.classList.remove('disappear');
+                });
 
-            ipcRenderer.on("listen-to-window-blur", (sender, data) => {
-                const focusModalBtn = document.getElementById('focus-on-modal-window');
-                focusModalBtn.classList.add('smooth-appear');
-                focusModalBtn.classList.remove('disappear');
-            });
-
-            document.getElementById('frameless-window').addEventListener("click", () => {
-                ipcRenderer.send("frameless-window");
-            });
-
+                document.getElementById('frameless-window').addEventListener("click", () => {
+                    ipcRenderer.send("frameless-window");
+                });
+            }());
         </script>
 
     </section>

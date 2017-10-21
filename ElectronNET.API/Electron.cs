@@ -36,5 +36,15 @@
         /// Add icons and context menus to the system’s notification area.
         /// </summary>
         public static Tray Tray { get { return Tray.Instance; } }
+
+        /// <summary>
+        /// Detect keyboard events when the application does not have keyboard focus.
+        /// </summary>
+        public static GlobalShortcut GlobalShortcut { get { return GlobalShortcut.Instance; } }
+
+        /// <summary>
+        /// Manage files and URLs using their default applications.
+        /// </summary>
+        public static Shell Shell { get { return Shell.Instance; } }
     }
 }

@@ -40,6 +40,25 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Send a message to the renderer process synchronously via channel, 
+        /// you can also send arbitrary arguments.
+        /// 
+        /// Note: Sending a synchronous message will block the whole renderer process,
+        /// unless you know what you are doing you should never use it.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="listener"></param>
+        public void OnSync(string channel, Func<object, object> listener)
+        {
+            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
+            BridgeConnector.Socket.On(channel, (args) => {
+                var result = listener(args);
+
+                BridgeConnector.Socket.Emit(channel + "Sync", result);
+            });
+        }
+
+        /// <summary>
         /// Adds a one time listener method for the event. This listener is invoked only
         ///  the next time a message is sent to channel, after which it is removed.
         /// </summary>

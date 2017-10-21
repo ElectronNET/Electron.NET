@@ -31,12 +31,12 @@ module.exports = function (socket) {
     });
     socket.on('register-browserWindow-unresponsive', function (id) {
         getWindowById(id).on('unresponsive', function () {
-            socket.emit('browserWindow-unresponsive');
+            socket.emit('browserWindow-unresponsive' + id);
         });
     });
     socket.on('register-browserWindow-responsive', function (id) {
         getWindowById(id).on('responsive', function () {
-            socket.emit('browserWindow-responsive');
+            socket.emit('browserWindow-responsive' + id);
         });
     });
     socket.on('register-browserWindow-blur', function (id) {

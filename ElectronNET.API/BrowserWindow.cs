@@ -156,7 +156,7 @@ namespace ElectronNET.API
             {
                 if (_unresponsive == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-unresponsive", () =>
+                    BridgeConnector.Socket.On("browserWindow-unresponsive" + Id, () =>
                     {
                         _unresponsive();
                     });
@@ -182,7 +182,7 @@ namespace ElectronNET.API
             {
                 if (_responsive == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-responsive", () =>
+                    BridgeConnector.Socket.On("browserWindow-responsive" + Id, () =>
                     {
                         _responsive();
                     });
@@ -807,6 +807,7 @@ namespace ElectronNET.API
 
         internal BrowserWindow(int id) {
             Id = id;
+            WebContents = new WebContents(id);
         }
 
         /// <summary>
@@ -2147,6 +2148,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
         }
+
+        /// <summary>
+        /// Render and control web pages.
+        /// </summary>
+        public WebContents WebContents { get; internal set; }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {

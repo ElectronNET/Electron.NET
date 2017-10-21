@@ -199,6 +199,11 @@ namespace ElectronNET.API
         public IReadOnlyCollection<MenuItem> Items { get { return _items.AsReadOnly(); } }
         private List<MenuItem> _items = new List<MenuItem>();
 
+        public void Show(string image, MenuItem menuItem)
+        {
+            Show(image, new MenuItem[] { menuItem });
+        }
+
         public void Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
@@ -218,6 +223,7 @@ namespace ElectronNET.API
         public void Destroy()
         {
             BridgeConnector.Socket.Emit("tray-destroy");
+            _items.Clear();
         }
 
         /// <summary>

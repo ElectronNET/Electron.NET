@@ -1,0 +1,189 @@
+﻿<template class="task-template">
+    <section id="menus-section" class="section js-section u-category-menu">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-menu"></use></svg>
+                    Customize Menus
+                </h1>
+                <h3>The <code>Electron.Menu</code> and <code>MenuItem</code> can be used to create custom native menus.</h3>
+
+                <p>There are two kinds of menus: the application (top) menu and context (right-click) menu.</p>
+
+                <p>You find the sample source code in <code>Controllers\HomeController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="application-menu-demo-toggle" class="js-container-target demo-toggle-button">
+                    Create an application menu
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <p>The <code>Electron.Menu</code> and <code>MenuItem</code> allow you to customize your application menu. If you don't set any menu, Electron will generate a minimal menu for your app by default.</p>
+
+                    <p>This app uses the code below to set the application menu. If you click the 'View' option in the application menu and then the 'App Menu Demo', you'll see an information box displayed.</p>
+                    <h5>Main Process</h5>
+                    <pre><code class="csharp">var menu = new MenuItem[] {
+    new MenuItem { Label = "Edit", Submenu = new MenuItem[] {
+        new MenuItem { Label = "Undo", Accelerator = "CmdOrCtrl+Z", Role = MenuRole.undo },
+        new MenuItem { Label = "Redo", Accelerator = "Shift+CmdOrCtrl+Z", Role = MenuRole.redo },
+        new MenuItem { Type = MenuType.separator },
+        new MenuItem { Label = "Cut", Accelerator = "CmdOrCtrl+X", Role = MenuRole.cut },
+        new MenuItem { Label = "Copy", Accelerator = "CmdOrCtrl+C", Role = MenuRole.copy },
+        new MenuItem { Label = "Paste", Accelerator = "CmdOrCtrl+V", Role = MenuRole.paste },
+        new MenuItem { Label = "Select All", Accelerator = "CmdOrCtrl+A", Role = MenuRole.selectall }
+    }
+    },
+    new MenuItem { Label = "View", Submenu = new MenuItem[] {
+        new MenuItem
+        {
+            Label = "Reload",
+            Accelerator = "CmdOrCtrl+R",
+            Click = () =>
+            {
+                // on reload, start fresh and close any old
+                // open secondary windows
+                Electron.WindowManager.BrowserWindows.ToList().ForEach(browserWindow => {
+                    if(browserWindow.Id != 1)
+                    {
+                        browserWindow.Close();
+                    }
+                    else
+                    {
+                        browserWindow.Reload();
+                    }
+                });
+            }
+        },
+        new MenuItem
+        {
+            Label = "Toggle Full Screen",
+            Accelerator = "CmdOrCtrl+F",
+            Click = async () =>
+            {
+                bool isFullScreen = await Electron.WindowManager.BrowserWindows.First().IsFullScreenAsync();
+                Electron.WindowManager.BrowserWindows.First().SetFullScreen(!isFullScreen);
+            }
+        },
+        new MenuItem
+        {
+            Label = "Open Developer Tools",
+            Accelerator = "CmdOrCtrl+I",
+            Click = () => Electron.WindowManager.BrowserWindows.First().WebContents.OpenDevTools()
+        },
+        new MenuItem
+        {
+            Type = MenuType.separator
+        },
+        new MenuItem
+        {
+            Label = "App Menu Demo",
+            Click = async () => {
+                var options = new MessageBoxOptions("This demo is for the Menu section, showing how to create a clickable menu item in the application menu.");
+                options.Type = MessageBoxType.info;
+                options.Title = "Application Menu Demo";
+                await Electron.Dialog.ShowMessageBoxAsync(options);
+            }
+        }
+    }
+    },
+    new MenuItem { Label = "Window", Role = MenuRole.window, Submenu = new MenuItem[] {
+            new MenuItem { Label = "Minimize", Accelerator = "CmdOrCtrl+M", Role = MenuRole.minimize },
+            new MenuItem { Label = "Close", Accelerator = "CmdOrCtrl+W", Role = MenuRole.close }
+    }
+    },
+    new MenuItem { Label = "Help", Role = MenuRole.help, Submenu = new MenuItem[] {
+        new MenuItem 
+        { 
+            Label = "Learn More",
+            Click = async () => await Electron.Shell.OpenExternalAsync("https://github.com/ElectronNET")
+        }
+    }
+    }
+};
+
+Electron.Menu.SetApplicationMenu(menu);</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Know operating system menu differences.</strong>
+                        <p>When designing an app for multiple operating systems it's important to be mindful of the ways application menu conventions differ on each operating system.</p>
+                        <p>For instance, on Windows, accelerators are set with an <code>&</code>. Naming conventions also vary, like between "Settings" or "Preferences". Below are resources for learning operating system specific standards.</p>
+                        <ul>
+                            <li><a href="https://developer.apple.com/library/mac/documentation/UserExperience/Conceptual/OSXHIGuidelines/MenuBarMenus.html#//apple_ref/doc/uid/20000957-CH29-SW1">macOS<span class="u-visible-to-screen-reader">(opens in new window)</span></a></li>
+                            <li><a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb226797(v=vs.85).aspx">Windows<span class="u-visible-to-screen-reader">(opens in new window)</span></a></li>
+                            <li><a href="https://developer.gnome.org/hig/stable/menu-bars.html.en">Linux<span class="u-visible-to-screen-reader">(opens in new window)</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="context-menu-demo-toggle" class="js-container-target demo-toggle-button">
+                    Create a context menu
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="context-menu">View Demo</button>
+                    </div>
+                    <p>A context, or right-click, menu can be created with the <code>Electron.Menu.SetContextMenu()</code> and <code>MenuItem</code> as well. You can right-click anywhere in this app or click the demo button to see an example context menu.</p>
+
+                    <p>In this demo we use the <code>ipcRenderer</code> module to show the context menu when explicitly calling it from the renderer process.</p>
+                    <p>See the full <a href="http://electron.atom.io/docs/api/web-contents/#event-context-menu">context-menu event documentation</a> for all the available properties.</p>
+                    <h5>Main Process</h5>
+                    <pre><code class="csharp">var menu = new MenuItem[]
+{
+    new MenuItem
+    {
+        Label = "Hello",
+        Click = async () => await Electron.Dialog.ShowMessageBoxAsync("Electron.NET rocks!")
+    },
+    new MenuItem { Type = MenuType.separator },
+    new MenuItem { Label = "Electron.NET", Type = MenuType.checkbox, Checked = true }
+};
+
+var mainWindow = Electron.WindowManager.BrowserWindows.First();
+Electron.Menu.SetContextMenu(mainWindow, menu);
+
+Electron.IpcMain.On("show-context-menu", (args) => {
+    Electron.Menu.ContextMenuPopup(mainWindow);
+});</code></pre>
+                    <h5>Renderer Process</h5>
+                    <pre><code class="javascript">const { ipcRenderer } = require("electron");
+
+window.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+    ipcRenderer.send('show-context-menu');
+}, false);</code></pre>
+                </div>
+            </div>
+        </div>
+
+    <script type="text/javascript">
+    (function(){
+        const { ipcRenderer } = require("electron");
+        
+        document.getElementById("process-crash").addEventListener("click", () => {
+            ipcRenderer.send("process-crash");
+        });
+
+        const contextMenuBtn = document.getElementById('context-menu')
+        contextMenuBtn.addEventListener('click', function () {
+            ipcRenderer.send('show-context-menu');
+        })
+
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+            ipcRenderer.send('show-context-menu');
+        }, false);
+
+      }());
+    </script>
+
+    </section>
+</template>

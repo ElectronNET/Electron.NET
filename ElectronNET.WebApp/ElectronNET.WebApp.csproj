@@ -5,6 +5,12 @@
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controllers\ManageWindowsController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Assets\" />
     <Folder Include="wwwroot\assets\" />
   </ItemGroup>
