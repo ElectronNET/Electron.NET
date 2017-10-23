@@ -21,5 +21,5 @@ dotnet electronize build win
 echo "-- linux"
 dotnet electronize build linux
 
-echo "-- osx"
-dotnet electronize build osx
+#echo "-- osx"
+#dotnet electronize build osx
