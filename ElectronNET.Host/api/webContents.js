@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 var electron_1 = require("electron");
+var fs = require('fs');
 module.exports = function (socket) {
     socket.on('register-webContents-crashed', function (id) {
         var browserWindow = getWindowById(id);
@@ -23,6 +24,21 @@ module.exports = function (socket) {
         else {
             getWindowById(id).webContents.openDevTools();
         }
+    });
+    socket.on('webContents-printToPDF', function (id, options, path) {
+        getWindowById(id).webContents.printToPDF(options || {}, function (error, data) {
+            if (error) {
+                throw error;
+            }
+            fs.writeFile(path, data, function (error) {
+                if (error) {
+                    socket.emit('webContents-printToPDF-completed', false);
+                }
+                else {
+                    socket.emit('webContents-printToPDF-completed', true);
+                }
+            });
+        });
     });
     function getWindowById(id) {
         return electron_1.BrowserWindow.fromId(id);

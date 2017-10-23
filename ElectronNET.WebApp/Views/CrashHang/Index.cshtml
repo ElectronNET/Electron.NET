@@ -24,7 +24,7 @@
           <p>In this demo we create a new window and provide a link that will force a crash using <code>process.crash()</code>.</p>
           <p>The window is listening for the crash event and when the event occurs it prompts the user with two options: reload or close.</p>
 
-          <h5>Renderer Process</h5>
+          <h5>Main Process (C#)</h5>
           <pre><code class="csharp">var browserWindow = await Electron.WindowManager.CreateWindowAsync(viewPath);
 browserWindow.WebContents.OnCrashed += async (killed) => {
     var options = new MessageBoxOptions("This process has crashed.") {
@@ -58,7 +58,7 @@ browserWindow.WebContents.OnCrashed += async (killed) => {
           <p>In this demo we create a new window and provide a link that will force the process to hang using <code>process.hang()</code>.</p>
           <p>The window is listening for the process to become officially unresponsive (this can take up to 30 seconds). When this event occurs it prompts the user with two options: reload or close.</p>
 
-          <h5>Renderer Process</h5>
+          <h5>Main Process (C#)</h5>
           <pre><code class="csharp">var browserWindow = await Electron.WindowManager.CreateWindowAsync();
 browserWindow.OnUnresponsive += async () => {
     var options = new MessageBoxOptions("This process is hanging.")

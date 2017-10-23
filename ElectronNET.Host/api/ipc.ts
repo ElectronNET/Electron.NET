@@ -33,7 +33,7 @@ module.exports = (socket: SocketIO.Server) => {
         const window = BrowserWindow.fromId(browserWindow.id);
         
         if (window) {
-            window.webContents.send(channel, data);
+            window.webContents.send(channel, ...data);
         }
     });
 }

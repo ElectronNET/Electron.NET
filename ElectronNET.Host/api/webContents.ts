@@ -1,4 +1,6 @@
 import { BrowserWindow } from 'electron';
+const fs = require('fs');
+
 module.exports = (socket: SocketIO.Server) => {
     socket.on('register-webContents-crashed', (id) => {
         var browserWindow = getWindowById(id);
@@ -10,7 +12,7 @@ module.exports = (socket: SocketIO.Server) => {
     });
 
     socket.on('register-webContents-didFinishLoad', (id) => {
-        var browserWindow = getWindowById(id);
+        let browserWindow = getWindowById(id);
 
         browserWindow.webContents.removeAllListeners('did-finish-load');
         browserWindow.webContents.on('did-finish-load', () => {
@@ -24,6 +26,22 @@ module.exports = (socket: SocketIO.Server) => {
         } else {
             getWindowById(id).webContents.openDevTools();
         }
+    });
+
+    socket.on('webContents-printToPDF', (id, options, path) => {
+        getWindowById(id).webContents.printToPDF(options || {}, (error, data) => {
+            if (error) {
+                throw error;
+            }
+
+            fs.writeFile(path, data, (error) => {
+              if (error) {
+                socket.emit('webContents-printToPDF-completed', false);
+              } else {
+                socket.emit('webContents-printToPDF-completed', true);
+              }
+            });
+        });
     });
 
     function getWindowById(id: number): Electron.BrowserWindow {

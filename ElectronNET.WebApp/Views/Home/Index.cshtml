@@ -22,6 +22,10 @@
     <link rel="import" href="dialogs">
     <link rel="import" href="tray">
     <link rel="import" href="ipc">
+    <link rel="import" href="appsysinformation">
+    <link rel="import" href="clipboard">
+    <link rel="import" href="pdf">
+    <link rel="import" href="desktopcapturer">
 </head>
 <body>
 
@@ -74,7 +78,7 @@
             </h5>
             <button type="button" id="button-app-sys-information" data-section="app-sys-information" class="nav-button">Get app or user <em>system information</em></button>
             <button type="button" id="button-clipboard" data-section="clipboard" class="nav-button">Copy and paste from the <em>clipboard</em></button>
-            <button type="button" id="button-protocol" data-section="protocol" class="nav-button">Launch app from <em>protocol handler</em></button>
+            <!-- <button type="button" id="button-protocol" data-section="protocol" class="nav-button">Launch app from <em>protocol handler</em></button> -->
         </div>
 
         <div class="nav-item u-category-media">
@@ -88,8 +92,8 @@
 
         <footer class="nav-footer">
             <button type="button" id="button-about" data-modal="about" class="nav-footer-button">About</button>
-            <a class="nav-footer-logo" href="https://github.com" aria-label="Homepage">
-                <svg class="nav-footer-icon"><use xlink:href="assets/img/icons.svg#icon-love"></use></svg>
+            <a class="nav-footer-logo" href="https://github.com/ElectronNET/Electron.NET" aria-label="Homepage" target="_blank">
+                Made with <img src="assets/img/heart.jpg" style="width:14px;" /> in C#
             </a>
         </footer>
     </nav>

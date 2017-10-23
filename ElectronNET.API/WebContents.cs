@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -87,6 +88,37 @@ namespace ElectronNET.API
         public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
         {
             BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
+        }
+
+        /// <summary>
+        /// Prints window's web page as PDF with Chromium's preview printing custom
+        /// settings.The landscape will be ignored if @page CSS at-rule is used in the web page. 
+        /// By default, an empty options will be regarded as: Use page-break-before: always; 
+        /// CSS style to force to print to a new page.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="options"></param>
+        /// <returns>success</returns>
+        public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            BridgeConnector.Socket.On("webContents-printToPDF-completed", (success) =>
+            {
+                BridgeConnector.Socket.Off("webContents-printToPDF-completed");
+                taskCompletionSource.SetResult((bool)success);
+            });
+
+            if(options == null)
+            {
+                BridgeConnector.Socket.Emit("webContents-printToPDF", Id, "", path);
+            }
+            else
+            {
+                BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
+            }
+
+            return taskCompletionSource.Task;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

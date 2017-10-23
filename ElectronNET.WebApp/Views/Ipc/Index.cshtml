@@ -24,10 +24,10 @@
                         <button class="demo-button" id="async-msg">Ping</button>
                         <span class="demo-response" id="async-reply"></span>
                     </div>
-                    <p>Using <code>ipc</code> to send messages between processes asynchronously is the preferred method since it will return when finished without blocking other operations in the same process.</p>
+                    <p>Using <code>ipcRenderer</code> to send messages between processes asynchronously is the preferred method since it will return when finished without blocking other operations in the same process.</p>
 
                     <p>This example sends a "ping" from this process (renderer) to the main process. The main process then replies with "pong".</p>
-                    <h5>Renderer Process</h5>
+                    <h5>Renderer Process (JavaScript)</h5>
                     <pre><code class="javascript">const { ipcRenderer } = require("electron");
 
 document.getElementById("async-msg").addEventListener("click", () => {
@@ -38,7 +38,7 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
     const message = `Asynchronous message reply: ${arg}`;
     document.getElementById('async-reply').innerHTML = message;
 });</code></pre>
-                    <h5>Main Process</h5>
+                    <h5>Main Process (C#)</h5>
                     <pre><code class="csharp">Electron.IpcMain.On("async-msg", (args) =>
 {
     var mainWindow = Electron.WindowManager.BrowserWindows.First();
@@ -59,9 +59,9 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
                         <button class="demo-button" id="sync-msg">Ping</button>
                         <span class="demo-response" id="sync-reply"></span>
                     </div>
-                    <p>You can use the <code>ipc</code> module to send synchronous messages between processes as well, but note that the synchronous nature of this method means that it <b>will block</b> other operations while completing its task.</p>
+                    <p>You can use the <code>ipcRenderer</code> module to send synchronous messages between processes as well, but note that the synchronous nature of this method means that it <b>will block</b> other operations while completing its task.</p>
                     <p>This example sends a synchronous message, "ping", from this process (renderer) to the main process. The main process then replies with "pong".</p>
-                    <h5>Renderer Process</h5>
+                    <h5>Renderer Process (JavaScript)</h5>
                     <pre><code class="javascript">const { ipcRenderer } = require("electron");
 
 document.getElementById("sync-msg").addEventListener("click", () => {
@@ -69,7 +69,7 @@ document.getElementById("sync-msg").addEventListener("click", () => {
     const message = `Synchronous message reply: ${reply}`;
     document.getElementById('sync-reply').innerHTML = message;
 });</code></pre>
-                    <h5>Main Process</h5>
+                    <h5>Main Process (C#)</h5>
                     <pre><code class="csharp">Electron.IpcMain.OnSync("sync-msg", (args) =>
 {
     return "pong";

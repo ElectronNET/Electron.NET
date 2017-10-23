@@ -26,7 +26,7 @@
             <button class="demo-button" id="basic-noti">View demo</button>
           </div>
           <p>This demo demonstrates a basic notification. Text only.</p>
-          <h5>Renderer Process</h5>
+          <h5>Main Process (C#)</h5>
           <pre><code class="csharp">var options = new NotificationOptions("Basic Notification", "Short message part")
 {
     OnClick = async () => await Electron.Dialog.ShowMessageBoxAsync("Notification clicked")
@@ -47,7 +47,7 @@ Electron.Notification.Show(options);</code></pre>
             <button class="demo-button" id="advanced-noti">View demo</button>
           </div>
           <p>This demo demonstrates a basic notification. Both text and a image</p>
-          <h5>Renderer Process</h5>
+          <h5>Main Process (C#)</h5>
           <pre><code class="csharp">var options = new NotificationOptions("Notification with image", "Short message plus a custom image")
 {
     OnClick = async () => await Electron.Dialog.ShowMessageBoxAsync("Notification clicked"),

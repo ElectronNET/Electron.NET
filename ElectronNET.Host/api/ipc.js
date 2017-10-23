@@ -32,8 +32,9 @@ module.exports = function (socket) {
         }
         var window = electron_1.BrowserWindow.fromId(browserWindow.id);
         if (window) {
-            window.webContents.send(channel, data);
+            (_a = window.webContents).send.apply(_a, [channel].concat(data));
         }
+        var _a;
     });
 };
 //# sourceMappingURL=ipc.js.map

@@ -46,5 +46,15 @@
         /// Manage files and URLs using their default applications.
         /// </summary>
         public static Shell Shell { get { return Shell.Instance; } }
+
+        /// <summary>
+        /// Retrieve information about screen size, displays, cursor position, etc.
+        /// </summary>
+        public static Screen Screen { get { return Screen.Instance; } }
+
+        /// <summary>
+        /// Perform copy and paste operations on the system clipboard.
+        /// </summary>
+        public static Clipboard Clipboard { get { return Clipboard.Instance; } }
     }
 }

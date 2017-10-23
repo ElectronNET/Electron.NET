@@ -2,6 +2,9 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ElectronNET.API
 {
@@ -36,7 +39,35 @@ namespace ElectronNET.API
         public void On(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, listener);
+            BridgeConnector.Socket.On(channel, (args) => 
+            {
+                List<object> objectArray = FormatArguments(args);
+
+                if(objectArray.Count == 1)
+                {
+                    listener(objectArray.First());
+                }
+                else
+                {
+                    listener(objectArray);
+                }
+            });
+        }
+
+        private List<object> FormatArguments(object args)
+        {
+            List<object> objectArray = ((JArray)args).ToObject<object[]>().ToList();
+
+            for (int index = 0; index < objectArray.Count; index++)
+            {
+                var item = objectArray[index];
+                if (item == null)
+                {
+                    objectArray.Remove(item);
+                }
+            }
+
+            return objectArray;
         }
 
         /// <summary>
@@ -52,8 +83,18 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
             BridgeConnector.Socket.On(channel, (args) => {
-                var result = listener(args);
+                List<object> objectArray = FormatArguments(args);
+                object parameter;
+                if (objectArray.Count == 1)
+                {
+                    parameter = objectArray.First();
+                }
+                else
+                {
+                    parameter = objectArray;
+                }
 
+                var result = listener(parameter);
                 BridgeConnector.Socket.Emit(channel + "Sync", result);
             });
         }
@@ -67,7 +108,19 @@ namespace ElectronNET.API
         public void Once(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, listener);
+            BridgeConnector.Socket.On(channel, (args) =>
+            {
+                List<object> objectArray = FormatArguments(args);
+
+                if (objectArray.Count == 1)
+                {
+                    listener(objectArray.First());
+                }
+                else
+                {
+                    listener(objectArray);
+                }
+            });
         }
 
         /// <summary>
@@ -90,7 +143,32 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+            List<JObject> jobjects = new List<JObject>();
+            List<JArray> jarrays = new List<JArray>();
+            List<Object> objects = new List<Object>();
+
+            foreach (var parameterObject in data)
+            {
+                if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
+                {
+                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
+                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                {
+                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
+                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                {
+                    objects.Add(parameterObject);
+                }
+            }
+
+            if(jobjects.Count > 0 || jarrays.Count > 0)
+            {
+                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+            }
+            else
+            {
+                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+            }
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

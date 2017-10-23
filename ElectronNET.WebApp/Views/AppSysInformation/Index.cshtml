@@ -1,0 +1,187 @@
+﻿<template class="task-template">
+    <section id="app-sys-information-section" class="section js-section u-category-system">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-system"></use></svg>
+                    Get app and system information
+                </h1>
+                <h3>With Electron.NET you can gather information about the user's system, app or screen.</h3>
+                
+                <p>You find the sample source code in <code>Controllers\AppSysInformationController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="app-info-demo-toggle" class="js-container-target demo-toggle-button">
+                    Get app information
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="app-info">View Demo</button>
+                        <span class="demo-response" id="got-app-info"></span>
+                    </div>
+                    <p>The main process <code>Electron.App</code> can be used to get the path at which your app is located on the user's computer.</p>
+                    <p>In this example, to get that information from the renderer process, we use the <code>ipcRenderer</code> to send a message to the main process requesting the app's path.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">const { ipcRenderer } = require("electron");
+
+document.getElementById("app-info").addEventListener("click", () => {
+    ipcRenderer.send("app-info");
+});
+
+ipcRenderer.on("got-app-path", (event, path) => {
+    const message = `This app is located at: ${path}`;
+    document.getElementById('got-app-info').innerHTML = message
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("app-info", async (args) => 
+{
+    string appPath = await Electron.App.GetAppPathAsync();
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "got-app-path", appPath);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="app-version-demo-toggle" class="js-container-target demo-toggle-button">
+                    Get version information
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="version-info">View Demo</button>
+                        <span class="demo-response" id="got-version-info"></span>
+                    </div>
+                    <p>The <code>process</code> module is built into Node.js (therefore you can use this in the renderer processes) and in Electron.NET apps this object has a few more useful properties on it.</p>
+                    <p>The example below gets the version of Electron in use by the app.</p>
+                    <p>See the <a href="http://electron.atom.io/docs/api/process">process documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> for more.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">document.getElementById('version-info').addEventListener('click', () => {
+    const electronVersion = process.versions.electron;
+    const message = `This app is using Electron version: ${electronVersion}`;
+    document.getElementById('got-version-info').innerHTML = message;
+});</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Find versions of Chromium, Node.js and V8.</strong>
+                        <p>Electron also includes versions of Chromium, Node.js and V8 within the <code>process.versions</code> object. You can get there quickly by opening up developer tools in an Electron app and typing <code>process.versions</code>.</p>
+                        <pre><code class="language-js">// Returns version of Chromium in use
+process.versions.chrome
+// Returns version of V8 in use
+process.versions.v8
+// Returns version of Node in use
+process.versions.node</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="sys-info-demo-toggle" class="js-container-target demo-toggle-button">
+                    Get system information
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="sys-info">View Demo</button>
+                        <span class="demo-response" id="got-sys-info"></span>
+                    </div>
+                    <p>In the example below we require the module and then return the location of the home directory.</p>
+
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("sys-info", async (args) =>
+{
+    string homePath = await Electron.App.GetPathAsync(PathName.home);
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "got-sys-info", homePath);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="screen-info-demo-toggle" class="js-container-target demo-toggle-button">
+                    Get screen information
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="screen-info">View Demo</button>
+                        <span class="demo-response" id="got-screen-info"></span>
+                    </div>
+                    <p>The <code>Electron.Screen</code> retrieves information about screen size, displays, cursor position, etc. In the example below we retrieve the dimensions of the monitor in use.</p>
+
+                    <p>See the full <a href="http://electron.atom.io/docs/api/screen">screen documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> for more.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("screen-info", async (args) =>
+{
+    var display = await Electron.Screen.GetPrimaryDisplayAsync();
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "got-screen-info", display.Size);
+});</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Differences in dimensions.</strong>
+                        <p>The <code>.Size</code> property in the example returns the raw dimensions of the screen but because of system menu bars this may not be the actual space available for your app.</p>
+
+                        <p>To get the dimensions of the available screen space use the <code>.WorkAreaSize</code> property. Using <code>.workArea</code> will return the coordinates as well as the dimensions of the available screen space.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("app-info").addEventListener("click", () => {
+                    ipcRenderer.send("app-info");
+                });
+
+                ipcRenderer.on("got-app-path", (event, path) => {
+                    const message = `This app is located at: ${path}`;
+                    document.getElementById('got-app-info').innerHTML = message;
+                });
+
+                document.getElementById('version-info').addEventListener('click', () => {
+                    const electronVersion = process.versions.electron;
+                    const message = `This app is using Electron version: ${electronVersion}`;
+                    document.getElementById('got-version-info').innerHTML = message;
+                });
+
+                document.getElementById('sys-info').addEventListener('click', () => {
+                    ipcRenderer.send("sys-info");
+                });
+
+                ipcRenderer.on("got-sys-info", (event, homeDir) => {
+                    const message = `Your system home directory is: ${homeDir}`;
+                    document.getElementById('got-sys-info').innerHTML = message;
+                });
+
+                document.getElementById("screen-info").addEventListener("click", () => {
+                    ipcRenderer.send("screen-info");
+                });
+                
+                ipcRenderer.on("got-screen-info", (event, size) => {
+                     const message = `Your screen is: ${size.width}px x ${size.height}px`;
+                     document.getElementById('got-screen-info').innerHTML = message;
+                });
+
+            }());
+        </script>
+
+    </section>
+</template>

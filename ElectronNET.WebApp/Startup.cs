@@ -48,6 +48,7 @@ namespace ElectronNET.WebApp
             });
 
             browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.SetTitle("Electron.NET API Demos");
         }
     }
 }

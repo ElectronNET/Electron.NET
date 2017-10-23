@@ -50,10 +50,6 @@ This package contains the dotnet tooling to electronize your application.</Descr
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ElectronHost\api\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
   </ItemGroup>
 
@@ -70,9 +66,14 @@ This package contains the dotnet tooling to electronize your application.</Descr
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
-    <None Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
-    <None Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\api\clipboard.js" Link="ElectronHost\api\clipboard.js" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="$(ProjectDir)devCleanup.cmd" IgnoreExitCode="true" />

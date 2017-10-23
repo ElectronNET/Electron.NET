@@ -10,7 +10,7 @@
 
                 <p>There are two kinds of menus: the application (top) menu and context (right-click) menu.</p>
 
-                <p>You find the sample source code in <code>Controllers\HomeController.cs</code>.</p>
+                <p>You find the sample source code in <code>Controllers\MenusController.cs</code>.</p>
             </div>
         </header>
 
@@ -24,7 +24,7 @@
                     <p>The <code>Electron.Menu</code> and <code>MenuItem</code> allow you to customize your application menu. If you don't set any menu, Electron will generate a minimal menu for your app by default.</p>
 
                     <p>This app uses the code below to set the application menu. If you click the 'View' option in the application menu and then the 'App Menu Demo', you'll see an information box displayed.</p>
-                    <h5>Main Process</h5>
+                    <h5>Main Process (C#)</h5>
                     <pre><code class="csharp">var menu = new MenuItem[] {
     new MenuItem { Label = "Edit", Submenu = new MenuItem[] {
         new MenuItem { Label = "Undo", Accelerator = "CmdOrCtrl+Z", Role = MenuRole.undo },
@@ -135,7 +135,7 @@ Electron.Menu.SetApplicationMenu(menu);</code></pre>
 
                     <p>In this demo we use the <code>ipcRenderer</code> module to show the context menu when explicitly calling it from the renderer process.</p>
                     <p>See the full <a href="http://electron.atom.io/docs/api/web-contents/#event-context-menu">context-menu event documentation</a> for all the available properties.</p>
-                    <h5>Main Process</h5>
+                    <h5>Main Process (C#)</h5>
                     <pre><code class="csharp">var menu = new MenuItem[]
 {
     new MenuItem
@@ -153,7 +153,7 @@ Electron.Menu.SetContextMenu(mainWindow, menu);
 Electron.IpcMain.On("show-context-menu", (args) => {
     Electron.Menu.ContextMenuPopup(mainWindow);
 });</code></pre>
-                    <h5>Renderer Process</h5>
+                    <h5>Renderer Process (JavaScript)</h5>
                     <pre><code class="javascript">const { ipcRenderer } = require("electron");
 
 window.addEventListener('contextmenu', (e) => {
