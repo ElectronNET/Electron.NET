@@ -2,7 +2,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "Start building Electron.NET dev stack..."
 echo "Restore & Build API"
-cd $DIR/ElectronNet.API
+cd $DIR/ElectronNet.API/
 dotnet restore
 dotnet build
 cd ..
