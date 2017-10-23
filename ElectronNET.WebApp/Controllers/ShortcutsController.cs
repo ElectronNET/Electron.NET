@@ -8,17 +8,21 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            Electron.GlobalShortcut.Register("CommandOrControl+Alt+K", async () => {
-                var options = new MessageBoxOptions("You pressed the registered global shortcut keybinding.")
+            if (HybridSupport.IsElectronActive)
+            {
+                Electron.GlobalShortcut.Register("CommandOrControl+Alt+K", async () =>
                 {
-                    Type = MessageBoxType.info,
-                    Title = "Success!"
-                };
+                    var options = new MessageBoxOptions("You pressed the registered global shortcut keybinding.")
+                    {
+                        Type = MessageBoxType.info,
+                        Title = "Success!"
+                    };
 
-                await Electron.Dialog.ShowMessageBoxAsync(options);
-            });
+                    await Electron.Dialog.ShowMessageBoxAsync(options);
+                });
 
-            Electron.App.WillQuit += () => Electron.GlobalShortcut.UnregisterAll();
+                Electron.App.WillQuit += () => Electron.GlobalShortcut.UnregisterAll();
+            }
 
             return View();
         }

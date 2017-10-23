@@ -8,25 +8,29 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            Electron.IpcMain.On("put-in-tray", (args) => {
-
-                if (Electron.Tray.Items.Count == 0)
+            if (HybridSupport.IsElectronActive)
+            {
+                Electron.IpcMain.On("put-in-tray", (args) =>
                 {
-                    var menu = new MenuItem
+
+                    if (Electron.Tray.Items.Count == 0)
                     {
-                        Label = "Remove",
-                        Click = () => Electron.Tray.Destroy()
-                    };
+                        var menu = new MenuItem
+                        {
+                            Label = "Remove",
+                            Click = () => Electron.Tray.Destroy()
+                        };
 
-                    Electron.Tray.Show("/Assets/electron_32x32.png", menu);
-                    Electron.Tray.SetToolTip("Electron Demo in the tray.");
-                }
-                else
-                {
-                    Electron.Tray.Destroy();
-                }
+                        Electron.Tray.Show("/Assets/electron_32x32.png", menu);
+                        Electron.Tray.SetToolTip("Electron Demo in the tray.");
+                    }
+                    else
+                    {
+                        Electron.Tray.Destroy();
+                    }
 
-            });
+                });
+            }
 
             return View();
         }

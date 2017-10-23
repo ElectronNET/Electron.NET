@@ -8,16 +8,19 @@ namespace ElectronNET.WebApp.Controllers
     {
         public IActionResult Index()
         {
-            Electron.IpcMain.On("async-msg", (args) =>
+            if(HybridSupport.IsElectronActive)
             {
-                var mainWindow = Electron.WindowManager.BrowserWindows.First();
-                Electron.IpcMain.Send(mainWindow, "asynchronous-reply", "pong");
-            });
+                Electron.IpcMain.On("async-msg", (args) =>
+                {
+                    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+                    Electron.IpcMain.Send(mainWindow, "asynchronous-reply", "pong");
+                });
 
-            Electron.IpcMain.OnSync("sync-msg", (args) =>
-            {
-                return "pong";
-            });
+                Electron.IpcMain.OnSync("sync-msg", (args) =>
+                {
+                    return "pong";
+                });
+            }
 
             return View();
         }

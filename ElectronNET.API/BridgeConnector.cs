@@ -5,15 +5,27 @@ namespace ElectronNET.API
 {
     internal static class BridgeConnector
     {
-        public static Socket Socket;
+        private static Socket _socket;
 
-        public static void StartConnection()
+        public static Socket Socket
         {
-            Socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
-            Socket.On(Socket.EVENT_CONNECT, () =>
+            get
             {
-                Console.WriteLine("BridgeConnector connected!");
-            });
+                if(_socket == null && HybridSupport.IsElectronActive)
+                {
+                    _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
+                    _socket.On(Socket.EVENT_CONNECT, () =>
+                    {
+                        Console.WriteLine("BridgeConnector connected!");
+                    });
+                }
+                else if(_socket == null && !HybridSupport.IsElectronActive)
+                {
+                    _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
+                }
+
+                return _socket;
+            }
         }
     }
 }

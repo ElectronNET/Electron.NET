@@ -35,7 +35,11 @@ namespace ElectronNET.WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            ElectronBootstrap();
+            
+            if(HybridSupport.IsElectronActive)
+            {
+                ElectronBootstrap();
+            }
         }
 
         public async void ElectronBootstrap()

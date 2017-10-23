@@ -19,20 +19,13 @@ namespace ElectronNET.API
                 }
             }
 
-            if(IsElectronActive())
+            if(HybridSupport.IsElectronActive)
             {
                 builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                     .UseUrls("http://0.0.0.0:" + BridgeSettings.WebPort);
-
-                BridgeConnector.StartConnection();
             }
 
             return builder;
-        }
-
-        private static bool IsElectronActive()
-        {
-            return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
         }
     }
 }
