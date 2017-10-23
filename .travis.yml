@@ -2,6 +2,6 @@ language: csharp
 mono: none
 dotnet: 2.0.0
 before_script:
-  - sudo npm install electron-packager --global
+  - npm install electron-packager --global
 script:
   - ./buildAll.sh
