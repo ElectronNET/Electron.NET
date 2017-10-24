@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class WebPreferences
     {
         /// <summary>
@@ -182,13 +182,16 @@ namespace ElectronNET.API.Entities
         public bool NativeWindowOpen { get; set; }
 
         /// <summary>
-        /// Whether to enable the . Defaults to the value of the nodeIntegration option. The
-        /// preload script configured for the<webview> will have node integration enabled
+        /// Whether to enable the Webview. Defaults to the value of the nodeIntegration option. The
+        /// preload script configured for the Webview will have node integration enabled
         /// when it is executed so you should ensure remote/untrusted content is not able to
-        /// create a<webview> tag with a possibly malicious preload script.You can use the
+        /// create a Webview tag with a possibly malicious preload script.You can use the
         /// will-attach-webview event on to strip away the preload script and to validate or
-        /// alter the<webview>'s initial settings.
+        /// alter the Webview's initial settings.
         /// </summary>
+        /// <value>
+        ///   <c>true</c> if [webview tag]; otherwise, <c>false</c>.
+        /// </value>
         public bool WebviewTag { get; set; }
     }
 }

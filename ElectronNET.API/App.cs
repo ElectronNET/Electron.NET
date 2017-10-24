@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Control your application's event lifecycle.
+    /// </summary>
     public sealed class App
     {
         /// <summary>
@@ -1334,7 +1337,7 @@ namespace ElectronNET.API
             return await taskCompletionSource.Task;
         }
 
-        // TODO: Menu lösung muss gemacht werden und imeplementiert
+        // TODO: Menu lösung für macOS muss gemacht werden und imeplementiert
         /// <summary>
         /// Sets the application's dock menu.
         /// </summary>

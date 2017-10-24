@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
@@ -8,8 +6,11 @@ namespace ElectronNET.API.Entities
     public class Display
     {
         /// <summary>
-        /// 
+        /// Gets or sets the bounds.
         /// </summary>
+        /// <value>
+        /// The bounds.
+        /// </value>
         public Rectangle Bounds { get; set; }
 
         /// <summary>
@@ -28,8 +29,11 @@ namespace ElectronNET.API.Entities
         public int ScaleFactor { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets the size.
         /// </summary>
+        /// <value>
+        /// The size.
+        /// </value>
         public Size Size { get; set; }
 
         /// <summary>
@@ -38,13 +42,19 @@ namespace ElectronNET.API.Entities
         public string TouchSupport { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets the work area.
         /// </summary>
+        /// <value>
+        /// The work area.
+        /// </value>
         public Rectangle WorkArea { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets the size of the work area.
         /// </summary>
+        /// <value>
+        /// The size of the work area.
+        /// </value>
         public Size WorkAreaSize { get; set; }
     }
 }

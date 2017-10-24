@@ -3,9 +3,25 @@ using Newtonsoft.Json.Converters;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class OpenDialogOptions
     {
+        /// <summary>
+        /// Gets or sets the title.
+        /// </summary>
+        /// <value>
+        /// The title.
+        /// </value>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default path.
+        /// </summary>
+        /// <value>
+        /// The default path.
+        /// </value>
         public string DefaultPath { get; set; }
 
         /// <summary>

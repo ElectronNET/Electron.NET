@@ -7,9 +7,24 @@
     /// </summary>
     public enum DevToolsMode
     {
+        /// <summary>
+        /// The right
+        /// </summary>
         right,
+
+        /// <summary>
+        /// The bottom
+        /// </summary>
         bottom,
+
+        /// <summary>
+        /// The undocked
+        /// </summary>
         undocked,
+
+        /// <summary>
+        /// The detach
+        /// </summary>
         detach
     }
 }

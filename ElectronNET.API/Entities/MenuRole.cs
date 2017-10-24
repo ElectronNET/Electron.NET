@@ -1,14 +1,48 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum MenuRole
     {
+        /// <summary>
+        /// The undo
+        /// </summary>
         undo,
+
+        /// <summary>
+        /// The redo
+        /// </summary>
         redo,
+
+        /// <summary>
+        /// The cut
+        /// </summary>
         cut,
+
+        /// <summary>
+        /// The copy
+        /// </summary>
         copy,
+
+        /// <summary>
+        /// The paste
+        /// </summary>
         paste,
+
+        /// <summary>
+        /// The pasteandmatchstyle
+        /// </summary>
         pasteandmatchstyle,
+
+        /// <summary>
+        /// The selectall
+        /// </summary>
         selectall,
+
+        /// <summary>
+        /// The delete
+        /// </summary>
         delete,
 
         /// <summary>

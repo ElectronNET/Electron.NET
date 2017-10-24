@@ -1,5 +1,8 @@
 ﻿namespace ElectronNET.API
 {
+    /// <summary>
+    /// The Electron.NET API
+    /// </summary>
     public static class Electron
     {
         /// <summary>

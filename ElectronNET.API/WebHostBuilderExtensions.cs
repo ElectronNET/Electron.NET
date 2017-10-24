@@ -3,8 +3,17 @@ using System;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class WebHostBuilderExtensions
     {
+        /// <summary>
+        /// Use a Electron support for this .NET Core Project.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args)
         {
             foreach (string argument in args)

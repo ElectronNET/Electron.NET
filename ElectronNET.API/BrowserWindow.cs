@@ -10,8 +10,17 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Create and control browser windows.
+    /// </summary>
     public class BrowserWindow
     {
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public int Id { get; private set; }
 
         /// <summary>
@@ -1112,6 +1121,10 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
+        /// <summary>
+        /// Gets the bounds asynchronous.
+        /// </summary>
+        /// <returns></returns>
         public Task<Rectangle> GetBoundsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<Rectangle>();
@@ -1146,6 +1159,10 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
+        /// <summary>
+        /// Gets the content bounds asynchronous.
+        /// </summary>
+        /// <returns></returns>
         public Task<Rectangle> GetContentBoundsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<Rectangle>();
@@ -1166,7 +1183,6 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        /// <param name="animate"></param>
         public void SetSize(int width, int height)
         {
             BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height);
@@ -1207,7 +1223,6 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        /// <param name="animate"></param>
         public void SetContentSize(int width, int height)
         {
             BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height);
@@ -1742,11 +1757,17 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
+        /// <summary>
+        /// Focuses the on web view.
+        /// </summary>
         public void FocusOnWebView()
         {
             BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id);
         }
 
+        /// <summary>
+        /// Blurs the web view.
+        /// </summary>
         public void BlurWebView()
         {
             BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id);
@@ -1781,7 +1802,13 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("browserWindowReload", Id);
         }
 
-        public IReadOnlyCollection<MenuItem> Items { get { return _items.AsReadOnly(); } }
+        /// <summary>
+        /// Gets the menu items.
+        /// </summary>
+        /// <value>
+        /// The menu items.
+        /// </value>
+        public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
         private List<MenuItem> _items = new List<MenuItem>();
 
         /// <summary>
@@ -1804,7 +1831,7 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Sets progress value in progress bar. Valid range is [0, 1.0]. Remove progress
-        /// bar when progress < 0; Change to indeterminate mode when progress > 1. On Linux
+        /// bar when progress smaler as 0; Change to indeterminate mode when progress bigger as 1. On Linux
         /// platform, only supports Unity desktop environment, you need to specify the
         /// .desktop file name to desktopName field in package.json.By default, it will
         /// assume app.getName().desktop.On Windows, a mode can be passed.Accepted values
@@ -1820,7 +1847,7 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Sets progress value in progress bar. Valid range is [0, 1.0]. Remove progress
-        /// bar when progress < 0; Change to indeterminate mode when progress > 1. On Linux
+        /// bar when progress smaler as 0; Change to indeterminate mode when progress bigger as 1. On Linux
         /// platform, only supports Unity desktop environment, you need to specify the
         /// .desktop file name to desktopName field in package.json.By default, it will
         /// assume app.getName().desktop.On Windows, a mode can be passed.Accepted values
@@ -1865,6 +1892,12 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
+        /// <summary>
+        /// Gets the thumbar buttons.
+        /// </summary>
+        /// <value>
+        /// The thumbar buttons.
+        /// </value>
         public IReadOnlyCollection<ThumbarButton> ThumbarButtons { get { return _thumbarButtons.AsReadOnly(); } }
         private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
 
@@ -2054,7 +2087,7 @@ namespace ElectronNET.API
         /// On macOS it sets the NSWindow’s sharingType to NSWindowSharingNone. 
         /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
         /// </summary>
-        /// <param name="ignore"></param>
+        /// <param name="enable"></param>
         public void SetContentProtection(bool enable)
         {
             BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable);
@@ -2073,7 +2106,7 @@ namespace ElectronNET.API
         /// Sets parent as current window’s parent window, 
         /// passing null will turn current window into a top-level window.
         /// </summary>
-        /// <param name="browserWindow"></param>
+        /// <param name="parent"></param>
         public void SetParentWindow(BrowserWindow parent)
         {
             BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));

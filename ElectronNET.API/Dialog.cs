@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Display native system dialogs for opening and saving files, alerting, etc.
+    /// </summary>
     public sealed class Dialog
     {
         private static Dialog _dialog;

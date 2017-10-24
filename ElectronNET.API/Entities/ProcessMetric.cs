@@ -1,5 +1,8 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ProcessMetric
     {
       /// <summary>

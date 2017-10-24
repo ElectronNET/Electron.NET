@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
@@ -27,14 +30,31 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Gets the browser windows.
+        /// </summary>
+        /// <value>
+        /// The browser windows.
+        /// </value>
         public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.AsReadOnly(); } }
         private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
 
+        /// <summary>
+        /// Creates the window asynchronous.
+        /// </summary>
+        /// <param name="loadUrl">The load URL.</param>
+        /// <returns></returns>
         public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost")
         {
             return await CreateWindowAsync(new BrowserWindowOptions(), loadUrl);
         }
 
+        /// <summary>
+        /// Creates the window asynchronous.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="loadUrl">The load URL.</param>
+        /// <returns></returns>
         public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();

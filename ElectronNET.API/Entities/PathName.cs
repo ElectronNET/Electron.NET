@@ -1,5 +1,8 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum PathName
     {
         /// <summary>
@@ -64,7 +67,7 @@
         videos,
 
         /// <summary>
-        /// 
+        /// The logs
         /// </summary>
         logs,
 

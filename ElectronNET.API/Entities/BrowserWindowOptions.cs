@@ -4,6 +4,9 @@ using System.ComponentModel;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class BrowserWindowOptions
     {
         /// <summary>

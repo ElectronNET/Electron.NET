@@ -1,5 +1,8 @@
 ﻿namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ShortcutDetails
     {
         /// <summary>

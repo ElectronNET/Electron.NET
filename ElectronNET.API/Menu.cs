@@ -10,6 +10,9 @@ using System;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Create native application menus and context menus.
+    /// </summary>
     public sealed class Menu
     {
         private static Menu _menu;
@@ -29,9 +32,19 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Gets the menu items.
+        /// </summary>
+        /// <value>
+        /// The menu items.
+        /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _menuItems.AsReadOnly(); } }
         private List<MenuItem> _menuItems = new List<MenuItem>();
 
+        /// <summary>
+        /// Sets the application menu.
+        /// </summary>
+        /// <param name="menuItems">The menu items.</param>
         public void SetApplicationMenu(MenuItem[] menuItems)
         {
             _menuItems.Clear();
@@ -47,9 +60,20 @@ namespace ElectronNET.API
             });
         }
 
+        /// <summary>
+        /// Gets the context menu items.
+        /// </summary>
+        /// <value>
+        /// The context menu items.
+        /// </value>
         public IReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>> ContextMenuItems { get; internal set; }
         private Dictionary<int, List<MenuItem>> _contextMenuItems = new Dictionary<int, List<MenuItem>>();
 
+        /// <summary>
+        /// Sets the context menu.
+        /// </summary>
+        /// <param name="browserWindow">The browser window.</param>
+        /// <param name="menuItems">The menu items.</param>
         public void SetContextMenu(BrowserWindow browserWindow, MenuItem[] menuItems)
         {
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
@@ -73,6 +97,10 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Contexts the menu popup.
+        /// </summary>
+        /// <param name="browserWindow">The browser window.</param>
         public void ContextMenuPopup(BrowserWindow browserWindow)
         {
             BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id);

@@ -4,6 +4,9 @@ using Newtonsoft.Json.Converters;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class JumpListCategory
     {
         /// <summary>

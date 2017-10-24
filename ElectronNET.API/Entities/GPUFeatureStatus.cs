@@ -2,6 +2,9 @@
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class GPUFeatureStatus
     {
         /// <summary>
