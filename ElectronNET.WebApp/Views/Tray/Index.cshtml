@@ -1,0 +1,100 @@
+﻿<template class="task-template">
+    <section id="tray-section" class="section js-section u-category-native-ui">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-native-ui"></use></svg>
+                    Tray
+                </h1>
+                <h3>The <code>Electron.Tray</code> allows you to create an icon in the operating system's notification area.</h3>
+                <p>This icon can also have a context menu attached.</p>
+
+                <p>You find the sample source code in <code>Controllers\TrayController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="tray-demo-toggle" class="js-container-target demo-toggle-button">
+                    Tray
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux | Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="put-in-tray">View Demo</button>
+                        <span class="demo-response" id="tray-countdown"></span>
+                    </div>
+                    <p>The demo button sends a message to the main process using the <code>ipcRenderer</code>. In the main process the app is told to place an icon, with a context menu, in the tray.</p>
+
+                    <p>In this example the tray icon can be removed by clicking 'Remove' in the context menu or selecting the demo button again.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("put-in-tray", (args) => {
+
+    if (Electron.Tray.Items.Count == 0)
+    {
+        var menu = new MenuItem
+        {
+            Label = "Remove",
+            Click = () => Electron.Tray.Destroy()
+        };
+
+        Electron.Tray.Show("/Assets/electron_32x32.png", menu);
+        Electron.Tray.SetToolTip("Electron Demo in the tray.");
+    }
+    else
+    {
+        Electron.Tray.Destroy();
+    }
+
+});</code></pre>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">const { ipcRenderer } = require("electron");
+
+let trayOn = false;
+document.getElementById("put-in-tray").addEventListener("click", () => {
+    ipcRenderer.send("put-in-tray");
+    
+    let message = '';
+    
+    if(trayOn) {
+        trayOn = false;
+    } else {
+        trayOn = true;
+        message = 'Click demo again to remove.'
+    }
+
+    document.getElementById('tray-countdown').innerHTML = message;</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Tray support in Linux.</strong>
+                        <p>On Linux distributions that only have app indicator support, users will need to install <code>libappindicator1</code> to make the tray icon work. See the <a href="http://electron.atom.io/docs/api/tray">full API documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> for more details about using Tray on Linux.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+
+                let trayOn = false;
+                document.getElementById("put-in-tray").addEventListener("click", () => {
+                    ipcRenderer.send("put-in-tray");
+                    
+                    let message = '';
+                    
+                    if(trayOn) {
+                        trayOn = false;
+                    } else {
+                        trayOn = true;
+                        message = 'Click demo again to remove.'
+                    }
+
+                    document.getElementById('tray-countdown').innerHTML = message;
+                });
+            }());
+        </script>
+
+    </section>
+</template>

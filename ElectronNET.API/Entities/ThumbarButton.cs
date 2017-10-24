@@ -4,10 +4,25 @@ using System;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ThumbarButton
     {
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public string Id { get; internal set; }
 
+        /// <summary>
+        /// Gets or sets the click.
+        /// </summary>
+        /// <value>
+        /// The click.
+        /// </value>
         [JsonIgnore]
         public Action Click { get; set; }
 
@@ -34,6 +49,10 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public string Tooltip { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ThumbarButton"/> class.
+        /// </summary>
+        /// <param name="icon">The icon.</param>
         public ThumbarButton(string icon)
         {
             Icon = icon;

@@ -1,0 +1,201 @@
+﻿<template class="task-template">
+    <section id="windows-section" class="section js-section u-category-windows">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-windows"></use></svg>
+                    Create and Manage Windows
+                </h1>
+                <h3>The <code>Electron.WindowManager</code> in Electron.NET allows you to create a new browser window or manage an existing one.</h3>
+
+                <p>Each browser window is a separate process, known as the renderer process. This process, like the main process that controls the life cycle of the app, has full access to the .NET Core and Node.js APIs.
+
+                <p>You find the sample source code in <code>Controllers\WindowsController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">
+                    Create a new window
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="new-window">View Demo</button>
+                    </div>
+                    <p>The <code>Electron.WindowManager</code> gives you the ability to create new windows in your app. This main process can be used from the renderer process with the <code>Electron.IpcMain</code>, as is shown in this demo.</p>
+
+                    <p>There are a lot of options when creating a new window. A few are in this demo, but visit the <a href="http://electron.atom.io/docs/api/browser-window">documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> for the full list.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">await Electron.WindowManager.CreateWindowAsync();</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Use an invisible browser window to run background tasks.</strong>
+                        <p>You can set a new browser window to not be shown (be invisible) in order to use that additional renderer process as a kind of new thread in which to run C# in the background of your app. You do this by setting the <code>show</code> property to <code>false</code> when defining the new window.</p>
+                        <pre>
+<code class="csharp">
+public async void ElectronBootstrap()
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+    {
+        Show = false
+    });
+
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+}
+</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">
+                    Manage window state
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="manage-window">View Demo</button>
+                        <span class="demo-response" id="manage-window-reply"></span>
+                    </div>
+                    <p>In this demo we create a new window and listen for <code>OnMove</code> and <code>OnResize</code> events on it. Click the demo button, change the new window and see the dimensions and position update here, above.</p>
+                    <p>There are a lot of methods for controlling the state of the window such as the size, location, and focus status as well as events to listen to for window changes. Visit the <a href="http://electron.atom.io/docs/api/browser-window">documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> for the full list.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">public IActionResult Index()
+{
+    Electron.IpcMain.On("manage-window", async (args) => {
+
+        var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+        browserWindow.OnMove += UpdateReply;
+        browserWindow.OnResize += UpdateReply;
+    });
+
+    return View();
+}
+
+private async void UpdateReply()
+{
+    var browserWindow = Electron.WindowManager.BrowserWindows.Last();
+    var size = await browserWindow.GetSizeAsync();
+    var position = await browserWindow.GetPositionAsync();
+    string message = $"Size: {size[0]},{size[1]} Position: {position[0]},{position[1]}";
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "manage-window-reply", message);
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="using-window-events-demo-toggle" class="js-container-target demo-toggle-button">
+                    Window events: blur and focus
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="listen-to-window">View Demo</button>
+                        <button class="demo-button disappear" id="focus-on-modal-window">Focus on Demo</button>
+                    </div>
+                    <p>In this demo, we create a new window and listen for <code>OnBlur</code> event on it. Click the demo button to create a new modal window, and switch focus back to the parent window by clicking on it. You can click the <i>Focus on Demo</i> button to switch focus to the modal window again.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">var mainBrowserWindow = Electron.WindowManager.BrowserWindows.First();
+
+var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+browserWindow.OnFocus += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-focus");
+browserWindow.OnBlur += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-blur");
+
+Electron.IpcMain.On("listen-to-window-set-focus", (x) => browserWindow.Focus());</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button class="js-container-target demo-toggle-button">
+                    Create a frameless window
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="frameless-window">View Demo</button>
+                    </div>
+                    <p>
+                        A frameless window is a window that has no <a href="https://developer.mozilla.org/en-US/docs/Glossary/Chrome">"chrome"</a>,
+                        such as toolbars, title bars, status bars, borders, etc. You can make a browser window frameless by setting
+                        <code>Frame</code> to <code>false</code> when creating the window.
+                    </p>
+
+                    <h5>Main Process</h5>
+                    <pre><code class="csharp">var options = new BrowserWindowOptions
+{
+    Frame = false
+};
+await Electron.WindowManager.CreateWindowAsync(options);</code></pre>
+
+                    <p>Windows can have a transparent background, too. By setting the <code>Transparent</code> option to <code>true</code>, you can also make your frameless window transparent:</p>
+                    <pre>
+<code class="csharp">var options = new BrowserWindowOptions
+{
+    Frame = false,
+    Transparent = true
+};
+await Electron.WindowManager.CreateWindowAsync(options);</code></pre>
+
+                    <p>
+                        For more details, see the <a href="http://electron.atom.io/docs/api/frameless-window/">Frameless Window</a> documentation.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("new-window").addEventListener("click", () => {
+                    ipcRenderer.send("new-window");
+                });
+
+                document.getElementById("manage-window").addEventListener("click", () => {
+                    ipcRenderer.send("manage-window");
+                });
+
+                ipcRenderer.on("manage-window-reply", (sender, data) => {
+                    document.getElementById("manage-window-reply").innerText = data;
+                });
+                
+                document.getElementById("listen-to-window").addEventListener("click", () => {
+                    ipcRenderer.send("listen-to-window");
+                });
+
+                document.getElementById('focus-on-modal-window').addEventListener("click", () => {
+                    ipcRenderer.send("listen-to-window-set-focus");
+                });
+
+                ipcRenderer.on("listen-to-window-focus", (sender, data) => {
+                    const focusModalBtn = document.getElementById('focus-on-modal-window');
+                    focusModalBtn.classList.add('disappear');
+                    focusModalBtn.classList.remove('smooth-appear');
+                });
+
+                ipcRenderer.on("listen-to-window-blur", (sender, data) => {
+                    const focusModalBtn = document.getElementById('focus-on-modal-window');
+                    focusModalBtn.classList.add('smooth-appear');
+                    focusModalBtn.classList.remove('disappear');
+                });
+
+                document.getElementById('frameless-window').addEventListener("click", () => {
+                    ipcRenderer.send("frameless-window");
+                });
+            }());
+        </script>
+
+    </section>
+</template>

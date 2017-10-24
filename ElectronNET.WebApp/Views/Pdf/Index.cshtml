@@ -1,0 +1,79 @@
+﻿<template class="task-template">
+    <section id="pdf-section" class="section js-section u-category-media">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-media"></use></svg>
+                    Print to PDF
+                </h1>
+                <h3>The <code>BrowserWindow</code> class in Electron.NET has a property, <code>WebContents</code>, which allows your app to print as well as print to PDF.</h3>
+
+                <p>You find the sample source code in <code>Controllers\PdfController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="print-pdf-demo-toggle" class="js-container-target demo-toggle-button">
+                    Print to PDF
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="print-pdf">View Demo</button>
+                        <span class="demo-response is-selectable" id="pdf-path"></span>
+                    </div>
+                    <p>To demonstrate the print to PDF functionality, the demo button above will save this page as a PDF and, if you have a PDF viewer, open the file.</p>
+                    <p>In a real-world application you're more likely to add this to application menu, but for the purposes of the demo we've set it to the demo button.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">const { ipcRenderer } = require("electron");
+
+document.getElementById("print-pdf").addEventListener("click", () => {
+    ipcRenderer.send("print-pdf");
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("print-pdf", async (args) => {
+    BrowserWindow mainWindow = Electron.WindowManager.BrowserWindows.First();
+
+    var saveOptions = new SaveDialogOptions
+    {
+        Title = "Save an PDF-File",
+        DefaultPath = await Electron.App.GetPathAsync(PathName.documents),
+        Filters = new FileFilter[] 
+        {
+            new FileFilter { Name = "PDF", Extensions = new string[] { "pdf" } }
+        }
+    };
+    var path = await Electron.Dialog.ShowSaveDialogAsync(mainWindow, saveOptions);
+
+    if (await mainWindow.WebContents.PrintToPDFAsync(path))
+    {
+        await Electron.Shell.OpenExternalAsync("file://" + path);
+    }
+    else
+    {
+        Electron.Dialog.ShowErrorBox("Error", "Failed to create pdf file.");
+    }
+});</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Use a print style sheet.</strong>
+                        <p>You can create a stylesheet targeting printing to optimize the look of what your users print. Below is the stylesheet used in this app, located in <code>assets/css/print.css</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+
+                document.getElementById("print-pdf").addEventListener("click", () => {
+                    ipcRenderer.send("print-pdf");
+                });
+            }());
+        </script>
+
+    </section>
+</template>

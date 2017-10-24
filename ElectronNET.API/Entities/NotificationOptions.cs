@@ -3,6 +3,9 @@ using System;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class NotificationOptions
     {
         /// <summary>
@@ -61,6 +64,12 @@ namespace ElectronNET.API.Entities
         [JsonIgnore]
         public Action OnShow { get; set; }
 
+        /// <summary>
+        /// Gets or sets the show identifier.
+        /// </summary>
+        /// <value>
+        /// The show identifier.
+        /// </value>
         [JsonProperty]
         internal string ShowID { get; set; }
 
@@ -70,6 +79,12 @@ namespace ElectronNET.API.Entities
         [JsonIgnore]
         public Action OnClick { get; set; }
 
+        /// <summary>
+        /// Gets or sets the click identifier.
+        /// </summary>
+        /// <value>
+        /// The click identifier.
+        /// </value>
         [JsonProperty]
         internal string ClickID { get; set; }
 
@@ -81,6 +96,12 @@ namespace ElectronNET.API.Entities
         [JsonIgnore]
         public Action OnClose { get; set; }
 
+        /// <summary>
+        /// Gets or sets the close identifier.
+        /// </summary>
+        /// <value>
+        /// The close identifier.
+        /// </value>
         [JsonProperty]
         internal string CloseID { get; set; }
 
@@ -92,6 +113,12 @@ namespace ElectronNET.API.Entities
         [JsonIgnore]
         public Action<string> OnReply { get; set; }
 
+        /// <summary>
+        /// Gets or sets the reply identifier.
+        /// </summary>
+        /// <value>
+        /// The reply identifier.
+        /// </value>
         [JsonProperty]
         internal string ReplyID { get; set; }
 
@@ -101,9 +128,20 @@ namespace ElectronNET.API.Entities
         [JsonIgnore]
         public Action<string> OnAction { get; set; }
 
+        /// <summary>
+        /// Gets or sets the action identifier.
+        /// </summary>
+        /// <value>
+        /// The action identifier.
+        /// </value>
         [JsonProperty]
         internal string ActionID { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationOptions"/> class.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="body">The body.</param>
         public NotificationOptions(string title, string body)
         {
             Title = title;

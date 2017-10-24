@@ -1,0 +1,78 @@
+﻿<template class="task-template">
+  <section id="notifications-section" class="section js-section u-category-native-ui">
+    <header class="notifications">
+      <div class="section-wrapper">
+        <h1>
+          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-notification"></use></svg>
+          Desktop notifications
+        </h1>
+        <h3>The <code>Electron.Notification</code> in Electron.NET allows you to add basic desktop notifications.</h3>
+
+        <p>Electron conveniently allows developers to send notifications with the <a href="https://notifications.spec.whatwg.org/">HTML5 Notification API</a>, using the currently running operating system’s native notification APIs to display it.</p>
+
+        <p><b>Note:</b> Since this is an HTML5 API it is only available in the renderer process.</p>
+        
+        <p>You find the sample source code in <code>Controllers\NotificationsController.cs</code>.</p>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="basic-notification-demo-toggle" class="js-container-target demo-toggle-button">Basic notification
+          <div class="demo-meta u-avoid-clicks">Supports: Win 7+, macOS, Linux (that supports libnotify)<span class="demo-meta-divider">|</span> Process: Renderer</div>
+        </button>
+        <div class="demo-box">
+          <div class="demo-controls">
+            <button class="demo-button" id="basic-noti">View demo</button>
+          </div>
+          <p>This demo demonstrates a basic notification. Text only.</p>
+          <h5>Main Process (C#)</h5>
+          <pre><code class="csharp">var options = new NotificationOptions("Basic Notification", "Short message part")
+{
+    OnClick = async () => await Electron.Dialog.ShowMessageBoxAsync("Notification clicked")
+};
+
+Electron.Notification.Show(options);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="advanced-notification-demo-toggle" class="js-container-target demo-toggle-button">Notification with image
+          <div class="demo-meta u-avoid-clicks">Supports: Win 7+, macOS, Linux (that supports libnotify) <span class="demo-meta-divider">|</span> Process: Renderer</div>
+        </button>
+        <div class="demo-box">
+          <div class="demo-controls">
+            <button class="demo-button" id="advanced-noti">View demo</button>
+          </div>
+          <p>This demo demonstrates a basic notification. Both text and a image</p>
+          <h5>Main Process (C#)</h5>
+          <pre><code class="csharp">var options = new NotificationOptions("Notification with image", "Short message plus a custom image")
+{
+    OnClick = async () => await Electron.Dialog.ShowMessageBoxAsync("Notification clicked"),
+    Icon = "/assets/img/programming.png"
+};
+
+Electron.Notification.Show(options);</code></pre>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    (function(){
+        const { ipcRenderer } = require("electron");
+        
+        document.getElementById("basic-noti").addEventListener("click", () => {
+            ipcRenderer.send("basic-noti");
+        });
+        
+        document.getElementById("advanced-noti").addEventListener("click", () => {
+            ipcRenderer.send("advanced-noti");
+        });
+
+      }());
+    </script>
+
+  </section>
+</template>

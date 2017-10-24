@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Create OS desktop notifications
+    /// </summary>
     public sealed class Notification
     {
         private static Notification _notification;

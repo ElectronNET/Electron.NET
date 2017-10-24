@@ -3,6 +3,9 @@ using Newtonsoft.Json.Converters;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ProgressBarOptions
     {
         /// <summary>

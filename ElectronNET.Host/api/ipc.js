@@ -7,6 +7,16 @@ module.exports = function (socket) {
             socket.emit(channel, [event.preventDefault(), args]);
         });
     });
+    socket.on('registerSyncIpcMainChannel', function (channel) {
+        electron_1.ipcMain.on(channel, function (event, args) {
+            var x = socket;
+            x.removeAllListeners(channel + 'Sync');
+            socket.on(channel + 'Sync', function (result) {
+                event.returnValue = result;
+            });
+            socket.emit(channel, [event.preventDefault(), args]);
+        });
+    });
     socket.on('registerOnceIpcMainChannel', function (channel) {
         electron_1.ipcMain.once(channel, function (event, args) {
             socket.emit(channel, [event.preventDefault(), args]);
@@ -22,8 +32,9 @@ module.exports = function (socket) {
         }
         var window = electron_1.BrowserWindow.fromId(browserWindow.id);
         if (window) {
-            window.webContents.send(channel, data);
+            (_a = window.webContents).send.apply(_a, [channel].concat(data));
         }
+        var _a;
     });
 };
 //# sourceMappingURL=ipc.js.map

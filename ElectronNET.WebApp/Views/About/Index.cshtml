@@ -1,0 +1,42 @@
+﻿<template class="task-template">
+    <div id="about-modal" class="about modal">
+        <div class="about-wrapper">
+            <header class="about-header">
+                <img class="about-logo" src="assets/img/about.png" srcset="assets/img/about.png 1x, assets/img/about@2x.png 2x" alt="Electron.NET API Demos">
+            </header>
+            <main class="about-sections">
+                <section class="about-section play-along">
+                    <h2>Play Along</h2>
+                    <p>Use the demo snippets in an Electron app of your own. The <a href="https://github.com/electron/electron-quick-start">Electron Quick Start<span class="u-visible-to-screen-reader">(opens in new window)</span></a> app is a bare-bones setup that pairs with these demos. Follow the instructions here to get it going.
+                    To activate Electron.NET include the <a href="https://www.nuget.org/packages/ElectronNET.API/" target="_blank">ElectronNET.API NuGet package</a> in your ASP.NET Core app.
+                    <p>
+                        <code class="language-bash">PM> Install-Package ElectronNET.API</code>
+                    </p>
+
+                    Then include the UseElectron WebHostBuilder-Extension into the Program.cs-file of your ASP.NET Core project.
+
+                    <pre>
+                        <code class="csharp">public static IWebHost BuildWebHost(string[] args)
+{
+    return WebHost.CreateDefaultBuilder(args)
+        .UseElectron(args)
+        .UseStartup<Startup>()
+        .Build();
+}</code>
+                    </pre>
+                </section>
+                <section class="about-section about-code">
+                    <h2>About the Code</h2>
+                    <p>The source code of this app has been organized with ease of navigation in mind.
+                    You will find for each API Category the source code into the Controllers. 
+                    This Demo-App based on the <a href="https://github.com/electron/electron-api-demos" target="_blank">Electron API Demos</a>.</p> 
+                </section>
+                <footer class="about-section footer">
+                    <div class="rainbow-button-wrapper">
+                        <button id="get-started" class="about-button modal-hide">Get Started</button>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+</template>

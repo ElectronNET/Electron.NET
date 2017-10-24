@@ -1,6 +1,9 @@
 ﻿namespace ElectronNET.API.Entities
 {
-    // TODO: Fertig coden
+    // TODO: Need some of real code :)
+    /// <summary>
+    /// 
+    /// </summary>
     public class NativeImage
     {
         //        public static NativeImage CreateEmpty()

@@ -1,0 +1,115 @@
+﻿<template class="task-template">
+    <section id="clipboard-section" class="section js-section u-category-system">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-system"></use></svg>
+                    Clipboard
+                </h1>
+                <h3>The <code>Electron.Clipboard</code> provides methods to perform copy and paste operations.</h3>
+                <p>This module also has methods for copying text as markup (HTML) to the clipboard.</p>
+                
+                <p>You find the sample source code in <code>Controllers\ClipboardController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="copy-to-demo-toggle" class="js-container-target demo-toggle-button">
+                    Copy
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="copy-to">Copy</button>
+                        <input class="demo-input" id="copy-to-input" aria-label="Click copy" placeholder="Click copy."></input>
+                    </div>
+                    <p>In this example we copy a phrase to the clipboard. After clicking 'Copy' use the text area to paste (CMD + V or CTRL + V) the phrase from the clipboard.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("copy-to", (text) => 
+{
+    Electron.Clipboard.WriteText(text.ToString());
+});</code></pre>
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Electron.js Support in Electron.NET.</strong>
+                        <p>The <code>clipboard</code> module is built into Electron.js (therefore you can use this in the renderer processes).</p>
+                        <pre><code class="language-js">const clipboard = require('electron').clipboard;
+
+const copyBtn = document.getElementById('copy-to');
+const copyInput = document.getElementById('copy-to-input');
+
+copyBtn.addEventListener('click', () => {
+  if (copyInput.value !== '') copyInput.value = '';
+  copyInput.placeholder = 'Copied! Paste here to see.';
+  clipboard.writeText('Electron Demo!');
+})</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="paste-to-demo-toggle" class="js-container-target demo-toggle-button">
+                    Paste
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="paste-to">Paste</button>
+                        <span class="demo-response" id="paste-from"></span>
+                    </div>
+                    <p>In this example we copy a string to the clipboard and then paste the results into a message above.</p>
+
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("paste-to", async (text) =>
+{
+    Electron.Clipboard.WriteText(text.ToString());
+    string pasteText = await Electron.Clipboard.ReadTextAsync();
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "paste-from", pasteText);
+});</code></pre>
+
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Electron.js Support in Electron.NET.</strong>
+                        <p>The <code>clipboard</code> module is built into Electron.js (therefore you can use this in the renderer processes).</p>
+                        <pre><code class="language-js">const clipboard = require('electron').clipboard;
+
+const pasteBtn = document.getElementById('paste-to');
+
+pasteBtn.addEventListener('click', () => {
+  clipboard.writeText('What a demo!');
+  const message = `Clipboard contents: ${clipboard.readText()}`;
+  document.getElementById('paste-from').innerHTML = message;
+})</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("copy-to").addEventListener("click", () => {
+                    document.getElementById('copy-to-input').placeholder = 'Copied! Paste here to see.';
+                    ipcRenderer.send("copy-to", "Electron.NET Demo!");
+                });
+                
+                document.getElementById("paste-to").addEventListener("click", () => {
+                    ipcRenderer.send("paste-to", "What a demo!");
+                });
+
+                ipcRenderer.on("paste-from", (sender, text) => {
+                    const message = `Clipboard contents: ${text}`;
+                    document.getElementById("paste-from").innerText = message;
+                });
+
+            }());
+        </script>
+
+    </section>
+</template>

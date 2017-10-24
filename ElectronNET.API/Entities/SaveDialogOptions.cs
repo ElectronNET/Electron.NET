@@ -2,8 +2,17 @@
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SaveDialogOptions
     {
+        /// <summary>
+        /// Gets or sets the title.
+        /// </summary>
+        /// <value>
+        /// The title.
+        /// </value>
         public string Title { get; set; }
 
         /// <summary>

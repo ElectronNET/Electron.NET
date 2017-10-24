@@ -3,8 +3,17 @@ using System;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class WebHostBuilderExtensions
     {
+        /// <summary>
+        /// Use a Electron support for this .NET Core Project.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args)
         {
             foreach (string argument in args)
@@ -19,20 +28,13 @@ namespace ElectronNET.API
                 }
             }
 
-            if(IsElectronActive())
+            if(HybridSupport.IsElectronActive)
             {
                 builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                     .UseUrls("http://0.0.0.0:" + BridgeSettings.WebPort);
-
-                BridgeConnector.StartConnection();
             }
 
             return builder;
-        }
-
-        private static bool IsElectronActive()
-        {
-            return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
         }
     }
 }

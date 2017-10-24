@@ -1,5 +1,8 @@
 ﻿namespace ElectronNET.API
 {
+    /// <summary>
+    /// The Electron.NET API
+    /// </summary>
     public static class Electron
     {
         /// <summary>
@@ -36,5 +39,25 @@
         /// Add icons and context menus to the system’s notification area.
         /// </summary>
         public static Tray Tray { get { return Tray.Instance; } }
+
+        /// <summary>
+        /// Detect keyboard events when the application does not have keyboard focus.
+        /// </summary>
+        public static GlobalShortcut GlobalShortcut { get { return GlobalShortcut.Instance; } }
+
+        /// <summary>
+        /// Manage files and URLs using their default applications.
+        /// </summary>
+        public static Shell Shell { get { return Shell.Instance; } }
+
+        /// <summary>
+        /// Retrieve information about screen size, displays, cursor position, etc.
+        /// </summary>
+        public static Screen Screen { get { return Screen.Instance; } }
+
+        /// <summary>
+        /// Perform copy and paste operations on the system clipboard.
+        /// </summary>
+        public static Clipboard Clipboard { get { return Clipboard.Instance; } }
     }
 }

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Add icons and context menus to the system's notification area.
+    /// </summary>
     public sealed class Tray
     {
         /// <summary>
@@ -196,9 +199,30 @@ namespace ElectronNET.API
             }
         }
 
-        public IReadOnlyCollection<MenuItem> Items { get { return _items.AsReadOnly(); } }
+        /// <summary>
+        /// Gets the menu items.
+        /// </summary>
+        /// <value>
+        /// The menu items.
+        /// </value>
+        public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
         private List<MenuItem> _items = new List<MenuItem>();
 
+        /// <summary>
+        /// Shows the Traybar.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="menuItem">The menu item.</param>
+        public void Show(string image, MenuItem menuItem)
+        {
+            Show(image, new MenuItem[] { menuItem });
+        }
+
+        /// <summary>
+        /// Shows the Traybar.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <param name="menuItems">The menu items.</param>
         public void Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
@@ -206,7 +230,8 @@ namespace ElectronNET.API
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("trayMenuItemClicked");
-            BridgeConnector.Socket.On("trayMenuItemClicked", (id) => {
+            BridgeConnector.Socket.On("trayMenuItemClicked", (id) =>
+            {
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
             });
@@ -218,6 +243,7 @@ namespace ElectronNET.API
         public void Destroy()
         {
             BridgeConnector.Socket.Emit("tray-destroy");
+            _items.Clear();
         }
 
         /// <summary>

@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
-let io, browserWindows, ipc, apiProcess, loadURL, appApi, menu, dialog, notification, tray;
+let io, browserWindows, ipc, apiProcess, loadURL;
+let appApi, menu, dialog, notification, tray, webContents;
+let globalShortcut, shell, screen, clipboard;
 
 app.on('ready', () => {
     portfinder(8000, (error, port) => {
@@ -25,6 +27,11 @@ function startSocketApiBridge(port) {
         dialog = require('./api/dialog')(socket);
         notification = require('./api/notification')(socket);
         tray = require('./api/tray')(socket);
+        webContents = require('./api/webContents')(socket);
+        globalShortcut = require('./api/globalShortcut')(socket);
+        shell = require('./api/shell')(socket);
+        screen = require('./api/screen')(socket);
+        clipboard = require('./api/clipboard')(socket);
     });
 }
 

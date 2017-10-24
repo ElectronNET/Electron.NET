@@ -1,0 +1,113 @@
+﻿<template class="task-template">
+  <section id="crash-hang-section" class="section js-section u-category-windows">
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-windows"></use></svg>
+          Handling Window Crashes and Hangs
+        </h1>
+        <h3>The <code>Electron.WindowManager</code> will emit events when the renderer process crashes or hangs. You can listen for these events and give users the chance to reload, wait or close that window.</h3>
+        
+        <p>You find the sample source code in <code>Controllers\CrashHangController.cs</code>.</p>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button">Relaunch window after the process crashes
+          <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+        </button>
+        <div class="demo-box">
+          <div class="demo-controls">
+            <button class="demo-button" id="process-crash">View Demo</button>
+          </div>
+          <p>In this demo we create a new window and provide a link that will force a crash using <code>process.crash()</code>.</p>
+          <p>The window is listening for the crash event and when the event occurs it prompts the user with two options: reload or close.</p>
+
+          <h5>Main Process (C#)</h5>
+          <pre><code class="csharp">var browserWindow = await Electron.WindowManager.CreateWindowAsync(viewPath);
+browserWindow.WebContents.OnCrashed += async (killed) => {
+    var options = new MessageBoxOptions("This process has crashed.") {
+        Type = MessageBoxType.info,
+        Title = "Renderer Process Crashed",
+        Buttons = new string[] { "Reload", "Close" }
+    };
+    var result = await Electron.Dialog.ShowMessageBoxAsync(options);
+
+    if (result.Response == 0)
+    {
+        browserWindow.Reload();
+    } else
+    {
+        browserWindow.Close();
+    }
+};</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-hangs-demo-toggle" class="js-container-target demo-toggle-button">Relaunch window after the process hangs
+          <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+        </button>
+        <div class="demo-box">
+          <div class="demo-controls">
+            <button class="demo-button" id="process-hang">View Demo</button>
+          </div>
+          <p>In this demo we create a new window and provide a link that will force the process to hang using <code>process.hang()</code>.</p>
+          <p>The window is listening for the process to become officially unresponsive (this can take up to 30 seconds). When this event occurs it prompts the user with two options: reload or close.</p>
+
+          <h5>Main Process (C#)</h5>
+          <pre><code class="csharp">var browserWindow = await Electron.WindowManager.CreateWindowAsync();
+browserWindow.OnUnresponsive += async () => {
+    var options = new MessageBoxOptions("This process is hanging.")
+    {
+        Type = MessageBoxType.info,
+        Title = "Renderer Process Hanging",
+        Buttons = new string[] { "Reload", "Close" }
+    };
+    var result = await Electron.Dialog.ShowMessageBoxAsync(options);
+
+    if (result.Response == 0)
+    {
+        browserWindow.Reload();
+    }
+    else
+    {
+        browserWindow.Close();
+    }
+};</code></pre>
+
+          <div class="demo-protip">
+            <h2>ProTip</h2>
+            <strong>Wait for the process to become responsive again.</strong>
+            <p>A third option in the case of a process that is hanging is to wait and see if the problem resolves, allowing the process to become responsive again. To do this, use the <code>BrowserWindow</code> event 'OnResponsive' as shown below.</p>
+            <pre><code class="csharp">browserWindow.OnResponsive += () =>
+{
+    // Do something when the window is responsive again
+};</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script type="text/javascript">
+    (function(){
+      const { ipcRenderer } = require("electron");
+      
+      document.getElementById("process-crash").addEventListener("click", () => {
+        ipcRenderer.send("process-crash");
+        });
+
+      document.getElementById("process-hang").addEventListener("click", () => {
+        ipcRenderer.send("process-hang");
+        });     
+
+      }());
+    </script>
+
+  </section>
+</template>

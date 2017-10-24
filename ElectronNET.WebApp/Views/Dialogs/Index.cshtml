@@ -1,0 +1,222 @@
+﻿<template class="task-template">
+    <section id="dialogs-section" class="section js-section u-category-native-ui">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-native-ui"></use></svg>
+                    Use system dialogs
+                </h1>
+                <h3>The <code>Electron.Dialog</code> in Electron.NET allows you to use native system dialogs for opening files or directories, saving a file or displaying informational messages.</h3>
+
+                <p>This is a main process module because this process is more efficient with native utilities and it allows the call to happen without interupting the visible elements in your page's renderer process.</p>
+
+                <p>You find the sample source code in <code>Controllers\DialogsController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="open-file-demo-toggle" class="js-container-target demo-toggle-button">
+                    Open a File or Directory
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="select-directory">View Demo</button>
+                        <span class="demo-response" id="selected-file"></span>
+                    </div>
+                    <p>In this demo, the <code>ipcRenderer</code> is used to send a message from the renderer process instructing the main process to launch the open file (or directory) dialog. If a file is selected, the main process can send that information back to the renderer process.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="language-js">const { ipcRenderer } = require("electron");
+
+document.getElementById("select-directory").addEventListener("click", () => {
+    ipcRenderer.send("select-directory");
+});
+
+ipcRenderer.on("select-directory-reply", (sender, path) => {
+    document.getElementById("selected-file").innerText = `You selected: ${path}`;;
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("select-directory", async (args) => {
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    var options = new OpenDialogOptions {
+        Properties = new OpenDialogProperty[] {
+            OpenDialogProperty.openFile,
+            OpenDialogProperty.openDirectory
+        }
+    };
+
+    string[] files = await Electron.Dialog.ShowOpenDialogAsync(mainWindow, options);
+    Electron.IpcMain.Send(mainWindow, "select-directory-reply", files);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="error-dialog-demo-toggle" class="js-container-target demo-toggle-button">
+                    Error Dialog
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button id="error-dialog" class="demo-button">View Demo</button>
+                    </div>
+                    <p>In this demo, the <code>ipcRenderer</code> is used to send a message from the renderer process instructing the main process to launch the error dialog.</p>
+
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="language-js">const { ipcRenderer } = require("electron");
+
+document.getElementById("error-dialog").addEventListener("click", () => {
+    ipcRenderer.send("error-dialog");
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("error-dialog", (args) =>
+{
+    Electron.Dialog.ShowErrorBox("An Error Message", "Demonstrating an error message.");
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="information-dialog-demo-toggle" class="js-container-target demo-toggle-button">
+                    Information Dialog
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="information-dialog">View Demo</button>
+                        <span class="demo-response" id="info-selection"></span>
+                    </div>
+                    <p>In this demo, the <code>ipcRenderer</code> is used to send a message from the renderer process instructing the main process to launch the information dialog. Options may be provided for responses which can then be relayed back to the renderer process.</p>
+
+                    <p>Note: The <code>title</code> property is not displayed in macOS.</p>
+
+                    <p>An information dialog can contain an icon, your choice of buttons, title and message.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">document.getElementById("information-dialog").addEventListener("click", () => {
+    ipcRenderer.send("information-dialog");
+});
+
+ipcRenderer.on("information-dialog-reply", (sender, index) => {
+    let message = 'You selected ';
+
+    if(index == 0) {
+        message += 'yes.'
+    } else {
+        message += 'no.'
+    }
+
+    document.getElementById("info-selection").innerText = message;
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("information-dialog", async (args) =>
+{
+    var options = new MessageBoxOptions("This is an information dialog. Isn't it nice?")
+    {
+        Type = MessageBoxType.info,
+        Title = "Information",
+        Buttons = new string[] { "Yes", "No" }
+    };
+
+    var result = await Electron.Dialog.ShowMessageBoxAsync(options);
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "information-dialog-reply", result.Response);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="save-dialog-demo-toggle" class="js-container-target demo-toggle-button">
+                    Save Dialog
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="save-dialog">View Demo</button>
+                        <span class="demo-response" id="file-saved"></span>
+                    </div>
+                    <p>In this demo, the <code>ipcRenderer</code> is used to send a message from the renderer process instructing the main process to launch the save dialog. It returns the path selected by the user which can be relayed back to the renderer process.</p>
+                    <h5>Renderer Process (JavaScript)</h5>
+                    <pre><code class="javascript">const { ipcRenderer } = require("electron");
+
+document.getElementById("save-dialog").addEventListener("click", () => {
+    ipcRenderer.send("save-dialog");
+});
+
+ipcRenderer.on("save-dialog-reply", (sender, path) => {
+    if (!path) path = 'No path';
+    document.getElementById('file-saved').innerHTML = `Path selected: ${path}`;
+});</code></pre>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("save-dialog", async (args) =>
+{
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    var options = new SaveDialogOptions
+    {
+        Title = "Save an Image",
+        Filters = new FileFilter[]
+        {
+            new FileFilter { Name = "Images", Extensions = new string[] {"jpg", "png", "gif" } }
+        }
+    };
+
+    var result = await Electron.Dialog.ShowSaveDialogAsync(mainWindow, options);
+    Electron.IpcMain.Send(mainWindow, "save-dialog-reply", result);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("select-directory").addEventListener("click", () => {
+                    ipcRenderer.send("select-directory");
+                });
+                
+                ipcRenderer.on("select-directory-reply", (sender, path) => {
+                    document.getElementById("selected-file").innerText = `You selected: ${path}`;
+                });
+                
+                document.getElementById("error-dialog").addEventListener("click", () => {
+                    ipcRenderer.send("error-dialog");
+                });
+
+                document.getElementById("information-dialog").addEventListener("click", () => {
+                    ipcRenderer.send("information-dialog");
+                });
+
+                ipcRenderer.on("information-dialog-reply", (sender, index) => {
+                    let message = 'You selected ';
+
+                    if(index == 0) {
+                        message += 'yes.'
+                    } else {
+                        message += 'no.'
+                    }
+
+                    document.getElementById("info-selection").innerText = message;
+                });
+
+                document.getElementById("save-dialog").addEventListener("click", () => {
+                    ipcRenderer.send("save-dialog");
+                });
+
+                ipcRenderer.on("save-dialog-reply", (sender, path) => {
+                    if (!path) path = 'No path';
+                    document.getElementById('file-saved').innerHTML = `Path selected: ${path}`;
+                });
+               
+            }());
+        </script>
+
+    </section>
+</template>

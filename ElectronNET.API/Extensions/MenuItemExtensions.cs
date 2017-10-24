@@ -17,7 +17,7 @@ namespace ElectronNET.API.Extensions
                     AddMenuItemsId(menuItem.Submenu);
                 }
 
-                if (string.IsNullOrEmpty(menuItem.Id))
+                if (string.IsNullOrEmpty(menuItem.Id) && menuItem.Click != null)
                 {
                     menuItem.Id = Guid.NewGuid().ToString();
                 }

@@ -1,0 +1,71 @@
+﻿<template class="task-template">
+    <section id="ex-links-file-manager-section" class="section js-section u-category-native-ui">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-native-ui"></use></svg>
+                    Open external links and the file manager
+                </h1>
+                <h3>The <code>Electron.Shell</code> in Electron.NET allows you to access certain native elements like the file manager and default web browser.</h3>
+
+                <p>This module works in both the main and renderer process.</p>
+                
+                <p>You find the sample source code in <code>Controllers\ShellController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="open-file-manager-demo-toggle" class="js-container-target demo-toggle-button">
+                    Open Path in File Manager
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="open-file-manager">View Demo</button>
+                    </div>
+                    <p>This demonstrates using the <code>Electron.Shell</code> to open the system file manager at a particular location.</p>
+                    <p>Clicking the demo button will open your file manager at the root.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">string path = await Electron.App.GetPathAsync(PathName.home);
+await Electron.Shell.ShowItemInFolderAsync(path);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="open-ex-links-demo-toggle" class="js-container-target demo-toggle-button">
+                    Open External Links
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="open-ex-links">View Demo</button>
+                    </div>
+                    <p>If you do not want your app to open website links <em>within</em> the app, you can use the <code>Electron.Shell</code> to open them externally. When clicked, the links will open outside of your app and in the user's default web browser.</p>
+                    <p>When the demo button is clicked, the electron website will open in your browser.<p>
+                        <h5>Main Process (C#)</h5>
+                        <pre><code class="csharp">await Electron.Shell.OpenExternalAsync("https://github.com/ElectronNET");</code></pre>
+            </div>
+        </div>
+        </div>
+        
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+                
+                document.getElementById("open-file-manager").addEventListener("click", () => {
+                    ipcRenderer.send("open-file-manager");
+                });
+
+                document.getElementById("open-ex-links").addEventListener("click", () => {
+                    ipcRenderer.send("open-ex-links");
+                });
+
+            }());
+        </script>
+
+
+    </section>
+</template>

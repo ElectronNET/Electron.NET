@@ -108,6 +108,11 @@ namespace ElectronNET.CLI.Commands
                 EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "menu.js", "api.");
                 EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "notification.js", "api.");
                 EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "tray.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "webContents.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "globalShortcut.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "shell.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);

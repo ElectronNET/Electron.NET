@@ -1,8 +1,11 @@
 [![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/GregorBiswanger/Electron.NET)
 
-Master: [![Build status](https://ci.appveyor.com/api/projects/status/u710d6hman5a4beb/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
-Build cross platform desktop apps with .NET Core and ASP.NET NET Core.
+AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
+
+Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
+
+Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core.
 
 # Usage:
 
@@ -117,33 +120,18 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 ### Note
 > An OS X App can only be built on a host OS X platform.
 
-## Dev Notes:
+# Contributing
+Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
+Please make sure all commits are properly documented.
 
-Currently there are two main projects and a "WebApp" that serves as a demo playground.
+# Authors
 
-* ElectronNET.API: Defines the Electron / .NET API bridge
-* ElectronNET.CLI: Responsible for the dotnet "electronize" tooling.
+* **Gregor Biswanger** - (Microsoft MVP, Intel Black Belt and Intel Software Innovator) is a freelance lecturer, consultant, trainer, author and speaker. He is a consultant for large and medium-sized companies, organizations and agencies for software architecture, web- and cross-platform development. You can find Gregor often on the road attending or speaking at international conferences. - [Cross-Platform-Blog](http://www.cross-platform-blog.com) - Twitter [@BFreakout](https://www.twitter.com/BFreakout)  
+* **Robert Muehsig** - Software Developer - from Dresden, Germany, now living & working in Switzerland. Microsoft MVP & Web Geek. - [codeinside Blog](https://blog.codeinside.eu) - Twitter [@robert0muehsig](https://twitter.com/robert0muehsig)  
+  
+See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
+  
+# License
+MIT-licensed
 
-Both projects create their own nuget package. The resulting nuget packages are saved under "/artifacts".
-
-__Currently__ the packages are just build with version 1.0.0 on your machine. NuGet might pick the wrong version from its own cache, so please read the dev notes if you want to develop!
-
-__ElectronNET.WebApp:__
-
-The WebApp now has referenced the API NuGet package and via the .csproj reference the CLI:
-
-    <ItemGroup>
-       <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
-    </ItemGroup>
-
-
-   
-# Dev Notes: Dev Workflow 
-
-(at least for the CLI extension)
-
-* Change something in the CLI project
-* rebuild the project (a nuget package should now appear in the /artifacts directory)
-* make sure there is no ElectronNET.CLI package in your %userprofile%\.nuget\packages cache with the same version 
-* execute dotnet restore in the WebApp 
-* execute dotnet electronize
+**Enjoy!**

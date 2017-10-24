@@ -4,6 +4,9 @@ using System;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MenuItem
     {
         /// <summary>
@@ -27,15 +30,39 @@ namespace ElectronNET.API.Entities
         public MenuType Type { get; set; }
 
 
+        /// <summary>
+        /// Gets or sets the label.
+        /// </summary>
+        /// <value>
+        /// The label.
+        /// </value>
         public string Label { get; set; }
 
 
+        /// <summary>
+        /// Gets or sets the sublabel.
+        /// </summary>
+        /// <value>
+        /// The sublabel.
+        /// </value>
         public string Sublabel { get; set; }
 
 
+        /// <summary>
+        /// Gets or sets the accelerator.
+        /// </summary>
+        /// <value>
+        /// The accelerator.
+        /// </value>
         public string Accelerator { get; set; }
 
 
+        /// <summary>
+        /// Gets or sets the icon.
+        /// </summary>
+        /// <value>
+        /// The icon.
+        /// </value>
         public string Icon { get; set; }
 
         /// <summary>

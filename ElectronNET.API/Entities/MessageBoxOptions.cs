@@ -3,6 +3,9 @@ using Newtonsoft.Json.Converters;
 
 namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MessageBoxOptions
     {
         /// <summary>
@@ -51,6 +54,12 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public bool CheckboxChecked { get; set; }
 
+        /// <summary>
+        /// Gets or sets the icon.
+        /// </summary>
+        /// <value>
+        /// The icon.
+        /// </value>
         public string Icon { get; set; }
 
         /// <summary>
@@ -80,6 +89,10 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public bool NormalizeAccessKeys { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageBoxOptions"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public MessageBoxOptions(string message)
         {
             Message = message;

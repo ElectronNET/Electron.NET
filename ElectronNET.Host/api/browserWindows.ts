@@ -3,6 +3,7 @@ const path = require('path');
 const windows: Electron.BrowserWindow[] = []
 
 module.exports = (socket: SocketIO.Server) => {
+
     socket.on('register-browserWindow-ready-to-show', (id) => {
         getWindowById(id).on('ready-to-show', () => {
             socket.emit('browserWindow-ready-to-show');
@@ -35,13 +36,13 @@ module.exports = (socket: SocketIO.Server) => {
 
     socket.on('register-browserWindow-unresponsive', (id) => {
         getWindowById(id).on('unresponsive', () => {
-            socket.emit('browserWindow-unresponsive');
+            socket.emit('browserWindow-unresponsive' + id);
         });
     });
 
     socket.on('register-browserWindow-responsive', (id) => {
         getWindowById(id).on('responsive', () => {
-            socket.emit('browserWindow-responsive');
+            socket.emit('browserWindow-responsive' + id);
         });
     });
 
