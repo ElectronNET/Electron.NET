@@ -16,8 +16,8 @@ dotnet restore
 dotnet build
 
 echo "Invoke electronize build in WebApp Demo"
-#echo "-- win"
-#dotnet electronize build win
+echo "-- win"
+dotnet electronize build win
 
 echo "-- linux"
 dotnet electronize build linux
