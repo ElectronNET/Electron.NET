@@ -34,11 +34,6 @@ namespace ElectronNET.CLI.Commands
                 }
 
 
-                string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop");
-
-                Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
-
-                string tempBinPath = Path.Combine(tempPath, "bin");
 
                 string netCorePublishRid = string.Empty;
                 string electronPackerPlatform = string.Empty;
@@ -60,22 +55,32 @@ namespace ElectronNET.CLI.Commands
                     default:
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         {
+                            desiredPlatform = "win";
                             netCorePublishRid = "win10-x64";
                             electronPackerPlatform = "win32";
                         }
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                         {
+                            desiredPlatform = "osx";
                             netCorePublishRid = "osx-x64";
                             electronPackerPlatform = "darwin";
                         }
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                         {
+                            desiredPlatform = "linux";
                             netCorePublishRid = "ubuntu-x64";
                             electronPackerPlatform = "linux";
                         }
 
                         break;
                 }
+
+
+                string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
+
+                Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
+
+                string tempBinPath = Path.Combine(tempPath, "bin");
 
                 Console.WriteLine($"Build ASP.NET Core App for {netCorePublishRid}...");
 
@@ -116,7 +121,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    // Works proper on Windows...
+                    // Works proper on Windows... 
                     ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
                 }
                 else
@@ -128,6 +133,7 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Build Electron Desktop Application...");
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // ToDo: Need a solution for --asar support
