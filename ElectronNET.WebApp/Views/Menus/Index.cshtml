@@ -167,10 +167,6 @@ window.addEventListener('contextmenu', (e) => {
     <script type="text/javascript">
     (function(){
         const { ipcRenderer } = require("electron");
-        
-        document.getElementById("process-crash").addEventListener("click", () => {
-            ipcRenderer.send("process-crash");
-        });
 
         const contextMenuBtn = document.getElementById('context-menu')
         contextMenuBtn.addEventListener('click', function () {

@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// 
-/// </summary>
-namespace ElectronNET.API
+﻿namespace ElectronNET.API
 {
     /// <summary>
     /// 

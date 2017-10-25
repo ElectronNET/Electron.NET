@@ -2,57 +2,57 @@ import { nativeImage as NativeImage } from 'electron';
 
 module.exports = (socket: SocketIO.Server, app: Electron.App) => {
     
-    socket.on('register-app-window-all-closed-event', () => {
+    socket.on('register-app-window-all-closed-event', (id) => {
         app.on('window-all-closed', () => {
-            socket.emit('app-window-all-closed');
+            socket.emit('app-window-all-closed' + id);
         });
     });
 
-    socket.on('register-app-before-quit-event', () => {
+    socket.on('register-app-before-quit-event', (id) => {
         app.on('before-quit', () => {
-            socket.emit('app-before-quit');
+            socket.emit('app-before-quit' + id);
         });
     });
 
-    socket.on('register-app-will-quit-event', () => {
+    socket.on('register-app-will-quit-event', (id) => {
         app.on('will-quit', () => {
-            socket.emit('app-will-quit');
+            socket.emit('app-will-quit' + id);
         });
     });
 
-    socket.on('register-app-quit-event', () => {
+    socket.on('register-app-quit-event', (id) => {
         app.on('quit', () => {
-            socket.emit('app-quit');
+            socket.emit('app-quit' + id);
         });
     });
 
-    socket.on('register-app-browser-window-blur-event', () => {
+    socket.on('register-app-browser-window-blur-event', (id) => {
         app.on('browser-window-blur', () => {
-            socket.emit('app-browser-window-blur');
+            socket.emit('app-browser-window-blur' + id);
         });
     });
 
-    socket.on('register-app-browser-window-focus-event', () => {
+    socket.on('register-app-browser-window-focus-event', (id) => {
         app.on('browser-window-focus', () => {
-            socket.emit('app-browser-window-focus');
+            socket.emit('app-browser-window-focus' + id);
         });
     });
 
-    socket.on('register-app-browser-window-created-event', () => {
+    socket.on('register-app-browser-window-created-event', (id) => {
         app.on('browser-window-created', () => {
-            socket.emit('app-browser-window-created');
+            socket.emit('app-browser-window-created' + id);
         });
     });
 
-    socket.on('register-app-web-contents-created-event', () => {
+    socket.on('register-app-web-contents-created-event', (id) => {
         app.on('web-contents-created', () => {
-            socket.emit('app-web-contents-created');
+            socket.emit('app-web-contents-created' + id);
         });
     });
 
-    socket.on('register-app-accessibility-support-changed-event', () => {
+    socket.on('register-app-accessibility-support-changed-event', (id) => {
         app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
-            socket.emit('app-accessibility-support-changed', accessibilitySupportEnabled);
+            socket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
         });
     });
 

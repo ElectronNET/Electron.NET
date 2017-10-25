@@ -1,49 +1,49 @@
 "use strict";
 exports.__esModule = true;
 module.exports = function (socket, app) {
-    socket.on('register-app-window-all-closed-event', function () {
+    socket.on('register-app-window-all-closed-event', function (id) {
         app.on('window-all-closed', function () {
-            socket.emit('app-window-all-closed');
+            socket.emit('app-window-all-closed' + id);
         });
     });
-    socket.on('register-app-before-quit-event', function () {
+    socket.on('register-app-before-quit-event', function (id) {
         app.on('before-quit', function () {
-            socket.emit('app-before-quit');
+            socket.emit('app-before-quit' + id);
         });
     });
-    socket.on('register-app-will-quit-event', function () {
+    socket.on('register-app-will-quit-event', function (id) {
         app.on('will-quit', function () {
-            socket.emit('app-will-quit');
+            socket.emit('app-will-quit' + id);
         });
     });
-    socket.on('register-app-quit-event', function () {
+    socket.on('register-app-quit-event', function (id) {
         app.on('quit', function () {
-            socket.emit('app-quit');
+            socket.emit('app-quit' + id);
         });
     });
-    socket.on('register-app-browser-window-blur-event', function () {
+    socket.on('register-app-browser-window-blur-event', function (id) {
         app.on('browser-window-blur', function () {
-            socket.emit('app-browser-window-blur');
+            socket.emit('app-browser-window-blur' + id);
         });
     });
-    socket.on('register-app-browser-window-focus-event', function () {
+    socket.on('register-app-browser-window-focus-event', function (id) {
         app.on('browser-window-focus', function () {
-            socket.emit('app-browser-window-focus');
+            socket.emit('app-browser-window-focus' + id);
         });
     });
-    socket.on('register-app-browser-window-created-event', function () {
+    socket.on('register-app-browser-window-created-event', function (id) {
         app.on('browser-window-created', function () {
-            socket.emit('app-browser-window-created');
+            socket.emit('app-browser-window-created' + id);
         });
     });
-    socket.on('register-app-web-contents-created-event', function () {
+    socket.on('register-app-web-contents-created-event', function (id) {
         app.on('web-contents-created', function () {
-            socket.emit('app-web-contents-created');
+            socket.emit('app-web-contents-created' + id);
         });
     });
-    socket.on('register-app-accessibility-support-changed-event', function () {
+    socket.on('register-app-accessibility-support-changed-event', function (id) {
         app.on('accessibility-support-changed', function (event, accessibilitySupportEnabled) {
-            socket.emit('app-accessibility-support-changed', accessibilitySupportEnabled);
+            socket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
         });
     });
     socket.on('appQuit', function () {

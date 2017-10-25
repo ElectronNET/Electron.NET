@@ -4,45 +4,45 @@ var electron_1 = require("electron");
 var path = require('path');
 var tray;
 module.exports = function (socket) {
-    socket.on('register-tray-click', function () {
+    socket.on('register-tray-click', function (id) {
         if (tray) {
             tray.on('click', function (event, bounds) {
-                socket.emit('tray-click-event', [event.__proto__, bounds]);
+                socket.emit('tray-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-right-click', function () {
+    socket.on('register-tray-right-click', function (id) {
         if (tray) {
             tray.on('right-click', function (event, bounds) {
-                socket.emit('tray-right-click-event', [event.__proto__, bounds]);
+                socket.emit('tray-right-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-double-click', function () {
+    socket.on('register-tray-double-click', function (id) {
         if (tray) {
             tray.on('double-click', function (event, bounds) {
-                socket.emit('tray-double-click-event', [event.__proto__, bounds]);
+                socket.emit('tray-double-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-balloon-show', function () {
+    socket.on('register-tray-balloon-show', function (id) {
         if (tray) {
             tray.on('balloon-show', function () {
-                socket.emit('tray-balloon-show-event');
+                socket.emit('tray-balloon-show-event' + id);
             });
         }
     });
-    socket.on('register-tray-balloon-click', function () {
+    socket.on('register-tray-balloon-click', function (id) {
         if (tray) {
             tray.on('balloon-click', function () {
-                socket.emit('tray-balloon-click-event');
+                socket.emit('tray-balloon-click-event' + id);
             });
         }
     });
-    socket.on('register-tray-balloon-closed', function () {
+    socket.on('register-tray-balloon-closed', function (id) {
         if (tray) {
             tray.on('balloon-closed', function () {
-                socket.emit('tray-balloon-closed-event');
+                socket.emit('tray-balloon-closed-event' + id);
             });
         }
     });

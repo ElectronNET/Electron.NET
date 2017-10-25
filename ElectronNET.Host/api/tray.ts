@@ -3,50 +3,50 @@ const path = require('path');
 let tray: Electron.Tray;
 
 module.exports = (socket: SocketIO.Server) => {
-    socket.on('register-tray-click', () => {
+    socket.on('register-tray-click', (id) => {
         if (tray) {
             tray.on('click', (event, bounds) => {
-                socket.emit('tray-click-event', [(<any>event).__proto__, bounds]);
+                socket.emit('tray-click-event' + id, [(<any>event).__proto__, bounds]);
             });
         }
     });
 
-    socket.on('register-tray-right-click', () => {
+    socket.on('register-tray-right-click', (id) => {
         if (tray) {
             tray.on('right-click', (event, bounds) => {
-                socket.emit('tray-right-click-event', [(<any>event).__proto__, bounds]);
+                socket.emit('tray-right-click-event' + id, [(<any>event).__proto__, bounds]);
             });
         }
     });
 
-    socket.on('register-tray-double-click', () => {
+    socket.on('register-tray-double-click', (id) => {
         if (tray) {
             tray.on('double-click', (event, bounds) => {
-                socket.emit('tray-double-click-event', [(<any>event).__proto__, bounds]);
+                socket.emit('tray-double-click-event' + id, [(<any>event).__proto__, bounds]);
             });
         }
     });
 
-    socket.on('register-tray-balloon-show', () => {
+    socket.on('register-tray-balloon-show', (id) => {
         if (tray) {
             tray.on('balloon-show', () => {
-                socket.emit('tray-balloon-show-event');
+                socket.emit('tray-balloon-show-event' + id);
             });
         }
     });
     
-    socket.on('register-tray-balloon-click', () => {
+    socket.on('register-tray-balloon-click', (id) => {
         if (tray) {
             tray.on('balloon-click', () => {
-                socket.emit('tray-balloon-click-event');
+                socket.emit('tray-balloon-click-event' + id);
             });
         }
     });
 
-    socket.on('register-tray-balloon-closed', () => {
+    socket.on('register-tray-balloon-closed', (id) => {
         if (tray) {
             tray.on('balloon-closed', () => {
-                socket.emit('tray-balloon-closed-event');
+                socket.emit('tray-balloon-closed-event' + id);
             });
         }
     });

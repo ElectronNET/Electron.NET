@@ -8,7 +8,11 @@
             "tsconfig": "tsconfig.json",
             "problemMatcher": [
                 "$tsc"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

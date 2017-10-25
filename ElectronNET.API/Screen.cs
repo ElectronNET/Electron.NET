@@ -33,6 +33,9 @@ namespace ElectronNET.API
             remove
             {
                 _onDisplayAdded -= value;
+
+                if (_onDisplayAdded == null)
+                    BridgeConnector.Socket.Off("screen-display-added-event" + GetHashCode());
             }
         }
 
@@ -59,6 +62,9 @@ namespace ElectronNET.API
             remove
             {
                 _onDisplayRemoved -= value;
+
+                if (_onDisplayRemoved == null)
+                    BridgeConnector.Socket.Off("screen-display-removed-event" + GetHashCode());
             }
         }
 
@@ -90,6 +96,9 @@ namespace ElectronNET.API
             remove
             {
                 _onDisplayMetricsChanged -= value;
+
+                if (_onDisplayMetricsChanged == null)
+                    BridgeConnector.Socket.Off("screen-display-metrics-changed-event" + GetHashCode());
             }
         }
 

@@ -23,7 +23,7 @@ namespace ElectronNET.API
             {
                 if (_click == null)
                 {
-                    BridgeConnector.Socket.On("tray-click-event", (result) =>
+                    BridgeConnector.Socket.On("tray-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -31,13 +31,16 @@ namespace ElectronNET.API
                         _click(trayClickEventArgs, bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-click");
+                    BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
                 }
                 _click += value;
             }
             remove
             {
                 _click -= value;
+
+                if (_click == null)
+                    BridgeConnector.Socket.Off("tray-click-event" + GetHashCode());
             }
         }
 
@@ -52,7 +55,7 @@ namespace ElectronNET.API
             {
                 if (_rightClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-right-click-event", (result) =>
+                    BridgeConnector.Socket.On("tray-right-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -60,13 +63,16 @@ namespace ElectronNET.API
                         _rightClick(trayClickEventArgs, bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-right-click");
+                    BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
                 }
                 _rightClick += value;
             }
             remove
             {
                 _rightClick -= value;
+
+                if (_rightClick == null)
+                    BridgeConnector.Socket.Off("tray-right-click-event" + GetHashCode());
             }
         }
 
@@ -81,7 +87,7 @@ namespace ElectronNET.API
             {
                 if (_doubleClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-double-click-event", (result) =>
+                    BridgeConnector.Socket.On("tray-double-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -89,13 +95,16 @@ namespace ElectronNET.API
                         _doubleClick(trayClickEventArgs, bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-double-click");
+                    BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
                 }
                 _doubleClick += value;
             }
             remove
             {
                 _doubleClick -= value;
+
+                if (_doubleClick == null)
+                    BridgeConnector.Socket.Off("tray-double-click-event" + GetHashCode());
             }
         }
 
@@ -110,18 +119,21 @@ namespace ElectronNET.API
             {
                 if (_balloonShow == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-show-event", () =>
+                    BridgeConnector.Socket.On("tray-balloon-show-event" + GetHashCode(), () =>
                     {
                         _balloonShow();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-show");
+                    BridgeConnector.Socket.Emit("register-tray-balloon-show", GetHashCode());
                 }
                 _balloonShow += value;
             }
             remove
             {
                 _balloonShow -= value;
+
+                if (_balloonShow == null)
+                    BridgeConnector.Socket.Off("tray-balloon-show-event" + GetHashCode());
             }
         }
 
@@ -136,18 +148,21 @@ namespace ElectronNET.API
             {
                 if (_balloonClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-click-event", () =>
+                    BridgeConnector.Socket.On("tray-balloon-click-event" + GetHashCode(), () =>
                     {
                         _balloonClick();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-click");
+                    BridgeConnector.Socket.Emit("register-tray-balloon-click", GetHashCode());
                 }
                 _balloonClick += value;
             }
             remove
             {
                 _balloonClick -= value;
+
+                if (_balloonClick == null)
+                    BridgeConnector.Socket.Off("tray-balloon-click-event" + GetHashCode());
             }
         }
 
@@ -163,18 +178,21 @@ namespace ElectronNET.API
             {
                 if (_balloonClosed == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-closed-event", () =>
+                    BridgeConnector.Socket.On("tray-balloon-closed-event" + GetHashCode(), () =>
                     {
                         _balloonClosed();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-closed");
+                    BridgeConnector.Socket.Emit("register-tray-balloon-closed", GetHashCode());
                 }
                 _balloonClosed += value;
             }
             remove
             {
                 _balloonClosed -= value;
+
+                if (_balloonClosed == null)
+                    BridgeConnector.Socket.Off("tray-balloon-closed-event" + GetHashCode());
             }
         }
 

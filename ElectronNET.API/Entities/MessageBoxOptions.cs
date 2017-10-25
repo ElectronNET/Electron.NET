@@ -80,10 +80,10 @@ namespace ElectronNET.API.Entities
 
         /// <summary>
         /// Normalize the keyboard access keys across platforms. Default is false. Enabling
-        /// this assumes & is used in the button labels for the placement of the keyboard
+        /// this assumes AND character is used in the button labels for the placement of the keyboard
         /// shortcut access key and labels will be converted so they work correctly on each
-        /// platform, & characters are removed on macOS, converted to _ on Linux, and left
-        /// untouched on Windows.For example, a button label of Vie&w will be converted to
+        /// platform, AND characters are removed on macOS, converted to _ on Linux, and left
+        /// untouched on Windows.For example, a button label of VieANDw will be converted to
         /// Vie_w on Linux and View on macOS and can be selected via Alt-W on Windows and
         /// Linux.
         /// </summary>

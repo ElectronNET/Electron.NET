@@ -13,7 +13,7 @@ namespace ElectronNET.WebApp.Controllers
                 Electron.IpcMain.On("put-in-tray", (args) =>
                 {
 
-                    if (Electron.Tray.Items.Count == 0)
+                    if (Electron.Tray.MenuItems.Count == 0)
                     {
                         var menu = new MenuItem
                         {

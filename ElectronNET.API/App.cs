@@ -28,18 +28,21 @@ namespace ElectronNET.API
             {
                 if (_windowAllClosed == null)
                 {
-                    BridgeConnector.Socket.On("app-window-all-closed", () =>
+                    BridgeConnector.Socket.On("app-window-all-closed" + GetHashCode(), () =>
                     {
                         _windowAllClosed();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event");
+                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
                 }
                 _windowAllClosed += value;
             }
             remove
             {
                 _windowAllClosed -= value;
+
+                if(_windowAllClosed == null)
+                    BridgeConnector.Socket.Off("app-window-all-closed" + GetHashCode());
             }
         }
 
@@ -57,18 +60,21 @@ namespace ElectronNET.API
             {
                 if (_beforeQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-before-quit", () =>
+                    BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), () =>
                     {
                         _beforeQuit();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-before-quit-event");
+                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
                 }
                 _beforeQuit += value;
             }
             remove
             {
                 _beforeQuit -= value;
+
+                if (_beforeQuit == null)
+                    BridgeConnector.Socket.Off("app-before-quit" + GetHashCode());
             }
         }
 
@@ -86,18 +92,21 @@ namespace ElectronNET.API
             {
                 if (_willQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-will-quit", () =>
+                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), () =>
                     {
                         _willQuit();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event");
+                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
                 }
                 _willQuit += value;
             }
             remove
             {
                 _willQuit -= value;
+
+                if (_willQuit == null)
+                    BridgeConnector.Socket.Off("app-will-quit" + GetHashCode());
             }
         }
 
@@ -112,18 +121,21 @@ namespace ElectronNET.API
             {
                 if (_quitting == null)
                 {
-                    BridgeConnector.Socket.On("app-quit", () =>
+                    BridgeConnector.Socket.On("app-quit" + GetHashCode(), () =>
                     {
                         _quitting();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-quit-event");
+                    BridgeConnector.Socket.Emit("register-app-quit-event", GetHashCode());
                 }
                 _quitting += value;
             }
             remove
             {
                 _quitting -= value;
+
+                if (_quitting == null)
+                    BridgeConnector.Socket.Off("app-quit" + GetHashCode());
             }
         }
 
@@ -138,18 +150,21 @@ namespace ElectronNET.API
             {
                 if (_browserWindowBlur == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-blur", () =>
+                    BridgeConnector.Socket.On("app-browser-window-blur" + GetHashCode(), () =>
                     {
                         _browserWindowBlur();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event");
+                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event", GetHashCode());
                 }
                 _browserWindowBlur += value;
             }
             remove
             {
                 _browserWindowBlur -= value;
+
+                if (_browserWindowBlur == null)
+                    BridgeConnector.Socket.Off("app-browser-window-blur" + GetHashCode());
             }
         }
 
@@ -164,18 +179,21 @@ namespace ElectronNET.API
             {
                 if (_browserWindowFocus == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-focus", () =>
+                    BridgeConnector.Socket.On("app-browser-window-focus" + GetHashCode(), () =>
                     {
                         _browserWindowFocus();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event");
+                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event", GetHashCode());
                 }
                 _browserWindowFocus += value;
             }
             remove
             {
                 _browserWindowFocus -= value;
+
+                if (_browserWindowFocus == null)
+                    BridgeConnector.Socket.Off("app-browser-window-focus" + GetHashCode());
             }
         }
 
@@ -190,18 +208,21 @@ namespace ElectronNET.API
             {
                 if (_browserWindowCreated == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-created", () =>
+                    BridgeConnector.Socket.On("app-browser-window-created" + GetHashCode(), () =>
                     {
                         _browserWindowCreated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event");
+                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event", GetHashCode());
                 }
                 _browserWindowCreated += value;
             }
             remove
             {
                 _browserWindowCreated -= value;
+
+                if (_browserWindowCreated == null)
+                    BridgeConnector.Socket.Off("app-browser-window-created" + GetHashCode());
             }
         }
 
@@ -216,18 +237,21 @@ namespace ElectronNET.API
             {
                 if (_webContentsCreated == null)
                 {
-                    BridgeConnector.Socket.On("app-web-contents-created", () =>
+                    BridgeConnector.Socket.On("app-web-contents-created" + GetHashCode(), () =>
                     {
                         _webContentsCreated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event");
+                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event", GetHashCode());
                 }
                 _webContentsCreated += value;
             }
             remove
             {
                 _webContentsCreated -= value;
+
+                if (_webContentsCreated == null)
+                    BridgeConnector.Socket.Off("app-web-contents-created" + GetHashCode());
             }
         }
 
@@ -244,18 +268,21 @@ namespace ElectronNET.API
             {
                 if (_accessibilitySupportChanged == null)
                 {
-                    BridgeConnector.Socket.On("app-accessibility-support-changed", (state) =>
+                    BridgeConnector.Socket.On("app-accessibility-support-changed" + GetHashCode(), (state) =>
                     {
                         _accessibilitySupportChanged((bool)state);
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event");
+                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event", GetHashCode());
                 }
                 _accessibilitySupportChanged += value;
             }
             remove
             {
                 _accessibilitySupportChanged -= value;
+
+                if (_accessibilitySupportChanged == null)
+                    BridgeConnector.Socket.Off("app-accessibility-support-changed" + GetHashCode());
             }
         }
 
@@ -402,58 +429,6 @@ namespace ElectronNET.API
             return await taskCompletionSource.Task;
         }
 
-        // TODO: Fertig coden
-        /// <summary>
-        /// Fetches a path's associated icon. On Windows, there a 2 kinds of icons: On Linux
-        /// and macOS, icons depend on the application associated with file mime type.
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        //public async static Task<NativeImage> GetFileIconAsync(string filePath)
-        //{
-        //    var taskCompletionSource = new TaskCompletionSource<NativeImage>();
-
-        //    BridgeConnector.Socket.On("appGetFileIconCompleted", (results) =>
-        //    {
-        //        BridgeConnector.Socket.Off("appGetFileIconCompleted");
-
-        //        byte[] test = ((JArray)results).Last.ToObject<byte[]>();
-
-
-        //        //object[] result = results as object[];
-        //        //NativeImage nativeImage = (NativeImage)result[1];
-        //        //taskCompletionSource.SetResult(nativeImage);
-        //    });
-        //    BridgeConnector.Socket.Emit("appGetFileIcon", filePath);
-
-        //    return await taskCompletionSource.Task;
-        //}
-
-        // TODO: Fertig coden
-
-        /// <summary>
-        /// Fetches a path's associated icon. On Windows, there a 2 kinds of icons: On Linux
-        /// and macOS, icons depend on the application associated with file mime type.
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="fileIconOptions"></param>
-        /// <returns></returns>
-        //public async static Task<NativeImage> GetFileIconAsync(string filePath, FileIconOptions fileIconOptions)
-        //{
-        //    var taskCompletionSource = new TaskCompletionSource<NativeImage>();
-
-        //    BridgeConnector.Socket.On("appGetFileIconCompleted", (results) =>
-        //    {
-        //        BridgeConnector.Socket.Off("appGetFileIconCompleted");
-
-        //        object[] result = results as object[];
-        //        NativeImage nativeImage = (NativeImage)result[1];
-        //        taskCompletionSource.SetResult(nativeImage);
-        //    });
-        //    BridgeConnector.Socket.Emit("appGetFileIcon", filePath, JObject.FromObject(fileIconOptions, _jsonSerializer));
-
-        //    return await taskCompletionSource.Task;
-        //}
 
         /// <summary>
         /// Overrides the path to a special directory or file associated with name. If the
@@ -1354,14 +1329,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("appDockSetIcon", image);
         }
-
-        /// <summary>
-        /// Sets the image associated with this dock icon.
-        /// </summary>
-        /// <param name="image"></param>
-        //public static void DockSetIcon(NativeImage image)
-        //{
-        //    BridgeConnector.Socket.Emit("appDockSetIcon", JObject.FromObject(image, _jsonSerializer));
-        //}
     }
 }

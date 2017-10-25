@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -13,6 +12,12 @@ namespace ElectronNET.API
     /// </summary>
     public class WebContents
     {
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         public int Id { get; private set; }
 
         /// <summary>
@@ -36,6 +41,9 @@ namespace ElectronNET.API
             remove
             {
                 _crashed -= value;
+
+                if (_crashed == null)
+                    BridgeConnector.Socket.Off("webContents-crashed" + Id);
             }
         }
 
@@ -63,6 +71,9 @@ namespace ElectronNET.API
             remove
             {
                 _didFinishLoad -= value;
+
+                if (_didFinishLoad == null)
+                    BridgeConnector.Socket.Off("webContents-didFinishLoad" + Id);
             }
         }
 

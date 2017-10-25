@@ -33,7 +33,7 @@ namespace ElectronNET.API
             {
                 if (_readyToShow == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-ready-to-show", () =>
+                    BridgeConnector.Socket.On("browserWindow-ready-to-show" + Id, () =>
                     {
                         _readyToShow();
                     });
@@ -45,6 +45,9 @@ namespace ElectronNET.API
             remove
             {
                 _readyToShow -= value;
+
+                if (_readyToShow == null)
+                    BridgeConnector.Socket.Off("browserWindow-ready-to-show" + Id);
             }
         }
 
@@ -59,7 +62,7 @@ namespace ElectronNET.API
             {
                 if (_pageTitleUpdated == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-page-title-updated", (title) =>
+                    BridgeConnector.Socket.On("browserWindow-page-title-updated" + Id, (title) =>
                     {
                         _pageTitleUpdated(title.ToString());
                     });
@@ -71,6 +74,9 @@ namespace ElectronNET.API
             remove
             {
                 _pageTitleUpdated -= value;
+
+                if (_pageTitleUpdated == null)
+                    BridgeConnector.Socket.Off("browserWindow-page-title-updated" + Id);
             }
         }
 
@@ -85,7 +91,7 @@ namespace ElectronNET.API
             {
                 if (_close == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-close", () =>
+                    BridgeConnector.Socket.On("browserWindow-close" + Id, () =>
                     {
                         _close();
                     });
@@ -97,6 +103,9 @@ namespace ElectronNET.API
             remove
             {
                 _close -= value;
+
+                if (_close == null)
+                    BridgeConnector.Socket.Off("browserWindow-close" + Id);
             }
         }
 
@@ -113,7 +122,7 @@ namespace ElectronNET.API
             {
                 if (_closed == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-closed", () =>
+                    BridgeConnector.Socket.On("browserWindow-closed" + Id, () =>
                     {
                         _closed();
                     });
@@ -125,6 +134,9 @@ namespace ElectronNET.API
             remove
             {
                 _closed -= value;
+
+                if (_closed == null)
+                    BridgeConnector.Socket.Off("browserWindow-closed" + Id);
             }
         }
 
@@ -139,7 +151,7 @@ namespace ElectronNET.API
             {
                 if (_sessionEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-session-end", () =>
+                    BridgeConnector.Socket.On("browserWindow-session-end" + Id, () =>
                     {
                         _sessionEnd();
                     });
@@ -151,6 +163,9 @@ namespace ElectronNET.API
             remove
             {
                 _sessionEnd -= value;
+
+                if (_sessionEnd == null)
+                    BridgeConnector.Socket.Off("browserWindow-session-end" + Id);
             }
         }
 
@@ -177,6 +192,9 @@ namespace ElectronNET.API
             remove
             {
                 _unresponsive -= value;
+
+                if (_unresponsive == null)
+                    BridgeConnector.Socket.Off("browserWindow-unresponsive" + Id);
             }
         }
 
@@ -203,6 +221,9 @@ namespace ElectronNET.API
             remove
             {
                 _responsive -= value;
+
+                if (_responsive == null)
+                    BridgeConnector.Socket.Off("browserWindow-responsive" + Id);
             }
         }
 
@@ -217,7 +238,7 @@ namespace ElectronNET.API
             {
                 if (_blur == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-blur", () =>
+                    BridgeConnector.Socket.On("browserWindow-blur" + Id, () =>
                     {
                         _blur();
                     });
@@ -229,6 +250,9 @@ namespace ElectronNET.API
             remove
             {
                 _blur -= value;
+
+                if (_blur == null)
+                    BridgeConnector.Socket.Off("browserWindow-blur" + Id);
             }
         }
 
@@ -243,7 +267,7 @@ namespace ElectronNET.API
             {
                 if (_focus == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-focus", () =>
+                    BridgeConnector.Socket.On("browserWindow-focus" + Id, () =>
                     {
                         _focus();
                     });
@@ -255,6 +279,9 @@ namespace ElectronNET.API
             remove
             {
                 _focus -= value;
+
+                if (_focus == null)
+                    BridgeConnector.Socket.Off("browserWindow-focus" + Id);
             }
         }
 
@@ -269,7 +296,7 @@ namespace ElectronNET.API
             {
                 if (_show == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-show", () =>
+                    BridgeConnector.Socket.On("browserWindow-show" + Id, () =>
                     {
                         _show();
                     });
@@ -281,6 +308,9 @@ namespace ElectronNET.API
             remove
             {
                 _show -= value;
+
+                if (_show == null)
+                    BridgeConnector.Socket.Off("browserWindow-show" + Id);
             }
         }
 
@@ -295,7 +325,7 @@ namespace ElectronNET.API
             {
                 if (_hide == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-hide", () =>
+                    BridgeConnector.Socket.On("browserWindow-hide" + Id, () =>
                     {
                         _hide();
                     });
@@ -307,6 +337,9 @@ namespace ElectronNET.API
             remove
             {
                 _hide -= value;
+
+                if (_hide == null)
+                    BridgeConnector.Socket.Off("browserWindow-hide" + Id);
             }
         }
 
@@ -321,7 +354,7 @@ namespace ElectronNET.API
             {
                 if (_maximize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-maximize", () =>
+                    BridgeConnector.Socket.On("browserWindow-maximize" + Id, () =>
                     {
                         _maximize();
                     });
@@ -333,6 +366,9 @@ namespace ElectronNET.API
             remove
             {
                 _maximize -= value;
+
+                if (_maximize == null)
+                    BridgeConnector.Socket.Off("browserWindow-maximize" + Id);
             }
         }
 
@@ -347,7 +383,7 @@ namespace ElectronNET.API
             {
                 if (_unmaximize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-unmaximize", () =>
+                    BridgeConnector.Socket.On("browserWindow-unmaximize" + Id, () =>
                     {
                         _unmaximize();
                     });
@@ -359,6 +395,9 @@ namespace ElectronNET.API
             remove
             {
                 _unmaximize -= value;
+
+                if (_unmaximize == null)
+                    BridgeConnector.Socket.Off("browserWindow-unmaximize" + Id);
             }
         }
 
@@ -373,7 +412,7 @@ namespace ElectronNET.API
             {
                 if (_minimize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-minimize", () =>
+                    BridgeConnector.Socket.On("browserWindow-minimize" + Id, () =>
                     {
                         _minimize();
                     });
@@ -385,6 +424,9 @@ namespace ElectronNET.API
             remove
             {
                 _minimize -= value;
+
+                if (_minimize == null)
+                    BridgeConnector.Socket.Off("browserWindow-minimize" + Id);
             }
         }
 
@@ -399,7 +441,7 @@ namespace ElectronNET.API
             {
                 if (_restore == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-restore", () =>
+                    BridgeConnector.Socket.On("browserWindow-restore" + Id, () =>
                     {
                         _restore();
                     });
@@ -411,6 +453,9 @@ namespace ElectronNET.API
             remove
             {
                 _restore -= value;
+
+                if (_restore == null)
+                    BridgeConnector.Socket.Off("browserWindow-restore" + Id);
             }
         }
 
@@ -425,7 +470,7 @@ namespace ElectronNET.API
             {
                 if (_resize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-resize", () =>
+                    BridgeConnector.Socket.On("browserWindow-resize" + Id, () =>
                     {
                         _resize();
                     });
@@ -437,6 +482,9 @@ namespace ElectronNET.API
             remove
             {
                 _resize -= value;
+
+                if (_resize == null)
+                    BridgeConnector.Socket.Off("browserWindow-resize" + Id);
             }
         }
 
@@ -453,7 +501,7 @@ namespace ElectronNET.API
             {
                 if (_move == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-move", () =>
+                    BridgeConnector.Socket.On("browserWindow-move" + Id, () =>
                     {
                         _move();
                     });
@@ -465,6 +513,9 @@ namespace ElectronNET.API
             remove
             {
                 _move -= value;
+
+                if (_move == null)
+                    BridgeConnector.Socket.Off("browserWindow-move" + Id);
             }
         }
 
@@ -479,7 +530,7 @@ namespace ElectronNET.API
             {
                 if (_moved == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-moved", () =>
+                    BridgeConnector.Socket.On("browserWindow-moved" + Id, () =>
                     {
                         _moved();
                     });
@@ -491,6 +542,9 @@ namespace ElectronNET.API
             remove
             {
                 _moved -= value;
+
+                if (_moved == null)
+                    BridgeConnector.Socket.Off("browserWindow-moved" + Id);
             }
         }
 
@@ -505,7 +559,7 @@ namespace ElectronNET.API
             {
                 if (_enterFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-enter-full-screen", () =>
+                    BridgeConnector.Socket.On("browserWindow-enter-full-screen" + Id, () =>
                     {
                         _enterFullScreen();
                     });
@@ -517,6 +571,9 @@ namespace ElectronNET.API
             remove
             {
                 _enterFullScreen -= value;
+
+                if (_enterFullScreen == null)
+                    BridgeConnector.Socket.Off("browserWindow-enter-full-screen" + Id);
             }
         }
 
@@ -531,7 +588,7 @@ namespace ElectronNET.API
             {
                 if (_leaveFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-leave-full-screen", () =>
+                    BridgeConnector.Socket.On("browserWindow-leave-full-screen" + Id, () =>
                     {
                         _leaveFullScreen();
                     });
@@ -543,6 +600,9 @@ namespace ElectronNET.API
             remove
             {
                 _leaveFullScreen -= value;
+
+                if (_leaveFullScreen == null)
+                    BridgeConnector.Socket.Off("browserWindow-leave-full-screen" + Id);
             }
         }
 
@@ -557,7 +617,7 @@ namespace ElectronNET.API
             {
                 if (_enterHtmlFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-enter-html-full-screen", () =>
+                    BridgeConnector.Socket.On("browserWindow-enter-html-full-screen" + Id, () =>
                     {
                         _enterHtmlFullScreen();
                     });
@@ -569,6 +629,9 @@ namespace ElectronNET.API
             remove
             {
                 _enterHtmlFullScreen -= value;
+
+                if (_enterHtmlFullScreen == null)
+                    BridgeConnector.Socket.Off("browserWindow-enter-html-full-screen" + Id);
             }
         }
 
@@ -583,7 +646,7 @@ namespace ElectronNET.API
             {
                 if (_leaveHtmlFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-leave-html-full-screen", () =>
+                    BridgeConnector.Socket.On("browserWindow-leave-html-full-screen" + Id, () =>
                     {
                         _leaveHtmlFullScreen();
                     });
@@ -595,6 +658,9 @@ namespace ElectronNET.API
             remove
             {
                 _leaveHtmlFullScreen -= value;
+
+                if (_leaveHtmlFullScreen == null)
+                    BridgeConnector.Socket.Off("browserWindow-leave-html-full-screen" + Id);
             }
         }
 
@@ -615,7 +681,7 @@ namespace ElectronNET.API
             {
                 if (_appCommand == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-app-command", (command) =>
+                    BridgeConnector.Socket.On("browserWindow-app-command" + Id, (command) =>
                     {
                         _appCommand(command.ToString());
                     });
@@ -627,6 +693,9 @@ namespace ElectronNET.API
             remove
             {
                 _appCommand -= value;
+
+                if (_appCommand == null)
+                    BridgeConnector.Socket.Off("browserWindow-app-command" + Id);
             }
         }
 
@@ -641,7 +710,7 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchBegin == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-begin", () =>
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-begin" + Id, () =>
                     {
                         _scrollTouchBegin();
                     });
@@ -653,6 +722,9 @@ namespace ElectronNET.API
             remove
             {
                 _scrollTouchBegin -= value;
+
+                if (_scrollTouchBegin == null)
+                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-begin" + Id);
             }
         }
 
@@ -667,7 +739,7 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-end", () =>
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-end" + Id, () =>
                     {
                         _scrollTouchEnd();
                     });
@@ -679,6 +751,9 @@ namespace ElectronNET.API
             remove
             {
                 _scrollTouchEnd -= value;
+
+                if (_scrollTouchEnd == null)
+                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-end" + Id);
             }
         }
 
@@ -693,7 +768,7 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchEdge == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-edge", () =>
+                    BridgeConnector.Socket.On("browserWindow-scroll-touch-edge" + Id, () =>
                     {
                         _scrollTouchEdge();
                     });
@@ -705,6 +780,9 @@ namespace ElectronNET.API
             remove
             {
                 _scrollTouchEdge -= value;
+
+                if (_scrollTouchEdge == null)
+                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-edge" + Id);
             }
         }
 
@@ -719,7 +797,7 @@ namespace ElectronNET.API
             {
                 if (_swipe == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-swipe", (direction) =>
+                    BridgeConnector.Socket.On("browserWindow-swipe" + Id, (direction) =>
                     {
                         _swipe(direction.ToString());
                     });
@@ -731,6 +809,9 @@ namespace ElectronNET.API
             remove
             {
                 _swipe -= value;
+
+                if (_swipe == null)
+                    BridgeConnector.Socket.Off("browserWindow-swipe" + Id);
             }
         }
 
@@ -745,7 +826,7 @@ namespace ElectronNET.API
             {
                 if (_sheetBegin == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-sheet-begin", () =>
+                    BridgeConnector.Socket.On("browserWindow-sheet-begin" + Id, () =>
                     {
                         _sheetBegin();
                     });
@@ -757,6 +838,9 @@ namespace ElectronNET.API
             remove
             {
                 _sheetBegin -= value;
+
+                if (_sheetBegin == null)
+                    BridgeConnector.Socket.Off("browserWindow-sheet-begin" + Id);
             }
         }
 
@@ -771,7 +855,7 @@ namespace ElectronNET.API
             {
                 if (_sheetEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-sheet-end", () =>
+                    BridgeConnector.Socket.On("browserWindow-sheet-end" + Id, () =>
                     {
                         _sheetEnd();
                     });
@@ -783,6 +867,9 @@ namespace ElectronNET.API
             remove
             {
                 _sheetEnd -= value;
+
+                if (_sheetEnd == null)
+                    BridgeConnector.Socket.Off("browserWindow-sheet-end" + Id);
             }
         }
 
@@ -797,7 +884,7 @@ namespace ElectronNET.API
             {
                 if (_newWindowForTab == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-new-window-for-tab", () =>
+                    BridgeConnector.Socket.On("browserWindow-new-window-for-tab" + Id, () =>
                     {
                         _newWindowForTab();
                     });
@@ -809,6 +896,9 @@ namespace ElectronNET.API
             remove
             {
                 _newWindowForTab -= value;
+
+                if (_newWindowForTab == null)
+                    BridgeConnector.Socket.Off("browserWindow-new-window-for-tab" + Id);
             }
         }
 
