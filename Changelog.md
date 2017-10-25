@@ -1,3 +1,14 @@
+# 0.0.3
+
+ElectronNET.CLI:
+* Init with Debug profile
+* Build for all platforms (well... for newest OSX/Linux/Windows)
+
+ElectronNET.API:
+* Moar XML documentation 
+* Hybrid support (e.g. running as normal website and electron app)
+* Event bugfixing
+
 # 0.0.2
 
 ElectronNET.CLI:
