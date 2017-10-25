@@ -29,6 +29,9 @@
     <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Assets\electron.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
