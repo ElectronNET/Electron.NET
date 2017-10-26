@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.ComponentModel;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
@@ -9,12 +11,14 @@
         /// Whether to enable DevTools. If it is set to false, can not use
         /// BrowserWindow.webContents.openDevTools() to open DevTools.Default is true.
         /// </summary>
-        public bool DevTools { get; set; }
+        [DefaultValue(true)]
+        public bool DevTools { get; set; } = true;
 
         /// <summary>
         /// Whether node integration is enabled. Default is true.
         /// </summary>
-        public bool NodeIntegration { get; set; }
+        [DefaultValue(true)]
+        public bool NodeIntegration { get; set; } = true;
 
         /// <summary>
         /// Whether node integration is enabled in web workers. Default is false.
@@ -57,14 +61,16 @@
         /// <summary>
         /// Enables JavaScript support. Default is true.
         /// </summary>
-        public bool Javascript { get; set; }
+        [DefaultValue(true)]
+        public bool Javascript { get; set; } = true;
 
         /// <summary>
         /// When false, it will disable the same-origin policy (usually using testing
         /// websites by people), and set allowRunningInsecureContent to true if this options
-        /// has not been set by user.Default is true.
+        /// has not been set by user. Default is true.
         /// </summary>
-        public bool WebSecurity { get; set; }
+        [DefaultValue(true)]
+        public bool WebSecurity { get; set; } = true;
 
         /// <summary>
         /// Allow an https page to run JavaScript, CSS or plugins from http URLs. Default is
@@ -75,22 +81,26 @@
         /// <summary>
         /// Enables image support. Default is true.
         /// </summary>
-        public bool Images { get; set; }
+        [DefaultValue(true)]
+        public bool Images { get; set; } = true;
 
         /// <summary>
         /// Make TextArea elements resizable. Default is true.
         /// </summary>
-        public bool TextAreasAreResizable { get; set; }
+        [DefaultValue(true)]
+        public bool TextAreasAreResizable { get; set; } = true;
 
         /// <summary>
         /// Enables WebGL support. Default is true.
         /// </summary>
-        public bool Webgl { get; set; }
+        [DefaultValue(true)]
+        public bool Webgl { get; set; } = true;
 
         /// <summary>
         /// Enables WebAudio support. Default is true.
         /// </summary>
-        public bool Webaudio { get; set; }
+        [DefaultValue(true)]
+        public bool Webaudio { get; set; } = true;
 
         /// <summary>
         /// Whether plugins should be enabled. Default is false.
@@ -153,7 +163,8 @@
         /// Whether to throttle animations and timers when the page becomes background. This
         /// also affects the[Page Visibility API][#page-visibility]. Defaults to true.
         /// </summary>
-        public bool BackgroundThrottling { get; set; }
+        [DefaultValue(true)]
+        public bool BackgroundThrottling { get; set; } = true;
 
         /// <summary>
         /// Whether to enable offscreen rendering for the browser window. Defaults to false.
