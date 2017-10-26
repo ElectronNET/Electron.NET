@@ -1,3 +1,13 @@
+# 0.0.4
+
+ElectronNET.CLI:
+
+* dotnet electronize start fixed
+
+ElectronNET.API:
+
+* WebPreferences settings with default values
+
 # 0.0.3
 
 ElectronNET.CLI:
