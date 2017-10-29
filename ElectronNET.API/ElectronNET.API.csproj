@@ -8,14 +8,14 @@
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Company />
     <Product>Electron.NET</Product>
-    <PackageLicenseUrl>https://github.com/GregorBiswanger/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/GregorBiswanger/Electron.NET/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/ElectronNET/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
     <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
 This package contains the API to access the "native" electron API.</Description>
-    <RepositoryUrl>https://github.com/GregorBiswanger/Electron.NET/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
-    <PackageReleaseNotes>Changelog: https://github.com/GregorBiswanger/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/GregorBiswanger/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

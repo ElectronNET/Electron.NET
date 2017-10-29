@@ -15,12 +15,12 @@
     <Company />
     <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
 This package contains the dotnet tooling to electronize your application.</Description>
-    <PackageLicenseUrl>https://github.com/GregorBiswanger/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/GregorBiswanger/Electron.NET/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/GregorBiswanger/Electron.NET/</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/ElectronNET/Electron.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
-    <PackageReleaseNotes>Changelog: https://github.com/GregorBiswanger/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/GregorBiswanger/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +33,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp2.0\ElectronNET.CLI.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
