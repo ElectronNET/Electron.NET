@@ -123,7 +123,7 @@ In your default setting we just build the application for the OS you are running
 The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note
-> An OS X App can only be built on a host OS X platform.
+> OSX builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. It works on Linux/OSX however.
 
 # Contributing
 Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
