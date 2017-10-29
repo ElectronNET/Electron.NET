@@ -1,3 +1,16 @@
+# not release
+
+ElectronNET.CLI:
+
+* nuget packages are now release bits and have the correct assembly verion
+
+
+# 0.0.5
+
+ElectronNET.API:
+
+* The last nuget package didn't contain the actual webpreferences settings with defaults - hopefully now.
+
 # 0.0.4
 
 ElectronNET.CLI:

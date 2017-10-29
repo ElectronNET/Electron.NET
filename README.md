@@ -1,4 +1,4 @@
-[![Electron.NET Logo](https://github.com/GregorBiswanger/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/GregorBiswanger/Electron.NET)
+[![Electron.NET Logo](https://github.com/ElectronNET/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/ElectronNET/Electron.NET)
 
 
 AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
