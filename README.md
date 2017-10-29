@@ -7,6 +7,11 @@ Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/El
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core.
 
+# NuGet:
+
+* API [![NuGet](https://img.shields.io/nuget/v/ElectronNET.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.API/)
+* CLI [![NuGet](https://img.shields.io/nuget/v/ElectronNET.CLI.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.CLI/)
+
 # Usage:
 
 To activate and communicate with the "native" (sort of native...) Electron API include the [ElectronNET.API NuGet package](https://www.nuget.org/packages/ElectronNET.API/) in your ASP.NET Core app.
