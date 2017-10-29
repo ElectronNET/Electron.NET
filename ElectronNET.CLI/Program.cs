@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml.Linq;
 
 namespace ElectronNET.CLI
 {
@@ -32,6 +31,9 @@ namespace ElectronNET.CLI
                     break;
                 case InitCommand.COMMAND_NAME:
                     command = new InitCommand(args.Skip(1).ToArray());
+                    break;
+                case VersionCommand.COMMAND_NAME:
+                    command = new VersionCommand(args.Skip(1).ToArray());
                     break;
                 case "--help":
                 case "--h":
@@ -92,6 +94,11 @@ namespace ElectronNET.CLI
             Console.WriteLine($"\t{InitCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InitCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
+            Console.WriteLine("Commands to see the current ElectronNET version number:");
+            Console.WriteLine("\t");
+            Console.WriteLine($"\t{VersionCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {VersionCommand.COMMAND_DESCRIPTION}");
+
+            Console.WriteLine("\t");
             Console.WriteLine("\t");
             Console.WriteLine("To get help on individual commands execute:");
             Console.WriteLine("\tdotnet electronize help <command>");
@@ -109,6 +116,9 @@ namespace ElectronNET.CLI
                     break;
                 case InitCommand.COMMAND_NAME:
                     PrintUsage(InitCommand.COMMAND_NAME, InitCommand.COMMAND_DESCRIPTION, InitCommand.CommandOptions, InitCommand.COMMAND_ARGUMENTS);
+                    break;
+                case VersionCommand.COMMAND_NAME:
+                    PrintUsage(VersionCommand.COMMAND_NAME, VersionCommand.COMMAND_DESCRIPTION, VersionCommand.CommandOptions, VersionCommand.COMMAND_ARGUMENTS);
                     break;
                 default:
                     Console.Error.WriteLine($"Unknown command {command}");

@@ -3,7 +3,8 @@
 ElectronNET.CLI:
 
 * nuget packages are now release bits and have the correct assembly verion
-
+* Version command 
+* better devCleanup.cmd
 
 # 0.0.5
 
