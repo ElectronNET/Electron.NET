@@ -14,6 +14,7 @@ namespace ElectronNET.API
     public sealed class IpcMain
     {
         private static IpcMain _ipcMain;
+        private static object _syncRoot = new Object();
 
         internal IpcMain() { }
 
@@ -23,7 +24,13 @@ namespace ElectronNET.API
             {
                 if(_ipcMain == null)
                 {
-                    _ipcMain = new IpcMain();
+                    lock (_syncRoot)
+                    {
+                        if(_ipcMain == null)
+                        {
+                            _ipcMain = new IpcMain();
+                        }
+                    }
                 }
 
                 return _ipcMain;

@@ -105,6 +105,7 @@ namespace ElectronNET.API
         private event Action<Display, string[]> _onDisplayMetricsChanged;
 
         private static Screen _screen;
+        private static object _syncRoot = new Object();
 
         internal Screen() { }
 
@@ -114,7 +115,13 @@ namespace ElectronNET.API
             {
                 if (_screen == null)
                 {
-                    _screen = new Screen();
+                    lock (_syncRoot)
+                    {
+                        if (_screen == null)
+                        {
+                            _screen = new Screen();
+                        }
+                    }
                 }
 
                 return _screen;

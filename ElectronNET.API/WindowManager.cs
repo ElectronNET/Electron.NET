@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace ElectronNET.API
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
+        private static object _syncRoot = new Object();
 
         internal WindowManager() { }
 
@@ -23,7 +25,13 @@ namespace ElectronNET.API
             {
                 if (_windowManager == null)
                 {
-                    _windowManager = new WindowManager();
+                    lock (_syncRoot)
+                    {
+                        if (_windowManager == null)
+                        {
+                            _windowManager = new WindowManager();
+                        }
+                    }
                 }
 
                 return _windowManager;

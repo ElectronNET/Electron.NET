@@ -10,6 +10,7 @@ namespace ElectronNET.API
     public sealed class GlobalShortcut
     {
         private static GlobalShortcut _globalShortcut;
+        private static object _syncRoot = new Object();
 
         internal GlobalShortcut() { }
 
@@ -19,7 +20,13 @@ namespace ElectronNET.API
             {
                 if (_globalShortcut == null)
                 {
-                    _globalShortcut = new GlobalShortcut();
+                    lock (_syncRoot)
+                    {
+                        if (_globalShortcut == null)
+                        {
+                            _globalShortcut = new GlobalShortcut();
+                        }
+                    }
                 }
 
                 return _globalShortcut;

@@ -201,6 +201,7 @@ namespace ElectronNET.API
         // TODO: Implement macOS Events
 
         private static Tray _tray;
+        private static object _syncRoot = new Object();
 
         internal Tray() { }
 
@@ -210,7 +211,13 @@ namespace ElectronNET.API
             {
                 if (_tray == null)
                 {
-                    _tray = new Tray();
+                    lock (_syncRoot)
+                    {
+                        if (_tray == null)
+                        {
+                            _tray = new Tray();
+                        }
+                    }
                 }
 
                 return _tray;
