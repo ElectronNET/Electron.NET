@@ -6,6 +6,7 @@ namespace ElectronNET.API
     internal static class BridgeConnector
     {
         private static Socket _socket;
+        private static object _syncRoot = new Object();
 
         public static Socket Socket
         {
@@ -13,15 +14,27 @@ namespace ElectronNET.API
             {
                 if(_socket == null && HybridSupport.IsElectronActive)
                 {
-                    _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
-                    _socket.On(Socket.EVENT_CONNECT, () =>
+                    lock (_syncRoot)
                     {
-                        Console.WriteLine("BridgeConnector connected!");
-                    });
+                        if (_socket == null && HybridSupport.IsElectronActive)
+                        {
+                            _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
+                            _socket.On(Socket.EVENT_CONNECT, () =>
+                            {
+                                Console.WriteLine("BridgeConnector connected!");
+                            });
+                        }
+                    }
                 }
                 else if(_socket == null && !HybridSupport.IsElectronActive)
                 {
-                    _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
+                    lock (_syncRoot)
+                    {
+                        if (_socket == null && !HybridSupport.IsElectronActive)
+                        {
+                            _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
+                        }
+                    }
                 }
 
                 return _socket;

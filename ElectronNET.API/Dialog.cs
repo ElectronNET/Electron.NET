@@ -13,6 +13,7 @@ namespace ElectronNET.API
     public sealed class Dialog
     {
         private static Dialog _dialog;
+        private static object _syncRoot = new Object();
 
         internal Dialog() { }
 
@@ -22,7 +23,13 @@ namespace ElectronNET.API
             {
                 if (_dialog == null)
                 {
-                    _dialog = new Dialog();
+                    lock (_syncRoot)
+                    {
+                        if(_dialog == null)
+                        {
+                            _dialog = new Dialog();
+                        }
+                    }
                 }
 
                 return _dialog;

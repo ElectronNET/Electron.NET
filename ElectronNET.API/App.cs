@@ -296,7 +296,13 @@ namespace ElectronNET.API
             {
                 if (_app == null)
                 {
-                    _app = new App();
+                    lock (_syncRoot)
+                    {
+                        if(_app == null)
+                        {
+                            _app = new App();
+                        }
+                    }
                 }
 
                 return _app;
@@ -304,6 +310,7 @@ namespace ElectronNET.API
         }
 
         private static App _app;
+        private static object _syncRoot = new Object();
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {

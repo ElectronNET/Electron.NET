@@ -15,6 +15,7 @@ namespace ElectronNET.API
     public sealed class Notification
     {
         private static Notification _notification;
+        private static object _syncRoot = new Object();
 
         internal Notification() { }
 
@@ -24,7 +25,13 @@ namespace ElectronNET.API
             {
                 if (_notification == null)
                 {
-                    _notification = new Notification();
+                    lock (_syncRoot)
+                    {
+                        if (_notification == null)
+                        {
+                            _notification = new Notification();
+                        }
+                    }
                 }
 
                 return _notification;

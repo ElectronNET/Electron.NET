@@ -14,6 +14,7 @@ namespace ElectronNET.API
     public sealed class Shell
     {
         private static Shell _shell;
+        private static object _syncRoot = new Object();
 
         internal Shell() { }
 
@@ -23,7 +24,13 @@ namespace ElectronNET.API
             {
                 if (_shell == null)
                 {
-                    _shell = new Shell();
+                    lock (_syncRoot)
+                    {
+                        if (_shell == null)
+                        {
+                            _shell = new Shell();
+                        }
+                    }
                 }
 
                 return _shell;

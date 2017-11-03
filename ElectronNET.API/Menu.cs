@@ -16,6 +16,7 @@ namespace ElectronNET.API
     public sealed class Menu
     {
         private static Menu _menu;
+        private static object _syncRoot = new Object();
 
         internal Menu() { }
 
@@ -25,7 +26,13 @@ namespace ElectronNET.API
             {
                 if (_menu == null)
                 {
-                    _menu = new Menu();
+                    lock (_syncRoot)
+                    {
+                        if(_menu == null)
+                        {
+                            _menu = new Menu();
+                        }
+                    }
                 }
 
                 return _menu;
