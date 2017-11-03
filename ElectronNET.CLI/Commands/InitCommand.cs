@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace ElectronNET.CLI.Commands
@@ -147,10 +148,19 @@ namespace ElectronNET.CLI.Commands
                 stream.SetLength(0);
                 stream.Position = 0;
 
-                xmlDocument.Save(stream);
+                var xws = new XmlWriterSettings
+                {
+                    OmitXmlDeclaration = true,
+                    Indent = true
+                };
+                using (XmlWriter xw = XmlWriter.Create(stream, xws))
+                {
+                    xmlDocument.Save(xw);
+                }
 
-                Console.WriteLine($"{ConfigName} added in csproj!");
             }
+
+            Console.WriteLine($"{ConfigName} added in csproj!");
             return true;
         }
     }
