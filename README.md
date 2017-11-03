@@ -5,12 +5,19 @@ AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/stat
 
 Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
-Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core.
+Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
+
+Electron.NET is a wrapper around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+The CLI extensions hosts our toolset to build and start Electron.NET applications.
 
 # NuGet:
 
 * API [![NuGet](https://img.shields.io/nuget/v/ElectronNET.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.API/)
 * CLI [![NuGet](https://img.shields.io/nuget/v/ElectronNET.CLI.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.CLI/)
+
+# Requirements to run:
+
+The current Electron.NET CLI builds Windows 10/OSX/Ubuntu binaries. Our API uses .NET Core 2.0, so our minimum base OS is the same as [.NET Core 2](https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0-supported-os.md).
 
 # Usage:
 
