@@ -109,7 +109,8 @@ Start your Electron.NET application with the Electron.NET CLI command. In Visual
 
 ## Usage of the Electron-API
 
-A complete documentation will follow. Until then take a look in the source code of the sample application: [Electron.NET API Demos](https://github.com/ElectronNET/electron.net-api-demos)
+A complete documentation will follow. Until then take a look in the source code of the sample application:  
+[Electron.NET API Demos](https://github.com/ElectronNET/electron.net-api-demos)
 
 ## Build
 
