@@ -91,6 +91,13 @@ namespace ElectronNET.CLI.Commands
             // this is should solve the problem for 80% of the users
             // for the other 20% we might fail... 
             var launchSettingFile = Path.Combine(currentDirectory, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingFile) == false)
+            {
+                Console.WriteLine("launchSettings.json not found - do nothing.");
+                return;
+            }
+
             string launchSettingText = File.ReadAllText(launchSettingFile);
 
             if (launchSettingText.Contains("electronize start") == false)
