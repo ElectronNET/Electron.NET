@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ElectronNET.CLI.Commands.Actions;
 
 namespace ElectronNET.CLI.Commands
 {
@@ -33,86 +34,24 @@ namespace ElectronNET.CLI.Commands
                     desiredPlatform = _args[0];
                 }
 
-
-
-                string netCorePublishRid = string.Empty;
-                string electronPackerPlatform = string.Empty;
-
-                switch (desiredPlatform)
-                {
-                    case "win":
-                        netCorePublishRid = "win-x64";
-                        electronPackerPlatform = "win32";
-                        break;
-                    case "osx":
-                        netCorePublishRid = "osx-x64";
-                        electronPackerPlatform = "darwin";
-                        break;
-                    case "linux":
-                        netCorePublishRid = "linux-x64";
-                        electronPackerPlatform = "linux";
-                        break;
-                    default:
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            desiredPlatform = "win";
-                            netCorePublishRid = "win-x64";
-                            electronPackerPlatform = "win32";
-                        }
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        {
-                            desiredPlatform = "osx";
-                            netCorePublishRid = "osx-x64";
-                            electronPackerPlatform = "darwin";
-                        }
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                        {
-                            desiredPlatform = "linux";
-                            netCorePublishRid = "linux-x64";
-                            electronPackerPlatform = "linux";
-                        }
-
-                        break;
-                }
+                var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform);
 
 
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
-
-                Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
-
-                string tempBinPath = Path.Combine(tempPath, "bin");
-
-                Console.WriteLine($"Build ASP.NET Core App for {netCorePublishRid}...");
-
-                ProcessHelper.CmdExecute($"dotnet publish -r {netCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
-
-
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
                 }
 
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
+                Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
-                string hostApiFolder = Path.Combine(tempPath, "api");
-                if (Directory.Exists(hostApiFolder) == false)
-                {
-                    Directory.CreateDirectory(hostApiFolder);
-                }
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "dialog.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "menu.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "notification.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "tray.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "webContents.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "globalShortcut.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "shell.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
+                string tempBinPath = Path.Combine(tempPath, "bin");
+
+                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
+
+                ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+
+                DeployEmbeddedElectronFiles.Do(tempPath);
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
@@ -137,8 +76,8 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // ToDo: Need a solution for --asar support
-                Console.WriteLine($"Package Electron App for Platform {electronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-packager . --platform={electronPackerPlatform} --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
+                ProcessHelper.CmdExecute($"electron-packager . --platform={platformInfo.ElectronPackerPlatform} --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
 
                 Console.WriteLine("... done");
 

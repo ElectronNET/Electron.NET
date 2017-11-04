@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ElectronNET.CLI.Commands.Actions;
 
 namespace ElectronNET.CLI.Commands
 {
@@ -47,30 +48,12 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
+                var platformInfo = GetTargetPlatformInformation.Do(string.Empty);
+
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                ProcessHelper.CmdExecute($"dotnet publish -r win-x64 --output \"{tempBinPath}\"", aspCoreProjectPath);
+                ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
 
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
-                EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
-
-                string hostApiFolder = Path.Combine(tempPath, "api");
-                if (Directory.Exists(hostApiFolder) == false)
-                {
-                    Directory.CreateDirectory(hostApiFolder);
-                }
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "dialog.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "menu.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "notification.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "tray.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "webContents.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "globalShortcut.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "shell.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
-                EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
+                DeployEmbeddedElectronFiles.Do(tempPath);
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
