@@ -45,7 +45,7 @@ public static IWebHost BuildWebHost(string[] args)
 Open the Electron Window in the Startup.cs file: 
 
 ```csharp
-public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 {
     if (env.IsDevelopment())
     {
@@ -67,7 +67,7 @@ public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
     });
 
     // Open the Electron-Window here
-    await Electron.WindowManager.CreateWindowAsync();
+    Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
 }
 ```
 
