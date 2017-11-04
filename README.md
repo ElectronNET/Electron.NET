@@ -73,7 +73,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 
 __Please note:__ Currently it is important to use ASP.NET Core with MVC. If you are working with the dotnet CLI, use
 
-   dotnet new mvc
+    dotnet new mvc
 
 ## Start the Application
 
