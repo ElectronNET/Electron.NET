@@ -47,7 +47,7 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                ProcessHelper.CmdExecute($"dotnet publish -r win10-x64 --output \"{tempBinPath}\"", aspCoreProjectPath);
+                ProcessHelper.CmdExecute($"dotnet publish -r win-x64 --output \"{tempBinPath}\"", aspCoreProjectPath);
 
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
                 EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
