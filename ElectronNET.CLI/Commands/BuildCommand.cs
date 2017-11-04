@@ -41,7 +41,7 @@ namespace ElectronNET.CLI.Commands
                 switch (desiredPlatform)
                 {
                     case "win":
-                        netCorePublishRid = "win10-x64";
+                        netCorePublishRid = "win-x64";
                         electronPackerPlatform = "win32";
                         break;
                     case "osx":
@@ -49,14 +49,14 @@ namespace ElectronNET.CLI.Commands
                         electronPackerPlatform = "darwin";
                         break;
                     case "linux":
-                        netCorePublishRid = "ubuntu-x64";
+                        netCorePublishRid = "linux-x64";
                         electronPackerPlatform = "linux";
                         break;
                     default:
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         {
                             desiredPlatform = "win";
-                            netCorePublishRid = "win10-x64";
+                            netCorePublishRid = "win-x64";
                             electronPackerPlatform = "win32";
                         }
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -68,7 +68,7 @@ namespace ElectronNET.CLI.Commands
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                         {
                             desiredPlatform = "linux";
-                            netCorePublishRid = "ubuntu-x64";
+                            netCorePublishRid = "linux-x64";
                             electronPackerPlatform = "linux";
                         }
 
