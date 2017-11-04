@@ -3,6 +3,8 @@
 
 AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
+* Checkout AppVeyor Aritfacts: Contains the WebApp sample builded for Windows & Linux!
+
 Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
@@ -12,7 +14,7 @@ The CLI extensions hosts our toolset to build and start Electron.NET application
 
 # NuGet:
 
-* API [![NuGet](https://img.shields.io/nuget/v/ElectronNET.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.API/)
+* API [![NuGet](https://img.shields.io/nuget/v/ElectronNET.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.API/) 
 * CLI [![NuGet](https://img.shields.io/nuget/v/ElectronNET.CLI.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.CLI/)
 
 # Requirements to run:
