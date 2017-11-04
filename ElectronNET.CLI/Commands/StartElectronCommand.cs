@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ElectronNET.CLI.Commands
@@ -9,7 +10,7 @@ namespace ElectronNET.CLI.Commands
     public class StartElectronCommand : ICommand
     {
         public const string COMMAND_NAME = "start";
-        public const string COMMAND_DESCRIPTION = "Start your ASP.NET Core Application with Electron.";
+        public const string COMMAND_DESCRIPTION = "Start your ASP.NET Core Application with Electron, without package it as a single exe. Faster for development.";
         public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
@@ -75,9 +76,18 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute("npm install", tempPath);
 
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
-                Console.WriteLine("Invoke electron.cmd - in dir: " + path);
 
-                ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", path);
+                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                if (isWindows)
+                {
+                    Console.WriteLine("Invoke electron.cmd - in dir: " + path);
+                    ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", path);
+                }
+                else
+                {
+                    Console.WriteLine("Invoke electron - in dir: " + path);
+                    ProcessHelper.CmdExecute(@"electron ""..\..\main.js""", path);
+                }
 
                 return true;
             });
