@@ -137,6 +137,14 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 ### Note
 > OSX builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. It works on Linux/OSX however.
 
+# Working with this Repo
+
+This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 1.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for OSX/Linux).
+
+If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
+
+The problem working with this repository is, that NuGet has a pretty aggressive cache, see [here for further information](https://github.com/ElectronNET/Electron.NET/wiki).
+
 # Contributing
 Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
 Please make sure all commits are properly documented.
