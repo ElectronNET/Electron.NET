@@ -1,11 +1,19 @@
 # not release
 
+
+# 0.0.6
+
 ElectronNET.CLI:
 
 * nuget packages are now release bits and have the correct assembly verion
 * Version command 
 * better devCleanup.cmd
-* Better Platform Support [Issue](https://github.com/ElectronNET/Electron.NET/issues/6) - thanks to @Petermarcu
+* Better Platform Support Issue - thanks to @Petermarcu
+* Start Command should now work on OSX/Linux
+
+ElectronNET.API:
+
+* Thread-Safe methods
 
 # 0.0.5
 
