@@ -13,7 +13,7 @@ ElectronNET.CLI:
 
 ElectronNET.API:
 
-* Thread-Safe methods
+* Thread-Safe methods - thanks to @yeskunall
 
 # 0.0.5
 
