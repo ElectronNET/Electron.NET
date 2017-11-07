@@ -1,5 +1,11 @@
 # not release
 
+# 0.0.7
+
+ElectronNET.CLI:
+
+* Fixed electronize start for macos/linux - thanks @yamachu
+* Skip NPM install on start when node_modules directory already exists
 
 # 0.0.6
 
