@@ -5,7 +5,7 @@ AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/stat
 
 * Checkout AppVeyor Aritfacts: Contains the WebApp sample builded for Windows & Linux!
 
-Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
+Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
 
@@ -97,9 +97,11 @@ After you edited the .csproj-file, you need to restore your NuGet packages withi
     dotnet restore
 ```
 
-* Make sure you have node.js v8.6.0 and on OSX/Ubuntu the electron-packager installed (via "sudo npm install electron-packager --global")
+* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-packager installed! 
+    
+    sudo npm install electron-packager --global
 
-At the first time, you need an Electron.NET Project initialization. Type the following command in your ASP.NET Core folder:
+At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
 
 ```
     dotnet electronize init
@@ -131,7 +133,7 @@ Here you need the Electron.NET CLI too. Type following command in your ASP.NET C
     dotnet electronize build
 ```
 
-In your default setting we just build the application for the OS you are running (Windows builds Windows, OSX builds OSX etc.), but this can be changed with:
+In your default setting we just build the application for the OS you are running (Windows builds Windows, macOS builds macOS etc.), but this can be changed with:
 
 ```
     dotnet electronize build win
