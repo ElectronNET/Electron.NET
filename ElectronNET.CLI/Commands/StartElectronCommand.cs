@@ -69,7 +69,7 @@ namespace ElectronNET.CLI.Commands
                 else
                 {
                     Console.WriteLine("Invoke electron - in dir: " + path);
-                    ProcessHelper.CmdExecute(@"electron ""..\..\main.js""", path);
+                    ProcessHelper.CmdExecute(@"./electron ""../../main.js""", path);
                 }
 
                 return true;
