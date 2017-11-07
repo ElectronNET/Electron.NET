@@ -55,8 +55,19 @@ namespace ElectronNET.CLI.Commands
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
-                Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", tempPath);
+                var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+
+                if (Directory.Exists(checkForNodeModulesDirPath) == false)
+                {
+                    Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
+
+                    Console.WriteLine("Start npm install...");
+                    ProcessHelper.CmdExecute("npm install", tempPath);
+                }
+                else
+                {
+                    Console.WriteLine("Skip npm install, because node_modules directory exists in: " + checkForNodeModulesDirPath);
+                }
 
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
 
