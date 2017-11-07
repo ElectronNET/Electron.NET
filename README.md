@@ -9,8 +9,13 @@ Travis-CI (Win/OSX/Linux): [![Build Status](https://travis-ci.org/ElectronNET/El
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
 
-Electron.NET is a wrapper around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+Electron.NET is a __wrapper__ around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+
 The CLI extensions hosts our toolset to build and start Electron.NET applications.
+
+## Wait - you host a .NET Core app inside Electron? Why?
+
+Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust X-plat enviroment called Electron. Porting Electron to .NET is not a goal of this project, at least we don't have any clue how do to it. We just combine ASP.NET Core & Electron. 
 
 # NuGet:
 
@@ -138,10 +143,6 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note
 > macOS builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. The macOS builds works on Linux/macOS however.
-
-# Wait - you host a .NET Core app inside Electron? Why?
-
-Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust enviroment called Electron.
 
 # Working with this Repo
 
