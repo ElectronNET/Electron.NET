@@ -19,7 +19,7 @@ The CLI extensions hosts our toolset to build and start Electron.NET application
 
 # Requirements to run:
 
-The current Electron.NET CLI builds Windows 10/OSX/Ubuntu binaries. Our API uses .NET Core 2.0, so our minimum base OS is the same as [.NET Core 2](https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0-supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 2.0, so our minimum base OS is the same as [.NET Core 2](https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0-supported-os.md).
 
 # Usage:
 
@@ -89,7 +89,7 @@ For the tooling you will need your dotnet-electronize package [ElectronNET.CLI N
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
 
 ```
-dotnet restore
+    dotnet restore
 ```
 
 * Make sure you have node.js v8.6.0 and on OSX/Ubuntu the electron-packager installed (via "sudo npm install electron-packager --global")
@@ -137,11 +137,15 @@ In your default setting we just build the application for the OS you are running
 The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note
-> OSX builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. It works on Linux/OSX however.
+> macOS builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. The macOS builds works on Linux/macOS however.
+
+# Wait - you host a .NET Core app inside Electron? Why?
+
+Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust enviroment called Electron.
 
 # Working with this Repo
 
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 1.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for OSX/Linux).
+This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 1.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
 
 If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
 
