@@ -9,7 +9,7 @@ ElectronNET.CLI:
 * Version command 
 * better devCleanup.cmd
 * Better Platform Support Issue - thanks to @Petermarcu
-* Start Command should now work on OSX/Linux
+* Start Command should now work on OSX/Linux - thanks to @r105m
 
 ElectronNET.API:
 
