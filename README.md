@@ -88,7 +88,7 @@ For the tooling you will need your dotnet-electronize package [ElectronNET.CLI N
 
 ```
     <ItemGroup>
-       <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
+         <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
     </ItemGroup>
 ```
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
@@ -123,8 +123,10 @@ Start your Electron.NET application with the Electron.NET CLI command. In Visual
 ## Usage of the Electron-API
 
 A complete documentation will follow. Until then take a look in the source code of the sample application:  
-[Electron.NET API Demos](https://github.com/ElectronNET/electron.net-api-demos)
+[Electron.NET API Demos](https://github.com/ElectronNET/electron.net-api-demos)  
 
+In this YouTube video, we show you how you can create a new project, use the Electron.NET API, debug a application and build an executable desktop app for Windows: [Electron.NET - Getting Started](https://www.youtube.com/watch?v=nuM6AojRFHk)  
+  
 ## Build
 
 Here you need the Electron.NET CLI too. Type following command in your ASP.NET Core folder:
