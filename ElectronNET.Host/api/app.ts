@@ -1,7 +1,22 @@
 import { nativeImage as NativeImage } from 'electron';
+let isQuitWindowAllClosed = true;
 
 module.exports = (socket: SocketIO.Server, app: Electron.App) => {
-    
+
+    // Quit when all windows are closed.
+    app.on('window-all-closed', () => {
+        // On macOS it is common for applications and their menu bar
+        // to stay active until the user quits explicitly with Cmd + Q
+        if (process.platform !== 'darwin' &&
+            isQuitWindowAllClosed) {
+            app.quit();
+        }
+    });
+
+    socket.on('quit-app-window-all-closed-event', (quit) => {
+        isQuitWindowAllClosed = quit;
+    });
+
     socket.on('register-app-window-all-closed-event', (id) => {
         app.on('window-all-closed', () => {
             socket.emit('app-window-all-closed' + id);
@@ -9,20 +24,18 @@ module.exports = (socket: SocketIO.Server, app: Electron.App) => {
     });
 
     socket.on('register-app-before-quit-event', (id) => {
-        app.on('before-quit', () => {
+        app.on('before-quit', (event) => {
+            event.preventDefault();
+
             socket.emit('app-before-quit' + id);
         });
     });
 
     socket.on('register-app-will-quit-event', (id) => {
-        app.on('will-quit', () => {
-            socket.emit('app-will-quit' + id);
-        });
-    });
+        app.on('will-quit', (event) => {
+            event.preventDefault();
 
-    socket.on('register-app-quit-event', (id) => {
-        app.on('quit', () => {
-            socket.emit('app-quit' + id);
+            socket.emit('app-will-quit' + id);
         });
     });
 
@@ -103,7 +116,7 @@ module.exports = (socket: SocketIO.Server, app: Electron.App) => {
     // }
 
     socket.on('appGetFileIcon', (path, options) => {
-        if(options) {
+        if (options) {
             app.getFileIcon(path, options, (error, nativeImage) => {
                 socket.emit('appGetFileIconCompleted', [error, nativeImage]);
             });

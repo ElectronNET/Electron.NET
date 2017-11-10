@@ -1,24 +1,34 @@
 "use strict";
 exports.__esModule = true;
+var isQuitWindowAllClosed = true;
 module.exports = function (socket, app) {
+    // Quit when all windows are closed.
+    app.on('window-all-closed', function () {
+        // On macOS it is common for applications and their menu bar
+        // to stay active until the user quits explicitly with Cmd + Q
+        if (process.platform !== 'darwin' &&
+            isQuitWindowAllClosed) {
+            app.quit();
+        }
+    });
+    socket.on('quit-app-window-all-closed-event', function (quit) {
+        isQuitWindowAllClosed = quit;
+    });
     socket.on('register-app-window-all-closed-event', function (id) {
         app.on('window-all-closed', function () {
             socket.emit('app-window-all-closed' + id);
         });
     });
     socket.on('register-app-before-quit-event', function (id) {
-        app.on('before-quit', function () {
+        app.on('before-quit', function (event) {
+            event.preventDefault();
             socket.emit('app-before-quit' + id);
         });
     });
     socket.on('register-app-will-quit-event', function (id) {
-        app.on('will-quit', function () {
+        app.on('will-quit', function (event) {
+            event.preventDefault();
             socket.emit('app-will-quit' + id);
-        });
-    });
-    socket.on('register-app-quit-event', function (id) {
-        app.on('quit', function () {
-            socket.emit('app-quit' + id);
         });
     });
     socket.on('register-app-browser-window-blur-event', function (id) {

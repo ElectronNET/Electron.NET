@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -30,7 +32,10 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-window-all-closed" + GetHashCode(), () =>
                     {
-                        _windowAllClosed();
+                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed)
+                        {
+                            _windowAllClosed();
+                        }
                     });
 
                     BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
@@ -54,15 +59,38 @@ namespace ElectronNET.API
         /// Note: If application quit was initiated by autoUpdater.quitAndInstall() then before-quit is emitted after
         /// emitting close event on all windows and closing them.
         /// </summary>
-        public event Action BeforeQuit
+        public event Func<Task> BeforeQuit
         {
             add
             {
                 if (_beforeQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), () =>
+                    BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), async () =>
                     {
-                        _beforeQuit();
+                        await _beforeQuit();
+
+                        if(_willQuit == null && _quitting == null)
+                        {
+                            Exit();
+                        }
+                        else if (_willQuit != null)
+                        {
+                            await _willQuit();
+                            
+                            if(_quitting == null)
+                            {
+                                Exit();
+                            } else
+                            {
+                                await _quitting();
+                                Exit();
+                            }
+                        }
+                        else if(_quitting != null)
+                        {
+                            await _quitting();
+                            Exit();
+                        }
                     });
 
                     BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
@@ -78,7 +106,7 @@ namespace ElectronNET.API
             }
         }
 
-        private event Action _beforeQuit;
+        private event Func<Task> _beforeQuit;
 
         /// <summary>
         /// Emitted when all windows have been closed and the application will quit. 
@@ -86,15 +114,25 @@ namespace ElectronNET.API
         /// See the description of the window-all-closed event for the differences between the will-quit and 
         /// window-all-closed events.
         /// </summary>
-        public event Action WillQuit
+        public event Func<Task> WillQuit
         {
             add
             {
                 if (_willQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), () =>
+                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), async () =>
                     {
-                        _willQuit();
+                        await _willQuit();
+
+                        if(_quitting == null)
+                        {
+                            Exit();
+                        }
+                        else
+                        {
+                            await _quitting();
+                            Exit();
+                        }
                     });
 
                     BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
@@ -110,23 +148,27 @@ namespace ElectronNET.API
             }
         }
 
-        private event Action _willQuit;
+        private event Func<Task> _willQuit;
 
         /// <summary>
         /// Emitted when the application is quitting.
         /// </summary>
-        public event Action Quitting
+        public event Func<Task> Quitting
         {
             add
             {
                 if (_quitting == null)
                 {
-                    BridgeConnector.Socket.On("app-quit" + GetHashCode(), () =>
+                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode() + "quitting", async () =>
                     {
-                        _quitting();
+                        if(_willQuit == null)
+                        {
+                            await _quitting();
+                            Exit();
+                        }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
                 }
                 _quitting += value;
             }
@@ -135,11 +177,11 @@ namespace ElectronNET.API
                 _quitting -= value;
 
                 if (_quitting == null)
-                    BridgeConnector.Socket.Off("app-quit" + GetHashCode());
+                    BridgeConnector.Socket.Off("app-will-quit" + GetHashCode() + "quitting");
             }
         }
 
-        private event Action _quitting;
+        private event Func<Task> _quitting;
 
         /// <summary>
         /// Emitted when a BrowserWindow gets blurred.

@@ -39,6 +39,23 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Quit when all windows are closed. (Default is true)
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [quit window all closed]; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsQuitOnWindowAllClosed
+        {
+            get { return _isQuitOnWindowAllClosed; }
+            set
+            {
+                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
+                _isQuitOnWindowAllClosed = value;
+            }
+        }
+        private bool _isQuitOnWindowAllClosed = true;
+
+        /// <summary>
         /// Gets the browser windows.
         /// </summary>
         /// <value>
