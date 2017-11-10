@@ -47,7 +47,7 @@
     await Electron.Dialog.ShowMessageBoxAsync(options);
 });
 
-Electron.App.WillQuit += () => Electron.GlobalShortcut.UnregisterAll();</code></pre>
+Electron.App.WillQuit += () => Task.Run(() => Electron.GlobalShortcut.UnregisterAll());</code></pre>
 
           <div class="demo-protip">
             <h2>ProTip</h2>
