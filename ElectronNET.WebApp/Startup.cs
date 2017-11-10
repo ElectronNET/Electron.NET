@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ElectronNET.WebApp
 {
@@ -61,7 +62,7 @@ namespace ElectronNET.WebApp
             });
 
             browserWindow.OnReadyToShow += () => browserWindow.Show();
-            browserWindow.SetTitle(Configuration["DemoTitleInSettings"] );
+            browserWindow.SetTitle(Configuration["DemoTitleInSettings"]);
         }
     }
 }

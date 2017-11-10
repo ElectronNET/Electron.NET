@@ -59,7 +59,7 @@ namespace ElectronNET.API
         /// Note: If application quit was initiated by autoUpdater.quitAndInstall() then before-quit is emitted after
         /// emitting close event on all windows and closing them.
         /// </summary>
-        public event Func<Task> BeforeQuit
+        public event Func<QuitEventArgs, Task> BeforeQuit
         {
             add
             {
@@ -67,29 +67,44 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), async () =>
                     {
-                        await _beforeQuit();
+                        await _beforeQuit(new QuitEventArgs());
 
-                        if(_willQuit == null && _quitting == null)
+                        if (_preventQuit)
                         {
-                            Exit();
+                            _preventQuit = false;
                         }
-                        else if (_willQuit != null)
+                        else
                         {
-                            await _willQuit();
-                            
-                            if(_quitting == null)
+                            if (_willQuit == null && _quitting == null)
                             {
                                 Exit();
-                            } else
+                            }
+                            else if (_willQuit != null)
+                            {
+                                await _willQuit(new QuitEventArgs());
+
+                                if (_preventQuit)
+                                {
+                                    _preventQuit = false;
+                                }
+                                else
+                                {
+                                    if (_quitting == null)
+                                    {
+                                        Exit();
+                                    }
+                                    else
+                                    {
+                                        await _quitting();
+                                        Exit();
+                                    }
+                                }
+                            }
+                            else if (_quitting != null)
                             {
                                 await _quitting();
                                 Exit();
                             }
-                        }
-                        else if(_quitting != null)
-                        {
-                            await _quitting();
-                            Exit();
                         }
                     });
 
@@ -106,7 +121,7 @@ namespace ElectronNET.API
             }
         }
 
-        private event Func<Task> _beforeQuit;
+        private event Func<QuitEventArgs, Task> _beforeQuit;
 
         /// <summary>
         /// Emitted when all windows have been closed and the application will quit. 
@@ -114,7 +129,7 @@ namespace ElectronNET.API
         /// See the description of the window-all-closed event for the differences between the will-quit and 
         /// window-all-closed events.
         /// </summary>
-        public event Func<Task> WillQuit
+        public event Func<QuitEventArgs, Task> WillQuit
         {
             add
             {
@@ -122,16 +137,23 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), async () =>
                     {
-                        await _willQuit();
+                        await _willQuit(new QuitEventArgs());
 
-                        if(_quitting == null)
+                        if (_preventQuit)
                         {
-                            Exit();
+                            _preventQuit = false;
                         }
                         else
                         {
-                            await _quitting();
-                            Exit();
+                            if (_quitting == null)
+                            {
+                                Exit();
+                            }
+                            else
+                            {
+                                await _quitting();
+                                Exit();
+                            }
                         }
                     });
 
@@ -148,7 +170,7 @@ namespace ElectronNET.API
             }
         }
 
-        private event Func<Task> _willQuit;
+        private event Func<QuitEventArgs, Task> _willQuit;
 
         /// <summary>
         /// Emitted when the application is quitting.
@@ -1378,5 +1400,12 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("appDockSetIcon", image);
         }
+
+        internal void PreventQuit()
+        {
+            _preventQuit = true;
+        }
+
+        private bool _preventQuit = false;
     }
 }
