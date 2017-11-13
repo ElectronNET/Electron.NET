@@ -15,7 +15,7 @@ The CLI extensions hosts our toolset to build and start Electron.NET application
 
 ## Wait - you host a .NET Core app inside Electron? Why?
 
-Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust X-plat enviroment called Electron. Porting Electron to .NET is not a goal of this project, at least we don't have any clue how do to it. We just combine ASP.NET Core & Electron. 
+Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust X-plat enviroment called Electron. Porting Electron to .NET is not a goal of this project, at least we don't have any clue how to do it. We just combine ASP.NET Core & Electron. 
 
 # NuGet:
 
