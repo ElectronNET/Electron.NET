@@ -6,7 +6,7 @@ dotnet restore
 dotnet build
 cd ..
 
-echo "Restore & Build API"
+echo "Restore & Build CLI"
 cd $dir/ElectronNET.CLI
 dotnet restore
 dotnet build
@@ -20,15 +20,15 @@ cd ..
 
 echo "Invoke electronize build in WebApp Demo"
 echo "-- win (dev-build)"
-cd $dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/
+cd $dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/
 ls
 dotnet "dotnet-electronize.dll" build win
 
 echo "-- linux (dev-build)"
-dotnet "$dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
+dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
 
 echo "-- osx (dev-build)"
-dotnet "$dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build osx
+dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build osx
 
 # Be aware, that for non-electronnet-dev environments the correct 
 # invoke command would be dotnet electronize ...

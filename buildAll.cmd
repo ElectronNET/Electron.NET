@@ -4,7 +4,7 @@ cd ElectronNet.API
 dotnet restore
 dotnet build
 cd ..
-echo "Restore & Build API"
+echo "Restore & Build CLI"
 cd ElectronNet.CLI
 dotnet restore
 dotnet build
@@ -16,10 +16,10 @@ dotnet build
 echo "Invoke electronize build in WebApp Demo"
 
 echo "-- win (dev-build)"
-dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
 
 echo "-- linux (dev-build)"
-dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
 
 REM Be aware, that for non-electronnet-dev environments the correct 
 REM invoke command would be dotnet electronize ...
