@@ -20,7 +20,9 @@ cd ..
 
 echo "Invoke electronize build in WebApp Demo"
 echo "-- win (dev-build)"
-dotnet "$dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
+cd $dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/
+ls
+dotnet "dotnet-electronize.dll" build win
 
 echo "-- linux (dev-build)"
 dotnet "$dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
