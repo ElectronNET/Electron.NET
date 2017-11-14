@@ -16,10 +16,10 @@ dotnet build
 echo "Invoke electronize build in WebApp Demo"
 
 echo "-- win"
-dotnet electronize build win
+dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
 
 echo "-- linux"
-dotnet electronize build linux
+dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
 
 REM Not supported on Windows Systems, because of SymLinks...
 REM echo "-- osx"
