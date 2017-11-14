@@ -17,13 +17,13 @@ dotnet build
 
 echo "Invoke electronize build in WebApp Demo"
 echo "-- win (dev-build)"
-dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
+dotnet $dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll build win
 
 echo "-- linux (dev-build)"
-dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
+dotnet $dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll build linux
 
 echo "-- osx (dev-build)"
-dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build osx
+dotnet $dir/ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll build osx
 
 # Be aware, that for non-electronnet-dev environemnts the correct 
 # invoke command would be dotnet electronize ...
