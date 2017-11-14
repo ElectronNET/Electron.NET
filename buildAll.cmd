@@ -15,11 +15,14 @@ dotnet restore
 dotnet build
 echo "Invoke electronize build in WebApp Demo"
 
-echo "-- win"
+echo "-- win (dev-build)"
 dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
 
-echo "-- linux"
+echo "-- linux (dev-build)"
 dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
+
+REM Be aware, that for non-electronnet-dev environemnts the correct 
+REM invoke command would be dotnet electronize ...
 
 REM Not supported on Windows Systems, because of SymLinks...
 REM echo "-- osx"
