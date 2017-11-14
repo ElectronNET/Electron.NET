@@ -13,6 +13,7 @@ echo "Restore & Build WebApp Demo"
 cd ElectronNet.WebApp
 dotnet restore
 dotnet build
+
 echo "Invoke electronize build in WebApp Demo"
 
 echo "-- win (dev-build)"
