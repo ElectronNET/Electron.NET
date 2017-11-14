@@ -21,7 +21,7 @@ dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build
 echo "-- linux (dev-build)"
 dotnet "../ElectronNet.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
 
-REM Be aware, that for non-electronnet-dev environemnts the correct 
+REM Be aware, that for non-electronnet-dev environments the correct 
 REM invoke command would be dotnet electronize ...
 
 REM Not supported on Windows Systems, because of SymLinks...
