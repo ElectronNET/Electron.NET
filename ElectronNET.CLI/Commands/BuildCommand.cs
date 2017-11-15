@@ -53,21 +53,32 @@ namespace ElectronNET.CLI.Commands
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
-                Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", tempPath);
+                var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                Console.WriteLine("Start npm install electron-packager...");
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (Directory.Exists(checkForNodeModulesDirPath) == false)
                 {
-                    // Works proper on Windows... 
-                    ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
+                    Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
+
+                    Console.WriteLine("Start npm install...");
+                    ProcessHelper.CmdExecute("npm install", tempPath);
+
+                    Console.WriteLine("Start npm install electron-packager...");
+
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Works proper on Windows... 
+                        ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
+                    }
+                    else
+                    {
+                        // ToDo: find another solution or document it proper
+                        // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
+                        Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " + tempPath + " manually. Sry.");
+                    }
                 }
                 else
                 {
-                    // ToDo: find another solution or document it proper
-                    // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " + tempPath + " manually. Sry.");
+                    Console.WriteLine("Skip npm install, because node_modules directory exists in: " + checkForNodeModulesDirPath);
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
