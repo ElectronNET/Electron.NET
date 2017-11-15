@@ -51,7 +51,13 @@ namespace ElectronNET.CLI.Commands
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+
+                if (resultCode != 0)
+                {
+                    Console.WriteLine("Error occured during dotnet publish.");
+                    return false;
+                }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 

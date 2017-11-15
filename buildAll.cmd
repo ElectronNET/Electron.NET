@@ -22,9 +22,9 @@ dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build
 echo "-- linux (dev-build)"
 dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
 
-REM Be aware, that for non-electronnet-dev environments the correct 
-REM invoke command would be dotnet electronize ...
+:: Be aware, that for non-electronnet-dev environments the correct 
+:: invoke command would be dotnet electronize ...
 
-REM Not supported on Windows Systems, because of SymLinks...
-REM echo "-- osx"
-REM   dotnet electronize build osx
+:: Not supported on Windows Systems, because of SymLinks...
+:: echo "-- osx"
+::   dotnet electronize build osx

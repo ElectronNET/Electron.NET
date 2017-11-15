@@ -49,7 +49,13 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 
-                ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+
+                if (resultCode != 0)
+                {
+                    Console.WriteLine("Error occured during dotnet publish.");
+                    return false;
+                }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
