@@ -55,7 +55,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (resultCode != 0)
                 {
-                    Console.WriteLine("Error occured during dotnet publish.");
+                    Console.WriteLine("Error occurred during dotnet publish.");
                     return false;
                 }
 
