@@ -33,15 +33,44 @@ namespace ElectronNET.CLI
 
                 if (output)
                 {
-                    cmd.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
-                    cmd.ErrorDataReceived += (s, e) =>
+                    cmd.OutputDataReceived += (s, e) =>
                     {
+                        // (sometimes error messages are only visbile here)
+                        // poor mans solution, we just seek for the term 'error'
+
                         // we can't just use cmd.ExitCode, because
                         // we delegate it to cmd.exe, which runs fine
                         // but we can catch any error here and return
                         // 1 if something fails
-                        returnCode = 1;
-                        Console.WriteLine(e.Data);
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        {
+                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            {
+                                returnCode = 1;
+                            }
+
+                            Console.WriteLine(e.Data);
+                        }
+
+                    };
+                    cmd.ErrorDataReceived += (s, e) =>
+                    {
+                        // poor mans solution, we just seek for the term 'error'
+
+                        // we can't just use cmd.ExitCode, because
+                        // we delegate it to cmd.exe, which runs fine
+                        // but we can catch any error here and return
+                        // 1 if something fails
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        {
+                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            {
+                                returnCode = 1;
+                            }
+
+                            Console.WriteLine(e.Data);
+                        }
+
                     };
                 }
 
