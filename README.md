@@ -145,6 +145,10 @@ In your default setting we just build the application for the OS you are running
 
 The end result should be an electron app under your __/bin/desktop__ folder.
 
+## Starter kits
+
+There is a React/Typescript/MobX starter kit at https://github.com/yoDon/Electron.NET-React-Typescript-MobX
+
 ### Note
 > macOS builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. The macOS builds works on Linux/macOS however.
 
