@@ -9,7 +9,7 @@ Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
 
-Electron.NET is a __wrapper__ around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
 The CLI extensions hosts our toolset to build and start Electron.NET applications.
 
