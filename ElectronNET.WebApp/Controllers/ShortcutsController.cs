@@ -22,7 +22,7 @@ namespace ElectronNET.WebApp.Controllers
                     await Electron.Dialog.ShowMessageBoxAsync(options);
                 });
 
-                Electron.App.WillQuit += (args) => Task.Run(() => Electron.GlobalShortcut.UnregisterAll());
+                Electron.App.WillQuit += () => Task.Run(() => Electron.GlobalShortcut.UnregisterAll());
             }
 
             return View();
