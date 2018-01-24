@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
@@ -27,14 +28,15 @@ namespace ElectronNET.CLI.Commands
             {
                 Console.WriteLine("Build Electron Application...");
 
-                string desiredPlatform = "";
+                var parsedArgs = _args
+                    .Select(s => s.Split(new[] { ':' }, 1))
+                    .ToDictionary(s => s[0], s => s[1]);
 
-                if (_args.Length > 0)
-                {
-                    desiredPlatform = _args[0];
-                }
+                var desiredPlatform = parsedArgs["/target"];
 
                 var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform);
+
+                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 
 
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
