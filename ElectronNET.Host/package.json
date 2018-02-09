@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "detect-port": "^1.2.1",
-    "electron": "^1.7.8",
+    "electron": "^1.7.11",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {

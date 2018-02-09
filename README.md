@@ -9,7 +9,7 @@ Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/
 
 Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
 
-Electron.NET is a __wrapper__ around a "normal" Electron application with a embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
 The CLI extensions hosts our toolset to build and start Electron.NET applications.
 
@@ -145,8 +145,12 @@ In your default setting we just build the application for the OS you are running
 
 The end result should be an electron app under your __/bin/desktop__ folder.
 
+## Starter kits
+
+There is a React/Typescript/MobX starter kit at https://github.com/yoDon/Electron.NET-React-Typescript-MobX
+
 ### Note
-> macOS builds on Windows are currently not supported, because the build just hangs, but I'm not sure why. The macOS builds works on Linux/macOS however.
+> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
 # Working with this Repo
 
