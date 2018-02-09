@@ -18,11 +18,12 @@ function startSocketApiBridge(port) {
     startAspCoreBackend(port);
 
     io.on('connection', (socket) => {
-        console.log('ASP.NET Core Application connected...');
-        
+        global.elesocket = socket;
+        console.log('ASP.NET Core Application connected...', 'global.elesocket', global.elesocket.id);
+
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket);
-        ipc = require('./api/ipc')(socket);        
+        ipc = require('./api/ipc')(socket);
         menu = require('./api/menu')(socket);
         dialog = require('./api/dialog')(socket);
         notification = require('./api/notification')(socket);
@@ -42,12 +43,12 @@ function startAspCoreBackend(electronPort) {
 
         const manifestFile = require("./bin/electron.manifest.json");
         let binaryFile = manifestFile.executable;
-        
+
         const os = require("os");
-        if(os.platform() === "win32") {
+        if (os.platform() === "win32") {
             binaryFile = binaryFile + '.exe';
         }
-        
+
         const binFilePath = path.join(__dirname, 'bin', binaryFile);
         apiProcess = process(binFilePath, parameters);
 

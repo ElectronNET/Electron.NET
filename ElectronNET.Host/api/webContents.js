@@ -7,14 +7,14 @@ module.exports = function (socket) {
         var browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('crashed');
         browserWindow.webContents.on('crashed', function (event, killed) {
-            socket.emit('webContents-crashed' + id, killed);
+            global.elesocket.emit('webContents-crashed' + id, killed);
         });
     });
     socket.on('register-webContents-didFinishLoad', function (id) {
         var browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('did-finish-load');
         browserWindow.webContents.on('did-finish-load', function () {
-            socket.emit('webContents-didFinishLoad' + id);
+            global.elesocket.emit('webContents-didFinishLoad' + id);
         });
     });
     socket.on('webContentsOpenDevTools', function (id, options) {
@@ -32,10 +32,10 @@ module.exports = function (socket) {
             }
             fs.writeFile(path, data, function (error) {
                 if (error) {
-                    socket.emit('webContents-printToPDF-completed', false);
+                    global.elesocket.emit('webContents-printToPDF-completed', false);
                 }
                 else {
-                    socket.emit('webContents-printToPDF-completed', true);
+                    global.elesocket.emit('webContents-printToPDF-completed', true);
                 }
             });
         });

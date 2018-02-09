@@ -6,152 +6,152 @@ var windows = [];
 module.exports = function (socket) {
     socket.on('register-browserWindow-ready-to-show', function (id) {
         getWindowById(id).on('ready-to-show', function () {
-            socket.emit('browserWindow-ready-to-show' + id);
+            global.elesocket.emit('browserWindow-ready-to-show' + id);
         });
     });
     socket.on('register-browserWindow-page-title-updated', function (id) {
         getWindowById(id).on('page-title-updated', function (event, title) {
-            socket.emit('browserWindow-page-title-updated' + id, title);
+            global.elesocket.emit('browserWindow-page-title-updated' + id, title);
         });
     });
     socket.on('register-browserWindow-close', function (id) {
         getWindowById(id).on('close', function () {
-            socket.emit('browserWindow-close' + id);
+            global.elesocket.emit('browserWindow-close' + id);
         });
     });
     socket.on('register-browserWindow-closed', function (id) {
         getWindowById(id).on('closed', function () {
-            socket.emit('browserWindow-closed' + id);
+            global.elesocket.emit('browserWindow-closed' + id);
         });
     });
     socket.on('register-browserWindow-session-end', function (id) {
         getWindowById(id).on('session-end', function () {
-            socket.emit('browserWindow-session-end' + id);
+            global.elesocket.emit('browserWindow-session-end' + id);
         });
     });
     socket.on('register-browserWindow-unresponsive', function (id) {
         getWindowById(id).on('unresponsive', function () {
-            socket.emit('browserWindow-unresponsive' + id);
+            global.elesocket.emit('browserWindow-unresponsive' + id);
         });
     });
     socket.on('register-browserWindow-responsive', function (id) {
         getWindowById(id).on('responsive', function () {
-            socket.emit('browserWindow-responsive' + id);
+            global.elesocket.emit('browserWindow-responsive' + id);
         });
     });
     socket.on('register-browserWindow-blur', function (id) {
         getWindowById(id).on('blur', function () {
-            socket.emit('browserWindow-blur' + id);
+            global.elesocket.emit('browserWindow-blur' + id);
         });
     });
     socket.on('register-browserWindow-focus', function (id) {
         getWindowById(id).on('focus', function () {
-            socket.emit('browserWindow-focus' + id);
+            global.elesocket.emit('browserWindow-focus' + id);
         });
     });
     socket.on('register-browserWindow-show', function (id) {
         getWindowById(id).on('show', function () {
-            socket.emit('browserWindow-show' + id);
+            global.elesocket.emit('browserWindow-show' + id);
         });
     });
     socket.on('register-browserWindow-hide', function (id) {
         getWindowById(id).on('hide', function () {
-            socket.emit('browserWindow-hide' + id);
+            global.elesocket.emit('browserWindow-hide' + id);
         });
     });
     socket.on('register-browserWindow-maximize', function (id) {
         getWindowById(id).on('maximize', function () {
-            socket.emit('browserWindow-maximize' + id);
+            global.elesocket.emit('browserWindow-maximize' + id);
         });
     });
     socket.on('register-browserWindow-unmaximize', function (id) {
         getWindowById(id).on('unmaximize', function () {
-            socket.emit('browserWindow-unmaximize' + id);
+            global.elesocket.emit('browserWindow-unmaximize' + id);
         });
     });
     socket.on('register-browserWindow-minimize', function (id) {
         getWindowById(id).on('minimize', function () {
-            socket.emit('browserWindow-minimize' + id);
+            global.elesocket.emit('browserWindow-minimize' + id);
         });
     });
     socket.on('register-browserWindow-restore', function (id) {
         getWindowById(id).on('restore', function () {
-            socket.emit('browserWindow-restore' + id);
+            global.elesocket.emit('browserWindow-restore' + id);
         });
     });
     socket.on('register-browserWindow-resize', function (id) {
         getWindowById(id).on('resize', function () {
-            socket.emit('browserWindow-resize' + id);
+            global.elesocket.emit('browserWindow-resize' + id);
         });
     });
     socket.on('register-browserWindow-move', function (id) {
         getWindowById(id).on('move', function () {
-            socket.emit('browserWindow-move' + id);
+            global.elesocket.emit('browserWindow-move' + id);
         });
     });
     socket.on('register-browserWindow-moved', function (id) {
         getWindowById(id).on('moved', function () {
-            socket.emit('browserWindow-moved' + id);
+            global.elesocket.emit('browserWindow-moved' + id);
         });
     });
     socket.on('register-browserWindow-enter-full-screen', function (id) {
         getWindowById(id).on('enter-full-screen', function () {
-            socket.emit('browserWindow-enter-full-screen' + id);
+            global.elesocket.emit('browserWindow-enter-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-leave-full-screen', function (id) {
         getWindowById(id).on('leave-full-screen', function () {
-            socket.emit('browserWindow-leave-full-screen' + id);
+            global.elesocket.emit('browserWindow-leave-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-enter-html-full-screen', function (id) {
         getWindowById(id).on('enter-html-full-screen', function () {
-            socket.emit('browserWindow-enter-html-full-screen' + id);
+            global.elesocket.emit('browserWindow-enter-html-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-leave-html-full-screen', function (id) {
         getWindowById(id).on('leave-html-full-screen', function () {
-            socket.emit('browserWindow-leave-html-full-screen' + id);
+            global.elesocket.emit('browserWindow-leave-html-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-app-command', function (id) {
         getWindowById(id).on('app-command', function (event, command) {
-            socket.emit('browserWindow-app-command' + id, command);
+            global.elesocket.emit('browserWindow-app-command' + id, command);
         });
     });
     socket.on('register-browserWindow-scroll-touch-begin', function (id) {
         getWindowById(id).on('scroll-touch-begin', function () {
-            socket.emit('browserWindow-scroll-touch-begin' + id);
+            global.elesocket.emit('browserWindow-scroll-touch-begin' + id);
         });
     });
     socket.on('register-browserWindow-scroll-touch-end', function (id) {
         getWindowById(id).on('scroll-touch-end', function () {
-            socket.emit('browserWindow-scroll-touch-end' + id);
+            global.elesocket.emit('browserWindow-scroll-touch-end' + id);
         });
     });
     socket.on('register-browserWindow-scroll-touch-edge', function (id) {
         getWindowById(id).on('scroll-touch-edge', function () {
-            socket.emit('browserWindow-scroll-touch-edge' + id);
+            global.elesocket.emit('browserWindow-scroll-touch-edge' + id);
         });
     });
     socket.on('register-browserWindow-swipe', function (id) {
         getWindowById(id).on('swipe', function (event, direction) {
-            socket.emit('browserWindow-swipe' + id, direction);
+            global.elesocket.emit('browserWindow-swipe' + id, direction);
         });
     });
     socket.on('register-browserWindow-sheet-begin', function (id) {
         getWindowById(id).on('sheet-begin', function () {
-            socket.emit('browserWindow-sheet-begin' + id);
+            global.elesocket.emit('browserWindow-sheet-begin' + id);
         });
     });
     socket.on('register-browserWindow-sheet-end', function (id) {
         getWindowById(id).on('sheet-end', function () {
-            socket.emit('browserWindow-sheet-end' + id);
+            global.elesocket.emit('browserWindow-sheet-end' + id);
         });
     });
     socket.on('register-browserWindow-new-window-for-tab', function (id) {
         getWindowById(id).on('new-window-for-tab', function () {
-            socket.emit('browserWindow-new-window-for-tab' + id);
+            global.elesocket.emit('browserWindow-new-window-for-tab' + id);
         });
     });
     socket.on('createBrowserWindow', function (options, loadUrl) {
@@ -167,7 +167,7 @@ module.exports = function (socket) {
                         windows.splice(index, 1);
                         var ids_1 = [];
                         windows.forEach(function (x) { return ids_1.push(x.id); });
-                        socket.emit('BrowserWindowClosed', ids_1);
+                        global.elesocket.emit('BrowserWindowClosed', ids_1);
                     }
                 }
             };
@@ -180,7 +180,7 @@ module.exports = function (socket) {
             window.loadURL(loadUrl);
         }
         windows.push(window);
-        socket.emit('BrowserWindowCreated', window.id);
+        global.elesocket.emit('BrowserWindowCreated', window.id);
     });
     socket.on('browserWindowDestroy', function (id) {
         getWindowById(id).destroy();
@@ -196,11 +196,11 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsFocused', function (id) {
         var isFocused = getWindowById(id).isFocused();
-        socket.emit('browserWindow-isFocused-completed', isFocused);
+        global.elesocket.emit('browserWindow-isFocused-completed', isFocused);
     });
     socket.on('browserWindowIsDestroyed', function (id) {
         var isDestroyed = getWindowById(id).isDestroyed();
-        socket.emit('browserWindow-isDestroyed-completed', isDestroyed);
+        global.elesocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
     });
     socket.on('browserWindowShow', function (id) {
         getWindowById(id).show();
@@ -213,11 +213,11 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsVisible', function (id) {
         var isVisible = getWindowById(id).isVisible();
-        socket.emit('browserWindow-isVisible-completed', isVisible);
+        global.elesocket.emit('browserWindow-isVisible-completed', isVisible);
     });
     socket.on('browserWindowIsModal', function (id) {
         var isModal = getWindowById(id).isModal();
-        socket.emit('browserWindow-isModal-completed', isModal);
+        global.elesocket.emit('browserWindow-isModal-completed', isModal);
     });
     socket.on('browserWindowMaximize', function (id) {
         getWindowById(id).maximize();
@@ -227,7 +227,7 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsMaximized', function (id) {
         var isMaximized = getWindowById(id).isMaximized();
-        socket.emit('browserWindow-isMaximized-completed', isMaximized);
+        global.elesocket.emit('browserWindow-isMaximized-completed', isMaximized);
     });
     socket.on('browserWindowMinimize', function (id) {
         getWindowById(id).minimize();
@@ -237,14 +237,14 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsMinimized', function (id) {
         var isMinimized = getWindowById(id).isMinimized();
-        socket.emit('browserWindow-isMinimized-completed', isMinimized);
+        global.elesocket.emit('browserWindow-isMinimized-completed', isMinimized);
     });
     socket.on('browserWindowSetFullScreen', function (id, fullscreen) {
         getWindowById(id).setFullScreen(fullscreen);
     });
     socket.on('browserWindowIsFullScreen', function (id) {
         var isFullScreen = getWindowById(id).isFullScreen();
-        socket.emit('browserWindow-isFullScreen-completed', isFullScreen);
+        global.elesocket.emit('browserWindow-isFullScreen-completed', isFullScreen);
     });
     socket.on('browserWindowSetAspectRatio', function (id, aspectRatio, extraSize) {
         getWindowById(id).setAspectRatio(aspectRatio, extraSize);
@@ -260,91 +260,91 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowGetBounds', function (id) {
         var rectangle = getWindowById(id).getBounds();
-        socket.emit('browserWindow-getBounds-completed', rectangle);
+        global.elesocket.emit('browserWindow-getBounds-completed', rectangle);
     });
     socket.on('browserWindowSetContentBounds', function (id, bounds, animate) {
         getWindowById(id).setContentBounds(bounds, animate);
     });
     socket.on('browserWindowGetContentBounds', function (id) {
         var rectangle = getWindowById(id).getContentBounds();
-        socket.emit('browserWindow-getContentBounds-completed', rectangle);
+        global.elesocket.emit('browserWindow-getContentBounds-completed', rectangle);
     });
     socket.on('browserWindowSetSize', function (id, width, height, animate) {
         getWindowById(id).setSize(width, height, animate);
     });
     socket.on('browserWindowGetSize', function (id) {
         var size = getWindowById(id).getSize();
-        socket.emit('browserWindow-getSize-completed', size);
+        global.elesocket.emit('browserWindow-getSize-completed', size);
     });
     socket.on('browserWindowSetContentSize', function (id, width, height, animate) {
         getWindowById(id).setContentSize(width, height, animate);
     });
     socket.on('browserWindowGetContentSize', function (id) {
         var size = getWindowById(id).getContentSize();
-        socket.emit('browserWindow-getContentSize-completed', size);
+        global.elesocket.emit('browserWindow-getContentSize-completed', size);
     });
     socket.on('browserWindowSetMinimumSize', function (id, width, height) {
         getWindowById(id).setMinimumSize(width, height);
     });
     socket.on('browserWindowGetMinimumSize', function (id) {
         var size = getWindowById(id).getMinimumSize();
-        socket.emit('browserWindow-getMinimumSize-completed', size);
+        global.elesocket.emit('browserWindow-getMinimumSize-completed', size);
     });
     socket.on('browserWindowSetMaximumSize', function (id, width, height) {
         getWindowById(id).setMaximumSize(width, height);
     });
     socket.on('browserWindowGetMaximumSize', function (id) {
         var size = getWindowById(id).getMaximumSize();
-        socket.emit('browserWindow-getMaximumSize-completed', size);
+        global.elesocket.emit('browserWindow-getMaximumSize-completed', size);
     });
     socket.on('browserWindowSetResizable', function (id, resizable) {
         getWindowById(id).setResizable(resizable);
     });
     socket.on('browserWindowIsResizable', function (id) {
         var resizable = getWindowById(id).isResizable();
-        socket.emit('browserWindow-isResizable-completed', resizable);
+        global.elesocket.emit('browserWindow-isResizable-completed', resizable);
     });
     socket.on('browserWindowSetMovable', function (id, movable) {
         getWindowById(id).setMovable(movable);
     });
     socket.on('browserWindowIsMovable', function (id) {
         var movable = getWindowById(id).isMovable();
-        socket.emit('browserWindow-isMovable-completed', movable);
+        global.elesocket.emit('browserWindow-isMovable-completed', movable);
     });
     socket.on('browserWindowSetMinimizable', function (id, minimizable) {
         getWindowById(id).setMinimizable(minimizable);
     });
     socket.on('browserWindowIsMinimizable', function (id) {
         var minimizable = getWindowById(id).isMinimizable();
-        socket.emit('browserWindow-isMinimizable-completed', minimizable);
+        global.elesocket.emit('browserWindow-isMinimizable-completed', minimizable);
     });
     socket.on('browserWindowSetMaximizable', function (id, maximizable) {
         getWindowById(id).setMaximizable(maximizable);
     });
     socket.on('browserWindowIsMaximizable', function (id) {
         var maximizable = getWindowById(id).isMaximizable();
-        socket.emit('browserWindow-isMaximizable-completed', maximizable);
+        global.elesocket.emit('browserWindow-isMaximizable-completed', maximizable);
     });
     socket.on('browserWindowSetFullScreenable', function (id, fullscreenable) {
         getWindowById(id).setFullScreenable(fullscreenable);
     });
     socket.on('browserWindowIsFullScreenable', function (id) {
         var fullscreenable = getWindowById(id).isFullScreenable();
-        socket.emit('browserWindow-isFullScreenable-completed', fullscreenable);
+        global.elesocket.emit('browserWindow-isFullScreenable-completed', fullscreenable);
     });
     socket.on('browserWindowSetClosable', function (id, closable) {
         getWindowById(id).setClosable(closable);
     });
     socket.on('browserWindowIsClosable', function (id) {
         var closable = getWindowById(id).isClosable();
-        socket.emit('browserWindow-isClosable-completed', closable);
+        global.elesocket.emit('browserWindow-isClosable-completed', closable);
     });
     socket.on('browserWindowSetAlwaysOnTop', function (id, flag, level, relativeLevel) {
         getWindowById(id).setAlwaysOnTop(flag, level, relativeLevel);
     });
     socket.on('browserWindowIsAlwaysOnTop', function (id) {
         var isAlwaysOnTop = getWindowById(id).isAlwaysOnTop();
-        socket.emit('browserWindow-isAlwaysOnTop-completed', isAlwaysOnTop);
+        global.elesocket.emit('browserWindow-isAlwaysOnTop-completed', isAlwaysOnTop);
     });
     socket.on('browserWindowCenter', function (id) {
         getWindowById(id).center();
@@ -354,14 +354,14 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowGetPosition', function (id) {
         var position = getWindowById(id).getPosition();
-        socket.emit('browserWindow-getPosition-completed', position);
+        global.elesocket.emit('browserWindow-getPosition-completed', position);
     });
     socket.on('browserWindowSetTitle', function (id, title) {
         getWindowById(id).setTitle(title);
     });
     socket.on('browserWindowGetTitle', function (id) {
         var title = getWindowById(id).getTitle();
-        socket.emit('browserWindow-getTitle-completed', title);
+        global.elesocket.emit('browserWindow-getTitle-completed', title);
     });
     socket.on('browserWindowSetTitle', function (id, title) {
         getWindowById(id).setTitle(title);
@@ -385,21 +385,21 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsKiosk', function (id) {
         var isKiosk = getWindowById(id).isKiosk();
-        socket.emit('browserWindow-isKiosk-completed', isKiosk);
+        global.elesocket.emit('browserWindow-isKiosk-completed', isKiosk);
     });
     socket.on('browserWindowSetRepresentedFilename', function (id, filename) {
         getWindowById(id).setRepresentedFilename(filename);
     });
     socket.on('browserWindowGetRepresentedFilename', function (id) {
         var pathname = getWindowById(id).getRepresentedFilename();
-        socket.emit('browserWindow-getRepresentedFilename-completed', pathname);
+        global.elesocket.emit('browserWindow-getRepresentedFilename-completed', pathname);
     });
     socket.on('browserWindowSetDocumentEdited', function (id, edited) {
         getWindowById(id).setDocumentEdited(edited);
     });
     socket.on('browserWindowIsDocumentEdited', function (id) {
         var edited = getWindowById(id).isDocumentEdited();
-        socket.emit('browserWindow-isDocumentEdited-completed', edited);
+        global.elesocket.emit('browserWindow-isDocumentEdited-completed', edited);
     });
     socket.on('browserWindowFocusOnWebView', function (id) {
         getWindowById(id).focusOnWebView();
@@ -418,7 +418,7 @@ module.exports = function (socket) {
         if (menuItems) {
             menu = electron_1.Menu.buildFromTemplate(menuItems);
             addMenuItemClickConnector(menu.items, function (id) {
-                socket.emit("windowMenuItemClicked", id);
+                global.elesocket.emit("windowMenuItemClicked", id);
             });
         }
         getWindowById(id).setMenu(menu);
@@ -441,18 +441,18 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowHasShadow', function (id) {
         var hasShadow = getWindowById(id).hasShadow();
-        socket.emit('browserWindow-hasShadow-completed', hasShadow);
+        global.elesocket.emit('browserWindow-hasShadow-completed', hasShadow);
     });
     socket.on('browserWindowSetThumbarButtons', function (id, thumbarButtons) {
         thumbarButtons.forEach(function (thumbarButton) {
             var imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = electron_1.nativeImage.createFromPath(imagePath);
             thumbarButton.click = function () {
-                socket.emit("thumbarButtonClicked", thumbarButton["id"]);
+                global.elesocket.emit("thumbarButtonClicked", thumbarButton["id"]);
             };
         });
         var success = getWindowById(id).setThumbarButtons(thumbarButtons);
-        socket.emit('browserWindowSetThumbarButtons-completed', success);
+        global.elesocket.emit('browserWindowSetThumbarButtons-completed', success);
     });
     socket.on('browserWindowSetThumbnailClip', function (id, rectangle) {
         getWindowById(id).setThumbnailClip(rectangle);
@@ -471,21 +471,21 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowIsMenuBarAutoHide', function (id) {
         var isMenuBarAutoHide = getWindowById(id).isMenuBarAutoHide();
-        socket.emit('browserWindow-isMenuBarAutoHide-completed', isMenuBarAutoHide);
+        global.elesocket.emit('browserWindow-isMenuBarAutoHide-completed', isMenuBarAutoHide);
     });
     socket.on('browserWindowSetMenuBarVisibility', function (id, visible) {
         getWindowById(id).setMenuBarVisibility(visible);
     });
     socket.on('browserWindowIsMenuBarVisible', function (id) {
         var isMenuBarVisible = getWindowById(id).isMenuBarVisible();
-        socket.emit('browserWindow-isMenuBarVisible-completed', isMenuBarVisible);
+        global.elesocket.emit('browserWindow-isMenuBarVisible-completed', isMenuBarVisible);
     });
     socket.on('browserWindowSetVisibleOnAllWorkspaces', function (id, visible) {
         getWindowById(id).setVisibleOnAllWorkspaces(visible);
     });
     socket.on('browserWindowIsVisibleOnAllWorkspaces', function (id) {
         var isVisibleOnAllWorkspaces = getWindowById(id).isVisibleOnAllWorkspaces();
-        socket.emit('browserWindow-isVisibleOnAllWorkspaces-completed', isVisibleOnAllWorkspaces);
+        global.elesocket.emit('browserWindow-isVisibleOnAllWorkspaces-completed', isVisibleOnAllWorkspaces);
     });
     socket.on('browserWindowSetIgnoreMouseEvents', function (id, ignore) {
         getWindowById(id).setIgnoreMouseEvents(ignore);
@@ -502,7 +502,7 @@ module.exports = function (socket) {
     });
     socket.on('browserWindowGetParentWindow', function (id) {
         var browserWindow = getWindowById(id).getParentWindow();
-        socket.emit('browserWindow-getParentWindow-completed', browserWindow.id);
+        global.elesocket.emit('browserWindow-getParentWindow-completed', browserWindow.id);
     });
     socket.on('browserWindowGetChildWindows', function (id) {
         var browserWindows = getWindowById(id).getChildWindows();
@@ -510,7 +510,7 @@ module.exports = function (socket) {
         browserWindows.forEach(function (x) {
             ids.push(x.id);
         });
-        socket.emit('browserWindow-getChildWindows-completed', ids);
+        global.elesocket.emit('browserWindow-getChildWindows-completed', ids);
     });
     socket.on('browserWindowSetAutoHideCursor', function (id, autoHide) {
         getWindowById(id).setAutoHideCursor(autoHide);

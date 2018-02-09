@@ -16,44 +16,44 @@ module.exports = function (socket, app) {
     });
     socket.on('register-app-window-all-closed-event', function (id) {
         app.on('window-all-closed', function () {
-            socket.emit('app-window-all-closed' + id);
+            global.elesocket.emit('app-window-all-closed' + id);
         });
     });
     socket.on('register-app-before-quit-event', function (id) {
         app.on('before-quit', function (event) {
             event.preventDefault();
-            socket.emit('app-before-quit' + id);
+            global.elesocket.emit('app-before-quit' + id);
         });
     });
     socket.on('register-app-will-quit-event', function (id) {
         app.on('will-quit', function (event) {
             event.preventDefault();
-            socket.emit('app-will-quit' + id);
+            global.elesocket.emit('app-will-quit' + id);
         });
     });
     socket.on('register-app-browser-window-blur-event', function (id) {
         app.on('browser-window-blur', function () {
-            socket.emit('app-browser-window-blur' + id);
+            global.elesocket.emit('app-browser-window-blur' + id);
         });
     });
     socket.on('register-app-browser-window-focus-event', function (id) {
         app.on('browser-window-focus', function () {
-            socket.emit('app-browser-window-focus' + id);
+            global.elesocket.emit('app-browser-window-focus' + id);
         });
     });
     socket.on('register-app-browser-window-created-event', function (id) {
         app.on('browser-window-created', function () {
-            socket.emit('app-browser-window-created' + id);
+            global.elesocket.emit('app-browser-window-created' + id);
         });
     });
     socket.on('register-app-web-contents-created-event', function (id) {
         app.on('web-contents-created', function () {
-            socket.emit('app-web-contents-created' + id);
+            global.elesocket.emit('app-web-contents-created' + id);
         });
     });
     socket.on('register-app-accessibility-support-changed-event', function (id) {
         app.on('accessibility-support-changed', function (event, accessibilitySupportEnabled) {
-            socket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
+            global.elesocket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
         });
     });
     socket.on('appQuit', function () {
@@ -77,11 +77,11 @@ module.exports = function (socket, app) {
     });
     socket.on('appGetAppPath', function () {
         var path = app.getAppPath();
-        socket.emit('appGetAppPathCompleted', path);
+        global.elesocket.emit('appGetAppPathCompleted', path);
     });
     socket.on('appGetPath', function (name) {
         var path = app.getPath(name);
-        socket.emit('appGetPathCompleted', path);
+        global.elesocket.emit('appGetPathCompleted', path);
     });
     // const nativeImages = {};
     // function addNativeImage(nativeImage: Electron.NativeImage) {
@@ -95,12 +95,12 @@ module.exports = function (socket, app) {
     socket.on('appGetFileIcon', function (path, options) {
         if (options) {
             app.getFileIcon(path, options, function (error, nativeImage) {
-                socket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                global.elesocket.emit('appGetFileIconCompleted', [error, nativeImage]);
             });
         }
         else {
             app.getFileIcon(path, function (error, nativeImage) {
-                socket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                global.elesocket.emit('appGetFileIconCompleted', [error, nativeImage]);
             });
         }
     });
@@ -109,18 +109,18 @@ module.exports = function (socket, app) {
     });
     socket.on('appGetVersion', function () {
         var version = app.getVersion();
-        socket.emit('appGetVersionCompleted', version);
+        global.elesocket.emit('appGetVersionCompleted', version);
     });
     socket.on('appGetName', function () {
         var name = app.getName();
-        socket.emit('appGetNameCompleted', name);
+        global.elesocket.emit('appGetNameCompleted', name);
     });
     socket.on('appSetName', function (name) {
         app.setName(name);
     });
     socket.on('appGetLocale', function () {
         var locale = app.getLocale();
-        socket.emit('appGetLocaleCompleted', locale);
+        global.elesocket.emit('appGetLocaleCompleted', locale);
     });
     socket.on('appAddRecentDocument', function (path) {
         app.addRecentDocument(path);
@@ -130,32 +130,32 @@ module.exports = function (socket, app) {
     });
     socket.on('appSetAsDefaultProtocolClient', function (protocol, path, args) {
         var success = app.setAsDefaultProtocolClient(protocol, path, args);
-        socket.emit('appSetAsDefaultProtocolClientCompleted', success);
+        global.elesocket.emit('appSetAsDefaultProtocolClientCompleted', success);
     });
     socket.on('appRemoveAsDefaultProtocolClient', function (protocol, path, args) {
         var success = app.removeAsDefaultProtocolClient(protocol, path, args);
-        socket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
+        global.elesocket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
     });
     socket.on('appIsDefaultProtocolClient', function (protocol, path, args) {
         var success = app.isDefaultProtocolClient(protocol, path, args);
-        socket.emit('appIsDefaultProtocolClientCompleted', success);
+        global.elesocket.emit('appIsDefaultProtocolClientCompleted', success);
     });
     socket.on('appSetUserTasks', function (tasks) {
         var success = app.setUserTasks(tasks);
-        socket.emit('appSetUserTasksCompleted', success);
+        global.elesocket.emit('appSetUserTasksCompleted', success);
     });
     socket.on('appGetJumpListSettings', function () {
         var jumpListSettings = app.getJumpListSettings();
-        socket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
+        global.elesocket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
     });
     socket.on('appSetJumpList', function (categories) {
         app.setJumpList(categories);
     });
     socket.on('appMakeSingleInstance', function () {
         var success = app.makeSingleInstance(function (args, workingDirectory) {
-            socket.emit('newInstanceOpened', [args, workingDirectory]);
+            global.elesocket.emit('newInstanceOpened', [args, workingDirectory]);
         });
-        socket.emit('appMakeSingleInstanceCompleted', success);
+        global.elesocket.emit('appMakeSingleInstanceCompleted', success);
     });
     socket.on('appReleaseSingleInstance', function () {
         app.releaseSingleInstance();
@@ -165,48 +165,48 @@ module.exports = function (socket, app) {
     });
     socket.on('appGetCurrentActivityType', function () {
         var activityType = app.getCurrentActivityType();
-        socket.emit('appGetCurrentActivityTypeCompleted', activityType);
+        global.elesocket.emit('appGetCurrentActivityTypeCompleted', activityType);
     });
     socket.on('appSetAppUserModelId', function (id) {
         app.setAppUserModelId(id);
     });
     socket.on('appImportCertificate', function (options) {
         app.importCertificate(options, function (result) {
-            socket.emit('appImportCertificateCompleted', result);
+            global.elesocket.emit('appImportCertificateCompleted', result);
         });
     });
     socket.on('appGetAppMetrics', function () {
         var processMetrics = app.getAppMetrics();
-        socket.emit('appGetAppMetricsCompleted', processMetrics);
+        global.elesocket.emit('appGetAppMetricsCompleted', processMetrics);
     });
     socket.on('appGetGpuFeatureStatus', function () {
         // TS Workaround - TS say getGpuFeatureStatus - but it is getGPUFeatureStatus
         var x = app;
         var gpuFeatureStatus = x.getGPUFeatureStatus();
-        socket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
+        global.elesocket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
     });
     socket.on('appSetBadgeCount', function (count) {
         var success = app.setBadgeCount(count);
-        socket.emit('appSetBadgeCountCompleted', success);
+        global.elesocket.emit('appSetBadgeCountCompleted', success);
     });
     socket.on('appGetBadgeCount', function () {
         var count = app.getBadgeCount();
-        socket.emit('appGetBadgeCountCompleted', count);
+        global.elesocket.emit('appGetBadgeCountCompleted', count);
     });
     socket.on('appIsUnityRunning', function () {
         var isUnityRunning = app.isUnityRunning();
-        socket.emit('appIsUnityRunningCompleted', isUnityRunning);
+        global.elesocket.emit('appIsUnityRunningCompleted', isUnityRunning);
     });
     socket.on('appGetLoginItemSettings', function (options) {
         var loginItemSettings = app.getLoginItemSettings(options);
-        socket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
+        global.elesocket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
     });
     socket.on('appSetLoginItemSettings', function (settings) {
         app.setLoginItemSettings(settings);
     });
     socket.on('appIsAccessibilitySupportEnabled', function () {
         var isAccessibilitySupportEnabled = app.isAccessibilitySupportEnabled();
-        socket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
+        global.elesocket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
     });
     socket.on('appSetAboutPanelOptions', function (options) {
         app.setAboutPanelOptions(options);
@@ -222,7 +222,7 @@ module.exports = function (socket, app) {
     });
     socket.on('appDockBounce', function (type) {
         var id = app.dock.bounce(type);
-        socket.emit('appDockBounceCompleted', id);
+        global.elesocket.emit('appDockBounceCompleted', id);
     });
     socket.on('appDockCancelBounce', function (id) {
         app.dock.cancelBounce(id);
@@ -235,7 +235,7 @@ module.exports = function (socket, app) {
     });
     socket.on('appDockGetBadge', function () {
         var text = app.dock.getBadge();
-        socket.emit('appDockGetBadgeCompleted', text);
+        global.elesocket.emit('appDockGetBadgeCompleted', text);
     });
     socket.on('appDockHide', function () {
         app.dock.hide();
@@ -245,7 +245,7 @@ module.exports = function (socket, app) {
     });
     socket.on('appDockIsVisible', function () {
         var isVisible = app.dock.isVisible();
-        socket.emit('appDockIsVisibleCompleted', isVisible);
+        global.elesocket.emit('appDockIsVisibleCompleted', isVisible);
     });
     // TODO: Menü Lösung muss noch implementiert werden
     socket.on('appDockSetMenu', function (menu) {
