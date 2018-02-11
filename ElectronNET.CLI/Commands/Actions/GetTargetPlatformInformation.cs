@@ -14,7 +14,7 @@ namespace ElectronNET.CLI.Commands.Actions
 
         }
 
-        public static GetTargetPlatformInformationResult Do(string desiredPlatform)
+        public static GetTargetPlatformInformationResult Do(string desiredPlatform, string specifiedPlatfromFromCustom)
         {
             string netCorePublishRid = string.Empty;
             string electronPackerPlatform = string.Empty;
@@ -33,34 +33,27 @@ namespace ElectronNET.CLI.Commands.Actions
                     netCorePublishRid = "linux-x64";
                     electronPackerPlatform = "linux";
                     break;
+                case "custom":
+                    var splittedSpecified = specifiedPlatfromFromCustom.Split(';');
+                    netCorePublishRid = splittedSpecified[0];
+                    electronPackerPlatform = splittedSpecified[1];
+                    break;
                 default:
-                    if (desiredPlatform.StartsWith("custom="))
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-
+                        netCorePublishRid = "win-x64";
+                        electronPackerPlatform = "win32";
                     }
-                    else
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            desiredPlatform = "win";
-                            netCorePublishRid = "win-x64";
-                            electronPackerPlatform = "win32";
-                        }
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        {
-                            desiredPlatform = "osx";
-                            netCorePublishRid = "osx-x64";
-                            electronPackerPlatform = "darwin";
-                        }
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                        {
-                            desiredPlatform = "linux";
-                            netCorePublishRid = "linux-x64";
-                            electronPackerPlatform = "linux";
-                        }
+                        netCorePublishRid = "osx-x64";
+                        electronPackerPlatform = "darwin";
                     }
-
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        netCorePublishRid = "linux-x64";
+                        electronPackerPlatform = "linux";
+                    }
 
                     break;
             }

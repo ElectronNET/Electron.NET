@@ -28,13 +28,17 @@ namespace ElectronNET.CLI.Commands
             {
                 Console.WriteLine("Build Electron Application...");
 
-                var parsedArgs = _args
-                    .Select(s => s.Split(new[] { ':' }, 1))
-                    .ToDictionary(s => s[0], s => s[1]);
+                SimpleCommandLineParser parser = new SimpleCommandLineParser();
+                parser.Parse(_args);
 
-                var desiredPlatform = parsedArgs["/target"];
-
-                var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform);
+                var desiredPlatform = parser.Arguments["/target"][0];
+                string specifiedFromCustom = string.Empty;
+                if (desiredPlatform == "custom" && parser.Arguments["/target"].Length > 1)
+                {
+                    specifiedFromCustom = parser.Arguments["/target"][1];
+                }
+                
+                var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 

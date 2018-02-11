@@ -7,7 +7,6 @@ using System.Text;
 
 namespace ElectronNET.CLI
 {
- 
     class Program
     {
         static void Main(string[] args)
