@@ -31,11 +31,11 @@ namespace ElectronNET.CLI.Commands
                 SimpleCommandLineParser parser = new SimpleCommandLineParser();
                 parser.Parse(_args);
 
-                var desiredPlatform = parser.Arguments["/target"][0];
+                var desiredPlatform = parser.Arguments["target"][0];
                 string specifiedFromCustom = string.Empty;
-                if (desiredPlatform == "custom" && parser.Arguments["/target"].Length > 1)
+                if (desiredPlatform == "custom" && parser.Arguments["target"].Length > 1)
                 {
-                    specifiedFromCustom = parser.Arguments["/target"][1];
+                    specifiedFromCustom = parser.Arguments["target"][1];
                 }
                 
                 var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
