@@ -22,6 +22,10 @@ dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build
 echo "/target linux (dev-build)"
 dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target linux
 
+echo "/target custom win7-x86;win32 (dev-build)"
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32
+
+
 :: Be aware, that for non-electronnet-dev environments the correct 
 :: invoke command would be dotnet electronize ...
 
