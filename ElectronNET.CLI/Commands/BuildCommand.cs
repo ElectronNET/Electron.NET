@@ -22,6 +22,11 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
+        private string _paramTarget = "target";
+        private string _paramDotNetConfig = "dotnet-configuration";
+        private string _paramElectronArch = "electron-arch";
+        private string _paramElectronParams = "electron-params";
+
         public Task<bool> ExecuteAsync()
         {
             return Task.Run(() =>
@@ -31,13 +36,19 @@ namespace ElectronNET.CLI.Commands
                 SimpleCommandLineParser parser = new SimpleCommandLineParser();
                 parser.Parse(_args);
 
-                var desiredPlatform = parser.Arguments["target"][0];
+                var desiredPlatform = parser.Arguments[_paramTarget][0];
                 string specifiedFromCustom = string.Empty;
-                if (desiredPlatform == "custom" && parser.Arguments["target"].Length > 1)
+                if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
                 {
                     specifiedFromCustom = parser.Arguments["target"][1];
                 }
-                
+
+                string configuration = "Release";
+                if (parser.Arguments.ContainsKey(_paramDotNetConfig))
+                {
+                    configuration = parser.Arguments[_paramDotNetConfig][0];
+                }
+
                 var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
@@ -53,9 +64,9 @@ namespace ElectronNET.CLI.Commands
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
-                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
+                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
 
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c {configuration} --output \"{tempBinPath}\"", Directory.GetCurrentDirectory());
 
                 if (resultCode != 0)
                 {
@@ -99,8 +110,21 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
                 // ToDo: Need a solution for --asar support
+
+                string electronArch = "x64";
+                if (parser.Arguments.ContainsKey(_paramElectronArch))
+                {
+                    electronArch = parser.Arguments[_paramElectronArch][0];
+                }
+
+                string electronParams = "";
+                if (parser.Arguments.ContainsKey(_paramElectronParams))
+                {
+                    electronParams = parser.Arguments[electronParams][0];
+                }
+
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-packager . --platform={platformInfo.ElectronPackerPlatform} --arch=x64 --out=\"{buildPath}\" --overwrite", tempPath);
+                ProcessHelper.CmdExecute($"electron-packager . --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams} --out=\"{buildPath}\" --overwrite", tempPath);
 
                 Console.WriteLine("... done");
 
