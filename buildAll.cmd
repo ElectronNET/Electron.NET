@@ -18,7 +18,7 @@ echo "Invoke electronize build in WebApp Demo"
 
 
 echo "/target xxx (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch x86  /electron-params "--prune=true "
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
 
 
 echo "/target win (dev-build)"
