@@ -120,7 +120,7 @@ namespace ElectronNET.CLI.Commands
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
                 {
-                    electronParams = parser.Arguments[electronParams][0];
+                    electronParams = parser.Arguments[_paramElectronParams][0];
                 }
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
