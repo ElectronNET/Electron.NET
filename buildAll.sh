@@ -28,7 +28,7 @@ echo "/target osx (dev-build)"
 dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target osx
 
 echo "/target custom win7-x86;win32 (dev-build)"
-dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" "build /target custom win7-x86;win32"
+dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom "win7-x86;win32"
 
 # Be aware, that for non-electronnet-dev environments the correct 
 # invoke command would be dotnet electronize ...
