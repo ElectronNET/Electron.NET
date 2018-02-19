@@ -1,5 +1,21 @@
 # not release
 
+# 0.0.9
+
+ElectronNET.API:
+
+* Better Async handling - thanks @danielmarbach
+
+ElectronNET.CLI:
+
+* More options on the 'build' command, e.g. for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
+* .NET Core project is now build with Release configuration, but can be adjusted with the new params.
+* Be aware: "Breaking" (but because of the alpha status of this project, we won't use SemVer)
+
+# 0.0.8
+
+This version was skipped because we unfortunatly released a pre version of this on NuGet.
+
 # 0.0.7
 
 ElectronNET.CLI:
