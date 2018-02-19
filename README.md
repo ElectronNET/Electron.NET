@@ -88,9 +88,11 @@ For the tooling you will need your dotnet-electronize package [ElectronNET.CLI N
 
 ```
     <ItemGroup>
-         <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
+         <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
     </ItemGroup>
 ```
+Be aware of the version: The current version of the CLI is 0.0.9.
+
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
 
 ```
