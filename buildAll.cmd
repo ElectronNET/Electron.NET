@@ -16,15 +16,24 @@ dotnet build
 
 echo "Invoke electronize build in WebApp Demo"
 
-echo "-- win (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build win
 
-echo "-- linux (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build linux
+echo "/target xxx (dev-build)"
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
+
+
+echo "/target win (dev-build)"
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target win
+
+echo "/target linux (dev-build)"
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target linux
+
+echo "/target custom win7-x86;win32 (dev-build)"
+dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32
+
 
 :: Be aware, that for non-electronnet-dev environments the correct 
 :: invoke command would be dotnet electronize ...
 
 :: Not supported on Windows Systems, because of SymLinks...
-:: echo "-- osx"
-::   dotnet electronize build osx
+:: echo "/target osx"
+::   dotnet electronize build /target osx
