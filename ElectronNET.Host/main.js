@@ -49,7 +49,8 @@ function startAspCoreBackend(electronPort) {
         }
         
         const binFilePath = path.join(__dirname, 'bin', binaryFile);
-        apiProcess = process(binFilePath, parameters);
+        var options = { cwd: path.join(__dirname, 'bin') };
+        apiProcess = process(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
             var text = data.toString();
