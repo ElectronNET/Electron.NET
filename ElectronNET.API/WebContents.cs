@@ -132,6 +132,22 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
+        public Task<string> GetUrl()
+        {
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            var eventString = "webContents-getUrl" + Id;
+            BridgeConnector.Socket.On(eventString, (url) =>
+            {
+                BridgeConnector.Socket.Off(eventString);
+                taskCompletionSource.SetResult((string)url);
+            });
+
+            BridgeConnector.Socket.Emit("webContents-getUrl", Id);
+
+            return taskCompletionSource.Task;
+        }
+        
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

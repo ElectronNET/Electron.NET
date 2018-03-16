@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Collections.Generic;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
@@ -21,5 +23,10 @@
         /// files.
         /// </summary>
         public string BaseURLForDataURL { get; set; }
+
+        /// <summary>
+        /// Extra headers for the request.
+        /// </summary>
+        public string ExtraHeaders { get; set; }
     }
 }

@@ -40,6 +40,10 @@ module.exports = function (socket) {
             });
         });
     });
+    socket.on('webContents-getUrl', function (id) {
+        var browserWindow = getWindowById(id);
+        socket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
+    });
     function getWindowById(id) {
         return electron_1.BrowserWindow.fromId(id);
     }
