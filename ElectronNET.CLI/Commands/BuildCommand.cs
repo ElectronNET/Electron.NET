@@ -48,7 +48,7 @@ namespace ElectronNET.CLI.Commands
                 string specifiedFromCustom = string.Empty;
                 if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
                 {
-                    specifiedFromCustom = parser.Arguments["target"][1];
+                    specifiedFromCustom = parser.Arguments[_paramTarget][1];
                 }
 
                 string configuration = "Release";
