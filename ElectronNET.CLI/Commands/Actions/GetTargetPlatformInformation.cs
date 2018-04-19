@@ -33,6 +33,10 @@ namespace ElectronNET.CLI.Commands.Actions
                     netCorePublishRid = "linux-x64";
                     electronPackerPlatform = "linux";
                     break;
+                case "linux-arm":
+                    netCorePublishRid = "linux-arm";
+                    electronPackerPlatform = "linux";
+                    break;
                 case "custom":
                     var splittedSpecified = specifiedPlatfromFromCustom.Split(';');
                     netCorePublishRid = splittedSpecified[0];
