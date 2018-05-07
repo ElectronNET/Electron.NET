@@ -3,7 +3,7 @@
 
 AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
-* Checkout AppVeyor Aritfacts: Contains the WebApp sample built for Windows & Linux!
+* Checkout AppVeyor Artifacts: Contains the WebApp sample built for Windows & Linux!
 
 Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
