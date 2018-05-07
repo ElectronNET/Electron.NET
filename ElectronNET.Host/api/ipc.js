@@ -3,6 +3,7 @@ exports.__esModule = true;
 var electron_1 = require("electron");
 module.exports = function (socket) {
     socket.on('registerIpcMainChannel', function (channel) { // 监听主程序注册
+        electron_1.ipcMain.removeAllListeners(channel); // yf add 防止重复监听
         electron_1.ipcMain.on(channel, function (event, args) { // 监听前端的推送
             console.log('ipc emit...', 'global.elesocket', global.elesocket.id, channel);
             global.elesocket.emit(channel, [event.preventDefault(), args]); // 发送到后端
