@@ -15,12 +15,14 @@ app.on('ready', () => {
 
 function startSocketApiBridge(port) {
     io = require('socket.io')(port);
+
     // yf add
-    io.setMaxListeners(0);
     startAspCoreBackend(port);
 
     io.on('connection', (socket) => {
+
         global.elesocket = socket;
+        global.elesocket.setMaxListeners(0);
         console.log('ASP.NET Core Application connected...', 'global.elesocket', global.elesocket.id, new Date());
 
         appApi = require('./api/app')(socket, app);
