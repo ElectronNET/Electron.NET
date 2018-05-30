@@ -183,16 +183,20 @@ module.exports = function (socket) {
         global.elesocket.emit('BrowserWindowCreated', window.id);
     });
     socket.on('browserWindowDestroy', function (id) {
-        getWindowById(id).destroy();
+        if (getWindowById(id))
+            getWindowById(id).destroy();
     });
     socket.on('browserWindowClose', function (id) {
-        getWindowById(id).close();
+        if (getWindowById(id))
+            getWindowById(id).close();
     });
     socket.on('browserWindowFocus', function (id) {
-        getWindowById(id).focus();
+        if (getWindowById(id))
+            getWindowById(id).focus();
     });
     socket.on('browserWindowBlur', function (id) {
-        getWindowById(id).blur();
+        if (getWindowById(id))
+            getWindowById(id).blur();
     });
     socket.on('browserWindowIsFocused', function (id) {
         var isFocused = getWindowById(id).isFocused();
@@ -230,7 +234,8 @@ module.exports = function (socket) {
         global.elesocket.emit('browserWindow-isMaximized-completed', isMaximized);
     });
     socket.on('browserWindowMinimize', function (id) {
-        getWindowById(id).minimize();
+        if (getWindowById(id))
+            getWindowById(id).minimize();
     });
     socket.on('browserWindowRestore', function (id) {
         getWindowById(id).restore();
@@ -240,7 +245,8 @@ module.exports = function (socket) {
         global.elesocket.emit('browserWindow-isMinimized-completed', isMinimized);
     });
     socket.on('browserWindowSetFullScreen', function (id, fullscreen) {
-        getWindowById(id).setFullScreen(fullscreen);
+        if (getWindowById(id))
+            getWindowById(id).setFullScreen(fullscreen);
     });
     socket.on('browserWindowIsFullScreen', function (id) {
         var isFullScreen = getWindowById(id).isFullScreen();
@@ -312,7 +318,8 @@ module.exports = function (socket) {
         global.elesocket.emit('browserWindow-isMovable-completed', movable);
     });
     socket.on('browserWindowSetMinimizable', function (id, minimizable) {
-        getWindowById(id).setMinimizable(minimizable);
+        if (getWindowById(id))
+            getWindowById(id).setMinimizable(minimizable);
     });
     socket.on('browserWindowIsMinimizable', function (id) {
         var minimizable = getWindowById(id).isMinimizable();
@@ -347,7 +354,8 @@ module.exports = function (socket) {
         global.elesocket.emit('browserWindow-isAlwaysOnTop-completed', isAlwaysOnTop);
     });
     socket.on('browserWindowCenter', function (id) {
-        getWindowById(id).center();
+        if (getWindowById(id))
+            getWindowById(id).center();
     });
     socket.on('browserWindowSetPosition', function (id, x, y, animate) {
         getWindowById(id).setPosition(x, y, animate);
@@ -357,14 +365,12 @@ module.exports = function (socket) {
         global.elesocket.emit('browserWindow-getPosition-completed', position);
     });
     socket.on('browserWindowSetTitle', function (id, title) {
-        getWindowById(id).setTitle(title);
+        if (getWindowById(id))
+            getWindowById(id).setTitle(title);
     });
     socket.on('browserWindowGetTitle', function (id) {
         var title = getWindowById(id).getTitle();
         global.elesocket.emit('browserWindow-getTitle-completed', title);
-    });
-    socket.on('browserWindowSetTitle', function (id, title) {
-        getWindowById(id).setTitle(title);
     });
     socket.on('browserWindowSetSheetOffset', function (id, offsetY, offsetX) {
         if (offsetX) {
