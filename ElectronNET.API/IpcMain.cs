@@ -46,6 +46,7 @@ namespace ElectronNET.API
         public void On(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
+            BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On(channel, (args) => 
             {
                 List<object> objectArray = FormatArguments(args);
