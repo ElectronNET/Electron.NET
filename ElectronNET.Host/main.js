@@ -1,4 +1,5 @@
 const { app } = require('electron');
+const { BrowserWindow } = require('electron')
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
@@ -6,8 +7,13 @@ const portfinder = require('detect-port');
 let io, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialog, notification, tray, webContents;
 let globalShortcut, shell, screen, clipboard;
+let loadingWindow;
 
 app.on('ready', () => {
+
+    // yf add 
+    startLoadingWindow();
+
     portfinder(8000, (error, port) => {
         startSocketApiBridge(port);
     });
@@ -59,8 +65,36 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             var text = data.toString();
             console.log(`stdout: ${data.toString()}`);
+
+            if (data.toString().indexOf("MainWindowShowed") > -1 && loadingWindow && !loadingWindow.isDestroyed()) {
+                loadingWindow.close();
+            }
         });
     });
+}
+
+function startLoadingWindow() {
+    const manifestFile = require("./bin/electron.manifest.json");
+    let loadingUrl = manifestFile.loadingUrl;
+    let icon = manifestFile.icon;
+    if (loadingUrl) {
+        loadingWindow = new BrowserWindow({
+            width: 400,
+            height: 435,
+            transparent: true,
+            frame: false,
+            show: false,
+            devTools: true,
+            icon: path.join(__dirname, icon)
+        })
+        loadingWindow.loadURL(loadingUrl);
+        loadingWindow.once('ready-to-show', () => {
+            loadingWindow.show()
+        })
+        loadingWindow.on('closed', () => {
+            loadingWindow = null
+        })
+    }
 }
 
 //app.on('activate', () => {
