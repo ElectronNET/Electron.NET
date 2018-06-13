@@ -79,14 +79,17 @@ function startLoadingWindow() {
     let icon = manifestFile.icon;
     if (loadingUrl) {
         loadingWindow = new BrowserWindow({
-            width: 400,
-            height: 435,
+            width: manifestFile.width,
+            height: manifestFile.height,
             transparent: true,
             frame: false,
             show: false,
             devTools: true,
             icon: path.join(__dirname, icon)
         })
+        if (manifestFile.devTools) {
+            loadingWindow.webContents.openDevTools();
+        }
         loadingWindow.loadURL(loadingUrl);
         loadingWindow.once('ready-to-show', () => {
             loadingWindow.show()
