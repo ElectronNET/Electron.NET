@@ -1,5 +1,7 @@
 const { app } = require('electron');
+// yf add
 const { BrowserWindow } = require('electron')
+
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
@@ -7,7 +9,22 @@ const portfinder = require('detect-port');
 let io, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialog, notification, tray, webContents;
 let globalShortcut, shell, screen, clipboard;
+
+// yf add
 let loadingWindow;
+let mainWindowId;
+
+// yf add
+const manifestJsonFile = require("./bin/electron.manifest.json");
+if (manifestJsonFile.singleInstance) {
+    const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
+        mainWindowId && BrowserWindow.fromId(mainWindowId) && BrowserWindow.fromId(mainWindowId).show();
+    });
+    if (shouldQuit) {
+        app.quit();
+        return;
+    }
+}
 
 app.on('ready', () => {
 
@@ -68,26 +85,26 @@ function startAspCoreBackend(electronPort) {
 
             if (data.toString().indexOf("MainWindowShowed") > -1 && loadingWindow && !loadingWindow.isDestroyed()) {
                 loadingWindow.close();
+                mainWindowId = parseInt(data.toString().replace("MainWindowShowed:", "").trim())
             }
         });
     });
 }
 
 function startLoadingWindow() {
-    const manifestFile = require("./bin/electron.manifest.json");
-    let loadingUrl = manifestFile.loadingUrl;
-    let icon = manifestFile.icon;
+    let loadingUrl = manifestJsonFile.loadingUrl;
+    let icon = manifestJsonFile.icon;
     if (loadingUrl) {
         loadingWindow = new BrowserWindow({
-            width: manifestFile.width,
-            height: manifestFile.height,
+            width: manifestJsonFile.width,
+            height: manifestJsonFile.height,
             transparent: true,
             frame: false,
             show: false,
             devTools: true,
             icon: path.join(__dirname, icon)
         })
-        if (manifestFile.devTools) {
+        if (manifestJsonFile.devTools) {
             loadingWindow.webContents.openDevTools();
         }
         loadingWindow.loadURL(loadingUrl);
