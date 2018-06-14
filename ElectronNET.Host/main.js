@@ -83,14 +83,18 @@ function startAspCoreBackend(electronPort) {
             var text = data.toString();
             console.log(`stdout: ${data.toString()}`);
 
-            if (data.toString().indexOf("MainWindowShowed") > -1 && loadingWindow && !loadingWindow.isDestroyed()) {
+            // yf add
+            if (text.indexOf(manifestFile.mainWindowShowed) > -1 &&
+                loadingWindow && !loadingWindow.isDestroyed()) {
                 loadingWindow.close();
-                mainWindowId = parseInt(data.toString().replace("MainWindowShowed:", "").trim())
+
+                mainWindowId = parseInt(text.replace(`${manifestFile.mainWindowShowed}:`, "").trim());
             }
         });
     });
 }
 
+// yf add
 function startLoadingWindow() {
     let loadingUrl = manifestJsonFile.loadingUrl;
     let icon = manifestJsonFile.icon;
