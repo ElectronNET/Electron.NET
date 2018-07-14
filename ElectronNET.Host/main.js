@@ -1,18 +1,19 @@
-const { app } = require('electron');
+﻿const { app } = require('electron');
 // yf add
-const { BrowserWindow } = require('electron')
+const { BrowserWindow, dialog, shell } = require('electron')
 
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portfinder = require('detect-port');
 let io, browserWindows, ipc, apiProcess, loadURL;
-let appApi, menu, dialog, notification, tray, webContents;
-let globalShortcut, shell, screen, clipboard;
+let appApi, menu, dialogApi, notification, tray, webContents;
+let globalShortcut, shellApi, screen, clipboard;
 
 // yf add
 let loadingWindow;
 let mainWindowId;
+let countDownInterval;
 
 // yf add
 const manifestJsonFile = require("./bin/electron.manifest.json");
@@ -52,12 +53,12 @@ function startSocketApiBridge(port) {
         browserWindows = require('./api/browserWindows')(socket);
         ipc = require('./api/ipc')(socket);
         menu = require('./api/menu')(socket);
-        dialog = require('./api/dialog')(socket);
+        dialogApi = require('./api/dialog')(socket);
         notification = require('./api/notification')(socket);
         tray = require('./api/tray')(socket);
         webContents = require('./api/webContents')(socket);
         globalShortcut = require('./api/globalShortcut')(socket);
-        shell = require('./api/shell')(socket);
+        shellApi = require('./api/shell')(socket);
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
     });
@@ -114,11 +115,43 @@ function startLoadingWindow() {
         loadingWindow.loadURL(loadingUrl);
         loadingWindow.once('ready-to-show', () => {
             loadingWindow.show()
+
+            // 激活倒计时
+            activeCountDowInterval(manifestJsonFile)
         })
         loadingWindow.on('closed', () => {
             loadingWindow = null
+
+            clearInterval(countDownInterval)
         })
     }
+}
+
+function activeCountDowInterval(manifestJsonFile) {
+    if (!manifestJsonFile.timeout || !manifestJsonFile.timeout.limit)
+        return
+
+    let limitSecond = manifestJsonFile.timeout.limit
+    let currentSecond = 0;
+    countDownInterval = setInterval(() => {
+        currentSecond++;
+        if (currentSecond < limitSecond)
+            return;
+
+        clearInterval(countDownInterval);
+
+        dialog.showMessageBox(loadingWindow, {
+            type: 'error',
+            buttons: ["前往安装"],
+            title: '文件缺失提示',
+            message: '计算机缺少组件无法启动该程序，点击前往安装组件后重试',
+        }, (res, isChecked) => {
+            if (manifestJsonFile.timeout.help)
+                shell.openExternal(manifestJsonFile.timeout.help)
+            app.quit();
+        });
+
+    }, 1000)
 }
 
 //app.on('activate', () => {
