@@ -20,13 +20,19 @@ module.exports = function (socket) {
     socket.on('showOpenDialog', function (browserWindow, options, guid) {
         var window = electron_1.BrowserWindow.fromId(browserWindow.id);
         electron_1.dialog.showOpenDialog(window, options, function (filePaths) {
-            global.elesocket.emit('showOpenDialogComplete' + guid, filePaths || []);
+            filePaths = filePaths || [];
+            var encodeFilePaths = [];
+            filePaths.forEach((item, index) => {
+                encodeFilePaths.push(encodeURIComponent(item));
+            });
+            global.elesocket.emit('showOpenDialogComplete' + guid, encodeFilePaths);
         });
     });
     socket.on('showSaveDialog', function (browserWindow, options, guid) {
         var window = electron_1.BrowserWindow.fromId(browserWindow.id);
         electron_1.dialog.showSaveDialog(window, options, function (filename) {
-            global.elesocket.emit('showSaveDialogComplete' + guid, filename || '');
+            filename = encodeURIComponent(filename || '');
+            global.elesocket.emit('showSaveDialogComplete' + guid, filename);
         });
     });
     socket.on('showErrorBox', function (title, content) {

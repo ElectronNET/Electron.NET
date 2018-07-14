@@ -16,7 +16,7 @@ This package contains the API to access the "native" electron API.</Description>
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,8 +32,9 @@ This package contains the API to access the "native" electron API.</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EngineIoClientDotNet" Version="1.0.7.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.0" />
-    <PackageReference Include="SocketIoClientDotNet" Version="1.0.3" />
+    <PackageReference Include="SocketIoClientDotNet" Version="1.0.7.2" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">

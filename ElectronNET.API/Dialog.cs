@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace ElectronNET.API
 {
@@ -54,7 +56,12 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
 
                 var result = ((JArray)filePaths).ToObject<string[]>();
-                taskCompletionSource.SetResult(result);
+                var list = new List<string>();
+                foreach (var item in result)
+                {
+                    list.Add(HttpUtility.UrlDecode(item));
+                }
+                taskCompletionSource.SetResult(list.ToArray());
             });
 
 

@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
-    <Version>1.0.4</Version>
+    <Version>1.0.4.1</Version>
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Product>Electron.NET</Product>
     <Company />
