@@ -141,10 +141,10 @@ function activeCountDowInterval(manifestJsonFile) {
         clearInterval(countDownInterval);
 
         dialog.showMessageBox(loadingWindow, {
-            type: 'error',
-            buttons: ["前往安装"],
-            title: '文件缺失提示',
-            message: '计算机缺少组件无法启动该程序，点击前往安装组件后重试',
+            type: manifestJsonFile.timeout.messageBox.type || 'error',
+            buttons: manifestJsonFile.timeout.messageBox.buttons || ["前往安装"],
+            title: manifestJsonFile.timeout.messageBox.title || '文件缺失提示',
+            message: manifestJsonFile.timeout.messageBox.message || '计算机缺少组件无法启动该程序，点击前往安装组件后重试',
         }, (res, isChecked) => {
             if (manifestJsonFile.timeout.help)
                 shell.openExternal(manifestJsonFile.timeout.help)
