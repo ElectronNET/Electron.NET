@@ -11,11 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "detect-port": "^1.2.1",
-    "electron": "^1.7.11",
+    "electron": "^2.0.2",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
-    "@types/electron": "^1.6.10",
     "@types/socket.io": "^1.4.31"
   }
 }
