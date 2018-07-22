@@ -518,8 +518,6 @@ namespace ElectronNET.API
         /// stored under the userData directory.If you want to change this location, you
         /// have to override the userData path before the ready event of the app module is emitted.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="path"></param>
         public void SetPath(string name, string path)
         {
             BridgeConnector.Socket.Emit("appSetPath", name, path);
@@ -618,7 +616,6 @@ namespace ElectronNET.API
         /// Windows you can visit the list from the task bar, and on macOS you can visit it
         /// from dock menu.
         /// </summary>
-        /// <param name="path"></param>
         public void AddRecentDocument(string path)
         {
             BridgeConnector.Socket.Emit("appAddRecentDocument", path);
@@ -1213,7 +1210,6 @@ namespace ElectronNET.API
         /// launcher, Note: Unity launcher requires the existence of a.desktop file to
         /// work, for more information please read Desktop Environment Integration.
         /// </summary>
-        /// <param name="count"></param>
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default(CancellationToken))
         {
