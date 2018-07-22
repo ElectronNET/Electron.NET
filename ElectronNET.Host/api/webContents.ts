@@ -44,6 +44,11 @@ module.exports = (socket: SocketIO.Server) => {
         });
     });
 
+    socket.on('webContents-getUrl', function (id) {
+        var browserWindow = getWindowById(id);
+        socket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
+    });
+
     function getWindowById(id: number): Electron.BrowserWindow {
         return BrowserWindow.fromId(id);
     }
