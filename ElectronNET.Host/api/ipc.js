@@ -2,24 +2,25 @@
 exports.__esModule = true;
 var electron_1 = require("electron");
 module.exports = function (socket) {
-    socket.on('registerIpcMainChannel', function (channel) {
-        electron_1.ipcMain.on(channel, function (event, args) {
-            socket.emit(channel, [event.preventDefault(), args]);
+    socket.on('registerIpcMainChannel', function (channel) { // ¼àÌýÖ÷³ÌÐò×¢²á
+        electron_1.ipcMain.removeAllListeners(channel); // yf add ·ÀÖ¹ÖØ¸´¼àÌý
+        electron_1.ipcMain.on(channel, function (event, args) { // ¼àÌýÇ°¶ËµÄÍÆËÍ
+            global.elesocket.emit(channel, [event.preventDefault(), args]); // ·¢ËÍµ½ºó¶Ë
         });
     });
     socket.on('registerSyncIpcMainChannel', function (channel) {
         electron_1.ipcMain.on(channel, function (event, args) {
-            var x = socket;
+            var x = global.elesocket;
             x.removeAllListeners(channel + 'Sync');
-            socket.on(channel + 'Sync', function (result) {
+            global.elesocket.on(channel + 'Sync', function (result) {
                 event.returnValue = result;
             });
-            socket.emit(channel, [event.preventDefault(), args]);
+            global.elesocket.emit(channel, [event.preventDefault(), args]);
         });
     });
     socket.on('registerOnceIpcMainChannel', function (channel) {
         electron_1.ipcMain.once(channel, function (event, args) {
-            socket.emit(channel, [event.preventDefault(), args]);
+            global.elesocket.emit(channel, [event.preventDefault(), args]);
         });
     });
     socket.on('removeAllListenersIpcMainChannel', function (channel) {
