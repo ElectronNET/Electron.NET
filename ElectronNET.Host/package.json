@@ -1,17 +1,13 @@
 {
-  "name": "ElectronNET.Host",
+  "name": "electron.net.host",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
+  "author": "Gregor Biswanger",
   "license": "ISC",
   "dependencies": {
     "detect-port": "^1.2.1",
-    "electron": "^2.0.2",
+    "electron": "^2.0.5",
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
