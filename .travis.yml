@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.0.0
+dotnet: 2.1.3
 before_script:
   - npm install electron-packager --global
 script:
