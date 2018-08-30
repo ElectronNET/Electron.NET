@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>dotnet-electronize</AssemblyName>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>electronize</AssemblyName>
     
     <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -21,6 +21,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+    <PackAsTool>true</PackAsTool>
   </PropertyGroup>
 
   <ItemGroup>
