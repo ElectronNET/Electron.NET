@@ -17,18 +17,23 @@ cd $dir/ElectronNET.WebApp
 dotnet restore
 dotnet build
 
+echo "Install CLI as dotnet tool"
+
+dotnet tool uninstall ElectronNET.CLI -g
+dotnet tool install ElectronNET.CLI -g
+
 echo "Invoke electronize build in WebApp Demo"
 echo "/target win (dev-build)"
-dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target win
+electronize build /target win
 
 echo "/target linux (dev-build)"
-dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target linux
+electronize build /target linux
 
 echo "/target osx (dev-build)"
-dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target osx
+electronize build /target osx
 
 echo "/target custom win7-x86;win32 (dev-build)"
-dotnet "$dir/ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom "win7-x86;win32"
+electronize build /target custom "win7-x86;win32"
 
 # Be aware, that for non-electronnet-dev environments the correct 
 # invoke command would be dotnet electronize ...

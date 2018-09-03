@@ -16,19 +16,22 @@ dotnet build
 
 echo "Invoke electronize build in WebApp Demo"
 
+echo "Install CLI"
+
+dotnet tool uninstall ElectronNET.CLI -g
+dotnet tool install ElectronNET.CLI -g
 
 echo "/target xxx (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
-
+electronize build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
 
 echo "/target win (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target win
+electronize build /target win
 
 echo "/target linux (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target linux
+electronize build /target linux
 
 echo "/target custom win7-x86;win32 (dev-build)"
-dotnet "../ElectronNET.CLI/bin/Debug/netcoreapp2.0/dotnet-electronize.dll" build /target custom win7-x86;win32
+electronize build /target custom win7-x86;win32
 
 
 :: Be aware, that for non-electronnet-dev environments the correct 
