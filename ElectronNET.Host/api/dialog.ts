@@ -1,6 +1,6 @@
 import { BrowserWindow, dialog } from "electron";
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('showMessageBox', (browserWindow, options, guid) => {
         if ("id" in browserWindow) {
             var window = BrowserWindow.fromId(browserWindow.id);

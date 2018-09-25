@@ -2,7 +2,7 @@ import { Menu, Tray, nativeImage } from "electron";
 const path = require('path');
 let tray: Electron.Tray;
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('register-tray-click', (id) => {
         if (tray) {
             tray.on('click', (event, bounds) => {

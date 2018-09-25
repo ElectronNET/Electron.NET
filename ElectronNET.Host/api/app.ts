@@ -1,7 +1,7 @@
 import { nativeImage as NativeImage } from 'electron';
 let isQuitWindowAllClosed = true;
 
-module.exports = (socket: SocketIO.Server, app: Electron.App) => {
+export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     // Quit when all windows are closed.
     app.on('window-all-closed', () => {

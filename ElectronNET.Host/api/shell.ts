@@ -1,6 +1,6 @@
 import { shell } from "electron";
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('shell-showItemInFolder', (fullPath) => {
         const success = shell.showItemInFolder(fullPath);
 

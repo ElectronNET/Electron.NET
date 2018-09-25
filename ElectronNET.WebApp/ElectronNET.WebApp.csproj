@@ -15,7 +15,6 @@
     <Folder Include="wwwroot\assets\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ElectronNET.API" Version="1.0.0.2" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.0" />

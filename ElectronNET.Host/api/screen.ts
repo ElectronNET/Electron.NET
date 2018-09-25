@@ -1,6 +1,6 @@
 import { screen } from "electron";
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('register-screen-display-added', (id) => {
         screen.on('display-added', (event, display) => {
             socket.emit('screen-display-added-event' + id, display);

@@ -1,5 +1,4 @@
 "use strict";
-exports.__esModule = true;
 var isQuitWindowAllClosed = true;
 module.exports = function (socket, app) {
     // Quit when all windows are closed.

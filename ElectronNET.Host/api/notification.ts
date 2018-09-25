@@ -1,7 +1,7 @@
 import { Notification } from "electron";
 const notifications: Electron.Notification[] = [];
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('createNotification', (options) => {
         const notification = new Notification(options);
         let haveEvent = false;

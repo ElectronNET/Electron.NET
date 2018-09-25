@@ -75,7 +75,7 @@ function startSocketApiBridge(port) {
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
         appApi = require('./api/app')(socket, app);
-        browserWindows = require('./api/browserWindows')(socket);
+        browserWindows = require('./api/browserWindows')(socket, app);
         ipc = require('./api/ipc')(socket);
         menu = require('./api/menu')(socket);
         dialogApi = require('./api/dialog')(socket);
@@ -113,11 +113,3 @@ function startAspCoreBackend(electronPort) {
         });
     });
 }
-
-//app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-//    if (win === null) {
-//        createWindow();
-//    }
-//});

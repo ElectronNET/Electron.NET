@@ -1,5 +1,4 @@
 "use strict";
-exports.__esModule = true;
 var electron_1 = require("electron");
 var contextMenuItems = [];
 module.exports = function (socket) {

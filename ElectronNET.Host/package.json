@@ -5,6 +5,9 @@
   "main": "main.js",
   "author": "Gregor Biswanger",
   "license": "ISC",
+  "scripts": {
+    "start": "tsc -p ."
+  },
   "dependencies": {
     "detect-port": "^1.2.3",
     "electron": "^3.0.0",

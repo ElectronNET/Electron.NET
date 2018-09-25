@@ -1,6 +1,6 @@
 import { globalShortcut } from "electron";
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {
             socket.emit('globalShortcut-pressed', accelerator);

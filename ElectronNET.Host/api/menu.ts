@@ -1,7 +1,7 @@
 import { Menu, BrowserWindow } from "electron";
 const contextMenuItems = [];
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
 

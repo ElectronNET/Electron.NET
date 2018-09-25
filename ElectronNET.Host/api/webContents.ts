@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 const fs = require('fs');
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('register-webContents-crashed', (id) => {
         var browserWindow = getWindowById(id);
 

@@ -1,9 +1,9 @@
 "use strict";
-exports.__esModule = true;
 var electron_1 = require("electron");
 var path = require('path');
 var windows = [];
-module.exports = function (socket) {
+var window, lastOptions;
+module.exports = function (socket, app) {
     socket.on('register-browserWindow-ready-to-show', function (id) {
         getWindowById(id).on('ready-to-show', function () {
             socket.emit('browserWindow-ready-to-show' + id);
@@ -155,7 +155,8 @@ module.exports = function (socket) {
         });
     });
     socket.on('createBrowserWindow', function (options, loadUrl) {
-        var window = new electron_1.BrowserWindow(options);
+        window = new electron_1.BrowserWindow(options);
+        lastOptions = options;
         window.on('closed', function (sender) {
             var _loop_1 = function () {
                 windowItem = windows[index];
@@ -174,6 +175,13 @@ module.exports = function (socket) {
             var windowItem;
             for (var index = 0; index < windows.length; index++) {
                 _loop_1();
+            }
+        });
+        app.on('activate', function () {
+            // On macOS it's common to re-create a window in the app when the
+            // dock icon is clicked and there are no other windows open.
+            if (window === null && lastOptions) {
+                window = new electron_1.BrowserWindow(lastOptions);
             }
         });
         if (loadUrl) {

@@ -1,6 +1,6 @@
 import { ipcMain, BrowserWindow } from 'electron';
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
             socket.emit(channel, [event.preventDefault(), args]);

@@ -1,6 +1,6 @@
 import { clipboard } from "electron";
 
-module.exports = (socket: SocketIO.Server) => {
+export = (socket: SocketIO.Socket) => {
 
     socket.on('clipboard-readText', (type) => {
         const text = clipboard.readText(type);
