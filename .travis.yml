@@ -2,6 +2,7 @@ language: csharp
 mono: none
 dotnet: 2.1.300
 before_script:
+  - export PATH="$PATH:/home/travis/.dotnet/tools"
   - npm install electron-packager --global
 script:
   - ./buildAll.sh

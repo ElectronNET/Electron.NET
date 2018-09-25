@@ -26,9 +26,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="ElectronNET.CLI" Version="*" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" />
   </ItemGroup>
   <ItemGroup>
