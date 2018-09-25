@@ -1029,21 +1029,21 @@ namespace ElectronNET.API
         /// <returns>This method returns false if your process is the primary instance of 
         /// the application and your app should continue loading. And returns true if your 
         /// process has sent its parameters to another instance, and you should immediately quit.</returns>
-        public async Task<bool> MakeSingleInstanceAsync(Action<string[], string> newInstanceOpened, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> RequestSingleInstanceLockAsync(Action<string[], string> newInstanceOpened, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("appMakeSingleInstanceCompleted", (success) =>
+                BridgeConnector.Socket.On("appRequestSingleInstanceLockCompleted", (success) =>
                 {
-                    BridgeConnector.Socket.Off("appMakeSingleInstanceCompleted");
+                    BridgeConnector.Socket.Off("appRequestSingleInstanceLockCompleted");
                     taskCompletionSource.SetResult((bool)success);
                 });
 
-                BridgeConnector.Socket.Off("newInstanceOpened");
-                BridgeConnector.Socket.On("newInstanceOpened", (result) =>
+                BridgeConnector.Socket.Off("secondInstance");
+                BridgeConnector.Socket.On("secondInstance", (result) =>
                 {
                     JArray results = (JArray)result;
                     string[] args = results.First.ToObject<string[]>();
@@ -1052,7 +1052,7 @@ namespace ElectronNET.API
                     newInstanceOpened(args, workdirectory);
                 });
 
-                BridgeConnector.Socket.Emit("appMakeSingleInstance");
+                BridgeConnector.Socket.Emit("appRequestSingleInstanceLock");
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1063,9 +1063,9 @@ namespace ElectronNET.API
         /// Releases all locks that were created by makeSingleInstance. This will allow
         /// multiple instances of the application to once again run side by side.
         /// </summary>
-        public void ReleaseSingleInstance()
+        public void ReleaseSingleInstanceLock()
         {
-            BridgeConnector.Socket.Emit("appReleaseSingleInstance");
+            BridgeConnector.Socket.Emit("appReleaseSingleInstanceLock");
         }
 
         /// <summary>
@@ -1155,7 +1155,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Memory and cpu usage statistics of all the processes associated with the app.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Array of ProcessMetric objects that correspond to memory and cpu usage
+        /// statistics of all the processes associated with the app.</returns>
         public async Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();

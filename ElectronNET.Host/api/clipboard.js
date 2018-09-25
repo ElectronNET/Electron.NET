@@ -4,35 +4,35 @@ var electron_1 = require("electron");
 module.exports = function (socket) {
     socket.on('clipboard-readText', function (type) {
         var text = electron_1.clipboard.readText(type);
-        global.elesocket.emit('clipboard-readText-Completed', text);
+        socket.emit('clipboard-readText-Completed', text);
     });
     socket.on('clipboard-writeText', function (text, type) {
         electron_1.clipboard.writeText(text, type);
     });
     socket.on('clipboard-readHTML', function (type) {
         var content = electron_1.clipboard.readHTML(type);
-        global.elesocket.emit('clipboard-readHTML-Completed', content);
+        socket.emit('clipboard-readHTML-Completed', content);
     });
     socket.on('clipboard-writeHTML', function (markup, type) {
         electron_1.clipboard.writeHTML(markup, type);
     });
     socket.on('clipboard-readRTF', function (type) {
         var content = electron_1.clipboard.readRTF(type);
-        global.elesocket.emit('clipboard-readRTF-Completed', content);
+        socket.emit('clipboard-readRTF-Completed', content);
     });
     socket.on('clipboard-writeRTF', function (text, type) {
         electron_1.clipboard.writeHTML(text, type);
     });
     socket.on('clipboard-readBookmark', function () {
         var bookmark = electron_1.clipboard.readBookmark();
-        global.elesocket.emit('clipboard-readBookmark-Completed', bookmark);
+        socket.emit('clipboard-readBookmark-Completed', bookmark);
     });
     socket.on('clipboard-writeBookmark', function (title, url, type) {
         electron_1.clipboard.writeBookmark(title, url, type);
     });
     socket.on('clipboard-readFindText', function () {
         var content = electron_1.clipboard.readFindText();
-        global.elesocket.emit('clipboard-readFindText-Completed', content);
+        socket.emit('clipboard-readFindText-Completed', content);
     });
     socket.on('clipboard-writeFindText', function (text) {
         electron_1.clipboard.writeFindText(text);
@@ -42,7 +42,7 @@ module.exports = function (socket) {
     });
     socket.on('clipboard-availableFormats', function (type) {
         var formats = electron_1.clipboard.availableFormats(type);
-        global.elesocket.emit('clipboard-availableFormats-Completed', formats);
+        socket.emit('clipboard-availableFormats-Completed', formats);
     });
     socket.on('clipboard-write', function (data, type) {
         electron_1.clipboard.write(data, type);

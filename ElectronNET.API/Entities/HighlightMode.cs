@@ -18,6 +18,16 @@
         /// <summary>
         /// Never highlight the tray icon.
         /// </summary>
-        never
+        never,
+
+        /// <summary>
+        /// Activate highlight the tray icon.
+        /// </summary>
+        on,
+
+        /// <summary>
+        /// Deactivate highlight the tray icon.
+        /// </summary>
+        off
     }
 }

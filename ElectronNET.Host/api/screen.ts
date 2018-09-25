@@ -25,7 +25,7 @@ module.exports = (socket: SocketIO.Server) => {
     });
 
     socket.on('screen-getMenuBarHeight', () => {
-        var height = screen.getMenuBarHeight();
+        var height = screen.getPrimaryDisplay().workArea;
         socket.emit('screen-getMenuBarHeightCompleted', height);
     });
 

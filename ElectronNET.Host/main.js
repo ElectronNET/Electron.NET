@@ -9,9 +9,11 @@ let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
 let splashScreen, mainWindowId;
 
-const manifestJsonFile = require('./bin/electron.manifest.json');
+const manifestJsonFilePath = './bin/electron.manifest.json';
+const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance) {
-    const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
+    const shouldQuit = app.requestSingleInstanceLock();
+    app.on('second-instance', (commandLine, workingDirectory) => {
         mainWindowId && BrowserWindow.fromId(mainWindowId) && BrowserWindow.fromId(mainWindowId).show();
     });
 

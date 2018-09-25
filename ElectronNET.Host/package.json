@@ -6,11 +6,14 @@
   "author": "Gregor Biswanger",
   "license": "ISC",
   "dependencies": {
-    "detect-port": "^1.2.1",
-    "electron": "^2.0.5",
-    "socket.io": "^2.0.3"
+    "detect-port": "^1.2.3",
+    "electron": "^3.0.0",
+    "socket.io": "^2.1.1"
   },
   "devDependencies": {
-    "@types/socket.io": "^1.4.31"
+    "@types/socket.io": "^1.4.38",
+    "@types/node": "^10.11.0",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.3"
   }
 }

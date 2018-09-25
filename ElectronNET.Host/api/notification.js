@@ -9,31 +9,31 @@ module.exports = function (socket) {
         if (options.showID) {
             haveEvent = true;
             notification.on('show', function () {
-                global.elesocket.emit('NotificationEventShow', options.showID);
+                socket.emit('NotificationEventShow', options.showID);
             });
         }
         if (options.clickID) {
             haveEvent = true;
             notification.on('click', function () {
-                global.elesocket.emit('NotificationEventClick', options.clickID);
+                socket.emit('NotificationEventClick', options.clickID);
             });
         }
         if (options.closeID) {
             haveEvent = true;
             notification.on('close', function () {
-                global.elesocket.emit('NotificationEventClose', options.closeID);
+                socket.emit('NotificationEventClose', options.closeID);
             });
         }
         if (options.replyID) {
             haveEvent = true;
             notification.on('reply', function (event, value) {
-                global.elesocket.emit('NotificationEventReply', [options.replyID, value]);
+                socket.emit('NotificationEventReply', [options.replyID, value]);
             });
         }
         if (options.actionID) {
             haveEvent = true;
             notification.on('action', function (event, value) {
-                global.elesocket.emit('NotificationEventAction', [options.actionID, value]);
+                socket.emit('NotificationEventAction', [options.actionID, value]);
             });
         }
         if (haveEvent) {
@@ -43,7 +43,7 @@ module.exports = function (socket) {
     });
     socket.on('notificationIsSupported', function (options) {
         var isSupported = electron_1.Notification.isSupported;
-        global.elesocket.emit('notificationIsSupportedComplete', isSupported);
+        socket.emit('notificationIsSupportedComplete', isSupported);
     });
 };
 //# sourceMappingURL=notification.js.map

@@ -91,7 +91,7 @@ namespace ElectronNET.CLI.Commands
                     Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
 
                     Console.WriteLine("Start npm install...");
-                    ProcessHelper.CmdExecute("npm install", tempPath);
+                    ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                     Console.WriteLine("Start npm install electron-packager...");
 

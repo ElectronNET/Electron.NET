@@ -187,15 +187,17 @@ module.exports = (socket: SocketIO.Server, app: Electron.App) => {
         app.setJumpList(categories);
     });
 
-    socket.on('appMakeSingleInstance', () => {
-        const success = app.makeSingleInstance((args, workingDirectory) => {
-            socket.emit('newInstanceOpened', [args, workingDirectory]);
+    socket.on('appRequestSingleInstanceLock', () => {
+        app.on('second-instance', (args, workingDirectory) => {
+            socket.emit('secondInstance', [args, workingDirectory]);
         });
-        socket.emit('appMakeSingleInstanceCompleted', success);
+
+        const success = app.requestSingleInstanceLock();
+        socket.emit('appRequestSingleInstanceLockCompleted', success);
     });
 
-    socket.on('appReleaseSingleInstance', () => {
-        app.releaseSingleInstance();
+    socket.on('appReleaseSingleInstanceLock', () => {
+        app.releaseSingleInstanceLock();
     });
 
     socket.on('appSetUserActivity', (type, userInfo, webpageURL) => {
@@ -223,9 +225,7 @@ module.exports = (socket: SocketIO.Server, app: Electron.App) => {
     });
 
     socket.on('appGetGpuFeatureStatus', () => {
-        // TS Workaround - TS say getGpuFeatureStatus - but it is getGPUFeatureStatus
-        let x = <any>app;
-        const gpuFeatureStatus = x.getGPUFeatureStatus();
+        const gpuFeatureStatus = app.getGPUFeatureStatus();
         socket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
     });
 
@@ -317,4 +317,4 @@ module.exports = (socket: SocketIO.Server, app: Electron.App) => {
     socket.on('appDockSetIcon', (image) => {
         app.dock.setIcon(image);
     });
-}
+};

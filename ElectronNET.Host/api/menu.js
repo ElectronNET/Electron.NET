@@ -6,7 +6,7 @@ module.exports = function (socket) {
     socket.on('menu-setContextMenu', function (browserWindowId, menuItems) {
         var menu = electron_1.Menu.buildFromTemplate(menuItems);
         addContextMenuItemClickConnector(menu.items, browserWindowId, function (id, browserWindowId) {
-            global.elesocket.emit("contextMenuItemClicked", [id, browserWindowId]);
+            socket.emit("contextMenuItemClicked", [id, browserWindowId]);
         });
         contextMenuItems.push({
             menu: menu,
@@ -34,7 +34,7 @@ module.exports = function (socket) {
     socket.on('menu-setApplicationMenu', function (menuItems) {
         var menu = electron_1.Menu.buildFromTemplate(menuItems);
         addMenuItemClickConnector(menu.items, function (id) {
-            global.elesocket.emit("menuItemClicked", id);
+            socket.emit("menuItemClicked", id);
         });
         electron_1.Menu.setApplicationMenu(menu);
     });

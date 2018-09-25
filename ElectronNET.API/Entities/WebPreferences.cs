@@ -126,7 +126,7 @@ namespace ElectronNET.API.Entities
         /// A list of feature strings separated by ,, like CSSVariables,KeyboardEventKey to
         /// enable.The full list of supported feature strings can be found in the file.
         /// </summary>
-        public string BlinkFeatures { get; set; }
+        public string EnableBlinkFeatures { get; set; }
 
         /// <summary>
         /// A list of feature strings separated by ,, like CSSVariables,KeyboardEventKey to
