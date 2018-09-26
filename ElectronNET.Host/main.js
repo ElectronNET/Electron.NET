@@ -9,7 +9,7 @@ let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
 let splashScreen, mainWindowId;
 
-const manifestJsonFilePath = './bin/electron.manifest.json';
+const manifestJsonFilePath = path.join(__dirname, 'bin', 'electron.manifest.json');
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance) {
     const shouldQuit = app.requestSingleInstanceLock();
