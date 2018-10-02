@@ -111,5 +111,8 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
         });
+        apiProcess.srderr.on('data', (data) => {
+            console.log(`srderr: ${data.toString()}`);
+        });
     });
 }
