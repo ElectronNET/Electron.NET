@@ -4,12 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>electronize</AssemblyName>
-    
-    <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
-    <Version>1.0.4.2</Version>
+    <Version>1.0.4.3</Version>
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Product>Electron.NET</Product>
     <Company />
@@ -21,7 +19,12 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
-    <PackAsTool>true</PackAsTool>
+    <!-- enable .NET Core 2.1 features -->
+    <IsPackable>true</IsPackable>
+    <PackAsTool Condition="'$(TargetFramework)'=='netcoreapp2.1'">true</PackAsTool>
+    <PackageType Condition="'$(TargetFramework)'!='netcoreapp2.1'">DotNetCliTool</PackageType>
+    <!-- the following is entirely optional, but it is a .NET Core 2.1 feature only, which is why it is here -->
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
 
   <ItemGroup>

@@ -42,15 +42,15 @@ namespace ElectronNET.CLI
                         // we delegate it to cmd.exe, which runs fine
                         // but we can catch any error here and return
                         // 1 if something fails
-                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
-                        {
-                            if (e.Data.ToLowerInvariant().Contains("error"))
-                            {
-                                returnCode = 1;
-                            }
+                        //if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        //{
+                        //    if (e.Data.ToLowerInvariant().Contains("error"))
+                        //    {
+                        //        returnCode = 1;
+                        //    }
 
-                            Console.WriteLine(e.Data);
-                        }
+                        //    Console.WriteLine(e.Data);
+                        //}
 
                     };
                     cmd.ErrorDataReceived += (s, e) =>
@@ -61,15 +61,15 @@ namespace ElectronNET.CLI
                         // we delegate it to cmd.exe, which runs fine
                         // but we can catch any error here and return
                         // 1 if something fails
-                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
-                        {
-                            if (e.Data.ToLowerInvariant().Contains("error"))
-                            {
-                                returnCode = 1;
-                            }
+                        //if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
+                        //{
+                        //    if (e.Data.ToLowerInvariant().Contains("error"))
+                        //    {
+                        //        returnCode = 1;
+                        //    }
 
-                            Console.WriteLine(e.Data);
-                        }
+                        //    Console.WriteLine(e.Data);
+                        //}
 
                     };
                 }
