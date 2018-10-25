@@ -74,7 +74,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     });
 
     // Open the Electron-Window here
-    Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+    Task.Run(async () => (await Electron.WindowManager.CreateWindowAsync()).Show());
 }
 ```
 
