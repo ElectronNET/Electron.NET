@@ -5,7 +5,7 @@
 ElectronNET.API:
 
 * manifestJsonFilePath fixed (thanks @smack0007)
-* Use Electron release 2.0.2 and updated packages (thanks @deinok)
+* Use Electron release 3.0.0 and updated packages (thanks @deinok)
 * fixes for Socket interaction (thanks @mojinxun)
 * Fixing SingleInstances (thanks @yaofeng)
 * Enhance WebContent.GetUrl (thanks @ru-sh)
