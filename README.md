@@ -84,14 +84,19 @@ __Please note:__ Currently it is important to use ASP.NET Core with MVC. If you 
 
 ## Start the Application
 
-For the tooling you will need your dotnet-electronize package [ElectronNET.CLI NuGet package](https://www.nuget.org/packages/ElectronNET.CLI/). This package __must__ be referenced in the .csproj like this:
+To start the application make sure you have installed the "[ElectronNET.CLI](https://www.nuget.org/packages/ElectronNET.CLI/)" packages as global tool:
+
+    dotnet tool install ElectronNET.CLI -g
+
+### ElectronNET.CLI Version 0.0.9
+
+In the Version 0.0.9 the CLI was not a global tool and needed to be registred like this in the .csproj:
 
 ```
     <ItemGroup>
          <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
     </ItemGroup>
 ```
-Be aware of the version: The current version of the CLI is 0.0.9.
 
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
 

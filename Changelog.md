@@ -1,5 +1,20 @@
 # not release
 
+# 0.0.10
+
+ElectronNET.API:
+
+* manifestJsonFilePath fixed (thanks @smack0007)
+* Use Electron release 2.0.2 and updated packages (thanks @deinok)
+* fixes for Socket interaction (thanks @mojinxun)
+* Fixing SingleInstances (thanks @yaofeng)
+* Enhance WebContent.GetUrl (thanks @ru-sh)
+
+ElectronNET.CLI:
+
+* Show Resultcode for better debugging when using Build/Start Command
+* ElectronNET.CLI is now a global dotnet tool
+
 # 0.0.9
 
 ElectronNET.API:
