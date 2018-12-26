@@ -88,22 +88,6 @@ To start the application make sure you have installed the "[ElectronNET.CLI](htt
 
     dotnet tool install ElectronNET.CLI -g
 
-### ElectronNET.CLI Version 0.0.9
-
-In the Version 0.0.9 the CLI was not a global tool and needed to be registred like this in the .csproj:
-
-```
-    <ItemGroup>
-         <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
-    </ItemGroup>
-```
-
-After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
-
-```
-    dotnet restore
-```
-
 * Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-packager installed! 
     
     sudo npm install electron-packager --global
@@ -111,14 +95,14 @@ After you edited the .csproj-file, you need to restore your NuGet packages withi
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
 
 ```
-    dotnet electronize init
+    electronize init
 ```
 
 * Now a electronnet.manifest.json should appear in your ASP.NET Core project
 * Now run the following:
 
 ```
-    dotnet electronize start
+    electronize start
 ```
 ### Note
 > Only the first electronize start is slow. The next will go on faster.
@@ -136,18 +120,18 @@ In this YouTube video, we show you how you can create a new project, use the Ele
   
 ## Build
 
-Here you need the Electron.NET CLI too. Type following command in your ASP.NET Core folder:
+Here you need the Electron.NET CLI as well. Type the following command in your ASP.NET Core folder:
 
 ```
-    dotnet electronize build /target win
+    electronize build /target win
 ```
 
 There are additional platforms available:
 
 ```
-    dotnet electronize build /target win
-    dotnet electronize build /target osx
-    dotnet electronize build /target linux
+    electronize build /target win
+    electronize build /target osx
+    electronize build /target linux
 ```
 
 Those three "default" targets will produce x64 packages for those platforms.
@@ -155,7 +139,7 @@ Those three "default" targets will produce x64 packages for those platforms.
 For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
 
 ```
-    dotnet electronize build build /target custom win7-x86;win32 /electron-arch ia32 
+    electronize build build /target custom win7-x86;win32 /electron-arch ia32 
 ```
 
 The end result should be an electron app under your __/bin/desktop__ folder.
@@ -190,3 +174,26 @@ See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/
 MIT-licensed
 
 **Enjoy!**
+
+# Important notes
+
+## ElectronNET.CLI Version 0.0.9
+
+In the Version 0.0.9 the CLI was not a global tool and needed to be registred like this in the .csproj:
+
+```
+    <ItemGroup>
+         <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
+    </ItemGroup>
+```
+
+After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
+
+```
+    dotnet restore
+```
+
+
+If you still use this version you will need to invoke it like this:
+
+    dotnet electronize ...
