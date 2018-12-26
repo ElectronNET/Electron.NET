@@ -27,13 +27,22 @@ app.on('ready', () => {
         startSplashScreen();
     }
 
-    portfinder(8000, (error, port) => {
-        startSocketApiBridge(port);
-    });
+    if (isStaticPortEnabled() === false) {
+        portfinder(manifestJsonFile.port, (error, port) => {
+            startSocketApiBridge(port);
+        });
+    }
+    else {
+        startSocketApiBridge(manifestJsonFile.port);
+    }
 });
 
 function isSplashScreenEnabled() {
     return Boolean(manifestJsonFile.loadingUrl);
+}
+
+function isStaticPortEnabled() {
+    return Boolean(manifestJsonFile.static);
 }
 
 function startSplashScreen() {
@@ -94,9 +103,9 @@ function startSocketApiBridge(port) {
 }
 
 function startAspCoreBackend(electronPort) {
-    portfinder(8000, (error, electronWebPort) => {
-        loadURL = `http://localhost:${electronWebPort}`
-        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+    if (isStaticPortEnabled() === true) {
+        loadURL = `http://localhost:${manifestJsonFile.port+1}`;
+        const parameters = [`/electronPort=${manifestJsonFile.port}`, `/electronWebPort=${manifestJsonFile.port + 1}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -111,5 +120,25 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
         });
-    });
+    }
+    else {
+        portfinder(manifestJsonFile.port, (error, electronWebPort) => {
+            loadURL = `http://localhost:${electronWebPort}`;
+            const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+            let binaryFile = manifestJsonFile.executable;
+
+            const os = require('os');
+            if (os.platform() === 'win32') {
+                binaryFile = binaryFile + '.exe';
+            }
+
+            const binFilePath = path.join(__dirname, 'bin', binaryFile);
+            var options = { cwd: path.join(__dirname, 'bin') };
+            apiProcess = process(binFilePath, parameters, options);
+
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
+        });
+    }
 }

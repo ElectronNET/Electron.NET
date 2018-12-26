@@ -14,7 +14,9 @@ namespace ElectronNET.CLI.Commands
     {
         public const string COMMAND_NAME = "init";
         public const string COMMAND_DESCRIPTION = "Creates the needed Electron.NET config for your Electron Application.";
-        public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
+        public static string COMMAND_ARGUMENTS = "/path from ASP.NET Core Project." + Environment.NewLine +
+                                                 "      /port [number] for the Electron port to start seeking from." + Environment.NewLine + 
+                                                 "      /static [true/false] for whether to use the portfinder or just go based on the port set.";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
         private const string ConfigName = "electron.manifest.json";
@@ -25,18 +27,40 @@ namespace ElectronNET.CLI.Commands
         {
             _args = args;
         }
+        
+        private const string _paramPath = "path";
+        private const string _paramPort = "port";
+        private const string _paramStaticPort = "static";
 
         public Task<bool> ExecuteAsync()
         {
             return Task.Run(() =>
             {
-                string aspCoreProjectPath = "";
+                SimpleCommandLineParser parser = new SimpleCommandLineParser();
+                parser.Parse(_args);
 
-                if (_args.Length > 0)
+                string port = "8000";
+                if (parser.Arguments.ContainsKey(_paramPort))
                 {
-                    if (Directory.Exists(_args[0]))
+                    port = parser.Arguments[_paramPort][0];
+                }
+
+                string staticPort = "false";
+                if (parser.Arguments.ContainsKey(_paramStaticPort))
+                {
+                    staticPort = parser.Arguments[_paramStaticPort][0];
+                }
+
+                string aspCoreProjectPath = "";
+                if (parser.Arguments.ContainsKey(_paramPath))
+                {
+                    if (Directory.Exists(parser.Arguments[_paramPath][0]))
                     {
-                        aspCoreProjectPath = _args[0];
+                        aspCoreProjectPath = parser.Arguments[_paramPath][0];
+                    }
+                    else
+                    {
+                        Console.WriteLine("Supplied path doesn't exist. Creating in current working directory.");
                     }
                 }
                 else
@@ -62,11 +86,13 @@ namespace ElectronNET.CLI.Commands
                 // search .csproj
                 Console.WriteLine($"Search your .csproj to add the needed {ConfigName}...");
                 var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                
+                string executable = GetAssemblyName(projectFile);
 
-                // update config file with the name of the csproj
-                // ToDo: If the csproj name != application name, this will fail
                 string text = File.ReadAllText(targetFilePath);
-                text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
+                text = text.Replace("{{executable}}", executable);
+                text = text.Replace("\"{{port}}\"", port);
+                text = text.Replace("\"{{static}}\"", staticPort);
                 File.WriteAllText(targetFilePath, text);
 
                 Console.WriteLine($"Found your .csproj: {projectFile} - check for existing config or update it.");
@@ -126,7 +152,7 @@ namespace ElectronNET.CLI.Commands
             using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 var xmlDocument = XDocument.Load(stream);
-
+                
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
                 if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
                 {
@@ -169,6 +195,34 @@ namespace ElectronNET.CLI.Commands
 
             Console.WriteLine($"{ConfigName} added in csproj!");
             return true;
+        }
+
+        private static string GetAssemblyName (string projectFile)
+        {
+            string executable = Path.GetFileNameWithoutExtension(projectFile);;
+            // Tentative fix for the issue with the executable being a different name from the project
+            using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                var xmlDocument = XDocument.Load(stream);
+
+                var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
+                if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
+                {
+                    Console.WriteLine(
+                        $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
+                }
+                else
+                {
+                    var propertyGroups = projectElement.Elements("PropertyGroup");
+                    if (propertyGroups != null && propertyGroups.Count() > 0) {
+                        var assemblyName = propertyGroups.FirstOrDefault().Element("AssemblyName");
+                        if (assemblyName != null)
+                            executable = assemblyName.Value;
+                    }
+                }
+            }
+
+            return executable;
         }
     }
 }
