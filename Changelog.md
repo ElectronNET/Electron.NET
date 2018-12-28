@@ -1,5 +1,9 @@
 # not release
 
+ElectronNET.CLI:
+
+* Invoke 'npm install' without --prod flag to install needed devDependencies as well.
+
 # 0.0.10
 
 ElectronNET.API:
