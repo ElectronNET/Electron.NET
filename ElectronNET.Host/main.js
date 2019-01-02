@@ -3,7 +3,7 @@ const { BrowserWindow, dialog, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
-const portfinder = require('detect-port');
+const portscanner = require('portscanner');
 let io, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
@@ -27,9 +27,11 @@ app.on('ready', () => {
         startSplashScreen();
     }
 
-    portfinder(8000, (error, port) => {
+    portscanner.findAPortNotInUse(8000, 65535, '127.0.0.1', function (error, port) {
+        console.log('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
+
 });
 
 function isSplashScreenEnabled() {
@@ -66,36 +68,39 @@ function startSplashScreen() {
 }
 
 function startSocketApiBridge(port) {
-    io = require('socket.io')(port);
-    startAspCoreBackend(port);
 
-    io.on('connection', (socket) => {
-        global['electronsocket'] = socket;
-        global['electronsocket'].setMaxListeners(0);
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
-
-        appApi = require('./api/app')(socket, app);
-        browserWindows = require('./api/browserWindows')(socket, app);
-        ipc = require('./api/ipc')(socket);
-        menu = require('./api/menu')(socket);
-        dialogApi = require('./api/dialog')(socket);
-        notification = require('./api/notification')(socket);
-        tray = require('./api/tray')(socket);
-        webContents = require('./api/webContents')(socket);
-        globalShortcut = require('./api/globalShortcut')(socket);
-        shellApi = require('./api/shell')(socket);
-        screen = require('./api/screen')(socket);
-        clipboard = require('./api/clipboard')(socket);
-
-        if (splashScreen && !splashScreen.isDestroyed()) {
-            splashScreen.close();
-        }
-    });
+    // io = require('socket.io')(port); will trigger the windows firewall, but this doesn't work either:
+    io = require('socket.io')("http://localhost:" + port);
+    //startAspCoreBackend(port);
+    //
+    //io.on('connection', (socket) => {
+    //    global['electronsocket'] = socket;
+    //    global['electronsocket'].setMaxListeners(0);
+    //    console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+    //
+    //    appApi = require('./api/app')(socket, app);
+    //    browserWindows = require('./api/browserWindows')(socket, app);
+    //    ipc = require('./api/ipc')(socket);
+    //    menu = require('./api/menu')(socket);
+    //    dialogApi = require('./api/dialog')(socket);
+    //    notification = require('./api/notification')(socket);
+    //    tray = require('./api/tray')(socket);
+    //    webContents = require('./api/webContents')(socket);
+    //    globalShortcut = require('./api/globalShortcut')(socket);
+    //    shellApi = require('./api/shell')(socket);
+    //    screen = require('./api/screen')(socket);
+    //    clipboard = require('./api/clipboard')(socket);
+    //
+    //    if (splashScreen && !splashScreen.isDestroyed()) {
+    //        splashScreen.close();
+    //    }
+    //});
 }
 
 function startAspCoreBackend(electronPort) {
-    portfinder(8000, (error, electronWebPort) => {
-        loadURL = `http://localhost:${electronWebPort}`
+    portscanner.findAPortNotInUse(8000, 65535, '127.0.0.1', function (error, electronWebPort) {
+        console.log('ASP.NET Core Port: ' + electronWebPort);
+        loadURL = `http://localhost:${electronWebPort}`;
         const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
         let binaryFile = manifestJsonFile.executable;
 
