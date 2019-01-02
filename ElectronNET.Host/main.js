@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('child_process').spawn;
 const portscanner = require('portscanner');
-let io, browserWindows, ipc, apiProcess, loadURL;
+let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
 let splashScreen, mainWindowId;
@@ -27,7 +27,8 @@ app.on('ready', () => {
         startSplashScreen();
     }
 
-    portscanner.findAPortNotInUse(8000, 65535, '127.0.0.1', function (error, port) {
+    // hostname needs to belocalhost, otherwise Windows Firewall will be triggered.
+    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, port) {
         console.log('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
@@ -69,36 +70,47 @@ function startSplashScreen() {
 
 function startSocketApiBridge(port) {
 
-    // io = require('socket.io')(port); will trigger the windows firewall, but this doesn't work either:
-    io = require('socket.io')("http://localhost:" + port);
-    //startAspCoreBackend(port);
-    //
-    //io.on('connection', (socket) => {
-    //    global['electronsocket'] = socket;
-    //    global['electronsocket'].setMaxListeners(0);
-    //    console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
-    //
-    //    appApi = require('./api/app')(socket, app);
-    //    browserWindows = require('./api/browserWindows')(socket, app);
-    //    ipc = require('./api/ipc')(socket);
-    //    menu = require('./api/menu')(socket);
-    //    dialogApi = require('./api/dialog')(socket);
-    //    notification = require('./api/notification')(socket);
-    //    tray = require('./api/tray')(socket);
-    //    webContents = require('./api/webContents')(socket);
-    //    globalShortcut = require('./api/globalShortcut')(socket);
-    //    shellApi = require('./api/shell')(socket);
-    //    screen = require('./api/screen')(socket);
-    //    clipboard = require('./api/clipboard')(socket);
-    //
-    //    if (splashScreen && !splashScreen.isDestroyed()) {
-    //        splashScreen.close();
-    //    }
-    //});
+    // instead of 'require('socket.io')(port);' we need to use this workaround
+    // otherwise the Windows Firewall will be triggered
+    server = require('http').createServer();
+    io = require('socket.io')();
+    io.attach(server);
+
+    server.listen(port, 'localhost');
+    server.on('listening', function () {
+        console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
+    });
+
+    startAspCoreBackend(port);
+    
+    io.on('connection', (socket) => {
+        global['electronsocket'] = socket;
+        global['electronsocket'].setMaxListeners(0);
+        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+    
+        appApi = require('./api/app')(socket, app);
+        browserWindows = require('./api/browserWindows')(socket, app);
+        ipc = require('./api/ipc')(socket);
+        menu = require('./api/menu')(socket);
+        dialogApi = require('./api/dialog')(socket);
+        notification = require('./api/notification')(socket);
+        tray = require('./api/tray')(socket);
+        webContents = require('./api/webContents')(socket);
+        globalShortcut = require('./api/globalShortcut')(socket);
+        shellApi = require('./api/shell')(socket);
+        screen = require('./api/screen')(socket);
+        clipboard = require('./api/clipboard')(socket);
+    
+        if (splashScreen && !splashScreen.isDestroyed()) {
+            splashScreen.close();
+        }
+    });
 }
 
 function startAspCoreBackend(electronPort) {
-    portscanner.findAPortNotInUse(8000, 65535, '127.0.0.1', function (error, electronWebPort) {
+
+    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, electronWebPort) {
         console.log('ASP.NET Core Port: ' + electronWebPort);
         loadURL = `http://localhost:${electronWebPort}`;
         const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
