@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -1657,6 +1658,13 @@ namespace ElectronNET.API
         /// <param name="y"></param>
         public void SetPosition(int x, int y)
         {
+            // Workaround Windows 10 / Electron Bug
+            // https://github.com/electron/electron/issues/4045
+            if (isWindows10())
+            {
+                x = x - 7;
+            }
+
             BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y);
         }
 
@@ -1668,7 +1676,19 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetPosition(int x, int y, bool animate)
         {
+            // Workaround Windows 10 / Electron Bug
+            // https://github.com/electron/electron/issues/4045
+            if (isWindows10())
+            {
+                x = x - 7;
+            }
+
             BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate);
+        }
+
+        private bool isWindows10()
+        {
+            return RuntimeInformation.OSDescription.Contains("Windows 10");
         }
 
         /// <summary>

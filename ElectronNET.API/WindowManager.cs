@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -114,9 +115,44 @@ namespace ElectronNET.API
                 loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
             }
 
-            BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+            // Workaround Windows 10 / Electron Bug
+            // https://github.com/electron/electron/issues/4045
+            if (isWindows10())
+            {
+                options.Width = options.Width + 14;
+                options.Height = options.Height + 7;
+            }
+
+            if (options.X == -1 && options.Y == -1)
+            {
+                options.X = 0;
+                options.Y = 0;
+
+                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+            }
+            else
+            {
+                // Workaround Windows 10 / Electron Bug
+                // https://github.com/electron/electron/issues/4045
+                if (isWindows10())
+                {
+                    options.X = options.X - 7;
+                }
+
+                var ownjsonSerializer = new JsonSerializer()
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
+            }
 
             return taskCompletionSource.Task;
+        }
+
+        private bool isWindows10()
+        {
+            return RuntimeInformation.OSDescription.Contains("Windows 10");
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

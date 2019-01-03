@@ -12,24 +12,24 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Window's width in pixels. Default is 800.
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get; set; } = 800;
 
         /// <summary>
         /// Window's height in pixels. Default is 600.
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get; set; } = 600;
 
         /// <summary>
         /// ( if y is used) Window's left offset from screen. Default is to center the
         /// window.
         /// </summary>
-        public int X { get; set; }
+        public int X { get; set; } = -1;
 
         /// <summary>
         /// ( if x is used) Window's top offset from screen. Default is to center the
         /// window.
         /// </summary>
-        public int Y { get; set; }
+        public int Y { get; set; } = -1;
 
         /// <summary>
         /// The width and height would be used as web page's size, which means the actual
