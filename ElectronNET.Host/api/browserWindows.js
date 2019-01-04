@@ -158,8 +158,8 @@ module.exports = function (socket, app) {
         window = new electron_1.BrowserWindow(options);
         lastOptions = options;
         window.on('closed', function (sender) {
-            var _loop_1 = function () {
-                windowItem = windows[index];
+            var _loop_1 = function (index) {
+                var windowItem = windows[index];
                 try {
                     windowItem.id;
                 }
@@ -172,9 +172,8 @@ module.exports = function (socket, app) {
                     }
                 }
             };
-            var windowItem;
             for (var index = 0; index < windows.length; index++) {
-                _loop_1();
+                _loop_1(index);
             }
         });
         app.on('activate', function () {
@@ -426,7 +425,7 @@ module.exports = function (socket, app) {
         if (menuItems) {
             menu = electron_1.Menu.buildFromTemplate(menuItems);
             addMenuItemClickConnector(menu.items, function (id) {
-                socket.emit("windowMenuItemClicked", id);
+                socket.emit('windowMenuItemClicked', id);
             });
         }
         getWindowById(id).setMenu(menu);
@@ -436,7 +435,7 @@ module.exports = function (socket, app) {
             if (item.submenu && item.submenu.items.length > 0) {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = function () { callback(item.id); };
             }
         });
@@ -456,7 +455,7 @@ module.exports = function (socket, app) {
             var imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = electron_1.nativeImage.createFromPath(imagePath);
             thumbarButton.click = function () {
-                socket.emit("thumbarButtonClicked", thumbarButton["id"]);
+                socket.emit('thumbarButtonClicked', thumbarButton['id']);
             };
         });
         var success = getWindowById(id).setThumbarButtons(thumbarButtons);

@@ -2,14 +2,13 @@
 var electron_1 = require("electron");
 module.exports = function (socket) {
     socket.on('showMessageBox', function (browserWindow, options, guid) {
-        if ("id" in browserWindow) {
-            var window = electron_1.BrowserWindow.fromId(browserWindow.id);
-            electron_1.dialog.showMessageBox(window, options, function (response, checkboxChecked) {
+        if ('id' in browserWindow) {
+            var window_1 = electron_1.BrowserWindow.fromId(browserWindow.id);
+            electron_1.dialog.showMessageBox(window_1, options, function (response, checkboxChecked) {
                 socket.emit('showMessageBoxComplete' + guid, [response, checkboxChecked]);
             });
         }
         else {
-            var message = browserWindow;
             var id_1 = guid || options;
             electron_1.dialog.showMessageBox(browserWindow, function (response, checkboxChecked) {
                 socket.emit('showMessageBoxComplete' + id_1, [response, checkboxChecked]);

@@ -1,4 +1,4 @@
-import { shell } from "electron";
+import { shell } from 'electron';
 
 export = (socket: SocketIO.Socket) => {
     socket.on('shell-showItemInFolder', (fullPath) => {
@@ -50,4 +50,4 @@ export = (socket: SocketIO.Socket) => {
 
         socket.emit('shell-readShortcutLinkCompleted', shortcutDetails);
     });
-}
+};

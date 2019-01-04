@@ -1,4 +1,4 @@
-import { Notification } from "electron";
+import { Notification } from 'electron';
 const notifications: Electron.Notification[] = [];
 
 export = (socket: SocketIO.Socket) => {
@@ -6,42 +6,42 @@ export = (socket: SocketIO.Socket) => {
         const notification = new Notification(options);
         let haveEvent = false;
 
-        if(options.showID) {
+        if (options.showID) {
             haveEvent = true;
             notification.on('show', () => {
                 socket.emit('NotificationEventShow', options.showID);
             });
         }
 
-        if(options.clickID) {
+        if (options.clickID) {
             haveEvent = true;
             notification.on('click', () => {
                 socket.emit('NotificationEventClick', options.clickID);
             });
         }
 
-        if(options.closeID) {
+        if (options.closeID) {
             haveEvent = true;
             notification.on('close', () => {
                 socket.emit('NotificationEventClose', options.closeID);
             });
         }
 
-        if(options.replyID) {
+        if (options.replyID) {
             haveEvent = true;
             notification.on('reply', (event, value) => {
                 socket.emit('NotificationEventReply', [options.replyID, value]);
             });
         }
 
-        if(options.actionID) {
+        if (options.actionID) {
             haveEvent = true;
             notification.on('action', (event, value) => {
                 socket.emit('NotificationEventAction', [options.actionID, value]);
             });
         }
 
-        if(haveEvent) {
+        if (haveEvent) {
             notifications.push(notification);
         }
 
@@ -52,4 +52,4 @@ export = (socket: SocketIO.Socket) => {
         const isSupported = Notification.isSupported;
         socket.emit('notificationIsSupportedComplete', isSupported);
     });
-}
+};

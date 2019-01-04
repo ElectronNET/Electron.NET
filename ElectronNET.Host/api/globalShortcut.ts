@@ -1,4 +1,4 @@
-import { globalShortcut } from "electron";
+import { globalShortcut } from 'electron';
 
 export = (socket: SocketIO.Socket) => {
     socket.on('globalShortcut-register', (accelerator) => {
@@ -19,7 +19,7 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('globalShortcut-unregisterAll', () => {
         try {
-            globalShortcut.unregisterAll();            
+            globalShortcut.unregisterAll();
         } catch (error) { }
     });
-}
+};

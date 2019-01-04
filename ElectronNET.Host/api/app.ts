@@ -1,4 +1,3 @@
-import { nativeImage as NativeImage } from 'electron';
 let isQuitWindowAllClosed = true;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {

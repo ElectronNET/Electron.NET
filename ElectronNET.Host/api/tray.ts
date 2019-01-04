@@ -1,4 +1,4 @@
-import { Menu, Tray, nativeImage } from "electron";
+import { Menu, Tray, nativeImage } from 'electron';
 const path = require('path');
 let tray: Electron.Tray;
 
@@ -34,7 +34,7 @@ export = (socket: SocketIO.Socket) => {
             });
         }
     });
-    
+
     socket.on('register-tray-balloon-click', (id) => {
         if (tray) {
             tray.on('balloon-click', () => {
@@ -55,7 +55,7 @@ export = (socket: SocketIO.Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addMenuItemClickConnector(menu.items, (id) => {
-            socket.emit("trayMenuItemClicked", id);
+            socket.emit('trayMenuItemClicked', id);
         });
 
         const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
@@ -78,7 +78,7 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('tray-setPressedImage', (image) => {
         if (tray) {
-            let img = nativeImage.createFromPath(image);
+            const img = nativeImage.createFromPath(image);
             tray.setPressedImage(img);
         }
     });
@@ -109,7 +109,7 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('tray-isDestroyed', () => {
         if (tray) {
-            let isDestroyed = tray.isDestroyed();
+            const isDestroyed = tray.isDestroyed();
             socket.emit('tray-isDestroyedCompleted', isDestroyed);
         }
     });
@@ -120,9 +120,9 @@ export = (socket: SocketIO.Socket) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
 
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = () => { callback(item.id); };
             }
         });
     }
-}
+};

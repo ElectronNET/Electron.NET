@@ -5,7 +5,7 @@ module.exports = function (socket) {
     socket.on('menu-setContextMenu', function (browserWindowId, menuItems) {
         var menu = electron_1.Menu.buildFromTemplate(menuItems);
         addContextMenuItemClickConnector(menu.items, browserWindowId, function (id, browserWindowId) {
-            socket.emit("contextMenuItemClicked", [id, browserWindowId]);
+            socket.emit('contextMenuItemClicked', [id, browserWindowId]);
         });
         contextMenuItems.push({
             menu: menu,
@@ -17,7 +17,7 @@ module.exports = function (socket) {
             if (item.submenu && item.submenu.items.length > 0) {
                 addContextMenuItemClickConnector(item.submenu.items, browserWindowId, callback);
             }
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = function () { callback(item.id, browserWindowId); };
             }
         });
@@ -33,7 +33,7 @@ module.exports = function (socket) {
     socket.on('menu-setApplicationMenu', function (menuItems) {
         var menu = electron_1.Menu.buildFromTemplate(menuItems);
         addMenuItemClickConnector(menu.items, function (id) {
-            socket.emit("menuItemClicked", id);
+            socket.emit('menuItemClicked', id);
         });
         electron_1.Menu.setApplicationMenu(menu);
     });
@@ -42,7 +42,7 @@ module.exports = function (socket) {
             if (item.submenu && item.submenu.items.length > 0) {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = function () { callback(item.id); };
             }
         });

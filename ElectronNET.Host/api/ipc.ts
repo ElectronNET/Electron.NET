@@ -9,7 +9,7 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('registerSyncIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
-            let x = <any>socket;
+            const x = <any>socket;
             x.removeAllListeners(channel + 'Sync');
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
@@ -31,9 +31,9 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
         const window = BrowserWindow.fromId(browserWindow.id);
-        
+
         if (window) {
             window.webContents.send(channel, ...data);
         }
     });
-}
+};

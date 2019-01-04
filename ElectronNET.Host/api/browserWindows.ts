@@ -1,6 +1,6 @@
-import { BrowserWindow, Menu, nativeImage } from "electron";
+import { BrowserWindow, Menu, nativeImage } from 'electron';
 const path = require('path');
-const windows: Electron.BrowserWindow[] = []
+const windows: Electron.BrowserWindow[] = [];
 let window, lastOptions;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {
@@ -190,8 +190,8 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         lastOptions = options;
 
         window.on('closed', (sender) => {
-            for (var index = 0; index < windows.length; index++) {
-                var windowItem = windows[index];
+            for (let index = 0; index < windows.length; index++) {
+                const windowItem = windows[index];
                 try {
                     windowItem.id;
                 } catch (error) {
@@ -551,7 +551,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             menu = Menu.buildFromTemplate(menuItems);
 
             addMenuItemClickConnector(menu.items, (id) => {
-                socket.emit("windowMenuItemClicked", id);
+                socket.emit('windowMenuItemClicked', id);
             });
         }
 
@@ -564,7 +564,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
 
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = () => { callback(item.id); };
             }
         });
@@ -589,7 +589,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = nativeImage.createFromPath(imagePath);
             thumbarButton.click = () => {
-                socket.emit("thumbarButtonClicked", thumbarButton["id"]);
+                socket.emit('thumbarButtonClicked', thumbarButton['id']);
             };
         });
 
@@ -674,7 +674,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
         browserWindows.forEach(x => {
             ids.push(x.id);
-        })
+        });
 
         socket.emit('browserWindow-getChildWindows-completed', ids);
     });
@@ -688,11 +688,11 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     });
 
     function getWindowById(id: number): Electron.BrowserWindow {
-        for (var index = 0; index < windows.length; index++) {
-            var element = windows[index];
+        for (let index = 0; index < windows.length; index++) {
+            const element = windows[index];
             if (element.id == id) {
                 return element;
             }
         }
     }
-}
+};

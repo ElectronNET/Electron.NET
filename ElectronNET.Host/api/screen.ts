@@ -1,4 +1,4 @@
-import { screen } from "electron";
+import { screen } from 'electron';
 
 export = (socket: SocketIO.Socket) => {
     socket.on('register-screen-display-added', (id) => {
@@ -20,32 +20,32 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('screen-getCursorScreenPoint', () => {
-        var point = screen.getCursorScreenPoint();
+        const point = screen.getCursorScreenPoint();
         socket.emit('screen-getCursorScreenPointCompleted', point);
     });
 
     socket.on('screen-getMenuBarHeight', () => {
-        var height = screen.getPrimaryDisplay().workArea;
+        const height = screen.getPrimaryDisplay().workArea;
         socket.emit('screen-getMenuBarHeightCompleted', height);
     });
 
     socket.on('screen-getPrimaryDisplay', () => {
-        var display = screen.getPrimaryDisplay();
+        const display = screen.getPrimaryDisplay();
         socket.emit('screen-getPrimaryDisplayCompleted', display);
     });
 
     socket.on('screen-getAllDisplays', () => {
-        var display = screen.getAllDisplays();
+        const display = screen.getAllDisplays();
         socket.emit('screen-getAllDisplaysCompleted', display);
     });
 
     socket.on('screen-getDisplayNearestPoint', (point) => {
-        var display = screen.getDisplayNearestPoint(point);
+        const display = screen.getDisplayNearestPoint(point);
         socket.emit('screen-getDisplayNearestPointCompleted', display);
     });
 
     socket.on('screen-getDisplayMatching', (rectangle) => {
-        var display = screen.getDisplayMatching(rectangle);
+        const display = screen.getDisplayMatching(rectangle);
         socket.emit('screen-getDisplayMatchingCompleted', display);
     });
-}
+};

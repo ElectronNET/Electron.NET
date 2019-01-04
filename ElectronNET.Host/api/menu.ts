@@ -1,4 +1,4 @@
-import { Menu, BrowserWindow } from "electron";
+import { Menu, BrowserWindow } from 'electron';
 const contextMenuItems = [];
 
 export = (socket: SocketIO.Socket) => {
@@ -6,7 +6,7 @@ export = (socket: SocketIO.Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, browserWindowId) => {
-            socket.emit("contextMenuItemClicked", [id, browserWindowId]);
+            socket.emit('contextMenuItemClicked', [id, browserWindowId]);
         });
 
         contextMenuItems.push({
@@ -21,7 +21,7 @@ export = (socket: SocketIO.Socket) => {
                 addContextMenuItemClickConnector(item.submenu.items, browserWindowId, callback);
             }
 
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = () => { callback(item.id, browserWindowId); };
             }
         });
@@ -29,8 +29,8 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('menu-contextMenuPopup', (browserWindowId) => {
         contextMenuItems.forEach(x => {
-            if(x.browserWindowId === browserWindowId) {
-                let browserWindow = BrowserWindow.fromId(browserWindowId);
+            if (x.browserWindowId === browserWindowId) {
+                const browserWindow = BrowserWindow.fromId(browserWindowId);
                 x.menu.popup(browserWindow);
             }
         });
@@ -40,7 +40,7 @@ export = (socket: SocketIO.Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addMenuItemClickConnector(menu.items, (id) => {
-            socket.emit("menuItemClicked", id);
+            socket.emit('menuItemClicked', id);
         });
 
         Menu.setApplicationMenu(menu);
@@ -52,9 +52,9 @@ export = (socket: SocketIO.Socket) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
 
-            if ("id" in item && item.id) {
+            if ('id' in item && item.id) {
                 item.click = () => { callback(item.id); };
             }
         });
     }
-}
+};

@@ -3,7 +3,7 @@ const fs = require('fs');
 
 export = (socket: SocketIO.Socket) => {
     socket.on('register-webContents-crashed', (id) => {
-        var browserWindow = getWindowById(id);
+        const browserWindow = getWindowById(id);
 
         browserWindow.webContents.removeAllListeners('crashed');
         browserWindow.webContents.on('crashed', (event, killed) => {
@@ -12,7 +12,7 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('register-webContents-didFinishLoad', (id) => {
-        let browserWindow = getWindowById(id);
+        const browserWindow = getWindowById(id);
 
         browserWindow.webContents.removeAllListeners('did-finish-load');
         browserWindow.webContents.on('did-finish-load', () => {
@@ -45,7 +45,7 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('webContents-getUrl', function (id) {
-        var browserWindow = getWindowById(id);
+        const browserWindow = getWindowById(id);
         socket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
     });
 

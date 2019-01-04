@@ -1,4 +1,4 @@
-import { clipboard } from "electron";
+import { clipboard } from 'electron';
 
 export = (socket: SocketIO.Socket) => {
 
@@ -59,4 +59,4 @@ export = (socket: SocketIO.Socket) => {
     socket.on('clipboard-write', (data, type) => {
         clipboard.write(data, type);
     });
-}
+};
