@@ -59,5 +59,8 @@
         /// Perform copy and paste operations on the system clipboard.
         /// </summary>
         public static Clipboard Clipboard { get { return Clipboard.Instance; } }
+
+
+        public static HostHook HostHook { get { return HostHook.Instance; } }
     }
 }

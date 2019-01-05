@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Electron App",
-            "program": "${workspaceFolder}\\main.js",
-            "runtimeExecutable": "${workspaceFolder}\\node_modules\\.bin\\electron",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "program": "${workspaceFolder}/main.js",
             "sourceMaps": true
         }
     ]

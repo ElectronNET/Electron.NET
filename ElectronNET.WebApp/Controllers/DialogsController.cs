@@ -23,6 +23,10 @@ namespace ElectronNET.WebApp.Controllers
 
                     string[] files = await Electron.Dialog.ShowOpenDialogAsync(mainWindow, options);
                     Electron.IpcMain.Send(mainWindow, "select-directory-reply", files);
+
+                    var result = await Electron.HostHook.CallAsync<string>("create-excel", files);
+
+                    await Electron.Dialog.ShowMessageBoxAsync(result);
                 });
 
                 Electron.IpcMain.On("error-dialog", (args) =>

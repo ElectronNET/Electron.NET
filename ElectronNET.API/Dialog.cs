@@ -67,8 +67,7 @@ namespace ElectronNET.API
 
             BridgeConnector.Socket.Emit("showOpenDialog",
             JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
+            JObject.FromObject(options, _jsonSerializer), guid);
 
             return taskCompletionSource.Task;
         }

@@ -1,22 +1,22 @@
 "use strict";
-var electron_1 = require("electron");
-var fs = require('fs');
-module.exports = function (socket) {
-    socket.on('register-webContents-crashed', function (id) {
-        var browserWindow = getWindowById(id);
+const electron_1 = require("electron");
+const fs = require('fs');
+module.exports = (socket) => {
+    socket.on('register-webContents-crashed', (id) => {
+        const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('crashed');
-        browserWindow.webContents.on('crashed', function (event, killed) {
+        browserWindow.webContents.on('crashed', (event, killed) => {
             socket.emit('webContents-crashed' + id, killed);
         });
     });
-    socket.on('register-webContents-didFinishLoad', function (id) {
-        var browserWindow = getWindowById(id);
+    socket.on('register-webContents-didFinishLoad', (id) => {
+        const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('did-finish-load');
-        browserWindow.webContents.on('did-finish-load', function () {
+        browserWindow.webContents.on('did-finish-load', () => {
             socket.emit('webContents-didFinishLoad' + id);
         });
     });
-    socket.on('webContentsOpenDevTools', function (id, options) {
+    socket.on('webContentsOpenDevTools', (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
         }
@@ -24,12 +24,12 @@ module.exports = function (socket) {
             getWindowById(id).webContents.openDevTools();
         }
     });
-    socket.on('webContents-printToPDF', function (id, options, path) {
-        getWindowById(id).webContents.printToPDF(options || {}, function (error, data) {
+    socket.on('webContents-printToPDF', (id, options, path) => {
+        getWindowById(id).webContents.printToPDF(options || {}, (error, data) => {
             if (error) {
                 throw error;
             }
-            fs.writeFile(path, data, function (error) {
+            fs.writeFile(path, data, (error) => {
                 if (error) {
                     socket.emit('webContents-printToPDF-completed', false);
                 }
@@ -40,7 +40,7 @@ module.exports = function (socket) {
         });
     });
     socket.on('webContents-getUrl', function (id) {
-        var browserWindow = getWindowById(id);
+        const browserWindow = getWindowById(id);
         socket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
     });
     function getWindowById(id) {

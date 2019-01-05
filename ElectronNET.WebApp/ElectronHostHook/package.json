@@ -1,0 +1,20 @@
+{
+  "name": "electron-host-hook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/exceljs": "^0.5.2",
+    "@types/socket.io": "^2.1.2"
+  },
+  "dependencies": {
+    "exceljs": "^1.6.3"
+  }
+}

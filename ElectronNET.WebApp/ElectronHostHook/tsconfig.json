@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2015",
         "sourceMap": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "target": "es2015"
     },
     "exclude": [
         "node_modules"

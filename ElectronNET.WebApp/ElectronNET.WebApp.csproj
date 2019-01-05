@@ -3,12 +3,29 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Controllers\ManageWindowsController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ElectronHostHook\connector.ts" />
+    <None Remove="ElectronHostHook\excelCreator.ts" />
+    <None Remove="ElectronHostHook\index.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElectronHostHook\connector.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ElectronHostHook\excelCreator.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ElectronHostHook\index.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />

@@ -7,7 +7,7 @@ const portscanner = require('portscanner');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
-let splashScreen, mainWindowId;
+let splashScreen, mainWindowId, hostHook;
 
 const manifestJsonFilePath = path.join(__dirname, 'bin', 'electron.manifest.json');
 const manifestJsonFile = require(manifestJsonFilePath);
@@ -82,12 +82,12 @@ function startSocketApiBridge(port) {
     });
 
     startAspCoreBackend(port);
-    
+
     io.on('connection', (socket) => {
         global['electronsocket'] = socket;
         global['electronsocket'].setMaxListeners(0);
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
-    
+
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
         ipc = require('./api/ipc')(socket);
@@ -100,9 +100,20 @@ function startSocketApiBridge(port) {
         shellApi = require('./api/shell')(socket);
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
-    
+
         if (splashScreen && !splashScreen.isDestroyed()) {
             splashScreen.close();
+        }
+
+        try {
+            const hostHookScriptFilePath = path.join(__dirname, 'bin', 'ElectronHostHook', 'index.js');
+            const { HookService } = require(hostHookScriptFilePath);
+            if (hostHook === undefined) {
+                hostHook = new HookService(socket, app);
+                hostHook.onHostReady();
+            }
+        } catch (error) {
+            console.log(error.message);
         }
     });
 }
