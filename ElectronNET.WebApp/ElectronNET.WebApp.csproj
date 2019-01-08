@@ -12,19 +12,8 @@
     <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="ElectronHostHook\connector.ts" />
-    <None Remove="ElectronHostHook\excelCreator.ts" />
-    <None Remove="ElectronHostHook\index.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ElectronHostHook\connector.ts">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ElectronHostHook\excelCreator.ts">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ElectronHostHook\index.ts">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="ElectronHostHook\**\*.*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
