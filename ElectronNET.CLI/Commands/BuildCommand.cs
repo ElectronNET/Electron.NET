@@ -86,7 +86,11 @@ namespace ElectronNET.CLI.Commands
 
                 if (Directory.Exists(electronhosthookDir))
                 {
-                    DirectoryCopy.Do(electronhosthookDir, tempPath, true, new List<string>() { "node_modules" });
+                    string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
+                    DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
+
+                    Console.WriteLine("Start npm install for hosthooks...");
+                    ProcessHelper.CmdExecute("npm install", hosthookDir);
                 }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
