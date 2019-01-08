@@ -12,7 +12,7 @@
     <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ElectronHostHook\**\*.*">
+    <Content Update="ElectronHostHook\**\*.*">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
