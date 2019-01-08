@@ -59,6 +59,13 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
+                string electronhosthookDir = Path.Combine(aspCoreProjectPath, "ElectronHostHook");
+
+                if (Directory.Exists(electronhosthookDir))
+                {
+                    DirectoryCopy.Do(electronhosthookDir, tempPath, true, new List<string>() { "node_modules" });
+                }
+
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
@@ -92,5 +99,7 @@ namespace ElectronNET.CLI.Commands
                 return true;
             });
         }
+
+        
     }
 }
