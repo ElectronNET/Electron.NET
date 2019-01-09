@@ -59,17 +59,6 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-                string electronhosthookDir = Path.Combine(aspCoreProjectPath, "ElectronHostHook");
-
-                if (Directory.Exists(electronhosthookDir))
-                {
-                    string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
-
-                    Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install", hosthookDir);
-                }
-
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
@@ -86,7 +75,25 @@ namespace ElectronNET.CLI.Commands
                     Console.WriteLine("Skip npm install, because node_modules directory exists in: " + checkForNodeModulesDirPath);
                 }
 
+                Console.WriteLine("ElectronHostHook handling started...");
+
+                string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
+
+                if (Directory.Exists(electronhosthookDir))
+                {
+                    string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
+                    DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
+
+                    Console.WriteLine("Start npm install for hosthooks...");
+                    ProcessHelper.CmdExecute("npm install", hosthookDir);
+
+                    string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
+                    // ToDo: Not sure if this runs under linux/macos
+                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
+                }
+
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
+
 
                 bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 if (isWindows)
