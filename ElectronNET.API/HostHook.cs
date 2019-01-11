@@ -34,13 +34,27 @@ namespace ElectronNET.API
 
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.Emit(socketEventName, arguments);
+            string guid = Guid.NewGuid().ToString();
+
+            BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
+            {
+                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+            });
+
+            BridgeConnector.Socket.Emit(socketEventName, arguments, guid);
         }
 
         public Task<T> CallAsync<T>(string socketEventName, params dynamic[] arguments)
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
+
+            BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
+            {
+                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+            });
 
             BridgeConnector.Socket.On(socketEventName + "Complete" + guid, (result) =>
             {

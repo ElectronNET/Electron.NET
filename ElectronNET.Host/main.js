@@ -106,7 +106,7 @@ function startSocketApiBridge(port) {
         }
 
         try {
-            const hostHookScriptFilePath = path.join(__dirname, 'bin', 'ElectronHostHook', 'index.js');
+            const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
             const { HookService } = require(hostHookScriptFilePath);
             if (hostHook === undefined) {
                 hostHook = new HookService(socket, app);
