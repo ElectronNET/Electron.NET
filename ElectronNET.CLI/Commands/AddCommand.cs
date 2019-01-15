@@ -68,6 +68,10 @@ namespace ElectronNET.CLI.Commands
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "package.json", "ElectronHostHook.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "tsconfig.json", "ElectronHostHook.");
 
+                // npm for typescript compiler etc.
+                Console.WriteLine("Start npm install...");
+                ProcessHelper.CmdExecute("npm install", targetFilePath);
+
                 // search .csproj
                 Console.WriteLine($"Search your .csproj to add configure CopyToPublishDirectory to 'Never'");
                 var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();

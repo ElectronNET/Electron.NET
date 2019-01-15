@@ -61,19 +61,12 @@ namespace ElectronNET.CLI.Commands
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
-                var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+                var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                if (Directory.Exists(checkForNodeModulesDirPath) == false)
-                {
-                    Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
+                Console.WriteLine("node_modules missing in: " + nodeModulesDirPath);
 
-                    Console.WriteLine("Start npm install...");
-                    ProcessHelper.CmdExecute("npm install", tempPath);
-                }
-                else
-                {
-                    Console.WriteLine("Skip npm install, because node_modules directory exists in: " + checkForNodeModulesDirPath);
-                }
+                Console.WriteLine("Start npm install...");
+                ProcessHelper.CmdExecute("npm install", tempPath);
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
@@ -111,6 +104,6 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        
+
     }
 }
