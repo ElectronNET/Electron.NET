@@ -23,6 +23,22 @@ namespace ElectronNET.CLI.Commands.Actions
             {
                 Directory.CreateDirectory(destDirName);
             }
+            else
+            {
+                DirectoryInfo targetDir = new DirectoryInfo(destDirName);
+                
+                foreach (FileInfo fileDel in targetDir.EnumerateFiles())
+                {
+                    fileDel.Delete();
+                }
+                foreach (DirectoryInfo dirDel in targetDir.EnumerateDirectories())
+                {
+                    dirDel.Delete(true);
+                }
+            }
+
+
+
 
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();
