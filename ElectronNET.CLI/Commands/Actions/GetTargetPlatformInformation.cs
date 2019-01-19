@@ -45,7 +45,7 @@ namespace ElectronNET.CLI.Commands.Actions
                 default:
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-                        netCorePublishRid = "win-x64";
+                        netCorePublishRid = $"win-x{(Environment.Is64BitOperatingSystem ? "64" : "86")}";
                         electronPackerPlatform = "win32";
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
