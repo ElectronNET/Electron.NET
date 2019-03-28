@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "author": "Gregor Biswanger",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "start": "tsc -p ."
   },
