@@ -19,6 +19,9 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine + 
                                                  "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
                                                  "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
+                                                 "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
+                                                 "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
+                                                 "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -34,6 +37,10 @@ namespace ElectronNET.CLI.Commands
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramElectronArch = "electron-arch";
         private string _paramElectronParams = "electron-params";
+        private string _paramOutputDirectory = "relative-path";
+        private string _paramAbsoluteOutput = "absolute-path";
+        private string _paramPackageJson = "package-json";
+
 
         public Task<bool> ExecuteAsync()
         {
@@ -61,8 +68,8 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 
-
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
+                
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
@@ -83,6 +90,13 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
+
+                if (parser.Arguments.ContainsKey(_paramPackageJson))
+                {
+                    Console.WriteLine("Copying custom package.json.");
+
+                    File.Copy(parser.Arguments[_paramPackageJson][0], Path.Combine(tempPath, "package.json"), true);
+                }
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
@@ -113,7 +127,17 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
+
+                // Specifying an absolute path supercedes a relative path
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+                if (parser.Arguments.ContainsKey(_paramAbsoluteOutput))
+                {
+                    buildPath = parser.Arguments[_paramAbsoluteOutput][0];
+                }
+                else if (parser.Arguments.ContainsKey(_paramOutputDirectory))
+                {
+                    buildPath = Path.Combine(Directory.GetCurrentDirectory(),parser.Arguments[_paramOutputDirectory][0]);
+                }
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
