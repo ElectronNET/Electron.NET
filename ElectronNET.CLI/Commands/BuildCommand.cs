@@ -22,6 +22,7 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
                                                  "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
                                                  "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
+                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'"  + Environment.NewLine +                                 
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -40,7 +41,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramOutputDirectory = "relative-path";
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
-
+        private string _paramForceNodeInstall = "install-modules";
 
         public Task<bool> ExecuteAsync()
         {
@@ -100,7 +101,7 @@ namespace ElectronNET.CLI.Commands
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                if (Directory.Exists(checkForNodeModulesDirPath) == false)
+                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
                 {
                     Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
 
