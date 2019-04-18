@@ -1,12 +1,14 @@
 import { Menu, BrowserWindow } from 'electron';
 const contextMenuItems = [];
+let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
+    electronSocket = socket;
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, browserWindowId) => {
-            socket.emit('contextMenuItemClicked', [id, browserWindowId]);
+            electronSocket.emit('contextMenuItemClicked', [id, browserWindowId]);
         });
 
         contextMenuItems.push({
@@ -40,7 +42,7 @@ export = (socket: SocketIO.Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addMenuItemClickConnector(menu.items, (id) => {
-            socket.emit('menuItemClicked', id);
+            electronSocket.emit('menuItemClicked', id);
         });
 
         Menu.setApplicationMenu(menu);

@@ -1,11 +1,13 @@
 "use strict";
 const electron_1 = require("electron");
 const contextMenuItems = [];
+let electronSocket;
 module.exports = (socket) => {
+    electronSocket = socket;
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = electron_1.Menu.buildFromTemplate(menuItems);
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, browserWindowId) => {
-            socket.emit('contextMenuItemClicked', [id, browserWindowId]);
+            electronSocket.emit('contextMenuItemClicked', [id, browserWindowId]);
         });
         contextMenuItems.push({
             menu: menu,
@@ -33,7 +35,7 @@ module.exports = (socket) => {
     socket.on('menu-setApplicationMenu', (menuItems) => {
         const menu = electron_1.Menu.buildFromTemplate(menuItems);
         addMenuItemClickConnector(menu.items, (id) => {
-            socket.emit('menuItemClicked', id);
+            electronSocket.emit('menuItemClicked', id);
         });
         electron_1.Menu.setApplicationMenu(menu);
     });

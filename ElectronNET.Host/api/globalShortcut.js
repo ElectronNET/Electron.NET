@@ -1,14 +1,16 @@
 "use strict";
 const electron_1 = require("electron");
+let electronSocket;
 module.exports = (socket) => {
+    electronSocket = socket;
     socket.on('globalShortcut-register', (accelerator) => {
         electron_1.globalShortcut.register(accelerator, () => {
-            socket.emit('globalShortcut-pressed', accelerator);
+            electronSocket.emit('globalShortcut-pressed', accelerator);
         });
     });
     socket.on('globalShortcut-isRegistered', (accelerator) => {
         const isRegistered = electron_1.globalShortcut.isRegistered(accelerator);
-        socket.emit('globalShortcut-isRegisteredCompleted', isRegistered);
+        electronSocket.emit('globalShortcut-isRegisteredCompleted', isRegistered);
     });
     socket.on('globalShortcut-unregister', (accelerator) => {
         electron_1.globalShortcut.unregister(accelerator);

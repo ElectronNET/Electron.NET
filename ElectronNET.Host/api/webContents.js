@@ -1,19 +1,21 @@
 "use strict";
 const electron_1 = require("electron");
 const fs = require('fs');
+let electronSocket;
 module.exports = (socket) => {
+    electronSocket = socket;
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('crashed');
         browserWindow.webContents.on('crashed', (event, killed) => {
-            socket.emit('webContents-crashed' + id, killed);
+            electronSocket.emit('webContents-crashed' + id, killed);
         });
     });
     socket.on('register-webContents-didFinishLoad', (id) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('did-finish-load');
         browserWindow.webContents.on('did-finish-load', () => {
-            socket.emit('webContents-didFinishLoad' + id);
+            electronSocket.emit('webContents-didFinishLoad' + id);
         });
     });
     socket.on('webContentsOpenDevTools', (id, options) => {
@@ -31,17 +33,17 @@ module.exports = (socket) => {
             }
             fs.writeFile(path, data, (error) => {
                 if (error) {
-                    socket.emit('webContents-printToPDF-completed', false);
+                    electronSocket.emit('webContents-printToPDF-completed', false);
                 }
                 else {
-                    socket.emit('webContents-printToPDF-completed', true);
+                    electronSocket.emit('webContents-printToPDF-completed', true);
                 }
             });
         });
     });
     socket.on('webContents-getUrl', function (id) {
         const browserWindow = getWindowById(id);
-        socket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
+        electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
     });
     function getWindowById(id) {
         return electron_1.BrowserWindow.fromId(id);
