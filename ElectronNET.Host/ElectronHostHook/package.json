@@ -1,17 +1,20 @@
 {
   "name": "electron-host-hook",
   "version": "1.0.0",
-  "description": "",
+  "description": "Connector for Electron.NET projects.",
+  "repository": {
+    "url": "https://github.com/ElectronNET/Electron.NET"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Gregor Biswanger",
+  "license": "MIT",
   "devDependencies": {
-    "@types/electron": "^1.6.10",
-    "@types/socket.io": "^2.1.2"
+    "@types/socket.io": "^2.1.2",
+    "typescript": "^3.4.5"
   },
   "dependencies": {}
 }

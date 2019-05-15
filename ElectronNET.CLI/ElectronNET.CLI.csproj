@@ -44,7 +44,6 @@ This package contains the dotnet tooling to electronize your application.</Descr
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\ElectronNET.Host\package-lock.json" Link="ElectronHost\package-lock.json" />
     <EmbeddedResource Include="..\ElectronNET.Host\package.json" Link="ElectronHost\package.json" />
   </ItemGroup>
 
@@ -61,6 +60,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
 	 <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\connector.ts" Link="ElectronHost\ElectronHostHook\connector.ts" />
 	<EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\tsconfig.json" Link="ElectronHost\ElectronHostHook\tsconfig.json" />
 	<EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\package.json" Link="ElectronHost\ElectronHostHook\package.json" />
+      <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\.gitignore" Link="ElectronHost\ElectronHostHook\.gitignore" />
   </ItemGroup>
 
 

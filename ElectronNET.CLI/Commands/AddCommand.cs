@@ -67,10 +67,16 @@ namespace ElectronNET.CLI.Commands
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "connector.ts", "ElectronHostHook.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "package.json", "ElectronHostHook.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "tsconfig.json", "ElectronHostHook.");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, ".gitignore", "ElectronHostHook.");
 
                 // npm for typescript compiler etc.
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", targetFilePath);
+
+                // run typescript compiler
+                string tscPath = Path.Combine(targetFilePath, "node_modules", ".bin");
+                // ToDo: Not sure if this runs under linux/macos
+                ProcessHelper.CmdExecute(@"tsc -p ../../", tscPath);
 
                 // search .csproj
                 Console.WriteLine($"Search your .csproj to add configure CopyToPublishDirectory to 'Never'");

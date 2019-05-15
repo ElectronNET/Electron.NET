@@ -1,0 +1,95 @@
+﻿<template class="task-template">
+    <section id="hosthook-section" class="section js-section u-category-communication">
+        <header class="communication">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-communication"></use></svg>
+                    Execute your own TypeScript code
+                </h1>
+                <h3>The <code>HostHook</code> API allows you to execute your own JavaScript/TypeScript code on the host process.</h3>
+
+                <p>Create first an ElectronHostHook directory via the Electron.NET CLI, with the following command: <code>electronize add hosthook</code>.</p>
+                <p>In this directory you can install any NPM packages and embed your own JavaScript/TypeScript code. It is also possible to respond to events from the host process.</p>
+                <p>You find the sample source code in <code>Controllers\HostHookController.cs</code> and in the <code>ElectronHostHook</code> folder.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="async-msg-demo-toggle" class="js-container-target demo-toggle-button">
+                    Execute TypeScript code
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="start-hoosthook-button">Create Excel-File</button>
+                        <span class="demo-response" id="hoosthook-reply"></span>
+                    </div>
+                    <p>Use <code>Electron.HostHook.CallAsync</code> to execute asynchronously your own JavaScript/TypeScript code, that expect a result value.</p>
+
+                    <p>This example execute the TypeScript code, that listening on "create-excel". The TypeScript code use a NPM Package names exceljs, to create a Excel file and reply a success message.</p>
+
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">
+Electron.IpcMain.On("start-hoosthook", async (args) =>
+{
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    var options = new OpenDialogOptions
+    {
+        Properties = new OpenDialogProperty[]
+        {
+            OpenDialogProperty.openDirectory
+        }
+    };
+    var folderPath = await Electron.Dialog.ShowOpenDialogAsync(mainWindow, options);
+
+    var resultFromTypeScript = await Electron.HostHook.CallAsync<string>("create-excel-file", folderPath);
+    Electron.IpcMain.Send(mainWindow, "excel-file-created", resultFromTypeScript);
+});
+                            </code>
+                    </pre>
+                    <h5>index.ts from ElectronHostHook-Folder (TypeScript)</h5>
+                    <pre>
+                        <code class="typescript">
+import * as Electron from "electron";
+import { Connector } from "./connector";
+import { ExcelCreator } from "./excelCreator";
+
+export class HookService extends Connector {
+    constructor(socket: SocketIO.Socket, public app: Electron.App) {
+        super(socket, app);
+    }
+
+    onHostReady(): void {
+        // execute your own JavaScript Host logic here
+        this.on("create-excel", async (path, done) => {
+            const excelCreator: ExcelCreator = new ExcelCreator();
+            const result: string = await excelCreator.create(path);
+
+            done(result);
+        });
+    }
+}
+                        </code>
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+
+                document.getElementById("start-hoosthook-button").addEventListener("click", () => {
+                    ipcRenderer.send("start-hoosthook");
+                });
+
+                ipcRenderer.on('excel-file-created', (event, arg) => {
+                    const message = `Asynchronous message reply: ${arg}`;
+                    document.getElementById('hoosthook-reply').innerHTML = message;
+                });
+            }());
+        </script>
+
+    </section>
+</template>

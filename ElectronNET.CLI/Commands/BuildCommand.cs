@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
 
@@ -82,17 +80,11 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-
-
                 DeployEmbeddedElectronFiles.Do(tempPath);
-
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-
-                Console.WriteLine("node_modules missing in: " + checkForNodeModulesDirPath);
-
                 Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", tempPath);
+                ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                 Console.WriteLine("Start npm install electron-packager...");
 
@@ -118,11 +110,11 @@ namespace ElectronNET.CLI.Commands
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
                     Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install", hosthookDir);
+                    ProcessHelper.CmdExecute("npm install --production", hosthookDir);
 
                     string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
+                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook --sourceMap false", tscPath);
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");

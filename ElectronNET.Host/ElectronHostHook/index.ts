@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as Electron from "electron";
 import { Connector } from "./connector";
 

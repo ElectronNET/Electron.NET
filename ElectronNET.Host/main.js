@@ -1,6 +1,5 @@
 ﻿const { app } = require('electron');
-const { BrowserWindow, dialog, shell } = require('electron');
-const fs = require('fs');
+const { BrowserWindow } = require('electron');
 const path = require('path');
 const process = require('child_process').spawn;
 const portscanner = require('portscanner');
@@ -107,8 +106,9 @@ function startSocketApiBridge(port) {
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
-            const { HookService } = require(hostHookScriptFilePath);
-            if (hostHook === undefined) {
+
+            if (isModuleAvailable(hostHookScriptFilePath) && hostHook === undefined) {
+                const { HookService } = require(hostHookScriptFilePath);
                 hostHook = new HookService(socket, app);
                 hostHook.onHostReady();
             }
@@ -116,6 +116,14 @@ function startSocketApiBridge(port) {
             console.log(error.message);
         }
     });
+}
+
+function isModuleAvailable(name) {
+    try {
+        require.resolve(name);
+        return true;
+    } catch (e) { }
+    return false;
 }
 
 function startAspCoreBackend(electronPort) {
