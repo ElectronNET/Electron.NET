@@ -2,53 +2,55 @@
 const electron_1 = require("electron");
 const path = require('path');
 let tray;
+let electronSocket;
 module.exports = (socket) => {
+    electronSocket = socket;
     socket.on('register-tray-click', (id) => {
         if (tray) {
             tray.on('click', (event, bounds) => {
-                socket.emit('tray-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-right-click', (id) => {
         if (tray) {
             tray.on('right-click', (event, bounds) => {
-                socket.emit('tray-right-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-right-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-double-click', (id) => {
         if (tray) {
             tray.on('double-click', (event, bounds) => {
-                socket.emit('tray-double-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-double-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-balloon-show', (id) => {
         if (tray) {
             tray.on('balloon-show', () => {
-                socket.emit('tray-balloon-show-event' + id);
+                electronSocket.emit('tray-balloon-show-event' + id);
             });
         }
     });
     socket.on('register-tray-balloon-click', (id) => {
         if (tray) {
             tray.on('balloon-click', () => {
-                socket.emit('tray-balloon-click-event' + id);
+                electronSocket.emit('tray-balloon-click-event' + id);
             });
         }
     });
     socket.on('register-tray-balloon-closed', (id) => {
         if (tray) {
             tray.on('balloon-closed', () => {
-                socket.emit('tray-balloon-closed-event' + id);
+                electronSocket.emit('tray-balloon-closed-event' + id);
             });
         }
     });
     socket.on('create-tray', (image, menuItems) => {
         const menu = electron_1.Menu.buildFromTemplate(menuItems);
         addMenuItemClickConnector(menu.items, (id) => {
-            socket.emit('trayMenuItemClicked', id);
+            electronSocket.emit('trayMenuItemClicked', id);
         });
         const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
         tray = new electron_1.Tray(imagePath);
@@ -93,7 +95,7 @@ module.exports = (socket) => {
     socket.on('tray-isDestroyed', () => {
         if (tray) {
             const isDestroyed = tray.isDestroyed();
-            socket.emit('tray-isDestroyedCompleted', isDestroyed);
+            electronSocket.emit('tray-isDestroyedCompleted', isDestroyed);
         }
     });
     function addMenuItemClickConnector(menuItems, callback) {

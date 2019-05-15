@@ -1,16 +1,18 @@
 import { globalShortcut } from 'electron';
+let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
+    electronSocket = socket;
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {
-            socket.emit('globalShortcut-pressed', accelerator);
+            electronSocket.emit('globalShortcut-pressed', accelerator);
         });
     });
 
     socket.on('globalShortcut-isRegistered', (accelerator) => {
         const isRegistered = globalShortcut.isRegistered(accelerator);
 
-        socket.emit('globalShortcut-isRegisteredCompleted', isRegistered);
+        electronSocket.emit('globalShortcut-isRegisteredCompleted', isRegistered);
     });
 
     socket.on('globalShortcut-unregister', (accelerator) => {

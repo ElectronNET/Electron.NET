@@ -1,9 +1,11 @@
 "use strict";
 const electron_1 = require("electron");
+let electronSocket;
 module.exports = (socket) => {
+    electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
@@ -13,12 +15,12 @@ module.exports = (socket) => {
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
     socket.on('registerOnceIpcMainChannel', (channel) => {
         electron_1.ipcMain.once(channel, (event, args) => {
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {

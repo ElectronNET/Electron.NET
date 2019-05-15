@@ -1,7 +1,6 @@
-let isQuitWindowAllClosed = true;
-
+let isQuitWindowAllClosed = true, electronSocket;
 export = (socket: SocketIO.Socket, app: Electron.App) => {
-
+    electronSocket = socket;
     // Quit when all windows are closed.
     app.on('window-all-closed', () => {
         // On macOS it is common for applications and their menu bar
@@ -18,7 +17,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('register-app-window-all-closed-event', (id) => {
         app.on('window-all-closed', () => {
-            socket.emit('app-window-all-closed' + id);
+            electronSocket.emit('app-window-all-closed' + id);
         });
     });
 
@@ -26,7 +25,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         app.on('before-quit', (event) => {
             event.preventDefault();
 
-            socket.emit('app-before-quit' + id);
+            electronSocket.emit('app-before-quit' + id);
         });
     });
 
@@ -34,37 +33,37 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         app.on('will-quit', (event) => {
             event.preventDefault();
 
-            socket.emit('app-will-quit' + id);
+            electronSocket.emit('app-will-quit' + id);
         });
     });
 
     socket.on('register-app-browser-window-blur-event', (id) => {
         app.on('browser-window-blur', () => {
-            socket.emit('app-browser-window-blur' + id);
+            electronSocket.emit('app-browser-window-blur' + id);
         });
     });
 
     socket.on('register-app-browser-window-focus-event', (id) => {
         app.on('browser-window-focus', () => {
-            socket.emit('app-browser-window-focus' + id);
+            electronSocket.emit('app-browser-window-focus' + id);
         });
     });
 
     socket.on('register-app-browser-window-created-event', (id) => {
         app.on('browser-window-created', () => {
-            socket.emit('app-browser-window-created' + id);
+            electronSocket.emit('app-browser-window-created' + id);
         });
     });
 
     socket.on('register-app-web-contents-created-event', (id) => {
         app.on('web-contents-created', () => {
-            socket.emit('app-web-contents-created' + id);
+            electronSocket.emit('app-web-contents-created' + id);
         });
     });
 
     socket.on('register-app-accessibility-support-changed-event', (id) => {
         app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
-            socket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
+            electronSocket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
         });
     });
 
@@ -94,12 +93,12 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appGetAppPath', () => {
         const path = app.getAppPath();
-        socket.emit('appGetAppPathCompleted', path);
+        electronSocket.emit('appGetAppPathCompleted', path);
     });
 
     socket.on('appGetPath', (name) => {
         const path = app.getPath(name);
-        socket.emit('appGetPathCompleted', path);
+        electronSocket.emit('appGetPathCompleted', path);
     });
 
     // const nativeImages = {};
@@ -117,11 +116,11 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     socket.on('appGetFileIcon', (path, options) => {
         if (options) {
             app.getFileIcon(path, options, (error, nativeImage) => {
-                socket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
             });
         } else {
             app.getFileIcon(path, (error, nativeImage) => {
-                socket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
             });
         }
     });
@@ -132,12 +131,12 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appGetVersion', () => {
         const version = app.getVersion();
-        socket.emit('appGetVersionCompleted', version);
+        electronSocket.emit('appGetVersionCompleted', version);
     });
 
     socket.on('appGetName', () => {
         const name = app.getName();
-        socket.emit('appGetNameCompleted', name);
+        electronSocket.emit('appGetNameCompleted', name);
     });
 
     socket.on('appSetName', (name) => {
@@ -146,7 +145,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appGetLocale', () => {
         const locale = app.getLocale();
-        socket.emit('appGetLocaleCompleted', locale);
+        electronSocket.emit('appGetLocaleCompleted', locale);
     });
 
     socket.on('appAddRecentDocument', (path) => {
@@ -159,27 +158,27 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appSetAsDefaultProtocolClient', (protocol, path, args) => {
         const success = app.setAsDefaultProtocolClient(protocol, path, args);
-        socket.emit('appSetAsDefaultProtocolClientCompleted', success);
+        electronSocket.emit('appSetAsDefaultProtocolClientCompleted', success);
     });
 
     socket.on('appRemoveAsDefaultProtocolClient', (protocol, path, args) => {
         const success = app.removeAsDefaultProtocolClient(protocol, path, args);
-        socket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
+        electronSocket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
     });
 
     socket.on('appIsDefaultProtocolClient', (protocol, path, args) => {
         const success = app.isDefaultProtocolClient(protocol, path, args);
-        socket.emit('appIsDefaultProtocolClientCompleted', success);
+        electronSocket.emit('appIsDefaultProtocolClientCompleted', success);
     });
 
     socket.on('appSetUserTasks', (tasks) => {
         const success = app.setUserTasks(tasks);
-        socket.emit('appSetUserTasksCompleted', success);
+        electronSocket.emit('appSetUserTasksCompleted', success);
     });
 
     socket.on('appGetJumpListSettings', () => {
         const jumpListSettings = app.getJumpListSettings();
-        socket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
+        electronSocket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
     });
 
     socket.on('appSetJumpList', (categories) => {
@@ -188,11 +187,11 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appRequestSingleInstanceLock', () => {
         app.on('second-instance', (args, workingDirectory) => {
-            socket.emit('secondInstance', [args, workingDirectory]);
+            electronSocket.emit('secondInstance', [args, workingDirectory]);
         });
 
         const success = app.requestSingleInstanceLock();
-        socket.emit('appRequestSingleInstanceLockCompleted', success);
+        electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
     });
 
     socket.on('appReleaseSingleInstanceLock', () => {
@@ -205,7 +204,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appGetCurrentActivityType', () => {
         const activityType = app.getCurrentActivityType();
-        socket.emit('appGetCurrentActivityTypeCompleted', activityType);
+        electronSocket.emit('appGetCurrentActivityTypeCompleted', activityType);
     });
 
     socket.on('appSetAppUserModelId', (id) => {
@@ -214,38 +213,38 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appImportCertificate', (options) => {
         app.importCertificate(options, (result) => {
-            socket.emit('appImportCertificateCompleted', result);
+            electronSocket.emit('appImportCertificateCompleted', result);
         });
     });
 
     socket.on('appGetAppMetrics', () => {
         const processMetrics = app.getAppMetrics();
-        socket.emit('appGetAppMetricsCompleted', processMetrics);
+        electronSocket.emit('appGetAppMetricsCompleted', processMetrics);
     });
 
     socket.on('appGetGpuFeatureStatus', () => {
         const gpuFeatureStatus = app.getGPUFeatureStatus();
-        socket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
+        electronSocket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
     });
 
     socket.on('appSetBadgeCount', (count) => {
         const success = app.setBadgeCount(count);
-        socket.emit('appSetBadgeCountCompleted', success);
+        electronSocket.emit('appSetBadgeCountCompleted', success);
     });
 
     socket.on('appGetBadgeCount', () => {
         const count = app.getBadgeCount();
-        socket.emit('appGetBadgeCountCompleted', count);
+        electronSocket.emit('appGetBadgeCountCompleted', count);
     });
 
     socket.on('appIsUnityRunning', () => {
         const isUnityRunning = app.isUnityRunning();
-        socket.emit('appIsUnityRunningCompleted', isUnityRunning);
+        electronSocket.emit('appIsUnityRunningCompleted', isUnityRunning);
     });
 
     socket.on('appGetLoginItemSettings', (options) => {
         const loginItemSettings = app.getLoginItemSettings(options);
-        socket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
+        electronSocket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
     });
 
     socket.on('appSetLoginItemSettings', (settings) => {
@@ -254,7 +253,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appIsAccessibilitySupportEnabled', () => {
         const isAccessibilitySupportEnabled = app.isAccessibilitySupportEnabled();
-        socket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
+        electronSocket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
     });
 
     socket.on('appSetAboutPanelOptions', (options) => {
@@ -275,7 +274,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appDockBounce', (type) => {
         const id = app.dock.bounce(type);
-        socket.emit('appDockBounceCompleted', id);
+        electronSocket.emit('appDockBounceCompleted', id);
     });
 
     socket.on('appDockCancelBounce', (id) => {
@@ -292,7 +291,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appDockGetBadge', () => {
         const text = app.dock.getBadge();
-        socket.emit('appDockGetBadgeCompleted', text);
+        electronSocket.emit('appDockGetBadgeCompleted', text);
     });
 
     socket.on('appDockHide', () => {
@@ -305,7 +304,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appDockIsVisible', () => {
         const isVisible = app.dock.isVisible();
-        socket.emit('appDockIsVisibleCompleted', isVisible);
+        electronSocket.emit('appDockIsVisibleCompleted', isVisible);
     });
 
     // TODO: Menü Lösung muss noch implementiert werden

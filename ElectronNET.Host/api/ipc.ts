@@ -1,9 +1,11 @@
 import { ipcMain, BrowserWindow } from 'electron';
+let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
+    electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
 
@@ -15,13 +17,13 @@ export = (socket: SocketIO.Socket) => {
                 event.returnValue = result;
             });
 
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
 
     socket.on('registerOnceIpcMainChannel', (channel) => {
         ipcMain.once(channel, (event, args) => {
-            socket.emit(channel, [event.preventDefault(), args]);
+            electronSocket.emit(channel, [event.preventDefault(), args]);
         });
     });
 
