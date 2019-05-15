@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+    /// <summary>
+    /// Allows you to execute native JavaScript/TypeScript code from the host process.
+    /// 
+    /// It is only possible if the Electron.NET CLI has previously added an 
+    /// ElectronHostHook directory:
+    /// <c>electronize add HostHook</c>
+    /// </summary>
     public sealed class HostHook
     {
         private static HostHook _electronHostHook;
         private static object _syncRoot = new object();
+        string oneCallguid = Guid.NewGuid().ToString();
 
         internal HostHook() { }
 
@@ -32,18 +40,43 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Execute native JavaScript/TypeScript code.
+        /// </summary>
+        /// <param name="socketEventName">Socket name registered on the host.</param>
+        /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.Emit(socketEventName, arguments);
+            BridgeConnector.Socket.On(socketEventName + "Error" + oneCallguid, (result) =>
+            {
+                BridgeConnector.Socket.Off(socketEventName + "Error" + oneCallguid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+            });
+
+            BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
         }
 
+        /// <summary>
+        /// Execute native JavaScript/TypeScript code.
+        /// </summary>
+        /// <typeparam name="T">Results from the executed host code.</typeparam>
+        /// <param name="socketEventName">Socket name registered on the host.</param>
+        /// <param name="arguments">Optional parameters.</param>
+        /// <returns></returns>
         public Task<T> CallAsync<T>(string socketEventName, params dynamic[] arguments)
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
 
+            BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
+            {
+                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+            });
+
             BridgeConnector.Socket.On(socketEventName + "Complete" + guid, (result) =>
             {
+                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
                 BridgeConnector.Socket.Off(socketEventName + "Complete" + guid);
                 T data;
 
