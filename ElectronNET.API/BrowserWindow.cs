@@ -1929,7 +1929,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("browserWindowSetMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("windowMenuItemClicked");
@@ -1950,7 +1950,7 @@ namespace ElectronNET.API
         /// assumed.
         /// </summary>
         /// <param name="progress"></param>
-        public void SetProgressBar(int progress)
+        public void SetProgressBar(double progress)
         {
             BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress);
         }
@@ -1967,7 +1967,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="progress"></param>
         /// <param name="progressBarOptions"></param>
-        public void SetProgressBar(int progress, ProgressBarOptions progressBarOptions)
+        public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
         {
             BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
         }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
+        private readonly static Regex ErrorRegex = new Regex(@"\berror\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
         {
             using (Process cmd = new Process())
@@ -44,7 +47,7 @@ namespace ElectronNET.CLI
                         // 1 if something fails
                         if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
                         {
-                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            if (ErrorRegex.IsMatch(e.Data))
                             {
                                 returnCode = 1;
                             }
@@ -63,7 +66,7 @@ namespace ElectronNET.CLI
                         // 1 if something fails
                         if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
                         {
-                            if (e.Data.ToLowerInvariant().Contains("error"))
+                            if (ErrorRegex.IsMatch(e.Data))
                             {
                                 returnCode = 1;
                             }
