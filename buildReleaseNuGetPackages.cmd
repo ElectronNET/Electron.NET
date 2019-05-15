@@ -10,3 +10,4 @@ cd ElectronNet.CLI
 dotnet restore
 dotnet build --configuration Release --force /property:Version=0.0.11
 dotnet pack /p:Version=0.0.11 --configuration Release --force --output "%~dp0artifacts"
+cd ..
