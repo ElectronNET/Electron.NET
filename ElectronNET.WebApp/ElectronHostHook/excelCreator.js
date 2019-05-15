@@ -22,7 +22,7 @@ class ExcelCreator {
             worksheet.addRow({ id: 1, name: "John Doe", birthday: new Date(1970, 1, 1) });
             worksheet.addRow({ id: 2, name: "Jane Doe", birthday: new Date(1965, 1, 7) });
             yield workbook.xlsx.writeFile(path + "\\sample.xlsx");
-            return "finish";
+            return "Excel file created!";
         });
     }
 }
