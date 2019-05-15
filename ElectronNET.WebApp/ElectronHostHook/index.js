@@ -17,7 +17,7 @@ class HookService extends connector_1.Connector {
     }
     onHostReady() {
         // execute your own JavaScript Host logic here
-        this.on("create-excel", (path, done) => __awaiter(this, void 0, void 0, function* () {
+        this.on("create-excel-file", (path, done) => __awaiter(this, void 0, void 0, function* () {
             const excelCreator = new excelCreator_1.ExcelCreator();
             const result = yield excelCreator.create(path);
             done(result);

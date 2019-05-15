@@ -31,6 +31,9 @@ namespace ElectronNET.CLI
                 case InitCommand.COMMAND_NAME:
                     command = new InitCommand(args.Skip(1).ToArray());
                     break;
+                case AddCommand.COMMAND_NAME:
+                    command = new AddCommand(args.Skip(1).ToArray());
+                    break;
                 case VersionCommand.COMMAND_NAME:
                     command = new VersionCommand(args.Skip(1).ToArray());
                     break;
@@ -83,14 +86,19 @@ namespace ElectronNET.CLI
             Console.WriteLine($"\t{StartElectronCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {StartElectronCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
-            Console.WriteLine("Commands to build the Electron Application:");
+            Console.WriteLine("Command to build the Electron Application:");
             Console.WriteLine("\t");
             Console.WriteLine($"\t{BuildCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {BuildCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
-            Console.WriteLine("Commands to init the Electron Application:");
+            Console.WriteLine("Command to init the Electron Application:");
             Console.WriteLine("\t");
             Console.WriteLine($"\t{InitCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InitCommand.COMMAND_DESCRIPTION}");
+
+            Console.WriteLine("\t");
+            Console.WriteLine("Command to add a custom npm packages to the Electron Application:");
+            Console.WriteLine("\t");
+            Console.WriteLine($"\t{AddCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {AddCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("Commands to see the current ElectronNET version number:");
@@ -115,6 +123,9 @@ namespace ElectronNET.CLI
                     break;
                 case InitCommand.COMMAND_NAME:
                     PrintUsage(InitCommand.COMMAND_NAME, InitCommand.COMMAND_DESCRIPTION, InitCommand.CommandOptions, InitCommand.COMMAND_ARGUMENTS);
+                    break;
+                case AddCommand.COMMAND_NAME:
+                    PrintUsage(AddCommand.COMMAND_NAME, AddCommand.COMMAND_DESCRIPTION, AddCommand.CommandOptions, AddCommand.COMMAND_ARGUMENTS);
                     break;
                 case VersionCommand.COMMAND_NAME:
                     PrintUsage(VersionCommand.COMMAND_NAME, VersionCommand.COMMAND_DESCRIPTION, VersionCommand.CommandOptions, VersionCommand.COMMAND_ARGUMENTS);

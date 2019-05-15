@@ -16,7 +16,5 @@
     "@types/socket.io": "^2.1.2",
     "typescript": "^3.4.5"
   },
-  "dependencies": {
-    "exceljs": "^1.10.0"
-  }
+  "dependencies": {}
 }

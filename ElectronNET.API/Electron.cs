@@ -60,7 +60,13 @@
         /// </summary>
         public static Clipboard Clipboard { get { return Clipboard.Instance; } }
 
-
+        /// <summary>
+        /// Allows you to execute native JavaScript/TypeScript code from the host process.
+        /// 
+        /// It is only possible if the Electron.NET CLI has previously added an 
+        /// ElectronHostHook directory:
+        /// <c>electronize add HostHook</c>
+        /// </summary>
         public static HostHook HostHook { get { return HostHook.Instance; } }
     }
 }

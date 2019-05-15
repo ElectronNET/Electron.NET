@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace ElectronNET.CLI.Commands.Actions
 {
@@ -11,7 +8,6 @@ namespace ElectronNET.CLI.Commands.Actions
         {
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
-            EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package-lock.json");
 
             string hostApiFolder = Path.Combine(tempPath, "api");
             if (Directory.Exists(hostApiFolder) == false)

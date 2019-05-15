@@ -1,7 +1,10 @@
 {
   "name": "electron.net.host",
   "version": "1.0.0",
-  "description": "",
+  "description": "Electron-Host for Electron.NET.",
+  "repository": {
+    "url": "https://github.com/ElectronNET/Electron.NET"
+  },
   "main": "main.js",
   "author": "Gregor Biswanger",
   "license": "MIT",

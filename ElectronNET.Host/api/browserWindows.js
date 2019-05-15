@@ -437,8 +437,8 @@ module.exports = (socket, app) => {
             }
         });
     }
-    socket.on('browserWindowSetProgressBar', (id, progress) => {
-        getWindowById(id).setProgressBar(progress);
+    socket.on('browserWindowSetProgressBar', (id, progress, options) => {
+        getWindowById(id).setProgressBar(progress, options);
     });
     socket.on('browserWindowSetHasShadow', (id, hasShadow) => {
         getWindowById(id).setHasShadow(hasShadow);

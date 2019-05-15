@@ -15,9 +15,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.IpcMain.On("new-window", async (args) =>
                 {
-
                     await Electron.WindowManager.CreateWindowAsync(viewPath);
-
                 });
 
                 Electron.IpcMain.On("manage-window", async (args) =>
