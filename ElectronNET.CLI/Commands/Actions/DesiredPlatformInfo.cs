@@ -19,10 +19,7 @@ namespace ElectronNET.CLI.Commands.Actions {
         linux_arm,
 
         /// <summary> Attempt to auto detect the platform values. </summary>
-        auto_detect,
-
-        /// <summary> Other / custom platform </summary>
-        other,
+        auto,
 
     }
 
@@ -42,7 +39,7 @@ namespace ElectronNET.CLI.Commands.Actions {
                     return "linux-x64";
                 case DesiredPlatformInfo.linux_arm:
                     return "linux-arm";
-                case DesiredPlatformInfo.auto_detect: {
+                case DesiredPlatformInfo.auto: {
 
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         return $"win-x{(Environment.Is64BitOperatingSystem ? "64" : "86")}";
@@ -52,8 +49,6 @@ namespace ElectronNET.CLI.Commands.Actions {
                         return "linux-x64";
                     return null;
                 }
-                case DesiredPlatformInfo.other:
-                    return null;
                 default:
                     return null;
             }
@@ -72,7 +67,7 @@ namespace ElectronNET.CLI.Commands.Actions {
                     return "linux";
                 case DesiredPlatformInfo.linux_arm:
                     return "linux";
-                case DesiredPlatformInfo.auto_detect: {
+                case DesiredPlatformInfo.auto: {
 
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         return "win32";
@@ -82,8 +77,6 @@ namespace ElectronNET.CLI.Commands.Actions {
                         return "linux";
                     return null;
                 }
-                case DesiredPlatformInfo.other:
-                    return null;
                 default:
                     return null;
             }

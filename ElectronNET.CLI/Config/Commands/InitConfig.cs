@@ -13,10 +13,6 @@ namespace ElectronNET.CLI.Config.Commands {
         /// <value> The full path of the ASP core project. </value>
         public string ProjectPath { get; set; }
 
-        /// <summary> Overrides the electron manifest file name. </summary>
-        /// <value> The electron manifest file name. </value>
-        public string ElectronManifestFile { get; set; }
-
         /// <summary> Overrides the project file to use. </summary>
         /// <value> The project file to use. </value>
         public string ProjectFile { get; set; }
@@ -41,10 +37,6 @@ namespace ElectronNET.CLI.Config.Commands {
                 data["init:projectpath"] = args[1];
             }
 
-            // Overrides the filename of the electron manifest
-            if (switches.ContainsKey("electronmanifest"))
-                data["init:electronmanifest"] = switches["electronmanifest"];
-
             // Overrides the project file to use
             if (switches.ContainsKey("projectfile"))
                 data["init:projectfile"] = switches["projectfile"];
@@ -68,9 +60,6 @@ namespace ElectronNET.CLI.Config.Commands {
                 Console.WriteLine($"projectpath: {ProjectPath}");
                 return false;
             }
-
-            // Overrides the filename of the electron manifest
-            ElectronManifestFile = builder["init:electronmanifest"] ?? "electron.manifest.json";
 
             // Overrides the project file to use
             ProjectFile = builder["init:projectfile"];
@@ -106,8 +95,6 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendLine("  Options:");
             helptxt.AppendFormat(strfmt, "--projectfile=<Filepath>", "Specify the path to the project file\n");
             helptxt.AppendFormat(strfmt, "", "(default: searches projectpath for *.csproj)\n");
-            helptxt.AppendFormat(strfmt, "--electronmanifest=<Filename>", "Specify file name of the electron manifest file\n");
-            helptxt.AppendFormat(strfmt, "", "(default: electron.manifest.json)\n");
             helptxt.AppendFormat(strfmt, "--launchsettingsfile=<Filename>", "Specify file name of the launch settings file\n");
             helptxt.AppendFormat(strfmt, "", "(default: Properties/launchSettings.json)\n");
             Console.Write(helptxt.ToString());

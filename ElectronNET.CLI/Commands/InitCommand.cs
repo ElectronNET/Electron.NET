@@ -38,7 +38,7 @@ namespace ElectronNET.CLI.Commands {
                         .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
                             SearchOption.TopDirectoryOnly).FirstOrDefault();
                 }
-                if (cmdcfg.ProjectFile == null || File.Exists(cmdcfg.ProjectFile)) {
+                if (cmdcfg.ProjectFile == null || !File.Exists(cmdcfg.ProjectFile)) {
                     Console.WriteLine("Error unable to locate .csproj file");
                     return false;
                 }
@@ -65,15 +65,15 @@ namespace ElectronNET.CLI.Commands {
         private void AddManifest() {
             Console.WriteLine("Adding the electron manifest file to your project...");
 
-            var targetFilePath = Path.Combine(cmdcfg.ProjectPath, cmdcfg.ElectronManifestFile);
+            var targetFilePath = Path.Combine(cmdcfg.ProjectPath, "electron.manifest.json");
             if (File.Exists(targetFilePath)) {
-                Console.WriteLine($"electron manifest file already found: {cmdcfg.ElectronManifestFile}");
+                Console.WriteLine("electron manifest file already found: electron.manifest.json");
                 Console.WriteLine("Skipping");
                 return;
             }
 
             // Deploy config file
-            EmbeddedFileHelper.DeployEmbeddedFile(cmdcfg.ProjectPath, cmdcfg.ElectronManifestFile);
+            EmbeddedFileHelper.DeployEmbeddedFile(cmdcfg.ProjectPath, "electron.manifest.json");
 
             // update config file with the name of the csproj
             // ToDo: If the csproj name != application name, this will fail
@@ -98,15 +98,15 @@ namespace ElectronNET.CLI.Commands {
                     return false;
                 }
 
-                if (xmlDocument.ToString().Contains($"Content Update=\"{cmdcfg.ElectronManifestFile}\"")) {
-                    Console.WriteLine($"{cmdcfg.ElectronManifestFile} already in csproj.");
+                if (xmlDocument.ToString().Contains("Content Update=\"electron.manifest.json\"")) {
+                    Console.WriteLine("electron.manifest.json already in csproj.");
                     return true;
                 }
 
-                Console.WriteLine($"{cmdcfg.ElectronManifestFile} will be added to csproj.");
+                Console.WriteLine("electron.manifest.json will be added to csproj.");
 
                 var itemGroupXmlString = "<ItemGroup>" +
-                                         "<Content Update=\"" + cmdcfg.ElectronManifestFile + "\">" +
+                                         "<Content Update=\"electron.manifest.json\">" +
                                          "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
                                          "</Content>" +
                                          "</ItemGroup>";
@@ -127,7 +127,7 @@ namespace ElectronNET.CLI.Commands {
 
             }
 
-            Console.WriteLine($"{cmdcfg.ElectronManifestFile} added in csproj!");
+            Console.WriteLine("electron.manifest.json added in csproj!");
             return true;
         }
 
@@ -167,7 +167,7 @@ namespace ElectronNET.CLI.Commands {
                 Console.WriteLine("Debug profile added!");
             }
             else {
-                Console.WriteLine("Debug profile already existing");
+                Console.WriteLine("Debug profile already exists Skipping");
             }
             return true;
         }

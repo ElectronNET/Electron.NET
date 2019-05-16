@@ -67,7 +67,7 @@ namespace ElectronNET.CLI.Commands {
         private bool DotnetPublish() {
             var tempBinPath = Path.Combine(cmdcfg.RunPath, "bin");
             var resultCode = ProcessHelper.CmdExecute(
-                $"dotnet publish -r {cmdcfg.RuntimeIdentifier} --output \"{tempBinPath}\" ${cmdcfg.DotnetAdditionalOpts}",
+                $"dotnet publish -r {cmdcfg.RuntimeIdentifier} --output \"{tempBinPath}\" {cmdcfg.DotnetAdditionalOpts}",
                 cmdcfg.ProjectPath);
             if (resultCode != 0) {
                 Console.WriteLine($"Error occurred during dotnet publish: {resultCode}");
@@ -87,7 +87,7 @@ namespace ElectronNET.CLI.Commands {
             if (cmdcfg.ForceNpmInstall) {
                 if (Directory.Exists(NodeModulesDirPath)) {
                     Console.WriteLine("node_modules detected but deleting due to force being enabled");
-                    Directory.Delete(NodeModulesDirPath);
+                    Directory.Delete(NodeModulesDirPath,true);
                 }
             }
 

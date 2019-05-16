@@ -122,7 +122,7 @@ namespace ElectronNET.CLI.Config.Commands {
 
             // Which desired platform to use win, linux, osxx, etc
             try {
-                var desiredplat = builder["start:target"] ?? "auto_detect";
+                var desiredplat = builder["start:target"] ?? "auto";
                 Target = EnumHelper.Parse<DesiredPlatformInfo>(desiredplat, "target");
             }
             catch (ArgumentException ex) {
@@ -169,13 +169,14 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendFormat(strfmt, "", "(defaults to current directory)\n");
             helptxt.AppendLine("");
             helptxt.AppendLine("  Options:");
-            helptxt.AppendFormat(strfmt, "--npmcommand=npm,yarn,pnpm", "Which package manager to use\n");
+            helptxt.AppendFormat(strfmt, "--npmcommand=<value>", "Which package manager to use\n");
+            helptxt.AppendFormat(strfmt, "", $"(valid values: {EnumHelper.CommaValues<PackageManagerType>()})\n");
             helptxt.AppendFormat(strfmt, "", "(default: npm)\n");
             helptxt.AppendFormat(strfmt, "--runpath=<Path>", "Destination directory for running\n");
             helptxt.AppendFormat(strfmt, "", "(default: bin/Host)\n");
             helptxt.AppendFormat(strfmt, "--target=<value>", "Specify the desired target\n");
             helptxt.AppendFormat(strfmt, "", $"(valid values: {EnumHelper.CommaValues<DesiredPlatformInfo>()})\n");
-            helptxt.AppendFormat(strfmt, "", "(default: auto_detect)\n");
+            helptxt.AppendFormat(strfmt, "", "(default: auto)\n");
             helptxt.AppendFormat(strfmt, "--runtimeid=<value>", "Runtime identifier for dotnet publish\n");
             helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform)\n");
             helptxt.AppendFormat(strfmt, "--dotnetopts=<value>", "Additional command line options to pass to dotnet publish\n");

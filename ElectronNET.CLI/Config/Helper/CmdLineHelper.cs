@@ -39,9 +39,12 @@ namespace ElectronNET.CLI.Config.Helper {
                     continue;
 
                 // Remove the leading -, --, / from the front of the option for later parsing
-                switchitem = switchitem.ReplaceFirst("--", "");
-                switchitem = switchitem.ReplaceFirst("-", "");
-                switchitem = switchitem.ReplaceFirst("/", "");
+                if (switchitem.StartsWith("--"))
+                    switchitem = switchitem.ReplaceFirst("--", "");
+                if (switchitem.StartsWith("-"))
+                    switchitem = switchitem.ReplaceFirst("-", "");
+                if (switchitem.StartsWith("/"))
+                    switchitem = switchitem.ReplaceFirst("/", "");
 
                 // Split based on the equals sign
                 // remove double quotes from option value

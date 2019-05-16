@@ -52,8 +52,8 @@ namespace ElectronNET.CLI.Config.Commands {
             }
 
             // Overrides the destination directory for the electron hosthook files
-            if (switches.ContainsKey("electronhosthookpath"))
-                data["add:hosthook:hosthookpath"] = switches["electronhosthookpath"];
+            if (switches.ContainsKey("hosthookpath"))
+                data["add:hosthook:hosthookpath"] = switches["hosthookpath"];
 
             // Npm command to use
             if (switches.ContainsKey("npmcommand"))
@@ -135,9 +135,10 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendFormat(strfmt, "", "(defaults to current directory)\n");
             helptxt.AppendLine("");
             helptxt.AppendLine("  Options:");
-            helptxt.AppendFormat(strfmt, "--npmcommand=npm,yarn,pnpm", "Which package manager to use\n");
+            helptxt.AppendFormat(strfmt, "--npmcommand=<value>", "Which package manager to use\n");
+            helptxt.AppendFormat(strfmt, "", $"(valid values: {EnumHelper.CommaValues<PackageManagerType>()})\n");
             helptxt.AppendFormat(strfmt, "", "(default: npm)\n");
-            helptxt.AppendFormat(strfmt, "--electronhosthookpath=<Path>", "Destination directory for the electron host hook files\n");
+            helptxt.AppendFormat(strfmt, "--hosthookpath=<Path>", "Destination directory for the electron host hook files\n");
             helptxt.AppendFormat(strfmt, "", "(default: <ProjectPath>/ElectronHostHook)\n");
             helptxt.AppendFormat(strfmt, "--projectfile=<Filepath>", "Specify the path to the project file\n");
             helptxt.AppendFormat(strfmt, "", "(default: searches projectpath for *.csproj)\n");
