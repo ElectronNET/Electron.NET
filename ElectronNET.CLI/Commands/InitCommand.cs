@@ -99,7 +99,7 @@ namespace ElectronNET.CLI.Commands {
                 }
 
                 if (xmlDocument.ToString().Contains("Content Update=\"electron.manifest.json\"")) {
-                    Console.WriteLine("electron.manifest.json already in csproj.");
+                    Console.WriteLine("electron.manifest.json already in csproj skipping.");
                     return true;
                 }
 

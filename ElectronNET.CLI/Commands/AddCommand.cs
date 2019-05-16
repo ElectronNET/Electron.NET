@@ -34,8 +34,14 @@ namespace ElectronNET.CLI.Commands {
                     case "hosthook":
                         if (!AddHosthook_DeployFiles())
                             return false;
+                        if (cmdcfg.HookpathChanged) {
+                            Console.WriteLine("Warning: Custom directory selected for HostHookPath");
+                            Console.WriteLine("Please note that you will need to manually add this to your .csproj file");
+                            break;
+                        }
                         if (!AddHosthook_EditCsProj())
                             return false;
+                        
                         break;
                     default:
                         return false;
@@ -93,7 +99,7 @@ namespace ElectronNET.CLI.Commands {
                     .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
                         SearchOption.TopDirectoryOnly).FirstOrDefault();
             }
-            if (cmdcfg.ProjectFile == null || File.Exists(cmdcfg.ProjectFile)) {
+            if (cmdcfg.ProjectFile == null || !File.Exists(cmdcfg.ProjectFile)) {
                 Console.WriteLine("Error unable to locate .csproj file");
                 return false;
             }
@@ -107,6 +113,11 @@ namespace ElectronNET.CLI.Commands {
                     Console.WriteLine(
                         $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
                     return false;
+                }
+
+                if (xmlDocument.ToString().Contains("Content Update=\"ElectronHostHook\\**\\*.*\"")) {
+                    Console.WriteLine("ElectronHostHook already in csproj skipping.");
+                    return true;
                 }
 
                 var itemGroupXmlString = "<ItemGroup>" +

@@ -21,6 +21,7 @@ namespace ElectronNET.CLI.Config.Commands {
         /// <summary> Path to the electron host hook files. </summary>
         /// <value> Path to the electron host hook files. </value>
         public string ElectronHostHookPath { get; set; }
+        public bool HookpathChanged { get; set; }
 
         /// <summary> The package manager used to install packages. </summary>
         /// <value> which package manager to use. </value>
@@ -90,6 +91,8 @@ namespace ElectronNET.CLI.Config.Commands {
             }
 
             // Overrides the destination directory for the electron hosthook files
+            if (builder["add:hosthook:hosthookpath"] != null)
+                HookpathChanged = true;
             ElectronHostHookPath = builder["add:hosthook:hosthookpath"] ?? Path.Combine(ProjectPath, "ElectronHostHook");
 
             // Specify which package manager to use npm, yarn, pnpm
@@ -105,7 +108,7 @@ namespace ElectronNET.CLI.Config.Commands {
             }
 
             // Overrides the project file to use
-            ProjectFile = builder["init:projectfile"];
+            ProjectFile = builder["add:projectfile"];
 
             return true;
         }
