@@ -11,18 +11,19 @@ module.exports = (socket) => {
         const success = electron_1.shell.openItem(fullPath);
         electronSocket.emit('shell-openItemCompleted', success);
     });
-    socket.on('shell-openExternal', (url, options, callback) => {
-        let success = false;
-        if (options && callback) {
-            success = electron_1.shell.openExternal(url, options, (error) => {
+    socket.on('shell-openExternal', (url, options) => {
+        let success = true;
+        if (options) {
+            electron_1.shell.openExternal(url, options).catch((error) => {
+                success = false;
                 electronSocket.emit('shell-openExternalCallback', [url, error]);
             });
         }
-        else if (options) {
-            success = electron_1.shell.openExternal(url, options);
-        }
         else {
-            success = electron_1.shell.openExternal(url);
+            electron_1.shell.openExternal(url).catch((error) => {
+                success = false;
+                electronSocket.emit('shell-openExternalCallback', [url, error]);
+            });
         }
         electronSocket.emit('shell-openExternalCompleted', success);
     });

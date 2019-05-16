@@ -1415,14 +1415,6 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Enables mixed sandbox mode on the app. This method can only be called before app is ready.
-        /// </summary>
-        public void EnableMixedSandbox()
-        {
-            BridgeConnector.Socket.Emit("appEnableMixedSandbox");
-        }
-
-        /// <summary>
         /// When critical is passed, the dock icon will bounce until either the application
         /// becomes active or the request is canceled.When informational is passed, the
         /// dock icon will bounce for one second.However, the request remains active until

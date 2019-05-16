@@ -15,17 +15,19 @@ export = (socket: SocketIO.Socket) => {
         electronSocket.emit('shell-openItemCompleted', success);
     });
 
-    socket.on('shell-openExternal', (url, options, callback) => {
-        let success = false;
+    socket.on('shell-openExternal', (url, options) => {
+        let success = true;
 
-        if (options && callback) {
-            success = shell.openExternal(url, options, (error) => {
+        if (options) {
+            shell.openExternal(url, options).catch((error) => {
+                success = false;
                 electronSocket.emit('shell-openExternalCallback', [url, error]);
             });
-        } else if (options) {
-            success = shell.openExternal(url, options);
         } else {
-            success = shell.openExternal(url);
+            shell.openExternal(url).catch((error) => {
+                success = false;
+                electronSocket.emit('shell-openExternalCallback', [url, error]);
+            });
         }
 
         electronSocket.emit('shell-openExternalCompleted', success);

@@ -11,7 +11,7 @@ ElectronNET.CLI:
 
 ElectronNET.API:
 
-* Implement Electron 5.0.1 support
+* Implement Electron 5.0.1 support, but not all new features
 * Implement HostHook-API for execute own TypeScript/JavaScript code
 * Fixed bug: 'X and Y options to not work on Windows 10' [\#193](https://github.com/ElectronNET/Electron.NET/issues/193)
 * Merged pull request: Fix BrowserWindow::SetMenu [\#231](https://github.com/ElectronNET/Electron.NET/pull/231) thanks (thanks [CodeKenpachi](https://github.com/CodeKenpachi))

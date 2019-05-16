@@ -132,10 +132,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="url"></param>
         /// <param name="options">macOS only</param>
-        /// <param name="action">macOS only</param>
+        /// <param name="errorAction">Action to get the error message.</param>
         /// <returns>Whether an application was available to open the URL. 
         /// If callback is specified, always returns true.</returns>
-        public Task<bool> OpenExternalAsync(string url, OpenExternalOptions options, Action<Error> action)
+        public Task<bool> OpenExternalAsync(string url, OpenExternalOptions options, Action<Error> errorAction)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -157,7 +157,7 @@ namespace ElectronNET.API
                 }
             });
 
-            _openExternalCallbacks.Add(url, action);
+            _openExternalCallbacks.Add(url, errorAction);
 
             BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer), true);
 

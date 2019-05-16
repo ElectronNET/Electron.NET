@@ -155,7 +155,19 @@ module.exports = (socket, app) => {
             electronSocket.emit('browserWindow-new-window-for-tab' + id);
         });
     });
+    function hasOwnChildreen(obj, ...childNames) {
+        for (let i = 0; i < childNames.length; i++) {
+            if (!obj || !obj.hasOwnProperty(childNames[i])) {
+                return false;
+            }
+            obj = obj[childNames[i]];
+        }
+        return true;
+    }
     socket.on('createBrowserWindow', (options, loadUrl) => {
+        if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
+            options = Object.assign({}, options, { webPreferences: { nodeIntegration: true } });
+        }
         window = new electron_1.BrowserWindow(options);
         lastOptions = options;
         window.on('closed', (sender) => {
@@ -438,8 +450,8 @@ module.exports = (socket, app) => {
             }
         });
     }
-    socket.on('browserWindowSetProgressBar', (id, progress, options) => {
-        getWindowById(id).setProgressBar(progress, options);
+    socket.on('browserWindowSetProgressBar', (id, progress) => {
+        getWindowById(id).setProgressBar(progress);
     });
     socket.on('browserWindowSetHasShadow', (id, hasShadow) => {
         getWindowById(id).setHasShadow(hasShadow);

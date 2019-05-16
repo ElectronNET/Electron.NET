@@ -215,9 +215,6 @@ module.exports = (socket, app) => {
     socket.on('appCommandLineAppendArgument', (value) => {
         app.commandLine.appendArgument(value);
     });
-    socket.on('appEnableMixedSandbox', () => {
-        app.enableMixedSandbox();
-    });
     socket.on('appDockBounce', (type) => {
         const id = app.dock.bounce(type);
         electronSocket.emit('appDockBounceCompleted', id);

@@ -185,7 +185,22 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         });
     });
 
+    function hasOwnChildreen(obj, ...childNames) {
+        for (let i = 0; i < childNames.length; i++) {
+            if (!obj || !obj.hasOwnProperty(childNames[i])) {
+                return false;
+            }
+            obj = obj[childNames[i]];
+        }
+
+        return true;
+    }
+
     socket.on('createBrowserWindow', (options, loadUrl) => {
+        if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
+            options = { ...options, webPreferences: { nodeIntegration: true } };
+        }
+
         window = new BrowserWindow(options);
         lastOptions = options;
 
