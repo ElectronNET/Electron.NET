@@ -1,129 +1,131 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ElectronNET.CLI.Config;
+using ElectronNET.CLI.Config.Commands;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace ElectronNET.CLI.Commands
-{
-    public class AddCommand : ICommand
-    {
-        public const string COMMAND_NAME = "add";
-        public const string COMMAND_DESCRIPTION = "The add command needs to be invoked via 'add hosthook'. This creates a special folder for your custom npm package installation.";
-        public const string COMMAND_ARGUMENTS = "hosthook";
-        public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
+namespace ElectronNET.CLI.Commands {
+
+    /// <summary> Add Command. </summary>
+    public class AddCommand : ICommand {
+
+        /// <summary> General Application Settings. </summary>
+        /// <value> General Application Settings. </value>
+        private AppSettings appcfg { get; set; }
+
+        /// <summary> Command specific settings. </summary>
+        /// <value> Command specific settings. </value>
+        private AddConfig cmdcfg { get; set; }
 
 
-        private string[] _args;
+        /// <summary> Add Command Execute. </summary>
+        /// <returns> Add Command Task. </returns>
+        public Task<bool> ExecuteAsync() {
+            return Task.Run(() => {
 
-        public AddCommand(string[] args)
-        {
-            _args = args;
-        }
+                // Read in the configuration
+                appcfg = SettingsLoader.Settings;
+                cmdcfg = (AddConfig) appcfg.CommandConfig;
 
-        private static string ElectronHostHookFolderName = "ElectronHostHook";
-
-        public Task<bool> ExecuteAsync()
-        {
-            return Task.Run(() =>
-            {
-                if(_args.Length == 0)
-                {
-                    Console.WriteLine("Specify 'hosthook' to add custom npm packages.");
-                    return false;
+                switch (cmdcfg.SubCommand) {
+                    case "hosthook":
+                        if (!AddHosthook_DeployFiles())
+                            return false;
+                        if (!AddHosthook_EditCsProj())
+                            return false;
+                        break;
+                    default:
+                        return false;
                 }
-
-                if(_args[0].ToLowerInvariant() != "hosthook")
-                {
-                    Console.WriteLine("Specify 'hosthook' to add custom npm packages.");
-                    return false;
-                }
-
-                string aspCoreProjectPath = "";
-
-                // Maybe ToDo: Adding the possiblity to specify a path (like we did in the InitCommand, but this would require a better command args parser)
-                aspCoreProjectPath = Directory.GetCurrentDirectory();
-
-                var currentDirectory = aspCoreProjectPath;
-
-                var targetFilePath = Path.Combine(currentDirectory, ElectronHostHookFolderName);
-
-                if(Directory.Exists(targetFilePath))
-                {
-                    Console.WriteLine("ElectronHostHook directory already in place. If you want to start over, delete the folder and invoke this command again.");
-                    return false;
-                }
-
-                Console.WriteLine("Adding the ElectronHostHook folder to your project...");
-
-                Directory.CreateDirectory(targetFilePath);
-
-                // Deploy related files
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "index.ts", "ElectronHostHook.");
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "connector.ts", "ElectronHostHook.");
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "package.json", "ElectronHostHook.");
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "tsconfig.json", "ElectronHostHook.");
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, ".gitignore", "ElectronHostHook.");
-
-                // npm for typescript compiler etc.
-                Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", targetFilePath);
-
-                // run typescript compiler
-                string tscPath = Path.Combine(targetFilePath, "node_modules", ".bin");
-                // ToDo: Not sure if this runs under linux/macos
-                ProcessHelper.CmdExecute(@"tsc -p ../../", tscPath);
-
-                // search .csproj
-                Console.WriteLine($"Search your .csproj to add configure CopyToPublishDirectory to 'Never'");
-                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
-
-                Console.WriteLine($"Found your .csproj: {projectFile} - check for existing CopyToPublishDirectory setting or update it.");
-
-                if (!EditCsProj(projectFile)) return false;
-
                 Console.WriteLine($"Everything done - happy electronizing with your custom npm packages!");
-
                 return true;
             });
         }
 
+
+        /// <summary> Adds the ElectronHostHook files. </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
+        private bool AddHosthook_DeployFiles() {
+            Console.WriteLine("Add hosthook files...");
+
+            var targetFilePath = cmdcfg.ElectronHostHookPath;
+            if (Directory.Exists(targetFilePath)) {
+                Console.WriteLine("ElectronHostHook directory already in place. If you want to start over, delete the folder and invoke this command again.");
+                return false;
+            }
+
+            Console.WriteLine("Adding the ElectronHostHook folder to your project...");
+            Directory.CreateDirectory(targetFilePath);
+
+            // Deploy related files
+            EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "index.ts", "ElectronHostHook.");
+            EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "connector.ts", "ElectronHostHook.");
+            EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "package.json", "ElectronHostHook.");
+            EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "tsconfig.json", "ElectronHostHook.");
+            EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, ".gitignore", "ElectronHostHook.");
+
+            // npm for typescript compiler etc.
+            Console.WriteLine($"Start {cmdcfg.NpmCommand.ToInstallCmd()}...");
+            ProcessHelper.CmdExecute(cmdcfg.NpmCommand.ToInstallCmd(), targetFilePath);
+
+            // run typescript compiler
+            var tscPath = Path.Combine(targetFilePath, "node_modules", ".bin");
+            // ToDo: Not sure if this runs under linux/macos
+            ProcessHelper.CmdExecute(@"tsc -p ../../", tscPath);
+
+            return true;
+        }
+
+
+
+
         // ToDo: Cleanup this copy/past code.
-        private static bool EditCsProj(string projectFile)
-        {
-            using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
+        private bool AddHosthook_EditCsProj() {
+            Console.WriteLine($"Update the .csproj to add configure CopyToPublishDirectory to 'Never'");
+
+            // Find the .csproj file
+            if (cmdcfg.ProjectFile == null) {
+                Console.WriteLine("Searching for Project file");
+                cmdcfg.ProjectFile = Directory
+                    .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
+                        SearchOption.TopDirectoryOnly).FirstOrDefault();
+            }
+            if (cmdcfg.ProjectFile == null || File.Exists(cmdcfg.ProjectFile)) {
+                Console.WriteLine("Error unable to locate .csproj file");
+                return false;
+            }
+            Console.WriteLine($"Project file found: {cmdcfg.ProjectFile}");
+
+            using (var stream = File.Open(cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
                 var xmlDocument = XDocument.Load(stream);
 
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
-                if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
-                {
+                if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web") {
                     Console.WriteLine(
                         $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
                     return false;
                 }
 
-                string itemGroupXmlString = "<ItemGroup>" +
+                var itemGroupXmlString = "<ItemGroup>" +
                                                 "<Content Update=\"ElectronHostHook\\**\\*.*\">" +
                                                     "<CopyToPublishDirectory>Never</CopyToPublishDirectory>" +
                                                 "</Content>" +
                                             "</ItemGroup>";
 
                 var newItemGroupForConfig = XElement.Parse(itemGroupXmlString);
-                xmlDocument.Root.Add(newItemGroupForConfig);
+                xmlDocument.Root?.Add(newItemGroupForConfig);
 
                 stream.SetLength(0);
                 stream.Position = 0;
 
-                var xws = new XmlWriterSettings
-                {
+                var xws = new XmlWriterSettings {
                     OmitXmlDeclaration = true,
                     Indent = true
                 };
-                using (XmlWriter xw = XmlWriter.Create(stream, xws))
-                {
+                using (var xw = XmlWriter.Create(stream, xws)) {
                     xmlDocument.Save(xw);
                 }
 

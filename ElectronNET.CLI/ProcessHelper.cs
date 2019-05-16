@@ -3,28 +3,25 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace ElectronNET.CLI
-{
-    public class ProcessHelper
-    {
-        private readonly static Regex ErrorRegex = new Regex(@"\berror\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+namespace ElectronNET.CLI {
 
-        public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
-        {
-            using (Process cmd = new Process())
-            {
-                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    /// <summary> Process helper class. </summary>
+    public class ProcessHelper {
 
-                if (isWindows)
-                {
-                    cmd.StartInfo.FileName = "cmd.exe";
-                }
-                else
-                {
-                    // works for OSX and Linux (at least on Ubuntu)
-                    cmd.StartInfo.FileName = "bash";
-                }
+        /// <summary> The error RegEx. </summary>
+        private static readonly Regex ErrorRegex = new Regex(@"\berror\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+        /// <summary> Command execute. </summary>
+        /// <param name="command">              The command. </param>
+        /// <param name="workingDirectoryPath"> Pathname of the working directory. </param>
+        /// <param name="output">               (Optional) True to output. </param>
+        /// <param name="waitForExit">          (Optional) True to wait for exit. </param>
+        /// <returns> An int. </returns>
+        public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true) {
+            using (var cmd = new Process()) {
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+                cmd.StartInfo.FileName = isWindows ? "cmd.exe" : "bash";
                 cmd.StartInfo.RedirectStandardInput = true;
                 cmd.StartInfo.RedirectStandardOutput = true;
                 cmd.StartInfo.RedirectStandardError = true;
@@ -32,12 +29,10 @@ namespace ElectronNET.CLI
                 cmd.StartInfo.UseShellExecute = false;
                 cmd.StartInfo.WorkingDirectory = workingDirectoryPath;
 
-                int returnCode = 0;
+                var returnCode = 0;
 
-                if (output)
-                {
-                    cmd.OutputDataReceived += (s, e) =>
-                    {
+                if (output) {
+                    cmd.OutputDataReceived += (s, e) => {
                         // (sometimes error messages are only visbile here)
                         // poor mans solution, we just seek for the term 'error'
 
@@ -45,31 +40,24 @@ namespace ElectronNET.CLI
                         // we delegate it to cmd.exe, which runs fine
                         // but we can catch any error here and return
                         // 1 if something fails
-                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
-                        {
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false) {
                             if (ErrorRegex.IsMatch(e.Data))
-                            {
                                 returnCode = 1;
-                            }
 
                             Console.WriteLine(e.Data);
                         }
 
                     };
-                    cmd.ErrorDataReceived += (s, e) =>
-                    {
+                    cmd.ErrorDataReceived += (s, e) => {
                         // poor mans solution, we just seek for the term 'error'
 
                         // we can't just use cmd.ExitCode, because
                         // we delegate it to cmd.exe, which runs fine
                         // but we can catch any error here and return
                         // 1 if something fails
-                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false)
-                        {
+                        if (e != null && string.IsNullOrWhiteSpace(e.Data) == false) {
                             if (ErrorRegex.IsMatch(e.Data))
-                            {
                                 returnCode = 1;
-                            }
 
                             Console.WriteLine(e.Data);
                         }
@@ -86,9 +74,7 @@ namespace ElectronNET.CLI
                 cmd.StandardInput.Close();
 
                 if (waitForExit)
-                {
                     cmd.WaitForExit();
-                }
 
                 return returnCode;
             }

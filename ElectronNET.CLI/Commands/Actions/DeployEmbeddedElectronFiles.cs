@@ -1,20 +1,21 @@
 ﻿using System.IO;
 
-namespace ElectronNET.CLI.Commands.Actions
-{
-    public static class DeployEmbeddedElectronFiles
-    {
-        public static void Do(string tempPath)
-        {
+namespace ElectronNET.CLI.Commands.Actions {
+
+    /// <summary> Deploy embedded files. </summary>
+    public static class DeployEmbeddedElectronFiles {
+
+        /// <summary> Deploys files embedded in the cli application </summary>
+        /// <param name="tempPath"> Deployment path. </param>
+        public static void Do(string tempPath) {
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "build-helper.js");
 
-            string hostApiFolder = Path.Combine(tempPath, "api");
+            var hostApiFolder = Path.Combine(tempPath, "api");
             if (Directory.Exists(hostApiFolder) == false)
-            {
                 Directory.CreateDirectory(hostApiFolder);
-            }
+
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
@@ -28,11 +29,9 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
 
-            string splashscreenFolder = Path.Combine(tempPath, "splashscreen");
+            var splashscreenFolder = Path.Combine(tempPath, "splashscreen");
             if (Directory.Exists(splashscreenFolder) == false)
-            {
                 Directory.CreateDirectory(splashscreenFolder);
-            }
             EmbeddedFileHelper.DeployEmbeddedFile(splashscreenFolder, "index.html", "splashscreen.");
         }
     }

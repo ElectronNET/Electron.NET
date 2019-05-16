@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ElectronNET.CLI.Config;
+using ElectronNET.CLI.Config.Commands;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,101 +8,151 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace ElectronNET.CLI.Commands
-{
-    public class InitCommand : ICommand
-    {
-        public const string COMMAND_NAME = "init";
-        public const string COMMAND_DESCRIPTION = "Creates the needed Electron.NET config for your Electron Application.";
-        public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
-        public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
+namespace ElectronNET.CLI.Commands {
 
-        private const string ConfigName = "electron.manifest.json";
+    /// <summary> Initialize command. </summary>
+    public class InitCommand : ICommand {
 
-        private string[] _args;
+        /// <summary> General Application Settings. </summary>
+        /// <value> General Application Settings. </value>
+        private AppSettings appcfg { get; set; }
 
-        public InitCommand(string[] args)
-        {
-            _args = args;
-        }
+        /// <summary> Command specific settings. </summary>
+        /// <value> Command specific settings. </value>
+        private InitConfig cmdcfg { get; set; }
 
-        public Task<bool> ExecuteAsync()
-        {
-            return Task.Run(() =>
-            {
-                string aspCoreProjectPath = "";
+        /// <summary> Initialize Command Execute. </summary>
+        /// <returns> Initialize Command Task. </returns>
+        public Task<bool> ExecuteAsync() {
+            return Task.Run(() => {
+                Console.WriteLine("Init Electron Desktop Application...");
 
-                if (_args.Length > 0)
-                {
-                    if (Directory.Exists(_args[0]))
-                    {
-                        aspCoreProjectPath = _args[0];
-                    }
+                // Read in the configuration
+                appcfg = SettingsLoader.Settings;
+                cmdcfg = (InitConfig) appcfg.CommandConfig;
+
+                // Find the .csproj file
+                if (cmdcfg.ProjectFile == null) {
+                    Console.WriteLine("Searching for Project file");
+                    cmdcfg.ProjectFile = Directory
+                        .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
+                            SearchOption.TopDirectoryOnly).FirstOrDefault();
                 }
-                else
-                {
-                    aspCoreProjectPath = Directory.GetCurrentDirectory();
-                }
-
-                var currentDirectory = aspCoreProjectPath;
-
-                Console.WriteLine("Adding our config file to your project...");
-
-                var targetFilePath = Path.Combine(currentDirectory, ConfigName);
-
-                if (File.Exists(targetFilePath))
-                {
-                    Console.WriteLine("Config file already in your project.");
+                if (cmdcfg.ProjectFile == null || File.Exists(cmdcfg.ProjectFile)) {
+                    Console.WriteLine("Error unable to locate .csproj file");
                     return false;
                 }
+                Console.WriteLine($"Project file found: {cmdcfg.ProjectFile}");
 
-                // Deploy config file
-                EmbeddedFileHelper.DeployEmbeddedFile(currentDirectory, ConfigName);
+                // Add electron manifest file
+                AddManifest();
 
-                // search .csproj
-                Console.WriteLine($"Search your .csproj to add the needed {ConfigName}...");
-                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                // Edit the csproj file if needed
+                if (!EditCsProj())
+                    return false;
 
-                // update config file with the name of the csproj
-                // ToDo: If the csproj name != application name, this will fail
-                string text = File.ReadAllText(targetFilePath);
-                text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
-                File.WriteAllText(targetFilePath, text);
+                // Edit the launchSettings.json if needed
+                if (!EditLaunchSettings())
+                    return false;
 
-                Console.WriteLine($"Found your .csproj: {projectFile} - check for existing config or update it.");
-
-                if (!EditCsProj(projectFile)) return false;
-
-                // search launchSettings.json
-                Console.WriteLine($"Search your .launchSettings to add our electron debug profile...");
-
-                EditLaunchSettings(currentDirectory);
-
-                Console.WriteLine($"Everything done - happy electronizing!");
-
+                Console.WriteLine("Everything done - happy electronizing!");
                 return true;
             });
         }
 
-        private static void EditLaunchSettings(string currentDirectory)
-        {
+
+        /// <summary> Adds the electron manifest file to the project. </summary>
+        private void AddManifest() {
+            Console.WriteLine("Adding the electron manifest file to your project...");
+
+            var targetFilePath = Path.Combine(cmdcfg.ProjectPath, cmdcfg.ElectronManifestFile);
+            if (File.Exists(targetFilePath)) {
+                Console.WriteLine($"electron manifest file already found: {cmdcfg.ElectronManifestFile}");
+                Console.WriteLine("Skipping");
+                return;
+            }
+
+            // Deploy config file
+            EmbeddedFileHelper.DeployEmbeddedFile(cmdcfg.ProjectPath, cmdcfg.ElectronManifestFile);
+
+            // update config file with the name of the csproj
+            // ToDo: If the csproj name != application name, this will fail
+            Console.WriteLine($"Updating manifest with name of project: {Path.GetFileName(cmdcfg.ProjectFile)}");
+            var text = File.ReadAllText(targetFilePath);
+            text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(cmdcfg.ProjectFile));
+            File.WriteAllText(targetFilePath, text);
+        }
+
+
+        /// <summary> Edit the .csproj project file </summary>
+        /// <returns> True if it succeeds, false if it fails. </returns>
+        private bool EditCsProj() {
+            Console.WriteLine("Checking to see if we need to update the .csproj project file");
+            using (var stream = File.Open(cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
+                var xmlDocument = XDocument.Load(stream);
+
+                var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
+                if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web") {
+                    Console.WriteLine(
+                        $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
+                    return false;
+                }
+
+                if (xmlDocument.ToString().Contains($"Content Update=\"{cmdcfg.ElectronManifestFile}\"")) {
+                    Console.WriteLine($"{cmdcfg.ElectronManifestFile} already in csproj.");
+                    return true;
+                }
+
+                Console.WriteLine($"{cmdcfg.ElectronManifestFile} will be added to csproj.");
+
+                var itemGroupXmlString = "<ItemGroup>" +
+                                         "<Content Update=\"" + cmdcfg.ElectronManifestFile + "\">" +
+                                         "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
+                                         "</Content>" +
+                                         "</ItemGroup>";
+
+                var newItemGroupForConfig = XElement.Parse(itemGroupXmlString);
+                xmlDocument.Root?.Add(newItemGroupForConfig);
+
+                stream.SetLength(0);
+                stream.Position = 0;
+
+                var xws = new XmlWriterSettings {
+                    OmitXmlDeclaration = true,
+                    Indent = true
+                };
+                using (var xw = XmlWriter.Create(stream, xws)) {
+                    xmlDocument.Save(xw);
+                }
+
+            }
+
+            Console.WriteLine($"{cmdcfg.ElectronManifestFile} added in csproj!");
+            return true;
+        }
+
+
+        /// <summary> Edit the launch settings file. </summary>
+        private bool EditLaunchSettings() {
             // super stupid implementation, but because there is no nativ way to parse json
             // and cli extensions and other nuget packages are buggy 
             // this is should solve the problem for 80% of the users
             // for the other 20% we might fail... 
-            var launchSettingFile = Path.Combine(currentDirectory, "Properties", "launchSettings.json");
 
-            if (File.Exists(launchSettingFile) == false)
-            {
-                Console.WriteLine("launchSettings.json not found - do nothing.");
-                return;
+            if (cmdcfg.LaunchSettingsFile == null) {
+                Console.WriteLine("Searching for launchSettings.json to add our electron debug profile...");
+                cmdcfg.LaunchSettingsFile = Path.Combine(cmdcfg.ProjectPath, "Properties", "launchSettings.json");
             }
 
-            string launchSettingText = File.ReadAllText(launchSettingFile);
+            if (File.Exists(cmdcfg.LaunchSettingsFile) == false) {
+                Console.WriteLine("Error unable to locate launch settings config file");
+                return false;
+            }
 
-            if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false)
-            {
-                StringBuilder debugProfileBuilder = new StringBuilder();
+            var launchSettingText = File.ReadAllText(cmdcfg.LaunchSettingsFile);
+
+            if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false) {
+                var debugProfileBuilder = new StringBuilder();
                 debugProfileBuilder.AppendLine("profiles\": {");
                 debugProfileBuilder.AppendLine("    \"Electron.NET App\": {");
                 debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
@@ -111,63 +162,13 @@ namespace ElectronNET.CLI.Commands
                 debugProfileBuilder.AppendLine("    },");
 
                 launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
-                File.WriteAllText(launchSettingFile, launchSettingText);
+                File.WriteAllText(cmdcfg.LaunchSettingsFile, launchSettingText);
 
-                Console.WriteLine($"Debug profile added!");
+                Console.WriteLine("Debug profile added!");
             }
-            else
-            {
-                Console.WriteLine($"Debug profile already existing");
+            else {
+                Console.WriteLine("Debug profile already existing");
             }
-        }
-
-        private static bool EditCsProj(string projectFile)
-        {
-            using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
-                var xmlDocument = XDocument.Load(stream);
-
-                var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
-                if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
-                {
-                    Console.WriteLine(
-                        $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
-                    return false;
-                }
-
-                if (xmlDocument.ToString().Contains($"Content Update=\"{ConfigName}\""))
-                {
-                    Console.WriteLine($"{ConfigName} already in csproj.");
-                    return false;
-                }
-
-                Console.WriteLine($"{ConfigName} will be added to csproj.");
-
-                string itemGroupXmlString = "<ItemGroup>" +
-                                            "<Content Update=\"" + ConfigName + "\">" +
-                                            "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
-                                            "</Content>" +
-                                            "</ItemGroup>";
-
-                var newItemGroupForConfig = XElement.Parse(itemGroupXmlString);
-                xmlDocument.Root.Add(newItemGroupForConfig);
-
-                stream.SetLength(0);
-                stream.Position = 0;
-
-                var xws = new XmlWriterSettings
-                {
-                    OmitXmlDeclaration = true,
-                    Indent = true
-                };
-                using (XmlWriter xw = XmlWriter.Create(stream, xws))
-                {
-                    xmlDocument.Save(xw);
-                }
-
-            }
-
-            Console.WriteLine($"{ConfigName} added in csproj!");
             return true;
         }
     }
