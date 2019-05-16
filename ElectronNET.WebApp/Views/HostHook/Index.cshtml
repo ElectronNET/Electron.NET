@@ -30,8 +30,7 @@
                     <p>This example execute the TypeScript code, that listening on "create-excel". The TypeScript code use a NPM Package names exceljs, to create a Excel file and reply a success message.</p>
 
                     <h5>Main Process (C#)</h5>
-                    <pre><code class="csharp">
-Electron.IpcMain.On("start-hoosthook", async (args) =>
+                    <pre><code class="csharp">Electron.IpcMain.On("start-hoosthook", async (args) =>
 {
     var mainWindow = Electron.WindowManager.BrowserWindows.First();
     var options = new OpenDialogOptions
@@ -45,13 +44,11 @@ Electron.IpcMain.On("start-hoosthook", async (args) =>
 
     var resultFromTypeScript = await Electron.HostHook.CallAsync<string>("create-excel-file", folderPath);
     Electron.IpcMain.Send(mainWindow, "excel-file-created", resultFromTypeScript);
-});
-                            </code>
+});</code>
                     </pre>
                     <h5>index.ts from ElectronHostHook-Folder (TypeScript)</h5>
                     <pre>
-                        <code class="typescript">
-import * as Electron from "electron";
+                        <code class="typescript">import * as Electron from "electron";
 import { Connector } from "./connector";
 import { ExcelCreator } from "./excelCreator";
 
@@ -69,8 +66,7 @@ export class HookService extends Connector {
             done(result);
         });
     }
-}
-                        </code>
+}</code>
                     </pre>
                 </div>
             </div>

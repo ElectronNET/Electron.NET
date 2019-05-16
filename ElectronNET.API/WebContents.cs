@@ -21,6 +21,11 @@ namespace ElectronNET.API
         public int Id { get; private set; }
 
         /// <summary>
+        /// Manage browser sessions, cookies, cache, proxy settings, etc.
+        /// </summary>
+        public Session Session { get; internal set; }
+
+        /// <summary>
         /// Emitted when the renderer process crashes or is killed.
         /// </summary>
         public event Action<bool> OnCrashed
@@ -82,6 +87,7 @@ namespace ElectronNET.API
         internal WebContents(int id)
         {
             Id = id;
+            Session = new Session(id);
         }
 
         /// <summary>

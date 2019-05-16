@@ -17,10 +17,12 @@ body {
 
 /* enable text selection */
 
-.is-selectable,
+/*.is-selectable,*/
+
 pre,
 code {
   -webkit-user-select: auto;
+  user-select: text;
   cursor: auto;
 }
 

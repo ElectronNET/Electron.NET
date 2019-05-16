@@ -61,6 +61,8 @@ namespace ElectronNET.WebApp
                 Show = false
             });
 
+            await browserWindow.WebContents.Session.ClearCacheAsync();
+
             browserWindow.OnReadyToShow += () => browserWindow.Show();
             browserWindow.SetTitle(Configuration["DemoTitleInSettings"]);
         }
