@@ -15,6 +15,10 @@ namespace ElectronNET.CLI.Config.Commands {
         /// <value> The full path of the ASP core project. </value>
         public string ProjectPath { get; set; }
 
+        /// <summary> Path to the electron host hook files. </summary>
+        /// <value> Path to the electron host hook files. </value>
+        public string ElectronHostHookPath { get; set; }
+
         /// <summary> The package manager used to install packages. </summary>
         /// <value> which package manager to use. </value>
         public PackageManagerType NpmCommand { get; set; } = PackageManagerType.npm;
@@ -56,7 +60,11 @@ namespace ElectronNET.CLI.Config.Commands {
             // Overrides the source project path directory
             if (args.Count > 1 && args[0] != "help")
                 data["start:projectpath"] = args[1];
-            
+
+            // Overrides the directory for the electron hosthook files
+            if (switches.ContainsKey("hosthookpath"))
+                data["add:hosthook:hosthookpath"] = switches["hosthookpath"];
+
             // Npm command to use
             if (switches.ContainsKey("npmcommand"))
                 data["start:npmcommand"] = switches["npmcommand"];
@@ -103,6 +111,9 @@ namespace ElectronNET.CLI.Config.Commands {
                 Console.WriteLine($"projectpath: {ProjectPath}");
                 return false;
             }
+
+            // Overrides the directory for the electron hosthook files
+            ElectronHostHookPath = builder["add:hosthook:hosthookpath"] ?? Path.Combine(ProjectPath, "ElectronHostHook");
 
             // Specify which package manager to use npm, yarn, pnpm
             // pnpm is good at saving space on the disk
@@ -178,6 +189,8 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendFormat(strfmt, "", "(default: auto)\n");
             helptxt.AppendFormat(strfmt, "--runtimeid=<value>", "Runtime identifier for dotnet publish\n");
             helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform)\n");
+            helptxt.AppendFormat(strfmt, "--hosthookpath=<Path>", "directory for the electron host hook files\n");
+            helptxt.AppendFormat(strfmt, "", "(default: <ProjectPath>/ElectronHostHook)\n");
             helptxt.AppendFormat(strfmt, "--dotnetopts=<value>", "Additional command line options to pass to dotnet publish\n");
             helptxt.AppendFormat(strfmt, "--electron-params=<value>", "Additional parameters to pass to electron\n");
             helptxt.AppendFormat(strfmt, "--install-modules", "Force a re-install of node_modules\n");

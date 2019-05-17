@@ -40,6 +40,10 @@ namespace ElectronNET.CLI.Config {
             helptxt.AppendFormat(strfmt, "version", "Show the version of electronize\n");
             helptxt.AppendFormat(strfmt, "help", "Show Help\n");
             helptxt.AppendLine("");
+            helptxt.AppendLine("  Options:");
+            helptxt.AppendFormat(strfmt, "--cfgfile=", "Specify an alternative configuration file\n");
+            helptxt.AppendFormat(strfmt, "", "(default: ElectronNetSettings.json)\n");
+            helptxt.AppendLine("");
             helptxt.AppendLine("To get help on individual commands execute:");
             helptxt.AppendFormat(strfmt, "electronize help <command>", "\n");
             Console.Write(helptxt.ToString());

@@ -185,7 +185,7 @@ namespace ElectronNET.CLI.Config.Commands {
             ElectronPackerPlatform = builder["build:electronpacker"] ?? Target.ToElectronPackerPlatform();
 
             // electron arch setting
-            ElectronArch = builder["build:electron-arch"] ?? "x64";
+            ElectronArch = builder["build:electron-arch"] ?? Target.ToElectronArch();
 
             // Additional electron parameters
             ElectronParams = builder["build:electron-params"];

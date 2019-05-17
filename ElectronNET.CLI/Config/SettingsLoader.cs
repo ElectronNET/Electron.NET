@@ -46,6 +46,19 @@ namespace ElectronNET.CLI.Config {
             // Normally the config file is read in first then any command line options override it
             // We do an initial read first just to get the config file path
             var cfgfile = GetCfgFilePath(args);
+            if (cfgfile == null) {
+                // Default path for configuration file - optional
+                cfgfile = "ElectronNetSettings.json";
+            }
+            else {
+                // If the user has specified a different configuration file then make sure it exists
+                if (!File.Exists(cfgfile)) {
+                    Console.WriteLine($"Error unable to find configuration file: {cfgfile}");
+                    return false;
+                }
+            }
+
+
 
             // Read in the Json config file first, then override with arguments from the command line
             Builder = new ConfigurationBuilder()
@@ -65,16 +78,11 @@ namespace ElectronNET.CLI.Config {
         /// <param name="opts"> Command line options. </param>
         /// <returns> The configuration file path. </returns>
         private static string GetCfgFilePath(IEnumerable<string> opts) {
-            // Default path for configuration file
-            var cfgfile = "ElectronNetSettings.json";
+            string cfgfile = null;
             // search the switches for a cfgfile setting i.e. --cfgfile="Settings2.json"
             var switches = CmdLineHelper.FilterSwitches(opts);
-            if (switches.ContainsKey("cfgfile")) {
+            if (switches.ContainsKey("cfgfile"))
                 cfgfile = switches["cfgfile"];
-                // If the user has specified one then warn if it doesn't exist
-                if (!File.Exists(cfgfile))
-                    Console.WriteLine($"Warning unable to locate configuration file: {cfgfile}");
-            }
             return cfgfile;
         }
     }

@@ -18,6 +18,9 @@ namespace ElectronNET.CLI.Commands.Actions {
         /// <summary> Linux arm platform. </summary>
         linux_arm,
 
+        /// <summary> Raspberry Pi 32bit. </summary>
+        rpi_x32,
+
         /// <summary> Attempt to auto detect the platform values. </summary>
         auto,
 
@@ -38,6 +41,8 @@ namespace ElectronNET.CLI.Commands.Actions {
                 case DesiredPlatformInfo.linux:
                     return "linux-x64";
                 case DesiredPlatformInfo.linux_arm:
+                    return "linux-arm";
+                case DesiredPlatformInfo.rpi_x32:
                     return "linux-arm";
                 case DesiredPlatformInfo.auto: {
 
@@ -67,6 +72,8 @@ namespace ElectronNET.CLI.Commands.Actions {
                     return "linux";
                 case DesiredPlatformInfo.linux_arm:
                     return "linux";
+                case DesiredPlatformInfo.rpi_x32:
+                    return "linux";
                 case DesiredPlatformInfo.auto: {
 
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -81,5 +88,36 @@ namespace ElectronNET.CLI.Commands.Actions {
                     return null;
             }
         }
+
+        /// <summary> Determine the electron arch based on the enum. </summary>
+        /// <param name="type"> The type to act on. </param>
+        /// <returns> electron arch setting. </returns>
+        public static string ToElectronArch(this DesiredPlatformInfo type) {
+            switch (type) {
+                case DesiredPlatformInfo.win:
+                    return "x64";
+                case DesiredPlatformInfo.osx:
+                    return "x64";
+                case DesiredPlatformInfo.linux:
+                    return "x64";
+                case DesiredPlatformInfo.linux_arm:
+                    return "armv7l";
+                case DesiredPlatformInfo.rpi_x32:
+                    return "armv7l";
+                case DesiredPlatformInfo.auto: {
+
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        return "x64";
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        return "x64";
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        return "x64";
+                    return null;
+                }
+                default:
+                    return null;
+            }
+        }
+
     }
 }

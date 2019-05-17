@@ -108,20 +108,19 @@ namespace ElectronNET.CLI.Commands {
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool SetupElectronHostHook() {
             Console.WriteLine("ElectronHostHook handling started...");
-            var electronhosthookDir = Path.Combine(Cmdcfg.ProjectPath, "ElectronHostHook");
 
-            if (Directory.Exists(electronhosthookDir)) {
+            if (Directory.Exists(Cmdcfg.ElectronHostHookPath)) {
                 Console.WriteLine("ElectronHostHook directory found.");
 
                 var hosthookDir = Path.Combine(Cmdcfg.RunPath, "ElectronHostHook");
-                DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
+                DirectoryCopy.Do(Cmdcfg.ElectronHostHookPath, hosthookDir, true, new List<string>() { "node_modules" });
 
                 Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()} for hosthooks...");
                 ProcessHelper.CmdExecute(Cmdcfg.NpmCommand.ToInstallCmd(), hosthookDir);
 
                 var tscPath = Path.Combine(Cmdcfg.RunPath, "node_modules", ".bin");
                 // ToDo: Not sure if this runs under linux/macos
-                ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
+                ProcessHelper.CmdExecute($@"tsc -p {hosthookDir}", tscPath);
             }
 
             return true;
