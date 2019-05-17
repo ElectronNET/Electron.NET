@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-
-// TODO may need to change BuildPath option
-
 namespace ElectronNET.CLI.Config.Commands {
 
     /// <summary> Configuration for the build command. </summary>
@@ -158,12 +155,6 @@ namespace ElectronNET.CLI.Config.Commands {
                 return false;
             }
 
-            // Overrides the destination build directory
-            BuildPath = builder["build:buildpath"] ??
-                        Path.Combine(ProjectPath, "bin", "desktop", Target.ToString());
-            if (!Directory.Exists(BuildPath))
-                Directory.CreateDirectory(BuildPath);
-
             // Overrides the dotnet configuration - Debug / Release
             DotnetConfiguration = builder["build:dotnet-configuration"] ?? "Release";
 
@@ -177,6 +168,12 @@ namespace ElectronNET.CLI.Config.Commands {
                 setts.ShowHelp = true;
                 return false;
             }
+
+            // Overrides the destination build directory
+            BuildPath = builder["build:buildpath"] ??
+                        Path.Combine(ProjectPath, "bin", "desktop", Target.ToString());
+            if (!Directory.Exists(BuildPath))
+                Directory.CreateDirectory(BuildPath);
 
             // Overrides the runtime identifier for dotnet publish
             RuntimeIdentifier = builder["build:runtimeid"] ?? Target.ToNetCorePublishRid();
