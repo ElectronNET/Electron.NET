@@ -22,21 +22,21 @@ dotnet tool uninstall ElectronNET.CLI -g
 dotnet tool install ElectronNET.CLI -g
 
 echo "/target xxx (dev-build)"
-electronize build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
+electronize build --runtimeid="win7-x86" --electronpacker="win32" --dotnet-configuration=Debug --electron-arch=ia32 --electron-params="--prune=true"
 
 echo "/target win (dev-build)"
-electronize build /target win
+electronize build --target=win
 
 echo "/target linux (dev-build)"
-electronize build /target linux
+electronize build --target=linux
 
 echo "/target custom win7-x86;win32 (dev-build)"
-electronize build /target custom win7-x86;win32
+electronize build --runtimeid="win7-x86" --electronpacker="win32"
 
 
 :: Be aware, that for non-electronnet-dev environments the correct 
 :: invoke command would be dotnet electronize ...
 
 :: Not supported on Windows Systems, because of SymLinks...
-:: echo "/target osx"
-::   dotnet electronize build /target osx
+:: echo "--target=osx"
+::   dotnet electronize build --target=osx
