@@ -43,15 +43,13 @@ namespace ElectronNET.CLI.Config.Commands {
             Dictionary<string, string> switches) {
 
             // Specify the sub command
-            if (args.Count > 1 && args[0] != "help") {
+            if (args.Count > 1 && args[0] != "help")
                 data["add:subcommand"] = args[1].ToLowerInvariant();
-            }
-
+            
             // Overrides the source project path directory, second argument
-            if (args.Count > 2 && args[0] != "help") {
+            if (args.Count > 2 && args[0] != "help")
                 data["add:projectpath"] = args[2];
-            }
-
+            
             // Overrides the destination directory for the electron hosthook files
             if (switches.ContainsKey("hosthookpath"))
                 data["add:hosthook:hosthookpath"] = switches["hosthookpath"];

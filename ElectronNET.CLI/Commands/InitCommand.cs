@@ -15,11 +15,11 @@ namespace ElectronNET.CLI.Commands {
 
         /// <summary> General Application Settings. </summary>
         /// <value> General Application Settings. </value>
-        private AppSettings appcfg { get; set; }
+        private AppSettings Appcfg { get; set; }
 
         /// <summary> Command specific settings. </summary>
         /// <value> Command specific settings. </value>
-        private InitConfig cmdcfg { get; set; }
+        private InitConfig Cmdcfg { get; set; }
 
         /// <summary> Initialize Command Execute. </summary>
         /// <returns> Initialize Command Task. </returns>
@@ -28,21 +28,21 @@ namespace ElectronNET.CLI.Commands {
                 Console.WriteLine("Init Electron Desktop Application...");
 
                 // Read in the configuration
-                appcfg = SettingsLoader.Settings;
-                cmdcfg = (InitConfig) appcfg.CommandConfig;
+                Appcfg = SettingsLoader.Settings;
+                Cmdcfg = (InitConfig) Appcfg.CommandConfig;
 
                 // Find the .csproj file
-                if (cmdcfg.ProjectFile == null) {
+                if (Cmdcfg.ProjectFile == null) {
                     Console.WriteLine("Searching for Project file");
-                    cmdcfg.ProjectFile = Directory
-                        .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
+                    Cmdcfg.ProjectFile = Directory
+                        .EnumerateFiles(Cmdcfg.ProjectPath, "*.csproj",
                             SearchOption.TopDirectoryOnly).FirstOrDefault();
                 }
-                if (cmdcfg.ProjectFile == null || !File.Exists(cmdcfg.ProjectFile)) {
+                if (Cmdcfg.ProjectFile == null || !File.Exists(Cmdcfg.ProjectFile)) {
                     Console.WriteLine("Error unable to locate .csproj file");
                     return false;
                 }
-                Console.WriteLine($"Project file found: {cmdcfg.ProjectFile}");
+                Console.WriteLine($"Project file found: {Cmdcfg.ProjectFile}");
 
                 // Add electron manifest file
                 AddManifest();
@@ -65,7 +65,7 @@ namespace ElectronNET.CLI.Commands {
         private void AddManifest() {
             Console.WriteLine("Adding the electron manifest file to your project...");
 
-            var targetFilePath = Path.Combine(cmdcfg.ProjectPath, "electron.manifest.json");
+            var targetFilePath = Path.Combine(Cmdcfg.ProjectPath, "electron.manifest.json");
             if (File.Exists(targetFilePath)) {
                 Console.WriteLine("electron manifest file already found: electron.manifest.json");
                 Console.WriteLine("Skipping");
@@ -73,13 +73,13 @@ namespace ElectronNET.CLI.Commands {
             }
 
             // Deploy config file
-            EmbeddedFileHelper.DeployEmbeddedFile(cmdcfg.ProjectPath, "electron.manifest.json");
+            EmbeddedFileHelper.DeployEmbeddedFile(Cmdcfg.ProjectPath, "electron.manifest.json");
 
             // update config file with the name of the csproj
             // ToDo: If the csproj name != application name, this will fail
-            Console.WriteLine($"Updating manifest with name of project: {Path.GetFileName(cmdcfg.ProjectFile)}");
+            Console.WriteLine($"Updating manifest with name of project: {Path.GetFileName(Cmdcfg.ProjectFile)}");
             var text = File.ReadAllText(targetFilePath);
-            text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(cmdcfg.ProjectFile));
+            text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(Cmdcfg.ProjectFile));
             File.WriteAllText(targetFilePath, text);
         }
 
@@ -88,7 +88,7 @@ namespace ElectronNET.CLI.Commands {
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool EditCsProj() {
             Console.WriteLine("Checking to see if we need to update the .csproj project file");
-            using (var stream = File.Open(cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
+            using (var stream = File.Open(Cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
                 var xmlDocument = XDocument.Load(stream);
 
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
@@ -139,17 +139,17 @@ namespace ElectronNET.CLI.Commands {
             // this is should solve the problem for 80% of the users
             // for the other 20% we might fail... 
 
-            if (cmdcfg.LaunchSettingsFile == null) {
+            if (Cmdcfg.LaunchSettingsFile == null) {
                 Console.WriteLine("Searching for launchSettings.json to add our electron debug profile...");
-                cmdcfg.LaunchSettingsFile = Path.Combine(cmdcfg.ProjectPath, "Properties", "launchSettings.json");
+                Cmdcfg.LaunchSettingsFile = Path.Combine(Cmdcfg.ProjectPath, "Properties", "launchSettings.json");
             }
 
-            if (File.Exists(cmdcfg.LaunchSettingsFile) == false) {
+            if (File.Exists(Cmdcfg.LaunchSettingsFile) == false) {
                 Console.WriteLine("Error unable to locate launch settings config file");
                 return false;
             }
 
-            var launchSettingText = File.ReadAllText(cmdcfg.LaunchSettingsFile);
+            var launchSettingText = File.ReadAllText(Cmdcfg.LaunchSettingsFile);
 
             if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false) {
                 var debugProfileBuilder = new StringBuilder();
@@ -162,7 +162,7 @@ namespace ElectronNET.CLI.Commands {
                 debugProfileBuilder.AppendLine("    },");
 
                 launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
-                File.WriteAllText(cmdcfg.LaunchSettingsFile, launchSettingText);
+                File.WriteAllText(Cmdcfg.LaunchSettingsFile, launchSettingText);
 
                 Console.WriteLine("Debug profile added!");
             }

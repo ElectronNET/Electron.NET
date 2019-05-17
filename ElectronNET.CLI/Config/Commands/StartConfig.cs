@@ -54,10 +54,9 @@ namespace ElectronNET.CLI.Config.Commands {
             Dictionary<string, string> switches) {
 
             // Overrides the source project path directory
-            if (args.Count > 1 && args[0] != "help") {
+            if (args.Count > 1 && args[0] != "help")
                 data["start:projectpath"] = args[1];
-            }
-
+            
             // Npm command to use
             if (switches.ContainsKey("npmcommand"))
                 data["start:npmcommand"] = switches["npmcommand"];

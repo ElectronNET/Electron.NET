@@ -14,11 +14,11 @@ namespace ElectronNET.CLI.Commands {
 
         /// <summary> General Application Settings. </summary>
         /// <value> General Application Settings. </value>
-        private AppSettings appcfg { get; set; }
+        private AppSettings Appcfg { get; set; }
 
         /// <summary> Command specific settings. </summary>
         /// <value> Command specific settings. </value>
-        private BuildConfig cmdcfg { get; set; }
+        private BuildConfig Cmdcfg { get; set; }
 
         /// <summary> Build electron Command Execute. </summary>
         /// <returns> Build electron Command Task. </returns>
@@ -27,8 +27,8 @@ namespace ElectronNET.CLI.Commands {
                 Console.WriteLine("Build Electron Application...");
 
                 // Read in the configuration
-                appcfg = SettingsLoader.Settings;
-                cmdcfg = (BuildConfig) appcfg.CommandConfig;
+                Appcfg = SettingsLoader.Settings;
+                Cmdcfg = (BuildConfig) Appcfg.CommandConfig;
 
                 // Publish the .net project to the run path
                 if (!DotnetPublish())
@@ -55,14 +55,14 @@ namespace ElectronNET.CLI.Commands {
         /// <summary> Do a dotnet publish. </summary>
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool DotnetPublish() {
-            Console.WriteLine($"Build ASP.NET Core App for {cmdcfg.RuntimeIdentifier}...");
-            Console.WriteLine($"Executing dotnet publish in this directory: {cmdcfg.BuildPath}");
-            var tempBinPath = Path.Combine(cmdcfg.BuildPath, "bin");
+            Console.WriteLine($"Build ASP.NET Core App for {Cmdcfg.RuntimeIdentifier}...");
+            Console.WriteLine($"Executing dotnet publish in this directory: {Cmdcfg.BuildPath}");
+            var tempBinPath = Path.Combine(Cmdcfg.BuildPath, "bin");
             Console.WriteLine(
-                $"Build ASP.NET Core App for {cmdcfg.RuntimeIdentifier} under {cmdcfg.DotnetConfiguration}-Configuration...");
+                $"Build ASP.NET Core App for {Cmdcfg.RuntimeIdentifier} under {Cmdcfg.DotnetConfiguration}-Configuration...");
             var resultCode = ProcessHelper.CmdExecute(
-                $"dotnet publish -r {cmdcfg.RuntimeIdentifier} -c {cmdcfg.DotnetConfiguration} --output \"{tempBinPath}\"",
-                cmdcfg.ProjectPath);
+                $"dotnet publish -r {Cmdcfg.RuntimeIdentifier} -c {Cmdcfg.DotnetConfiguration} --output \"{tempBinPath}\"",
+                Cmdcfg.ProjectPath);
             if (resultCode != 0) {
                 Console.WriteLine($"Error occurred during dotnet publish: {resultCode}");
                 return false;
@@ -179,29 +179,33 @@ namespace ElectronNET.CLI.Commands {
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool SetupNodeModules() {
 
-            DeployEmbeddedElectronFiles.Do(cmdcfg.BuildPath);
-            var nodeModulesDirPath = Path.Combine(cmdcfg.BuildPath, "node_modules");
-            if (cmdcfg.PackageJsonFile != null) {
+            DeployEmbeddedElectronFiles.Do(Cmdcfg.BuildPath);
+            if (Cmdcfg.PackageJsonFile != null) {
                 Console.WriteLine("Copying custom package.json.");
-                File.Copy(cmdcfg.PackageJsonFile, Path.Combine(cmdcfg.BuildPath, "package.json"), true);
+                File.Copy(Cmdcfg.PackageJsonFile, Path.Combine(Cmdcfg.BuildPath, "package.json"), true);
             }
 
-            var checkForNodeModulesDirPath = Path.Combine(cmdcfg.BuildPath, "node_modules");
-            if (Directory.Exists(checkForNodeModulesDirPath) == false || cmdcfg.ForceNpmInstall || cmdcfg.PackageJsonFile != null)
+            var checkForNodeModulesDirPath = Path.Combine(Cmdcfg.BuildPath, "node_modules");
+            if (Directory.Exists(checkForNodeModulesDirPath) == false || Cmdcfg.ForceNpmInstall ||
+                Cmdcfg.PackageJsonFile != null) {
+                Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()}...");
 
-                Console.WriteLine("Start npm install...");
-            ProcessHelper.CmdExecute("npm install --production", cmdcfg.BuildPath);
-            Console.WriteLine("Start npm install electron-packager...");
+                // Need to avoid --production here as the electron packager needs tslint / @types/socket.io and others
+                // unless we want to move those packages into dependencies instead of devDependencies
+                ProcessHelper.CmdExecute($"{Cmdcfg.NpmCommand.ToInstallCmd()}", Cmdcfg.BuildPath);
+            }
+
+            Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()} electron-packager...");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
                 // Works proper on Windows... 
-                ProcessHelper.CmdExecute("npm install electron-packager --global", cmdcfg.BuildPath);
+                ProcessHelper.CmdExecute($"{Cmdcfg.NpmCommand.ToInstallCmd()} electron-packager --global", Cmdcfg.BuildPath);
             }
             else {
                 // ToDo: find another solution or document it proper
                 // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
                 Console.WriteLine(
-                    "Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " +
-                    cmdcfg.BuildPath + " manually. Sry.");
+                    $"Electron Packager - make sure you invoke 'sudo {Cmdcfg.NpmCommand.ToInstallCmd()} electron-packager --global' at " +
+                    Cmdcfg.BuildPath + " manually. Sry.");
             }
             return true;
         }
@@ -212,17 +216,18 @@ namespace ElectronNET.CLI.Commands {
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool BuildElectronHostHook() {
             Console.WriteLine("ElectronHostHook handling started...");
-            var electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
-            if (Directory.Exists(electronhosthookDir)) {
-                var hosthookDir = Path.Combine(cmdcfg.BuildPath, "ElectronHostHook");
-                DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() {"node_modules"});
+            if (Directory.Exists(Cmdcfg.ElectronHostHookPath)) {
+                var hosthookDir = Path.Combine(Cmdcfg.BuildPath, "ElectronHostHook");
+                DirectoryCopy.Do(Cmdcfg.ElectronHostHookPath, hosthookDir, true, new List<string>() {"node_modules"});
 
-                Console.WriteLine("Start npm install for hosthooks...");
-                ProcessHelper.CmdExecute("npm install --production", hosthookDir);
+                Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()} for hosthooks...");
 
-                var tscPath = Path.Combine(cmdcfg.BuildPath, "node_modules", ".bin");
+                // We need avoid --production here as we need typescript and socketio when running tsc
+                ProcessHelper.CmdExecute($"{Cmdcfg.NpmCommand.ToInstallCmd()}", hosthookDir);
+
+                var tscPath = Path.Combine(hosthookDir, "node_modules", ".bin");
                 // ToDo: Not sure if this runs under linux/macos
-                ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook --sourceMap false", tscPath);
+                ProcessHelper.CmdExecute($@"tsc -p {hosthookDir} --sourceMap false", tscPath);
             }
 
             return true;
@@ -234,16 +239,16 @@ namespace ElectronNET.CLI.Commands {
             Console.WriteLine("Build Electron Desktop Application...");
 
             // electron build directory
-            var buildPath = Path.Combine(cmdcfg.BuildPath, "..");
+            var packagePath = Path.Combine(Cmdcfg.BuildPath, "..");
             // make sure directory is absolute if relative
-            buildPath = Path.GetFullPath(buildPath);
+            packagePath = Path.GetFullPath(packagePath);
 
-            Console.WriteLine("Executing electron magic in this directory: " + buildPath);
+            Console.WriteLine($"Executing electron magic in this directory: {packagePath}");
             // ToDo: Need a solution for --asar support
-            Console.WriteLine($"Package Electron App for Platform {cmdcfg.ElectronPackerPlatform}...");
+            Console.WriteLine($"Package Electron App for Platform {Cmdcfg.ElectronPackerPlatform}...");
             ProcessHelper.CmdExecute(
-                $"electron-packager . --platform={cmdcfg.ElectronPackerPlatform} --arch={cmdcfg.ElectronArch} {cmdcfg.ElectronParams} --out=\"{buildPath}\" --overwrite",
-                cmdcfg.BuildPath);
+                $"electron-packager . --platform={Cmdcfg.ElectronPackerPlatform} --arch={Cmdcfg.ElectronArch} {Cmdcfg.ElectronParams} --out=\"{packagePath}\" --overwrite",
+                Cmdcfg.BuildPath);
 
             return true;
         }

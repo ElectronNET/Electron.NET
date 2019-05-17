@@ -18,6 +18,15 @@ namespace ElectronNET.CLI.Config.Commands {
         /// <value> The full path of the ASP core project. </value>
         public string ProjectPath { get; set; }
 
+        /// <summary> Path to the electron host hook files. </summary>
+        /// <value> Path to the electron host hook files. </value>
+        public string ElectronHostHookPath { get; set; }
+        public bool HookpathChanged { get; set; }
+
+        /// <summary> The package manager used to install packages. </summary>
+        /// <value> which package manager to use. </value>
+        public PackageManagerType NpmCommand { get; set; } = PackageManagerType.npm;
+
         /// <summary> Destination build directory. </summary>
         /// <value> Build destination path. </value>
         public string BuildPath { get; set; }
@@ -66,15 +75,21 @@ namespace ElectronNET.CLI.Config.Commands {
             Dictionary<string, string> switches) {
 
             // Overrides the source project path directory
-            if (args.Count > 1 && args[0] != "help") {
+            if (args.Count > 1 && args[0] != "help")
                 data["build:projectpath"] = args[1];
-            }
+
+            // Overrides the destination directory for the electron hosthook files
+            if (switches.ContainsKey("hosthookpath"))
+                data["add:hosthook:hosthookpath"] = switches["hosthookpath"];
+
+            // Npm command to use
+            if (switches.ContainsKey("npmcommand"))
+                data["build:npmcommand"] = switches["npmcommand"];
 
             // Overrides the destination build directory
-            if (args.Count > 2 && args[0] != "help") {
+            if (args.Count > 2 && args[0] != "help")
                 data["build:buildpath"] = args[2];
-            }
-
+            
             // Overrides the dotnet configuration - Debug / Release
             if (switches.ContainsKey("dotnet-configuration"))
                 data["build:dotnet-configuration"] = switches["dotnet-configuration"];
@@ -126,6 +141,23 @@ namespace ElectronNET.CLI.Config.Commands {
                 return false;
             }
 
+            // Overrides the destination directory for the electron hosthook files
+            if (builder["add:hosthook:hosthookpath"] != null)
+                HookpathChanged = true;
+            ElectronHostHookPath = builder["add:hosthook:hosthookpath"] ?? Path.Combine(ProjectPath, "ElectronHostHook");
+
+            // Specify which package manager to use npm, yarn, pnpm
+            // pnpm is good at saving space on the disk
+            try {
+                var npmcmdstr = builder["build:npmcommand"] ?? "npm";
+                NpmCommand = EnumHelper.Parse<PackageManagerType>(npmcmdstr, "npmcommand");
+            }
+            catch (ArgumentException ex) {
+                if (!setts.ShowHelp) Console.WriteLine(ex.Message);
+                setts.ShowHelp = true;
+                return false;
+            }
+
             // Overrides the destination build directory
             BuildPath = builder["build:buildpath"] ??
                         Path.Combine(ProjectPath, "bin", "desktop", Target.ToString());
@@ -165,8 +197,6 @@ namespace ElectronNET.CLI.Config.Commands {
             // Specify a package json file
             PackageJsonFile = builder["build:package-json"];
 
-
-            // TODO
             return true;
         }
 
@@ -195,39 +225,30 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendFormat(strfmt, "", "(defaults to <Project Path>/bin/desktop/<platform>)\n");
             helptxt.AppendLine("");
             helptxt.AppendLine("  Options:");
+            helptxt.AppendFormat(strfmt, "--hosthookpath=<Path>", "Destination directory for the electron host hook files\n");
+            helptxt.AppendFormat(strfmt, "", "(default: <ProjectPath>/ElectronHostHook)\n");
+            helptxt.AppendFormat(strfmt, "--npmcommand=<value>", "Which package manager to use\n");
+            helptxt.AppendFormat(strfmt, "", $"(valid values: {EnumHelper.CommaValues<PackageManagerType>()})\n");
+            helptxt.AppendFormat(strfmt, "", "(default: npm)\n");
             helptxt.AppendFormat(strfmt, "--dotnet-configuration=<config>", "Specify the dotnet configuration to use\n");
             helptxt.AppendFormat(strfmt, "", "(default: Release)\n");
             helptxt.AppendFormat(strfmt, "--target=<value>", "Specify the desired target\n");
             helptxt.AppendFormat(strfmt, "", $"(valid values: {EnumHelper.CommaValues<DesiredPlatformInfo>()})\n");
             helptxt.AppendFormat(strfmt, "", "(default: auto)\n");
-            helptxt.AppendFormat(strfmt, "--runtimeid=<value>", "Runtime identifier for dotnet publish\n");
-            helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform)\n");
-            helptxt.AppendFormat(strfmt, "--electronpacker=<value>", "Electron packer platform to use\n");
-            helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform)\n");
+            helptxt.AppendFormat(strfmt, "--runtimeid=<value>", "Runtime identifier for dotnet publish, e.g. \"win7-x86\"\n");
+            helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform) see the .NET Core RID Catalog\n");
+            helptxt.AppendFormat(strfmt, "--electronpacker=<value>", "Specify the resulting electron processor architecture\n");
+            helptxt.AppendFormat(strfmt, "", "(defaults to the value from desiredplatform) e.g. win32 or ia86 for x86 builds\n");
             helptxt.AppendFormat(strfmt, "--electron-arch=<value>", "Electron arch setting to use\n");
             helptxt.AppendFormat(strfmt, "", "(default: x64)\n");
-            helptxt.AppendFormat(strfmt, "--electron-params=<value>", "Additional parameters to pass to electron\n");
-            helptxt.AppendFormat(strfmt, "--install-modules", "Force a re-install of node_modules\n");
-            helptxt.AppendFormat(strfmt, "--package-json=<FilePath>", "Specify a package json file\n");
-
+            helptxt.AppendFormat(strfmt, "--electron-params=<value>", "Additional parameters to pass to the electron packager\n");
+            helptxt.AppendFormat(strfmt, "--install-modules", "Force install of node_modules, Implied by '--package-json'\n");
+            helptxt.AppendFormat(strfmt, "--package-json=<FilePath>", "Specify a custom package json file\n");
+            helptxt.AppendLine("");
+            helptxt.AppendLine("  Full example for a 32bit debug build with electron prune:");
+            helptxt.AppendLine("    electronize build --runtimeid=\"win7-x86\" --electronpacker=\"win32\" --dotnet-configuration=Debug");
+            helptxt.AppendLine("    --electron-arch=ia32  --electron-params=\"--prune=true\"");
             Console.Write(helptxt.ToString());
         }
-
-
-        // TODO
-        public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
-                                                 " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
-                                                 " e.g. '/target win' or '/target custom \"win7-x86;win32\"'" + Environment.NewLine +
-                                                 "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
-                                                 "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
-                                                 "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
-                                                 "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
-                                                 "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
-                                                 "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
-                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
-                                                 "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
-
-
-
     }
 }

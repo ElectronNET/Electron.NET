@@ -14,11 +14,11 @@ namespace ElectronNET.CLI.Commands {
 
         /// <summary> General Application Settings. </summary>
         /// <value> General Application Settings. </value>
-        private AppSettings appcfg { get; set; }
+        private AppSettings Appcfg { get; set; }
 
         /// <summary> Command specific settings. </summary>
         /// <value> Command specific settings. </value>
-        private StartConfig cmdcfg { get; set; }
+        private StartConfig Cmdcfg { get; set; }
 
         /// <summary> Start electron Command Execute. </summary>
         /// <returns> Start electron Command Task. </returns>
@@ -27,14 +27,14 @@ namespace ElectronNET.CLI.Commands {
                 Console.WriteLine("Start Electron Desktop Application...");
 
                 // Read in the configuration
-                appcfg = SettingsLoader.Settings;
-                cmdcfg = (StartConfig)appcfg.CommandConfig;
+                Appcfg = SettingsLoader.Settings;
+                Cmdcfg = (StartConfig)Appcfg.CommandConfig;
 
                 // Create a temp directory for running / debugging
-                if (cmdcfg.RunPath == null) {
-                    cmdcfg.RunPath = Path.Combine(cmdcfg.ProjectPath, "bin", "Host");
-                    if (Directory.Exists(cmdcfg.RunPath) == false)
-                        Directory.CreateDirectory(cmdcfg.RunPath);
+                if (Cmdcfg.RunPath == null) {
+                    Cmdcfg.RunPath = Path.Combine(Cmdcfg.ProjectPath, "bin", "Host");
+                    if (Directory.Exists(Cmdcfg.RunPath) == false)
+                        Directory.CreateDirectory(Cmdcfg.RunPath);
 
                 }
 
@@ -43,7 +43,7 @@ namespace ElectronNET.CLI.Commands {
                     return false;
 
                 // Copy over the host files needed for electron
-                DeployEmbeddedElectronFiles.Do(cmdcfg.RunPath);
+                DeployEmbeddedElectronFiles.Do(Cmdcfg.RunPath);
 
                 // Setup the node_modules directory using npm or the selected package manager
                 if (!SetupNodeModules())
@@ -65,10 +65,10 @@ namespace ElectronNET.CLI.Commands {
         /// <summary> Do a dotnet publish. </summary>
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool DotnetPublish() {
-            var tempBinPath = Path.Combine(cmdcfg.RunPath, "bin");
+            var tempBinPath = Path.Combine(Cmdcfg.RunPath, "bin");
             var resultCode = ProcessHelper.CmdExecute(
-                $"dotnet publish -r {cmdcfg.RuntimeIdentifier} --output \"{tempBinPath}\" {cmdcfg.DotnetAdditionalOpts}",
-                cmdcfg.ProjectPath);
+                $"dotnet publish -r {Cmdcfg.RuntimeIdentifier} --output \"{tempBinPath}\" {Cmdcfg.DotnetAdditionalOpts}",
+                Cmdcfg.ProjectPath);
             if (resultCode != 0) {
                 Console.WriteLine($"Error occurred during dotnet publish: {resultCode}");
                 return false;
@@ -79,21 +79,21 @@ namespace ElectronNET.CLI.Commands {
         /// <summary> Setup the node modules directory. </summary>
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool SetupNodeModules() {
-            var NodeModulesDirPath = Path.Combine(cmdcfg.RunPath, "node_modules");
+            var NodeModulesDirPath = Path.Combine(Cmdcfg.RunPath, "node_modules");
 
             if (!Directory.Exists(NodeModulesDirPath))
                 Console.WriteLine($"node_modules missing in: {NodeModulesDirPath}");
 
-            if (cmdcfg.ForceNpmInstall) {
+            if (Cmdcfg.ForceNpmInstall) {
                 if (Directory.Exists(NodeModulesDirPath)) {
                     Console.WriteLine("node_modules detected but deleting due to force being enabled");
                     Directory.Delete(NodeModulesDirPath,true);
                 }
             }
 
-            if (!Directory.Exists(NodeModulesDirPath) || cmdcfg.ForceNpmInstall) {
-                Console.WriteLine($"Start {cmdcfg.NpmCommand.ToInstallCmd()} ...");
-                ProcessHelper.CmdExecute(cmdcfg.NpmCommand.ToInstallCmd(), cmdcfg.RunPath);
+            if (!Directory.Exists(NodeModulesDirPath) || Cmdcfg.ForceNpmInstall) {
+                Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()} ...");
+                ProcessHelper.CmdExecute(Cmdcfg.NpmCommand.ToInstallCmd(), Cmdcfg.RunPath);
                 Console.WriteLine("install to node_modules complete");
             }
             else {
@@ -108,18 +108,18 @@ namespace ElectronNET.CLI.Commands {
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool SetupElectronHostHook() {
             Console.WriteLine("ElectronHostHook handling started...");
-            var electronhosthookDir = Path.Combine(cmdcfg.ProjectPath, "ElectronHostHook");
+            var electronhosthookDir = Path.Combine(Cmdcfg.ProjectPath, "ElectronHostHook");
 
             if (Directory.Exists(electronhosthookDir)) {
                 Console.WriteLine("ElectronHostHook directory found.");
 
-                var hosthookDir = Path.Combine(cmdcfg.RunPath, "ElectronHostHook");
+                var hosthookDir = Path.Combine(Cmdcfg.RunPath, "ElectronHostHook");
                 DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
-                Console.WriteLine($"Start {cmdcfg.NpmCommand.ToInstallCmd()} for hosthooks...");
-                ProcessHelper.CmdExecute(cmdcfg.NpmCommand.ToInstallCmd(), hosthookDir);
+                Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()} for hosthooks...");
+                ProcessHelper.CmdExecute(Cmdcfg.NpmCommand.ToInstallCmd(), hosthookDir);
 
-                var tscPath = Path.Combine(cmdcfg.RunPath, "node_modules", ".bin");
+                var tscPath = Path.Combine(Cmdcfg.RunPath, "node_modules", ".bin");
                 // ToDo: Not sure if this runs under linux/macos
                 ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
             }
@@ -131,18 +131,18 @@ namespace ElectronNET.CLI.Commands {
         /// <summary> Launches electron. </summary>
         /// <returns> True if it succeeds, false if it fails. </returns>
         private bool LaunchElectron() {
-            var nodebinpath = Path.Combine(cmdcfg.RunPath, "node_modules", ".bin");
+            var nodebinpath = Path.Combine(Cmdcfg.RunPath, "node_modules", ".bin");
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             if (isWindows) {
                 Console.WriteLine($"Invoke electron.cmd - in dir: {nodebinpath}");
                 ProcessHelper.CmdExecute(
-                    $@"electron.cmd {cmdcfg.ElectronParams} ""..\..\main.js""",
+                    $@"electron.cmd {Cmdcfg.ElectronParams} ""..\..\main.js""",
                     nodebinpath);
             }
             else {
                 Console.WriteLine($"Invoke electron - in dir: {nodebinpath}");
                 ProcessHelper.CmdExecute(
-                    $@"./electron {cmdcfg.ElectronParams} ""../../main.js""",
+                    $@"./electron {Cmdcfg.ElectronParams} ""../../main.js""",
                     nodebinpath);
             }
             return true;

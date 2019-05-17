@@ -14,11 +14,11 @@ namespace ElectronNET.CLI.Commands {
 
         /// <summary> General Application Settings. </summary>
         /// <value> General Application Settings. </value>
-        private AppSettings appcfg { get; set; }
+        private AppSettings Appcfg { get; set; }
 
         /// <summary> Command specific settings. </summary>
         /// <value> Command specific settings. </value>
-        private AddConfig cmdcfg { get; set; }
+        private AddConfig Cmdcfg { get; set; }
 
 
         /// <summary> Add Command Execute. </summary>
@@ -27,14 +27,14 @@ namespace ElectronNET.CLI.Commands {
             return Task.Run(() => {
 
                 // Read in the configuration
-                appcfg = SettingsLoader.Settings;
-                cmdcfg = (AddConfig) appcfg.CommandConfig;
+                Appcfg = SettingsLoader.Settings;
+                Cmdcfg = (AddConfig) Appcfg.CommandConfig;
 
-                switch (cmdcfg.SubCommand) {
+                switch (Cmdcfg.SubCommand) {
                     case "hosthook":
                         if (!AddHosthook_DeployFiles())
                             return false;
-                        if (cmdcfg.HookpathChanged) {
+                        if (Cmdcfg.HookpathChanged) {
                             Console.WriteLine("Warning: Custom directory selected for HostHookPath");
                             Console.WriteLine("Please note that you will need to manually add this to your .csproj file");
                             break;
@@ -57,7 +57,7 @@ namespace ElectronNET.CLI.Commands {
         private bool AddHosthook_DeployFiles() {
             Console.WriteLine("Add hosthook files...");
 
-            var targetFilePath = cmdcfg.ElectronHostHookPath;
+            var targetFilePath = Cmdcfg.ElectronHostHookPath;
             if (Directory.Exists(targetFilePath)) {
                 Console.WriteLine("ElectronHostHook directory already in place. If you want to start over, delete the folder and invoke this command again.");
                 return false;
@@ -74,8 +74,8 @@ namespace ElectronNET.CLI.Commands {
             EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, ".gitignore", "ElectronHostHook.");
 
             // npm for typescript compiler etc.
-            Console.WriteLine($"Start {cmdcfg.NpmCommand.ToInstallCmd()}...");
-            ProcessHelper.CmdExecute(cmdcfg.NpmCommand.ToInstallCmd(), targetFilePath);
+            Console.WriteLine($"Start {Cmdcfg.NpmCommand.ToInstallCmd()}...");
+            ProcessHelper.CmdExecute(Cmdcfg.NpmCommand.ToInstallCmd(), targetFilePath);
 
             // run typescript compiler
             var tscPath = Path.Combine(targetFilePath, "node_modules", ".bin");
@@ -93,19 +93,19 @@ namespace ElectronNET.CLI.Commands {
             Console.WriteLine($"Update the .csproj to add configure CopyToPublishDirectory to 'Never'");
 
             // Find the .csproj file
-            if (cmdcfg.ProjectFile == null) {
+            if (Cmdcfg.ProjectFile == null) {
                 Console.WriteLine("Searching for Project file");
-                cmdcfg.ProjectFile = Directory
-                    .EnumerateFiles(cmdcfg.ProjectPath, "*.csproj",
+                Cmdcfg.ProjectFile = Directory
+                    .EnumerateFiles(Cmdcfg.ProjectPath, "*.csproj",
                         SearchOption.TopDirectoryOnly).FirstOrDefault();
             }
-            if (cmdcfg.ProjectFile == null || !File.Exists(cmdcfg.ProjectFile)) {
+            if (Cmdcfg.ProjectFile == null || !File.Exists(Cmdcfg.ProjectFile)) {
                 Console.WriteLine("Error unable to locate .csproj file");
                 return false;
             }
-            Console.WriteLine($"Project file found: {cmdcfg.ProjectFile}");
+            Console.WriteLine($"Project file found: {Cmdcfg.ProjectFile}");
 
-            using (var stream = File.Open(cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
+            using (var stream = File.Open(Cmdcfg.ProjectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite)) {
                 var xmlDocument = XDocument.Load(stream);
 
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
