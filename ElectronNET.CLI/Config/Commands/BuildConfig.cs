@@ -83,10 +83,6 @@ namespace ElectronNET.CLI.Config.Commands {
             if (switches.ContainsKey("npmcommand"))
                 data["build:npmcommand"] = switches["npmcommand"];
 
-            // Overrides the destination build directory
-            if (args.Count > 2 && args[0] != "help")
-                data["build:buildpath"] = args[2];
-            
             // Overrides the dotnet configuration - Debug / Release
             if (switches.ContainsKey("dotnet-configuration"))
                 data["build:dotnet-configuration"] = switches["dotnet-configuration"];
@@ -217,8 +213,6 @@ namespace ElectronNET.CLI.Config.Commands {
             helptxt.AppendLine("  Arguments:");
             helptxt.AppendFormat(strfmt, "<Project Path>", "Source project directory\n");
             helptxt.AppendFormat(strfmt, "", "(defaults to current directory)\n");
-            helptxt.AppendFormat(strfmt, "<Build Path>", "Destination build directory\n");
-            helptxt.AppendFormat(strfmt, "", "(defaults to <Project Path>/bin/desktop/<platform>)\n");
             helptxt.AppendLine("");
             helptxt.AppendLine("  Options:");
             helptxt.AppendFormat(strfmt, "--hosthookpath=<Path>", "Destination directory for the electron host hook files\n");
