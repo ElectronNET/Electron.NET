@@ -33,13 +33,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="electron.manifest.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Update="ElectronHostHook\**\*.*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="ElectronHostHook\**\*.*">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    <Content Update="electron.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 </Project>

@@ -105,19 +105,19 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install --production", tempPath);
 
-                Console.WriteLine("Start npm install electron-packager...");
+                Console.WriteLine("Start npm install electron-builder...");
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 
                 {
                     // Works proper on Windows... 
-                    ProcessHelper.CmdExecute("npm install electron-packager --global", tempPath);
+                    ProcessHelper.CmdExecute("npm install electron-builder --global", tempPath);
                 }
                 else
                 {
                     // ToDo: find another solution or document it proper
                     // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Packager - make sure you invoke 'sudo npm install electron-packager --global' at " + tempPath + " manually. Sry.");
+                    Console.WriteLine("Electron Builder - make sure you invoke 'sudo npm install electron-builder --global' at " + tempPath + " manually. Sry.");
                 }
 
                 Console.WriteLine("ElectronHostHook handling started...");
@@ -132,9 +132,11 @@ namespace ElectronNET.CLI.Commands
                     Console.WriteLine("Start npm install for hosthooks...");
                     ProcessHelper.CmdExecute("npm install --production", hosthookDir);
 
-                    string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
+                    // ToDo: Global TypeScript installation is needed for ElectronHostHook
+                    //string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
+                    
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook --sourceMap false", tscPath);
+                    ProcessHelper.CmdExecute(@"tsc -p . --sourceMap false", hosthookDir);
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
@@ -166,15 +168,17 @@ namespace ElectronNET.CLI.Commands
                     electronParams = parser.Arguments[_paramElectronParams][0];
                 }
 
+                // ToDo: Make the same thing easer with native c# - we can save a tmp file in production code :)
+                Console.WriteLine("Create electron-builder configuration file...");
+                ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
+
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-packager . --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams} --out=\"{buildPath}\" --overwrite", tempPath);
+                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
                 return true;
             });
         }
-
-
     }
 }

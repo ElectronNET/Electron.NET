@@ -8,7 +8,8 @@ let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
 let splashScreen, mainWindowId, hostHook;
 
-const manifestJsonFilePath = path.join(__dirname, 'bin', 'electron.manifest.json');
+const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
+const manifestJsonFilePath = path.join(currentBinPath, 'electron.manifest.json');
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance) {
     const shouldQuit = app.requestSingleInstanceLock();
@@ -140,8 +141,8 @@ function startAspCoreBackend(electronPort) {
             binaryFile = binaryFile + '.exe';
         }
 
-        const binFilePath = path.join(__dirname, 'bin', binaryFile);
-        var options = { cwd: path.join(__dirname, 'bin') };
+        let binFilePath = path.join(currentBinPath, binaryFile);
+        var options = { cwd: currentBinPath };
         apiProcess = process(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {

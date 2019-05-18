@@ -52,6 +52,10 @@ This package contains the dotnet tooling to electronize your application.</Descr
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\build-helper.js" Link="ElectronHost\build-helper.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
   </ItemGroup>
   
