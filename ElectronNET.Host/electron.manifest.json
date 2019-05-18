@@ -1,5 +1,9 @@
 ﻿{
   "executable": "{{executable}}",
+  "splashscreen": {
+    "imageFile": ""
+  },
+  "singleInstance": false,
   "build": {
     "appId": "com.{{executable}}.app",
     "productName": "{{executable}}",

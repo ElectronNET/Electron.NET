@@ -3,6 +3,7 @@ const { BrowserWindow } = require('electron');
 const path = require('path');
 const process = require('child_process').spawn;
 const portscanner = require('portscanner');
+const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard;
@@ -36,36 +37,49 @@ app.on('ready', () => {
 });
 
 function isSplashScreenEnabled() {
-    return Boolean(manifestJsonFile.loadingUrl);
+    if(manifestJsonFile.hasOwnProperty('splashscreen')) {
+        if(manifestJsonFile.splashscreen.hasOwnProperty('imageFile')) {
+            return  Boolean(manifestJsonFile.splashscreen.imageFile);
+        }
+    }
+
+    return false;
 }
 
 function startSplashScreen() {
-    let loadingUrl = manifestJsonFile.loadingUrl;
-    let icon = manifestJsonFile.icon;
+    let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
+    imageSize(imageFile, (error, dimensions) => {
+        if (error) {
+            console.log(`load splashscreen error:`);
+            console.log(error);
 
-    if (loadingUrl) {
-        splashScreen = new BrowserWindow({
-            width: manifestJsonFile.width,
-            height: manifestJsonFile.height,
-            transparent: true,
-            frame: false,
-            show: false,
-            icon: path.join(__dirname, icon)
-        });
-
-        if (manifestJsonFile.devTools) {
-            splashScreen.webContents.openDevTools();
+            throw new Error(error.message);
         }
 
-        splashScreen.loadURL(loadingUrl);
-        splashScreen.once('ready-to-show', () => {
-            splashScreen.show();
+        splashScreen = new BrowserWindow({
+            width: dimensions.width,
+            height: dimensions.height,
+            transparent: true,
+            center: true,
+            frame: false,
+            alwaysOnTop: true,
+            skipTaskbar: true,
+            show: true
         });
 
-        splashScreen.on('closed', () => {
+        app.once('browser-window-focus', () => {
+            app.once('browser-window-focus', () => {
+                splashScreen.destroy();
+            });
+        });
+
+        const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
+        splashScreen.loadURL('file://' + loadSplashscreenUrl);
+
+        splashScreen.once('closed', () => {
             splashScreen = null;
         });
-    }
+    });
 }
 
 function startSocketApiBridge(port) {
@@ -100,10 +114,6 @@ function startSocketApiBridge(port) {
         shellApi = require('./api/shell')(socket);
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
-
-        if (splashScreen && !splashScreen.isDestroyed()) {
-            splashScreen.close();
-        }
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');

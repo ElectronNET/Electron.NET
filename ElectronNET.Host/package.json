@@ -12,6 +12,7 @@
     "start": "tsc -p ."
   },
   "dependencies": {
+    "image-size": "^0.7.4",
     "portscanner": "^2.2.0",
     "socket.io": "^2.2.0"
   },

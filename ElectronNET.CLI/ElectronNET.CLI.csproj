@@ -67,6 +67,9 @@ This package contains the dotnet tooling to electronize your application.</Descr
       <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\.gitignore" Link="ElectronHost\ElectronHostHook\.gitignore" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\splashscreen\index.html" Link="ElectronHost\splashscreen\index.html" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\app.js" Link="ElectronHost\api\app.js" />

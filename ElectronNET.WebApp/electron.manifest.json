@@ -1,5 +1,9 @@
 {
   "executable": "ElectronNET.WebApp",
+  "splashscreen": {
+    "imageFile": "/wwwroot/assets/img/about@2x.png"
+  },
+  "singleInstance": false,
   "build": {
     "appId": "com.electronnetapidemos.app",
     "productName": "ElectronNET API Demos",
