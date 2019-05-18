@@ -1,19 +1,22 @@
 # not release
 
-# 5.0.12
+# 5.22.12
 
 ElectronNET.CLI:
 
-* Implement 'add hosthook' command for add a ElectronHostHook-Directory
+* New Feature: Changed from **electron packager** to [**electron builder**](https://www.electron.build/)
+* New Feature: 'add hosthook' command for add a ElectronHostHook-Directory
 * Fixed bug: 'Unexpected firewall warnings' [\#181](https://github.com/ElectronNET/Electron.NET/issues/181)
 * Fixed bug: 'found 8 vulnerabilities (1 low, 5 moderate, 2 high)' [\#199](https://github.com/ElectronNET/Electron.NET/pull/199)
 * Merged pull request: Call electronize from the Path instead of via dotnet in launchSettings.json [\#243](https://github.com/ElectronNET/Electron.NET/pull/243) (thanks [grbd](https://github.com/grbd))
 
 ElectronNET.API:
 
-* Implement Electron 5.0.1 support, but not all new features
-* Implement HostHook-API for execute own TypeScript/JavaScript code
-* Implement Session-API functions
+* New Feature: Electron 5.0.1 support, but not all new features
+* New Feature: Splashscreen-Support
+* New Feature: HostHook-API for execute own TypeScript/JavaScript code on native Electron Main-Process
+* New Feature: Session-API functions
+* Fixed bug: Node process running after stopping app [\#96](https://github.com/ElectronNET/Electron.NET/issues/96)
 * Fixed bug: 'X and Y options to not work on Windows 10' [\#193](https://github.com/ElectronNET/Electron.NET/issues/193)
 * Fixed bug: Unable to clear cache [\#66](https://github.com/ElectronNET/Electron.NET/issues/66)
 * Merged pull request: Fix BrowserWindow::SetMenu [\#231](https://github.com/ElectronNET/Electron.NET/pull/231) thanks (thanks [CodeKenpachi](https://github.com/CodeKenpachi))
@@ -24,7 +27,7 @@ ElectronNET.API:
 
 ElectronNET.WebApp:
 
-* Implement a sample for the new HostHook-API
+* Implemented a sample for the new HostHook-API
 * Fixed bug: 'Electron.NET API Demo: unable to copy code?' [\#247](https://github.com/ElectronNET/Electron.NET/issues/247)
 
 # 0.0.11
