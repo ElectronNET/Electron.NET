@@ -13,7 +13,7 @@
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Product>Electron.NET</Product>
     <Company />
-    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
+    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
 This package contains the dotnet tooling to electronize your application.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>

@@ -16,7 +16,7 @@ namespace ElectronNET.API
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         internal WindowManager() { }
 

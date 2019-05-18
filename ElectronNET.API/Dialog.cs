@@ -15,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Dialog
     {
         private static Dialog _dialog;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         internal Dialog() { }
 

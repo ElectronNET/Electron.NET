@@ -47,7 +47,7 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                var platformInfo = GetTargetPlatformInformation.Do(String.Empty, String.Empty);
+                var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);

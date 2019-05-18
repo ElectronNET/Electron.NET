@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using System;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -13,7 +12,7 @@ namespace ElectronNET.API
     public sealed class Clipboard
     {
         private static Clipboard _clipboard;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         internal Clipboard() { }
 

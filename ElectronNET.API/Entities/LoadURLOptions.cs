@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
