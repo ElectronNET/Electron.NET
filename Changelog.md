@@ -65,12 +65,12 @@ ElectronNET.API:
 ElectronNET.CLI:
 
 * More options on the 'build' command, e.g. for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
-* .NET Core project is now build with Release configuration, but can be adjusted with the new params.
+* .NET Core project is now built with Release configuration but can be adjusted with the new params.
 * Be aware: "Breaking" (but because of the alpha status of this project, we won't use SemVer)
 
 # 0.0.8
 
-This version was skipped because we unfortunatly released a pre version of this on NuGet.
+This version was skipped because we unfortunately  released a pre-version of this on NuGet.
 
 # 0.0.7
 
@@ -83,7 +83,7 @@ ElectronNET.CLI:
 
 ElectronNET.CLI:
 
-* nuget packages are now release bits and have the correct assembly verion
+* nuget packages are now release bits and have the correct assembly version
 * Version command 
 * better devCleanup.cmd
 * Better Platform Support Issue - thanks to @Petermarcu

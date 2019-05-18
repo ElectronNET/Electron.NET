@@ -14,7 +14,7 @@ namespace ElectronNET.API
     public sealed class Shell
     {
         private static Shell _shell;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         internal Shell() { }
 

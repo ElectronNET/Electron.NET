@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -374,7 +373,7 @@ namespace ElectronNET.API
         }
 
         private static App _app;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {

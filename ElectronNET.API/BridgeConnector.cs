@@ -6,7 +6,7 @@ namespace ElectronNET.API
     internal static class BridgeConnector
     {
         private static Socket _socket;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         public static Socket Socket
         {

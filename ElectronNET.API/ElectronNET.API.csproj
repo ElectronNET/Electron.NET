@@ -10,7 +10,7 @@
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
-    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET NET Core.
+    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
 This package contains the API to access the "native" electron API.</Description>
     <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

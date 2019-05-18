@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using ElectronNET.API.Extensions;
 using System.Linq;
 using System.Collections.ObjectModel;
-using System;
 
 namespace ElectronNET.API
 {
@@ -16,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Menu
     {
         private static Menu _menu;
-        private static object _syncRoot = new Object();
+        private static object _syncRoot = new object();
 
         internal Menu() { }
 
