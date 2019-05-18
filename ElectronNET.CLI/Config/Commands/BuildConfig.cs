@@ -24,9 +24,9 @@ namespace ElectronNET.CLI.Config.Commands {
         /// <value> which package manager to use. </value>
         public PackageManagerType NpmCommand { get; set; } = PackageManagerType.npm;
 
-        /// <summary> Destination build directory. </summary>
-        /// <value> Build destination path. </value>
-        public string BuildPath { get; set; }
+        /// <summary> Temporary build directory for intermediary files. </summary>
+        /// <value> Temporary build destination path. </value>
+        public string TmpBuildPath { get; set; }
 
         /// <summary> The dotnet configuration - Debug / Release. </summary>
         /// <value> dotnet configuration. </value>
@@ -169,11 +169,10 @@ namespace ElectronNET.CLI.Config.Commands {
                 return false;
             }
 
-            // Overrides the destination build directory
-            BuildPath = builder["build:buildpath"] ??
-                        Path.Combine(ProjectPath, "bin", "desktop", Target.ToString());
-            if (!Directory.Exists(BuildPath))
-                Directory.CreateDirectory(BuildPath);
+            // Temp build directory
+            TmpBuildPath = Path.Combine(ProjectPath, "obj", "desktop", Target.ToString());
+            if (!Directory.Exists(TmpBuildPath))
+                Directory.CreateDirectory(TmpBuildPath);
 
             // Overrides the runtime identifier for dotnet publish
             RuntimeIdentifier = builder["build:runtimeid"] ?? Target.ToNetCorePublishRid();
