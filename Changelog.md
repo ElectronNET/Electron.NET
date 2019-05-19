@@ -13,6 +13,7 @@ ElectronNET.CLI:
 ElectronNET.API:
 
 * New Feature: Electron 5.0.1 support, but not all new features
+* New Feature: Auto Updater [(Based on electron-updater)](https://www.electron.build/auto-update)
 * New Feature: Splashscreen-Support
 * New Feature: HostHook-API for execute own TypeScript/JavaScript code on native Electron Main-Process
 * New Feature: Session-API functions
