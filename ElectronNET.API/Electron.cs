@@ -16,6 +16,11 @@
         public static App App { get { return App.Instance; } }
 
         /// <summary>
+        /// Enable apps to automatically update themselves. Based on electron-updater.
+        /// </summary>
+        public static AutoUpdater AutoUpdater { get { return AutoUpdater.Instance; } }
+
+        /// <summary>
         /// Control your windows.
         /// </summary>
         public static WindowManager WindowManager { get { return WindowManager.Instance; } }

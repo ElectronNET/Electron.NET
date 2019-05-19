@@ -1,6 +1,6 @@
 {
   "name": "electron.net.host",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Electron-Host for Electron.NET.",
   "repository": {
     "url": "https://github.com/ElectronNET/Electron.NET"
@@ -12,6 +12,7 @@
     "start": "tsc -p ."
   },
   "dependencies": {
+    "electron-updater": "^4.0.6",
     "image-size": "^0.7.4",
     "portscanner": "^2.2.0",
     "socket.io": "^2.2.0"

@@ -92,6 +92,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
 
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\clipboard.js" Link="ElectronHost\api\clipboard.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\autoUpdater.js" Link="ElectronHost\api\autoUpdater.js" />
   </ItemGroup>
 
   <ItemGroup>
