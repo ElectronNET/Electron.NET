@@ -17,7 +17,7 @@
           "provider": "github",
           "owner": "ElectronNET",
           "repo": "electron.net-api-demos",
-          "token": " Insert GH_TOKEN here!"
+          "token": ">> Insert GH_TOKEN here! <<"
         }
       ]
     },
