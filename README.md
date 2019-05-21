@@ -178,7 +178,7 @@ See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/
 
 ## Donate
 
-We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority.
+We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
 
 # License
 MIT-licensed
