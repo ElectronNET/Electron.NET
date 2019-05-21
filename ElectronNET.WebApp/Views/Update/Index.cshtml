@@ -1,0 +1,60 @@
+﻿<template class="task-template">
+    <section id="update-section" class="section js-section u-category-update">
+        <header class="section-header">
+            <div class="section-wrapper">
+                <h1>
+                    <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-update"></use></svg>
+                    Update
+                </h1>
+                <h3>The <code>Electron.AutoUpdater</code> allows you to automatically update your application.</h3>
+                <p>To publish your updates you just need simple file hosting, it does not require a dedicated server.</p>
+                <p>You find the sample source code in <code>Controllers\UpdateController.cs</code>.</p>
+            </div>
+        </header>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="tray-demo-toggle" class="js-container-target demo-toggle-button">
+                    Auto Update this App
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux | Process: Main</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="btn-update">View Demo</button>
+                        <span class="demo-response" id="demo-reply"></span>
+                    </div>
+                    <p>The demo button call the <code>Electron.AutoUpdater.CheckForUpdatesAndNotifyAsync()</code> in the main process.</p>
+
+                    <p>This will immediately download an update, then install in the background when the app quits.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("auto-update", async (args) =>
+{
+    var currentVersion = await Electron.App.GetVersionAsync();
+    var updateCheckResult = await Electron.AutoUpdater.CheckForUpdatesAndNotifyAsync();
+    var availableVersion = updateCheckResult.UpdateInfo.Version;
+    string information = $"Current version: {currentVersion} - available version: {availableVersion}";
+
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "auto-update-reply", information);
+});
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function(){
+                const { ipcRenderer } = require("electron");
+
+                document.getElementById("btn-update").addEventListener("click", () => {
+                    ipcRenderer.send("auto-update");
+                });
+
+                ipcRenderer.on('auto-update-reply', (event, message) => {
+                    document.getElementById('demo-reply').innerHTML = message;
+                });
+            }());
+        </script>
+
+    </section>
+</template>
