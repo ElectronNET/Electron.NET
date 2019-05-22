@@ -7,18 +7,24 @@ const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let splashScreen, mainWindowId, hostHook;
+let splashScreen, hostHook;
 
 const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
 const manifestJsonFilePath = path.join(currentBinPath, 'electron.manifest.json');
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance) {
-    const shouldQuit = app.requestSingleInstanceLock();
-    app.on('second-instance', (commandLine, workingDirectory) => {
-        mainWindowId && BrowserWindow.fromId(mainWindowId) && BrowserWindow.fromId(mainWindowId).show();
+    const mainInstance = app.requestSingleInstanceLock();
+    app.on('second-instance', () => {
+        const windows = BrowserWindow.getAllWindows();
+        if (windows.length) {
+            if (windows[0].isMinimized()) {
+                windows[0].restore();
+            }
+            windows[0].focus();
+        }
     });
 
-    if (shouldQuit) {
+    if (!mainInstance) {
         app.quit();
     }
 }
@@ -37,9 +43,9 @@ app.on('ready', () => {
 });
 
 function isSplashScreenEnabled() {
-    if(manifestJsonFile.hasOwnProperty('splashscreen')) {
-        if(manifestJsonFile.splashscreen.hasOwnProperty('imageFile')) {
-            return  Boolean(manifestJsonFile.splashscreen.imageFile);
+    if (manifestJsonFile.hasOwnProperty('splashscreen')) {
+        if (manifestJsonFile.splashscreen.hasOwnProperty('imageFile')) {
+            return Boolean(manifestJsonFile.splashscreen.imageFile);
         }
     }
 
