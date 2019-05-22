@@ -1,5 +1,7 @@
 [![Electron.NET Logo](https://github.com/ElectronNET/Electron.NET/blob/master/assets/images/electron.net-logo.png)](https://github.com/ElectronNET/Electron.NET)
 
+[![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net)
+
 
 AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/master?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/master)
 
@@ -7,7 +9,7 @@ AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/stat
 
 Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
-Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
+Build cross platform desktop apps with .NET Core 2.2 and ASP.NET NET Core. 
 
 Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
@@ -24,7 +26,11 @@ Well... there are lots of different approaches how to get a X-plat desktop app r
 
 # Requirements to run:
 
-The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 2.0, so our minimum base OS is the same as [.NET Core 2](https://github.com/dotnet/core/blob/master/release-notes/2.0/2.0-supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 2.2, so our minimum base OS is the same as [.NET Core 2.2](https://github.com/dotnet/core/blob/master/release-notes/2.2/2.2-supported-os.md).
+
+# Community
+
+[![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 # Usage:
 
@@ -88,21 +94,21 @@ To start the application make sure you have installed the "[ElectronNET.CLI](htt
 
     dotnet tool install ElectronNET.CLI -g
 
-* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-packager installed! 
+* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-builder installed! 
     
     sudo npm install electron-packager --global
 
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
 
 ```
-    electronize init
+electronize init
 ```
 
 * Now a electronnet.manifest.json should appear in your ASP.NET Core project
 * Now run the following:
 
 ```
-    electronize start
+electronize start
 ```
 ### Note
 > Only the first electronize start is slow. The next will go on faster.
@@ -139,7 +145,7 @@ Those three "default" targets will produce x64 packages for those platforms.
 For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
 
 ```
-    electronize build build /target custom win7-x86;win32 /electron-arch ia32 
+    electronize build /target custom win7-x86;win32 /electron-arch ia32 
 ```
 
 The end result should be an electron app under your __/bin/desktop__ folder.
@@ -169,7 +175,11 @@ Please make sure all commits are properly documented.
 * **Robert Muehsig** - Software Developer - from Dresden, Germany, now living & working in Switzerland. Microsoft MVP & Web Geek. - [codeinside Blog](https://blog.codeinside.eu) - Twitter [@robert0muehsig](https://twitter.com/robert0muehsig)  
   
 See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
-  
+
+## Donate
+
+We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
+
 # License
 MIT-licensed
 
