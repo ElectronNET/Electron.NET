@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.ComponentModel;
 
 namespace ElectronNET.API.Entities
 {
@@ -68,12 +69,14 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// If false, the menu item will be greyed out and unclickable.
         /// </summary>
-        public bool Enabled { get; set; }
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// If false, the menu item will be entirely hidden.
         /// </summary>
-        public bool Visible { get; set; }
+        [DefaultValue(true)]
+        public bool Visible { get; set; } = true;
 
         /// <summary>
         /// Should only be specified for checkbox or radio type menu items.
