@@ -9,7 +9,7 @@ AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/stat
 
 Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
-Build cross platform desktop apps with .NET Core 2.0 and ASP.NET NET Core. 
+Build cross platform desktop apps with .NET Core 2.2 and ASP.NET NET Core. 
 
 Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
@@ -94,21 +94,21 @@ To start the application make sure you have installed the "[ElectronNET.CLI](htt
 
     dotnet tool install ElectronNET.CLI -g
 
-* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-packager installed! 
+* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-builder installed! 
     
     sudo npm install electron-packager --global
 
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
 
 ```
-    electronize init
+electronize init
 ```
 
 * Now a electronnet.manifest.json should appear in your ASP.NET Core project
 * Now run the following:
 
 ```
-    electronize start
+electronize start
 ```
 ### Note
 > Only the first electronize start is slow. The next will go on faster.
