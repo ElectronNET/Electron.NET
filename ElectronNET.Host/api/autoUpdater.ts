@@ -43,6 +43,64 @@ export = (socket: SocketIO.Socket) => {
         });
     });
 
+    // Properties *****
+
+    socket.on('autoUpdater-autoDownload-get', () => {
+        electronSocket.emit('autoUpdater-autoDownload-get-reply', autoUpdater.autoDownload);
+    });
+
+    socket.on('autoUpdater-autoDownload-set', (value) => {
+        autoUpdater.autoDownload = value;
+    });
+
+    socket.on('autoUpdater-autoInstallOnAppQuit-get', () => {
+        electronSocket.emit('autoUpdater-autoInstallOnAppQuit-get-reply', autoUpdater.autoInstallOnAppQuit);
+    });
+
+    socket.on('autoUpdater-autoInstallOnAppQuit-set', (value) => {
+        autoUpdater.autoInstallOnAppQuit = value;
+    });
+
+    socket.on('autoUpdater-allowPrerelease-get', () => {
+        electronSocket.emit('autoUpdater-allowPrerelease-get-reply', autoUpdater.allowPrerelease);
+    });
+
+    socket.on('autoUpdater-allowPrerelease-set', (value) => {
+        autoUpdater.allowPrerelease = value;
+    });
+
+    socket.on('autoUpdater-fullChangelog-get', () => {
+        electronSocket.emit('autoUpdater-fullChangelog-get-reply', autoUpdater.fullChangelog);
+    });
+
+    socket.on('autoUpdater-fullChangelog-set', (value) => {
+        autoUpdater.fullChangelog = value;
+    });
+
+    socket.on('autoUpdater-allowDowngrade-get', () => {
+        electronSocket.emit('autoUpdater-allowDowngrade-get-reply', autoUpdater.allowDowngrade);
+    });
+
+    socket.on('autoUpdater-allowDowngrade-set', (value) => {
+        autoUpdater.allowDowngrade = value;
+    });
+
+    socket.on('autoUpdater-updateConfigPath-get', () => {
+        electronSocket.emit('autoUpdater-updateConfigPath-get-reply', autoUpdater.updateConfigPath || '');
+    });
+
+    socket.on('autoUpdater-updateConfigPath-set', (value) => {
+        autoUpdater.updateConfigPath = value;
+    });
+
+    socket.on('autoUpdater-channel-get', () => {
+        electronSocket.emit('autoUpdater-channel-get-reply', autoUpdater.channel || '');
+    });
+
+    socket.on('autoUpdater-channel-set', (value) => {
+        autoUpdater.channel = value;
+    });
+
     // Methods ********
 
     socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
@@ -58,5 +116,15 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+    });
+
+    socket.on('autoUpdaterDownloadUpdate', async (guid) => {
+        const downloadedPath = await autoUpdater.downloadUpdate();
+        electronSocket.emit('autoUpdaterDownloadUpdateComplete' + guid, downloadedPath);
+    });
+
+    socket.on('autoUpdaterGetFeedURL', async (guid) => {
+        const feedUrl = await autoUpdater.getFeedURL();
+        electronSocket.emit('autoUpdaterGetFeedURLComplete' + guid, feedUrl || '');
     });
 };
