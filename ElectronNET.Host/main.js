@@ -99,9 +99,9 @@ function startSocketApiBridge(port) {
     server.listen(port, 'localhost');
     server.on('listening', function () {
         console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
+        // Now that socket connection is established, we can guarantee port will not be open for portscanner
+        startAspCoreBackend(port);
     });
-
-    startAspCoreBackend(port);
 
     io.on('connection', (socket) => {
         global['electronsocket'] = socket;
