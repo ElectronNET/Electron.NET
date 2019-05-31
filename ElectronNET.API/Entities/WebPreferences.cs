@@ -15,10 +15,10 @@ namespace ElectronNET.API.Entities
         public bool DevTools { get; set; } = true;
 
         /// <summary>
-        /// Whether node integration is enabled. Default is false.
+        /// Whether node integration is enabled. Required to enable IPC. Default is true.
         /// </summary>
-        [DefaultValue(false)]
-        public bool NodeIntegration { get; set; } = false;
+        [DefaultValue(true)]
+        public bool NodeIntegration { get; set; } = true;
 
         /// <summary>
         /// Whether node integration is enabled in web workers. Default is false.
