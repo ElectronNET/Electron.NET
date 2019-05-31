@@ -15,10 +15,10 @@ namespace ElectronNET.API.Entities
         public bool DevTools { get; set; } = true;
 
         /// <summary>
-        /// Whether node integration is enabled. Default is true.
+        /// Whether node integration is enabled. Default is false.
         /// </summary>
-        [DefaultValue(true)]
-        public bool NodeIntegration { get; set; } = true;
+        [DefaultValue(false)]
+        public bool NodeIntegration { get; set; } = false;
 
         /// <summary>
         /// Whether node integration is enabled in web workers. Default is false.
