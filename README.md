@@ -254,3 +254,16 @@ If you still use this version you will need to invoke it like this:
 ```
 dotnet electronize ...
 ```
+
+## Node Integration
+Electron.NET requires Node Integration to be enabled for IPC to function.  If you are not using the IPC functionality you can disable Node Integration like so:
+
+```csharp
+WebPreferences wp = new WebPreferences();
+wp.NodeIntegration = false;
+BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
+{
+    WebPreferences = wp
+}
+
+```
