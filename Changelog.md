@@ -1,5 +1,8 @@
 # Not released
 
+
+# Released
+
 # 5.22.13
 
 ElectronNET.CLI:
@@ -8,10 +11,10 @@ ElectronNET.API:
 
 * Fixed bug: Menu Item visibility [\#257](https://github.com/ElectronNET/Electron.NET/issues/257)
 * Fixed bug: electron.manifest.json - singleInstance not working [\#258](https://github.com/ElectronNET/Electron.NET/issues/258)
+* Fixed security issue: ASP.NET Core process is now bound to 127.0.0.1 instead of the broader localhost [\#258](https://github.com/ElectronNET/Electron.NET/pull/266)  
 
 ElectronNET.WebApp:
 
-# Released
 
 # 5.22.12
 
