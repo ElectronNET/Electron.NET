@@ -1,5 +1,16 @@
 # Not released
 
+# 5.22.14
+
+ElectronNET.CLI:
+
+* Fixed bug: Electron tray icon TypeError ([Electron original issue](https://github.com/electron/electron/issues/7657))
+* Fixed bug: Wrong tray icon path in the application built via `electronize build` command
+
+ElectronNET.WebApp:
+
+* Fixed usage of the `Electron.Tray.Show` according fixed bugs in the ElectronNET.CLI
+
 
 # Released
 
