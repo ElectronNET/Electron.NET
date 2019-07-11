@@ -162,7 +162,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
 
                 Console.WriteLine("Setting up build script for electron-builder...");
-                var electronBuilderScript = $"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}";
+                var electronBuilderScript = $"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}".Replace("\"", "\\\"");
                 var packageJson = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(packageJsonPath));
                 packageJson["scripts"]["electron-build"] = electronBuilderScript;
                 File.WriteAllText(packageJsonPath, packageJson.ToString());
