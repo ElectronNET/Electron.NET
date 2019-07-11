@@ -90,12 +90,13 @@ namespace ElectronNET.CLI.Commands
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+                var packageJsonPath = Path.Combine(tempPath, "package.json");
 
                 if (parser.Arguments.ContainsKey(_paramPackageJson))
                 {
                     Console.WriteLine("Copying custom package.json.");
 
-                    File.Copy(parser.Arguments[_paramPackageJson][0], Path.Combine(tempPath, "package.json"), true);
+                    File.Copy(parser.Arguments[_paramPackageJson][0], packageJsonPath, true);
                 }
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
@@ -106,19 +107,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                 Console.WriteLine("Start npm install electron-builder...");
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-
-                {
-                    // Works proper on Windows... 
-                    ProcessHelper.CmdExecute("npm install electron-builder --global", tempPath);
-                }
-                else
-                {
-                    // ToDo: find another solution or document it proper
-                    // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Builder - make sure you invoke 'sudo npm install electron-builder --global' at " + tempPath + " manually. Sry.");
-                }
+                ProcessHelper.CmdExecute("npm install electron-builder@20.44.4 --save-dev", tempPath);
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
@@ -172,8 +161,14 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Create electron-builder configuration file...");
                 ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
 
+                Console.WriteLine("Setting up build script for electron-builder...");
+                var electronBuilderScript = $"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}";
+                var packageJson = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(packageJsonPath));
+                packageJson["scripts"]["electron-build"] = electronBuilderScript;
+                File.WriteAllText(packageJsonPath, packageJson.ToString());
+
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}", tempPath);
+                ProcessHelper.CmdExecute("npm run electron-build", tempPath);
 
                 Console.WriteLine("... done");
 
