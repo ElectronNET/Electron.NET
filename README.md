@@ -47,8 +47,8 @@ You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension.
 public static IWebHost BuildWebHost(string[] args)
 {
     return WebHost.CreateDefaultBuilder(args)
-        .UseElectron(args)
         .UseStartup<Startup>()
+        .UseElectron(args)
         .Build();
 }
 ```
