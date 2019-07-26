@@ -11,7 +11,6 @@
     <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\" />
     <Folder Include="wwwroot\assets\" />
   </ItemGroup>
   <ItemGroup>

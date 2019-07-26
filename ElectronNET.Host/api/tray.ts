@@ -60,9 +60,9 @@ export = (socket: SocketIO.Socket) => {
             electronSocket.emit('trayMenuItemClicked', id);
         });
 
-        const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
+        const trayIcon = nativeImage.createFromPath(image);
 
-        tray = new Tray(imagePath);
+        tray = new Tray(trayIcon);
         tray.setContextMenu(menu);
     });
 
