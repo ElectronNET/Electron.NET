@@ -28,6 +28,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:50395/"
-    },
+    }
   }
 }
