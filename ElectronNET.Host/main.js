@@ -12,7 +12,7 @@ let splashScreen, hostHook;
 const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
 const manifestJsonFilePath = path.join(currentBinPath, 'electron.manifest.json');
 const manifestJsonFile = require(manifestJsonFilePath);
-if (manifestJsonFile.singleInstance) {
+if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', () => {
         const windows = BrowserWindow.getAllWindows();
@@ -145,12 +145,19 @@ function isModuleAvailable(name) {
 }
 
 function startAspCoreBackend(electronPort) {
+    if(manifestJsonFile.aspCoreBackendPort) {
+        startBackend(manifestJsonFile.aspCoreBackendPort)
+    } else {
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, electronWebPort) {
+            startBackend(electronWebPort);
+        });
+    }
 
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, electronWebPort) {
-        console.log('ASP.NET Core Port: ' + electronWebPort);
-        loadURL = `http://localhost:${electronWebPort}`;
-        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+    function startBackend(aspCoreBackendPort) {
+        console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
+        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -165,5 +172,5 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
         });
-    });
+    }
 }
