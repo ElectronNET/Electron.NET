@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
@@ -11,7 +11,6 @@
     <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\" />
     <Folder Include="wwwroot\assets\" />
   </ItemGroup>
   <ItemGroup>

@@ -154,8 +154,6 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
-                // ToDo: Need a solution for --asar support
-
                 string electronArch = "x64";
                 if (parser.Arguments.ContainsKey(_paramElectronArch))
                 {
@@ -173,7 +171,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --platform={platformInfo.ElectronPackerPlatform} --arch={electronArch} {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=5.0.8 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

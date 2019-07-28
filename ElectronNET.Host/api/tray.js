@@ -52,8 +52,8 @@ module.exports = (socket) => {
         addMenuItemClickConnector(menu.items, (id) => {
             electronSocket.emit('trayMenuItemClicked', id);
         });
-        const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
-        tray = new electron_1.Tray(imagePath);
+        const trayIcon = electron_1.nativeImage.createFromPath(image);
+        tray = new electron_1.Tray(trayIcon);
         tray.setContextMenu(menu);
     });
     socket.on('tray-destroy', () => {

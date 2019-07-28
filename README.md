@@ -47,8 +47,8 @@ You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension.
 public static IWebHost BuildWebHost(string[] args)
 {
     return WebHost.CreateDefaultBuilder(args)
-        .UseElectron(args)
         .UseStartup<Startup>()
+        .UseElectron(args)
         .Build();
 }
 ```
@@ -86,17 +86,23 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 
 __Please note:__ Currently it is important to use ASP.NET Core with MVC. If you are working with the dotnet CLI, use
 
-    dotnet new mvc
+```
+dotnet new mvc
+```
 
 ## Start the Application
 
 To start the application make sure you have installed the "[ElectronNET.CLI](https://www.nuget.org/packages/ElectronNET.CLI/)" packages as global tool:
 
-    dotnet tool install ElectronNET.CLI -g
+```
+dotnet tool install ElectronNET.CLI -g
+```
 
 * Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-builder installed! 
-    
-    sudo npm install electron-packager --global
+
+```
+sudo npm install electron-builder --global
+```
 
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
 
@@ -129,15 +135,15 @@ In this YouTube video, we show you how you can create a new project, use the Ele
 Here you need the Electron.NET CLI as well. Type the following command in your ASP.NET Core folder:
 
 ```
-    electronize build /target win
+electronize build /target win
 ```
 
 There are additional platforms available:
 
 ```
-    electronize build /target win
-    electronize build /target osx
-    electronize build /target linux
+electronize build /target win
+electronize build /target osx
+electronize build /target linux
 ```
 
 Those three "default" targets will produce x64 packages for those platforms.
@@ -145,7 +151,7 @@ Those three "default" targets will produce x64 packages for those platforms.
 For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
 
 ```
-    electronize build /target custom win7-x86;win32 /electron-arch ia32 
+electronize build /target custom win7-x86;win32 /electron-arch ia32 
 ```
 
 The end result should be an electron app under your __/bin/desktop__ folder.
@@ -187,23 +193,77 @@ MIT-licensed
 
 # Important notes
 
+## ElectronNET.API & ElectronNET.CLI Version 5.22.12
+
+Make sure you also have the new Electron.NET CLI 5.22.12 version. This now uses [electron-builder](https://www.electron.build/configuration/configuration) and the necessary configuration to build is made in the **electron.manifest.json** file. In addition, own Electron.NET configurations are stored. Please make sure that your **electron.manifest.json** file has the following new structure:
+
+```
+{
+  "executable": "{{executable}}",
+  "splashscreen": {
+    "imageFile": ""
+  },
+  "singleInstance": false,
+  "build": {
+    "appId": "com.{{executable}}.app",
+    "productName": "{{executable}}",
+    "copyright": "Copyright © 2019",
+    "buildVersion": "1.0.0",
+    "compression": "maximum",
+    "directories": {
+      "output": "../../../bin/Desktop"
+    },
+    "extraResources": [
+      {
+        "from": "./bin",
+        "to": "bin",
+        "filter": ["**/*"]
+      }
+    ],
+    "files": [
+      {
+        "from": "./ElectronHostHook/node_modules",
+        "to": "ElectronHostHook/node_modules",
+        "filter": ["**/*"]
+      },
+      "**/*"
+    ]
+  }
+}
+```
+
 ## ElectronNET.CLI Version 0.0.9
 
 In the Version 0.0.9 the CLI was not a global tool and needed to be registred like this in the .csproj:
 
 ```
-    <ItemGroup>
-         <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
-    </ItemGroup>
+<ItemGroup>
+     <DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
+</ItemGroup>
 ```
 
 After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
 
 ```
-    dotnet restore
+dotnet restore
 ```
 
 
 If you still use this version you will need to invoke it like this:
 
-    dotnet electronize ...
+```
+dotnet electronize ...
+```
+
+## Node Integration
+Electron.NET requires Node Integration to be enabled for IPC to function.  If you are not using the IPC functionality you can disable Node Integration like so:
+
+```csharp
+WebPreferences wp = new WebPreferences();
+wp.NodeIntegration = false;
+BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
+{
+    WebPreferences = wp
+}
+
+```
