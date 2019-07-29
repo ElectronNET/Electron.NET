@@ -1,5 +1,8 @@
 # Not released
 
+
+# Released
+
 # 5.22.14
 
 ElectronNET.CLI:
@@ -17,9 +20,6 @@ ElectronNET.API:
 ElectronNET.WebApp:
 
 * Fixed usage of the `Electron.Tray.Show` according fixed bugs in the ElectronNET.CLI (thanks [Tum4ik](https://github.com/Tum4ik))
-
-
-# Released
 
 # 5.22.13
 
