@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
@@ -22,15 +22,15 @@ This package contains the API to access the "native" electron API.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.0\ElectronNET.API.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netcoreapp3.0\ElectronNET.API.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\ElectronNET.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.0\ElectronNET.API.xml</DocumentationFile>
     <Optimize>true</Optimize>
   </PropertyGroup>
 

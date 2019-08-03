@@ -2,15 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace ElectronNET.WebApp.Controllers
 {
     public class TrayController : Controller
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IHostEnvironment _env;
 
-        public TrayController(IHostingEnvironment env)
+        public TrayController(IHostEnvironment env)
         {
             _env = env;
         }
