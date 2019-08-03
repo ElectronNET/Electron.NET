@@ -156,10 +156,6 @@ electronize build /target custom win7-x86;win32 /electron-arch ia32
 
 The end result should be an electron app under your __/bin/desktop__ folder.
 
-## Starter kits
-
-There is a React/Typescript/MobX starter kit at https://github.com/yoDon/Electron.NET-React-Typescript-MobX
-
 ### Note
 > macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
