@@ -1940,6 +1940,14 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Remove the window's menu bar.
+        /// </summary>
+        public void RemoveMenu()
+        {
+            BridgeConnector.Socket.Emit("browserWindowRemoveMenu", Id);
+        }
+
+        /// <summary>
         /// Sets progress value in progress bar. Valid range is [0, 1.0]. Remove progress
         /// bar when progress smaler as 0; Change to indeterminate mode when progress bigger as 1. On Linux
         /// platform, only supports Unity desktop environment, you need to specify the

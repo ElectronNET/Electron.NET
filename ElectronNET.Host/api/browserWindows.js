@@ -440,6 +440,9 @@ module.exports = (socket, app) => {
         }
         getWindowById(id).setMenu(menu);
     });
+    socket.on('browserWindowRemoveMenu', (id) => {
+        getWindowById(id).removeMenu();
+    });
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {
             if (item.submenu && item.submenu.items.length > 0) {
