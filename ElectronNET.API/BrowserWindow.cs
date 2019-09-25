@@ -2310,5 +2310,37 @@ namespace ElectronNET.API
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
         };
+
+        /// <summary>
+        /// Adds Chrome extension located at path, and returns extension's name.
+        /// The method will also not return if the extension's manifest is missing or incomplete.
+        /// Note: This API cannot be called before the ready event of the app module is emitted.
+        /// </summary>
+        /// <param name="path">Path to the Chrome extension</param>
+        /// <returns></returns>
+        public static string AddExtension(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Remove Chrome extension with the specified name.
+        /// Note: This API cannot be called before the ready event of the app module is emitted.
+        /// </summary>
+        /// <param name="name">Name of the Chrome extension to remove</param>
+        public static void RemoveExtension(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// The keys are the extension names and each value is an object containing name and version properties.
+        /// Note: This API cannot be called before the ready event of the app module is emitted.
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, ChromeExtensionInfo> GetExtensions()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
