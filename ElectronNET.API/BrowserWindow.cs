@@ -2318,9 +2318,19 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="path">Path to the Chrome extension</param>
         /// <returns></returns>
-        public static string AddExtension(string path)
+        public static Task<string> AddExtensionAsync(string path)
         {
-            throw new NotImplementedException();
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("browserWindow-addExtension-completed", (extensionname) => {
+                BridgeConnector.Socket.Off("browserWindow-addExtension-completed");
+
+                taskCompletionSource.SetResult(extensionname.ToString());
+            });
+
+            BridgeConnector.Socket.Emit("browserWindowAddExtension", path);
+
+            return taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -2330,7 +2340,7 @@ namespace ElectronNET.API
         /// <param name="name">Name of the Chrome extension to remove</param>
         public static void RemoveExtension(string name)
         {
-            throw new NotImplementedException();
+            BridgeConnector.Socket.Emit("browserWindowRemoveExtension", name);
         }
 
         /// <summary>
@@ -2338,9 +2348,20 @@ namespace ElectronNET.API
         /// Note: This API cannot be called before the ready event of the app module is emitted.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, ChromeExtensionInfo> GetExtensions()
+        public static Task<ChromeExtensionInfo[]> GetExtensionsAsync()
         {
-            throw new NotImplementedException();
+            var taskCompletionSource = new TaskCompletionSource<ChromeExtensionInfo[]>();
+
+            BridgeConnector.Socket.On("browserWindow-getExtensions-completed", (extensionslist) => {
+                BridgeConnector.Socket.Off("browserWindow-getExtensions-completed");
+                var chromeExtensionInfos = ((JArray)extensionslist).ToObject<ChromeExtensionInfo[]>();
+                
+                taskCompletionSource.SetResult(chromeExtensionInfos);
+            });
+
+            BridgeConnector.Socket.Emit("browserWindowGetExtensions");
+
+            return taskCompletionSource.Task;
         }
     }
 }

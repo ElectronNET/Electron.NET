@@ -706,6 +706,28 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         getWindowById(id).setVibrancy(type);
     });
 
+    socket.on('browserWindowAddExtension', (path) => {
+        const extensionName = Electron.BrowserWindow.addExtension(path);
+
+        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
+    });
+
+    socket.on('browserWindowRemoveExtension', (name) => {
+        Electron.BrowserWindow.removeExtension(name);
+    });
+
+    socket.on('browserWindowGetExtensions', (path) => {
+        const extensionsList = Electron.BrowserWindow.getExtensions();
+
+        let chromeExtensionInfo = new Array();
+
+        Object.keys(extensionsList).forEach(key => {
+            chromeExtensionInfo.push(extensionsList[key]);
+        });
+
+        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
+    });
+
     function getWindowById(id: number): Electron.BrowserWindow {
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];

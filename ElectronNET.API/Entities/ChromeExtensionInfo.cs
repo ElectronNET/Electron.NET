@@ -9,30 +9,20 @@ namespace ElectronNET.API.Entities
     /// </summary>
     public class ChromeExtensionInfo
     {
-        private string _name;
-        private string _version;
-
-
-        internal ChromeExtensionInfo(string name, string version)
+        public ChromeExtensionInfo(string name, string version)
         {
-            _name = name;
-            _version = version;
+            Name = name;
+            Version = version;
         }
 
         /// <summary>
         /// Name of the Chrome extension
         /// </summary>
-        public string Name
-        {
-            get => _name;
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Version of the Chrome extension
         /// </summary>
-        public string Version
-        {
-            get => _version;
-        }
+        public string Version { get; set; }
     }
 }
