@@ -1,7 +1,7 @@
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
-let window, lastOptions, electronSocket;
+let window, lastOptions, electronSocket, electronBrowserWindow;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;
@@ -707,17 +707,17 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowAddExtension', (path) => {
-        const extensionName = Electron.BrowserWindow.addExtension(path);
+        const extensionName = BrowserWindow.addExtension(path);
 
         electronSocket.emit('browserWindow-addExtension-completed', extensionName);
     });
 
     socket.on('browserWindowRemoveExtension', (name) => {
-        Electron.BrowserWindow.removeExtension(name);
+        BrowserWindow.removeExtension(name);
     });
 
     socket.on('browserWindowGetExtensions', () => {
-        const extensionsList = Electron.BrowserWindow.getExtensions();
+        const extensionsList = BrowserWindow.getExtensions();
 
         let chromeExtensionInfo = new Array();
 
