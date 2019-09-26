@@ -1,7 +1,7 @@
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
-let window, lastOptions, electronSocket, electronBrowserWindow;
+let window, lastOptions, electronSocket;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;

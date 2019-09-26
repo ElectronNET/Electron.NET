@@ -13,7 +13,7 @@ var __assign = (this && this.__assign) || function () {
 var electron_1 = require("electron");
 var path = require('path');
 var windows = [];
-var window, lastOptions, electronSocket, electronBrowserWindow;
+var window, lastOptions, electronSocket;
 module.exports = function (socket, app) {
     electronSocket = socket;
     socket.on('register-browserWindow-ready-to-show', function (id) {
