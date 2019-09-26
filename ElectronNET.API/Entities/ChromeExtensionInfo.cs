@@ -9,6 +9,11 @@ namespace ElectronNET.API.Entities
     /// </summary>
     public class ChromeExtensionInfo
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChromeExtensionInfo"/> class.
+        /// </summary>
+        /// <param name="name">The name of the Chrome extension.</param>
+        /// <param name="version">The version of the Chrome extension.</param>
         public ChromeExtensionInfo(string name, string version)
         {
             Name = name;
