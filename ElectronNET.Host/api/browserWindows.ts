@@ -716,7 +716,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         Electron.BrowserWindow.removeExtension(name);
     });
 
-    socket.on('browserWindowGetExtensions', (path) => {
+    socket.on('browserWindowGetExtensions', () => {
         const extensionsList = Electron.BrowserWindow.getExtensions();
 
         let chromeExtensionInfo = new Array();
