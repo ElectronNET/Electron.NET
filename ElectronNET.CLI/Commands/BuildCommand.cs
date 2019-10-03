@@ -111,7 +111,6 @@ namespace ElectronNET.CLI.Commands
                 {
                     // Works proper on Windows... 
                     ProcessHelper.CmdExecute("npm install electron-builder --global", tempPath);
-
                 }
                 else
                 {
@@ -129,8 +128,8 @@ namespace ElectronNET.CLI.Commands
                     string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
-                    Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install typescript --global", tempPath);
+                    Console.WriteLine("Start npm install for typescript & hosthooks...");
+                    ProcessHelper.CmdExecute("npm install -g typescript", hosthookDir);
                     ProcessHelper.CmdExecute("npm install --production", hosthookDir);
 
                     // ToDo: Global TypeScript installation is needed for ElectronHostHook
