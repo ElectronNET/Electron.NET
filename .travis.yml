@@ -1,7 +1,7 @@
 language: csharp
 mono: none
 dist: xenial
-dotnet: 2.2
+dotnet: 3.0
 before_script:
   - export PATH="$PATH:/home/travis/.dotnet/tools"
   - npm install electron-packager --global

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>electronize</AssemblyName>
     
     <PackageType>DotnetCliTool</PackageType>
@@ -22,7 +22,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+    <PackageIcon>PackageIcon.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
 
@@ -38,7 +38,11 @@ This package contains the dotnet tooling to electronize your application.</Descr
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <None Include="PackageIcon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
   </ItemGroup>
