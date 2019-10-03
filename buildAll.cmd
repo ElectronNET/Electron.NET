@@ -22,7 +22,7 @@ dotnet tool uninstall ElectronNET.CLI -g
 dotnet tool install ElectronNET.CLI -g
 
 echo "/target xxx (dev-build)"
-electronize build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params "--prune=true "
+electronize build /target custom win7-x86;win /dotnet-configuration Debug /electron-arch ia32  /electron-params " "
 
 echo "/target win (dev-build)"
 electronize build /target win
@@ -30,8 +30,8 @@ electronize build /target win
 echo "/target linux (dev-build)"
 electronize build /target linux
 
-echo "/target custom win7-x86;win32 (dev-build)"
-electronize build /target custom win7-x86;win32
+echo "/target custom win7-x86;win (dev-build)"
+electronize build /target custom win7-x86;win
 
 
 :: Be aware, that for non-electronnet-dev environments the correct 

@@ -108,16 +108,16 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Start npm install electron-builder...");
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-
                 {
                     // Works proper on Windows... 
                     ProcessHelper.CmdExecute("npm install electron-builder --global", tempPath);
+
                 }
                 else
                 {
                     // ToDo: find another solution or document it proper
                     // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Builder - make sure you invoke 'sudo npm install electron-builder --global' at " + tempPath + " manually. Sry.");
+                    Console.WriteLine("Electron Builder - make sure you invoke 'sudo npm install electron-builder --global' & 'sudo npm install typescript --global'  at " + tempPath + " manually. Sry.");
                 }
 
                 Console.WriteLine("ElectronHostHook handling started...");
@@ -130,6 +130,7 @@ namespace ElectronNET.CLI.Commands
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
                     Console.WriteLine("Start npm install for hosthooks...");
+                    ProcessHelper.CmdExecute("npm install typescript --global", tempPath);
                     ProcessHelper.CmdExecute("npm install --production", hosthookDir);
 
                     // ToDo: Global TypeScript installation is needed for ElectronHostHook
