@@ -1,4 +1,9 @@
 echo "Start building Electron.NET dev stack..."
+
+echo "Install NPM dependencies: Typescript and Bundler"
+npm install typescript --global
+npm install electron-builder --global
+
 echo "Restore & Build API"
 cd ElectronNet.API
 dotnet restore
