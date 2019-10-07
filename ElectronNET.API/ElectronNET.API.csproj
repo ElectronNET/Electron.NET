@@ -35,7 +35,7 @@ This package contains the API to access the "native" electron API.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="PackageIcon.png" Pack="true" PackagePath="\"/>
+    <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
@@ -45,8 +45,10 @@ This package contains the API to access the "native" electron API.</Description>
     <Exec Command="$(ProjectDir)devCleanup.sh" IgnoreExitCode="true" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05">
+   <FrameworkReference Include="Microsoft.AspNetCore.App" />
+</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
