@@ -29,8 +29,8 @@ echo "/target win (dev-build)"
 electronize build /target win /electron-params "--publish never"
 
 echo "/target custom win7-x86;win (dev-build)"
-electronize build /target custom win7-x86;win /electron-params "--publish never"
 
+electronize build /target custom win7-x86;win /electron-params "--publish never"
 
 :: Be aware, that for non-electronnet-dev environments the correct 
 :: invoke command would be dotnet electronize ...
