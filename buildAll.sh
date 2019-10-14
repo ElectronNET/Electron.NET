@@ -32,8 +32,8 @@ electronize build /target linux
 echo "/target osx (dev-build)"
 electronize build /target osx
 
-echo "/target custom win7-x86;win32 (dev-build)"
-electronize build /target custom "win7-x86;win32"
+echo "/target custom win7-x86;win (dev-build)"
+electronize build /target custom "win7-x86;win"
 
 # Be aware, that for non-electronnet-dev environments the correct 
 # invoke command would be dotnet electronize ...
