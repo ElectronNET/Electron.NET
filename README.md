@@ -161,7 +161,7 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 
 # Working with this Repo
 
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 1.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
+This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
 
 If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
 
