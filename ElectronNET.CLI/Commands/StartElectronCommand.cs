@@ -77,7 +77,6 @@ namespace ElectronNET.CLI.Commands
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
                     Console.WriteLine("Start npm install for typescript & hosthooks...");
-                    ProcessHelper.CmdExecute("npm install -g typescript", hosthookDir);
                     ProcessHelper.CmdExecute("npm install", hosthookDir);
 
                     string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
