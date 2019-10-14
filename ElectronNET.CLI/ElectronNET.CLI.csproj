@@ -31,15 +31,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <None Remove="ElectronHost\package-lock.json" />
     <None Remove="ElectronHost\package.json" />
   </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-
+  
   <ItemGroup>
     <None Include="PackageIcon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
