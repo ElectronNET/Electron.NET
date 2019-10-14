@@ -115,7 +115,7 @@ namespace ElectronNET.CLI.Commands
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
                     Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install --production", hosthookDir);
+                    ProcessHelper.CmdExecute("npm install", hosthookDir);
 
                     // ToDo: Not sure if this runs under linux/macos
                     ProcessHelper.CmdExecute(@"tsc -p . --sourceMap false", hosthookDir);

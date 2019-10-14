@@ -28,9 +28,6 @@ electronize build /target custom win7-x86;win /dotnet-configuration Debug /elect
 echo "/target win (dev-build)"
 electronize build /target win /electron-params "--publish never"
 
-echo "/target linux (dev-build)"
-electronize build /target linux /electron-params "--publish never"
-
 echo "/target custom win7-x86;win (dev-build)"
 electronize build /target custom win7-x86;win /electron-params "--publish never"
 
@@ -41,3 +38,8 @@ electronize build /target custom win7-x86;win /electron-params "--publish never"
 :: Not supported on Windows Systems, because of SymLinks...
 :: echo "/target osx"
 ::   dotnet electronize build /target osx
+
+:: Linux and Mac is not supported on with this buildAll.cmd test file, because the electron bundler does some strange stuff
+:: Help welcome!
+:: echo "/target linux (dev-build)"
+:: electronize build /target linux /electron-params "--publish never"
