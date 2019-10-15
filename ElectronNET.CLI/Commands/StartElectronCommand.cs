@@ -11,8 +11,11 @@ namespace ElectronNET.CLI.Commands
     {
         public const string COMMAND_NAME = "start";
         public const string COMMAND_DESCRIPTION = "Start your ASP.NET Core Application with Electron, without package it as a single exe. Faster for development.";
-        public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
-        public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
+        public static string COMMAND_ARGUMENTS = "Optional: '/path' from ASP.NET Core Project." + Environment.NewLine +
+            "Optional: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
+            " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
+            " e.g. '/target win' or '/target custom \"win7-x86;win32\"'";
+        public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption> ();
 
         private string[] _args;
 
@@ -21,24 +24,35 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
-        public Task<bool> ExecuteAsync()
-        {
-            return Task.Run(() =>
-            {
-                Console.WriteLine("Start Electron Desktop Application...");
+        private string _paramPath = "path";
+        private string _paramTarget = "target";
+
+        public Task<bool> ExecuteAsync () {
+            return Task.Run (() => {
+                Console.WriteLine ("Start Electron Desktop Application...");
+
+                SimpleCommandLineParser parser = new SimpleCommandLineParser ();
+                parser.Parse (_args);
+
+                var desiredPlatform = string.Empty;
+                string specifiedFromCustom = string.Empty;
+
+                if (parser.Arguments.ContainsKey (_paramTarget)) {
+                    desiredPlatform = parser.Arguments[_paramTarget][0];
+                    if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1) {
+                        specifiedFromCustom = parser.Arguments[_paramTarget][1];
+                    }
+                }
 
                 string aspCoreProjectPath = "";
 
-                if (_args.Length > 0)
-                {
-                    if (Directory.Exists(_args[0]))
-                    {
-                        aspCoreProjectPath = _args[0];
+                if (parser.Arguments.ContainsKey (_paramPath)) {
+                    string pathTemp = parser.Arguments[_paramPath][0];
+                    if (Directory.Exists (pathTemp)) {
+                        aspCoreProjectPath = pathTemp;
                     }
-                }
-                else
-                {
-                    aspCoreProjectPath = Directory.GetCurrentDirectory();
+                } else {
+                    aspCoreProjectPath = Directory.GetCurrentDirectory ();
                 }
 
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
@@ -47,7 +61,7 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
+                var platformInfo = GetTargetPlatformInformation.Do (desiredPlatform, specifiedFromCustom);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
