@@ -238,7 +238,7 @@ In the Version 0.0.9 the CLI was not a global tool and needed to be registred li
 </ItemGroup>
 ```
 
-After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
+After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the following command in your ASP.NET Core folder:
 
 ```
 dotnet restore
