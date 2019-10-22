@@ -64,6 +64,11 @@ public static IWebHost BuildWebHost(string[] args)
 Open the Electron Window in the Startup.cs file: 
 
 ```csharp
+public void ConfigureServices(IServiceCollection services)
+{            
+    services.AddMvc(option => option.EnableEndpointRouting = false);
+}
+
 public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 {
     if (env.IsDevelopment())
