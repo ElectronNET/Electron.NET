@@ -4,6 +4,5 @@ dist: xenial
 dotnet: 3.0
 before_script:
   - export PATH="$PATH:/home/travis/.dotnet/tools"
-  - npm install electron-packager --global
 script:
   - ./buildAll.sh
