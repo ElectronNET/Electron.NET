@@ -118,7 +118,7 @@ namespace ElectronNET.CLI.Commands
                     ProcessHelper.CmdExecute("npm install", hosthookDir);
 
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p . --sourceMap false", hosthookDir);
+                    ProcessHelper.CmdExecute(@"npx tsc -p . --sourceMap false", hosthookDir);
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
@@ -153,7 +153,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=5.0.8 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=5.0.8 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

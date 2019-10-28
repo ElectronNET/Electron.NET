@@ -31,8 +31,6 @@ The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .
 Also you should have installed:
 
 * npm 
-* npm install -g typescript
-* npm install -g electron-builder
 
 # Community
 
@@ -107,12 +105,6 @@ To start the application make sure you have installed the "[ElectronNET.CLI](htt
 
 ```
 dotnet tool install ElectronNET.CLI -g
-```
-
-* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-builder installed! 
-
-```
-sudo npm install electron-builder --global
 ```
 
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:

@@ -72,9 +72,8 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute("npm install", targetFilePath);
 
                 // run typescript compiler
-                string tscPath = Path.Combine(targetFilePath, "node_modules", ".bin");
                 // ToDo: Not sure if this runs under linux/macos
-                ProcessHelper.CmdExecute(@"tsc -p ../../", tscPath);
+                ProcessHelper.CmdExecute(@"npx tsc -p ../../", targetFilePath);
 
                 // search .csproj
                 Console.WriteLine($"Search your .csproj to add configure CopyToPublishDirectory to 'Never'");
