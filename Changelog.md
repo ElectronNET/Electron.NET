@@ -1,13 +1,20 @@
 # Not released
 
-# 5.22.15
+# Released
+
+# 5.30.1
+
+ElectronNET.CLI:
+
+* Move to .NET Core 3.0
+* Use npm npx instead of global installations (thanks [jimbuck](https://github.com/jimbuck))
 
 ElectronNET.API:
 
+* Move to .NET Core 3.0
 * New Feature: Add BrowserWindow.RemoveMenu() (thanks [hack2root](https://github.com/hack2root))
 
-# Released
-
+Thanks to [MaherJendoubi](https://github.com/MaherJendoubi), [kant2002](https://github.com/kant2002), [raz-canva](https://github.com/raz-canva) and [Daddoon](https://github.com/Daddoon) to give .NET Core 3.0 feedback!
 # 5.22.14
 
 ElectronNET.CLI:
