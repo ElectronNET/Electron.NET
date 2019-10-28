@@ -76,12 +76,11 @@ namespace ElectronNET.CLI.Commands
                     string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
-                    Console.WriteLine("Start npm install for hosthooks...");
+                    Console.WriteLine("Start npm install for typescript & hosthooks...");
                     ProcessHelper.CmdExecute("npm install", hosthookDir);
 
-                    string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
+                    ProcessHelper.CmdExecute(@"npx tsc -p ../../ElectronHostHook", tempPath);
                 }
 
                 string path = Path.Combine(tempPath, "node_modules", ".bin");

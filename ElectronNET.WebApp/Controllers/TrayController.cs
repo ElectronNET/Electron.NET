@@ -8,9 +8,9 @@ namespace ElectronNET.WebApp.Controllers
 {
     public class TrayController : Controller
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
-        public TrayController(IHostingEnvironment env)
+        public TrayController(IWebHostEnvironment env)
         {
             _env = env;
         }
