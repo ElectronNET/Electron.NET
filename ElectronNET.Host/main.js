@@ -149,7 +149,7 @@ function startAspCoreBackend(electronPort) {
         startBackend(manifestJsonFile.aspCoreBackendPort)
     } else {
         // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-        portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, electronWebPort) {
+        portscanner.findAPortNotInUse(electronPort + 1, 65535, 'localhost', function (error, electronWebPort) {
             startBackend(electronWebPort);
         });
     }
