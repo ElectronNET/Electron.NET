@@ -50,6 +50,13 @@ namespace ElectronNET.CLI.Commands
                 SimpleCommandLineParser parser = new SimpleCommandLineParser();
                 parser.Parse(_args);
 
+                if (!parser.Arguments.ContainsKey(_paramTarget))
+                {
+                    Console.WriteLine($"Error: missing '{_paramTarget}' argument.");
+                    Console.WriteLine(COMMAND_ARGUMENTS);
+                    return false;
+                }
+
                 var desiredPlatform = parser.Arguments[_paramTarget][0];
                 string specifiedFromCustom = string.Empty;
                 if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
