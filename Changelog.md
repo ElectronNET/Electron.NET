@@ -1,5 +1,9 @@
 # Not released
 
+ElectronNET.CLI
+
+* Fixed a bug where `electronize build` with no arguments would throw a `KeyNotFoundException`. 
+
 # Released
 
 # 5.30.1
