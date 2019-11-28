@@ -718,8 +718,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('browserWindowGetExtensions', () => {
         const extensionsList = BrowserWindow.getExtensions();
-
-        let chromeExtensionInfo = new Array();
+        const chromeExtensionInfo = [];
 
         Object.keys(extensionsList).forEach(key => {
             chromeExtensionInfo.push(extensionsList[key]);

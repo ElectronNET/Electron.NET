@@ -113,15 +113,17 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     //     }
     // }
 
-    socket.on('appGetFileIcon', (path, options) => {
+    socket.on('appGetFileIcon', async (path, options) => {
+        let error = {};
+
         if (options) {
-            app.getFileIcon(path, options, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) =>  error = errorFileIcon);
+
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         } else {
-            app.getFileIcon(path, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) =>  error = errorFileIcon);
+
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
     });
 

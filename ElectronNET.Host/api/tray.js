@@ -1,6 +1,5 @@
 "use strict";
 const electron_1 = require("electron");
-const path = require('path');
 let tray;
 let electronSocket;
 module.exports = (socket) => {
@@ -80,11 +79,6 @@ module.exports = (socket) => {
     socket.on('tray-setTitle', (title) => {
         if (tray) {
             tray.setTitle(title);
-        }
-    });
-    socket.on('tray-setHighlightMode', (mode) => {
-        if (tray) {
-            tray.setHighlightMode(mode);
         }
     });
     socket.on('tray-displayBalloon', (options) => {

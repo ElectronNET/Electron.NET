@@ -3,43 +3,42 @@ let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
     electronSocket = socket;
-    socket.on('showMessageBox', (browserWindow, options, guid) => {
+    socket.on('showMessageBox', async (browserWindow, options, guid) => {
         if ('id' in browserWindow) {
             const window = BrowserWindow.fromId(browserWindow.id);
 
-            dialog.showMessageBox(window, options, (response, checkboxChecked) => {
-                electronSocket.emit('showMessageBoxComplete' + guid, [response, checkboxChecked]);
-            });
+            const messageBoxReturnValue = await dialog.showMessageBox(window, options);
+            electronSocket.emit('showMessageBoxComplete' + guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         } else {
             const id = guid || options;
-            dialog.showMessageBox(browserWindow, (response, checkboxChecked) => {
-                electronSocket.emit('showMessageBoxComplete' + id, [response, checkboxChecked]);
-            });
+            const messageBoxReturnValue = await dialog.showMessageBox(browserWindow);
+
+            electronSocket.emit('showMessageBoxComplete' + id, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         }
     });
 
-    socket.on('showOpenDialog', (browserWindow, options, guid) => {
+    socket.on('showOpenDialog', async (browserWindow, options, guid) => {
         const window = BrowserWindow.fromId(browserWindow.id);
-        dialog.showOpenDialog(window, options, (filePaths) => {
-            electronSocket.emit('showOpenDialogComplete' + guid, filePaths || []);
-        });
+        const openDialogReturnValue = await dialog.showOpenDialog(window, options);
+
+        electronSocket.emit('showOpenDialogComplete' + guid, openDialogReturnValue.filePaths || []);
     });
 
-    socket.on('showSaveDialog', (browserWindow, options, guid) => {
+    socket.on('showSaveDialog', async (browserWindow, options, guid) => {
         const window = BrowserWindow.fromId(browserWindow.id);
-        dialog.showSaveDialog(window, options, (filename) => {
-            electronSocket.emit('showSaveDialogComplete' + guid, filename || '');
-        });
+        const saveDialogReturnValue = await dialog.showSaveDialog(window, options);
+
+        electronSocket.emit('showSaveDialogComplete' + guid, saveDialogReturnValue.filePath || '');
     });
 
     socket.on('showErrorBox', (title, content) => {
         dialog.showErrorBox(title, content);
     });
 
-    socket.on('showCertificateTrustDialog', (browserWindow, options, guid) => {
+    socket.on('showCertificateTrustDialog', async (browserWindow, options, guid) => {
         const window = BrowserWindow.fromId(browserWindow.id);
-        dialog.showCertificateTrustDialog(window, options, () => {
-            electronSocket.emit('showCertificateTrustDialogComplete' + guid);
-        });
+        await dialog.showCertificateTrustDialog(window, options);
+
+        electronSocket.emit('showCertificateTrustDialogComplete' + guid);
     });
 };

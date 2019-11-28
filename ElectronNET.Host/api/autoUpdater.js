@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -87,23 +88,23 @@ module.exports = (socket) => {
         electron_updater_1.autoUpdater.channel = value;
     });
     // Methods ********
-    socket.on('autoUpdaterCheckForUpdatesAndNotify', (guid) => __awaiter(this, void 0, void 0, function* () {
+    socket.on('autoUpdaterCheckForUpdatesAndNotify', (guid) => __awaiter(void 0, void 0, void 0, function* () {
         const updateCheckResult = yield electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
         electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
     }));
-    socket.on('autoUpdaterCheckForUpdates', (guid) => __awaiter(this, void 0, void 0, function* () {
+    socket.on('autoUpdaterCheckForUpdates', (guid) => __awaiter(void 0, void 0, void 0, function* () {
         // autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
         const updateCheckResult = yield electron_updater_1.autoUpdater.checkForUpdates();
         electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
     }));
-    socket.on('autoUpdaterQuitAndInstall', (isSilent, isForceRunAfter) => __awaiter(this, void 0, void 0, function* () {
+    socket.on('autoUpdaterQuitAndInstall', (isSilent, isForceRunAfter) => __awaiter(void 0, void 0, void 0, function* () {
         electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
     }));
-    socket.on('autoUpdaterDownloadUpdate', (guid) => __awaiter(this, void 0, void 0, function* () {
+    socket.on('autoUpdaterDownloadUpdate', (guid) => __awaiter(void 0, void 0, void 0, function* () {
         const downloadedPath = yield electron_updater_1.autoUpdater.downloadUpdate();
         electronSocket.emit('autoUpdaterDownloadUpdateComplete' + guid, downloadedPath);
     }));
-    socket.on('autoUpdaterGetFeedURL', (guid) => __awaiter(this, void 0, void 0, function* () {
+    socket.on('autoUpdaterGetFeedURL', (guid) => __awaiter(void 0, void 0, void 0, function* () {
         const feedUrl = yield electron_updater_1.autoUpdater.getFeedURL();
         electronSocket.emit('autoUpdaterGetFeedURLComplete' + guid, feedUrl || '');
     }));
