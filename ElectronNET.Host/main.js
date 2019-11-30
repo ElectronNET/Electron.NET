@@ -7,10 +7,16 @@ const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
+let commandLine;
 let splashScreen, hostHook;
 
+let manifestJsonFileName = 'electron.manifest.json';
+if(app.commandLine.hasSwitch('manifest')) {
+    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
+};
+
 const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
-const manifestJsonFilePath = path.join(currentBinPath, 'electron.manifest.json');
+const manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
@@ -110,6 +116,7 @@ function startSocketApiBridge(port) {
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
+        commandLine = require('./api/commandLine')(socket, app);
         autoUpdater = require('./api/autoUpdater')(socket);
         ipc = require('./api/ipc')(socket);
         menu = require('./api/menu')(socket);

@@ -10,7 +10,11 @@
             "name": "Launch Electron App",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "program": "${workspaceFolder}/main.js",
-            "sourceMaps": true
+            "sourceMaps": true,
+            "args": [
+                "--test=true",
+                "--blub=wuhuu"
+            ]
         }
     ]
 }

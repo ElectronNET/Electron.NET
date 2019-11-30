@@ -262,14 +262,6 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         app.setAboutPanelOptions(options);
     });
 
-    socket.on('appCommandLineAppendSwitch', (theSwitch, value) => {
-        app.commandLine.appendSwitch(theSwitch, value);
-    });
-
-    socket.on('appCommandLineAppendArgument', (value) => {
-        app.commandLine.appendArgument(value);
-    });
-
     socket.on('appDockBounce', (type) => {
         const id = app.dock.bounce(type);
         electronSocket.emit('appDockBounceCompleted', id);
