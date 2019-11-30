@@ -1,5 +1,6 @@
+const manifestFileName = process.argv[2];
 // @ts-ignore
-const manifestFile = require('./bin/electron.manifest');
+const manifestFile = require('./bin/' + manifestFileName);
 const fs = require('fs');
 
 const builderConfiguration = { ...manifestFile.build };
@@ -30,6 +31,13 @@ if(builderConfiguration.hasOwnProperty('buildVersion')) {
 
 const builderConfigurationString = JSON.stringify(builderConfiguration);
 fs.writeFile('./bin/electron-builder.json', builderConfigurationString, (error) => {
+    if(error) {
+        console.log(error.message);
+    }
+});
+
+const manifestContent = JSON.stringify(manifestFile);
+fs.writeFile('./bin/electron.manifest.json', manifestContent, (error) => {
     if(error) {
         console.log(error.message);
     }

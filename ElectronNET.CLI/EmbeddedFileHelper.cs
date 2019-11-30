@@ -29,5 +29,19 @@ namespace ElectronNET.CLI
                 streamFromEmbeddedFile.CopyTo(fileStream);
             }
         }
+
+        public static void DeployEmbeddedFileToTargetFile(string targetPath, string embeddedFile, string targetFile, string namespacePath = "")
+        {
+            using (var fileStream = File.Create(Path.Combine(targetPath, targetFile)))
+            {
+                var streamFromEmbeddedFile = GetTestResourceFileStream("ElectronHost." + namespacePath + embeddedFile);
+                if (streamFromEmbeddedFile == null)
+                {
+                    Console.WriteLine("Error: Couldn't find embedded file: " + embeddedFile);
+                }
+
+                streamFromEmbeddedFile.CopyTo(fileStream);
+            }
+        }
     }
 }

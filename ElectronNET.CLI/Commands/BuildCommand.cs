@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
@@ -40,6 +41,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
         private string _paramForceNodeInstall = "install-modules";
+        private string _manifest = "manifest";
 
         public Task<bool> ExecuteAsync()
         {
@@ -79,7 +81,13 @@ namespace ElectronNET.CLI.Commands
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
+                } 
+                else
+                {
+                    Directory.Delete(tempPath, true);
+                    Directory.CreateDirectory(tempPath);
                 }
+                
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
@@ -157,7 +165,15 @@ namespace ElectronNET.CLI.Commands
 
                 // ToDo: Make the same thing easer with native c# - we can save a tmp file in production code :)
                 Console.WriteLine("Create electron-builder configuration file...");
-                ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
+
+                string manifestFileName = "electron.manifest.json";
+
+                if(parser.Arguments.ContainsKey(_manifest))
+                {
+                    manifestFileName = parser.Arguments[_manifest].First();
+                }
+
+                ProcessHelper.CmdExecute($"node build-helper.js " + manifestFileName, tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
                 ProcessHelper.CmdExecute($"npx electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=7.1.2 {electronParams}", tempPath);
