@@ -50,7 +50,7 @@ export = (socket: SocketIO.Socket) => {
         notification.show();
     });
 
-    socket.on('notificationIsSupported', (options) => {
+    socket.on('notificationIsSupported', () => {
         const isSupported = Notification.isSupported;
         electronSocket.emit('notificationIsSupportedComplete', isSupported);
     });

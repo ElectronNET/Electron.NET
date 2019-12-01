@@ -1,13 +1,45 @@
 # Not released
 
-# 5.22.15
-
-ElectronNET.API:
-
-* New Feature: Add BrowserWindow.RemoveMenu() (thanks [hack2root](https://github.com/hack2root))
+# 7.30.3
 
 # Released
 
+# 7.30.2
+
+ElectronNET.CLI:
+
+* Different manifest file support [\#340](https://github.com/ElectronNET/Electron.NET/issues/340)
+  * Create a additional manifest file: `electronize init /manifest test`
+  * Start the app with your additional manifest file: `electronize start /manifest electron.manifest.test.json`
+  * Build the app with your additional manifest file: `electronize build /target win /manifest electron.manifest.test.json`.
+
+* Command Line support [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+  * You can start the app with: `electronize start /args --dog=woof --test=true`
+  * Or as binary: `myapp.exe /args --dog=woof --test=true`
+* Fixed bug: Start process with listen port 8000 error. [\#308](https://github.com/ElectronNET/Electron.NET/issues/308) (thanks [thecodejedi](https://github.com/thecodejedi))
+* Fixed bug: `electronize build` with no arguments would throw a `KeyNotFoundException`. (thanks [jamiebrynes7](https://github.com/jamiebrynes7))
+
+ElectronNET.API:
+
+* New Feature: Electron 7.1.2 support, but not all new features (we search contributors) [\#341](https://github.com/ElectronNET/Electron.NET/issues/341)
+* New Feature: Electron.App.CommandLine API [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+* New Feature: Support of BrowserWindow.AddExtension, BrowserWindow.RemoveExtension, BrowserWindow.GetExtensions (thanks [Daddoon](https://github.com/Daddoon))
+
+Thank you for donation [robertmclaws](https://github.com/robertmclaws) ❤
+
+# 5.30.1
+
+ElectronNET.CLI:
+
+* Move to .NET Core 3.0
+* Use npm npx instead of global installations (thanks [jimbuck](https://github.com/jimbuck))
+
+ElectronNET.API:
+
+* Move to .NET Core 3.0
+* New Feature: Add BrowserWindow.RemoveMenu() (thanks [hack2root](https://github.com/hack2root))
+
+Thanks to [MaherJendoubi](https://github.com/MaherJendoubi), [kant2002](https://github.com/kant2002), [raz-canva](https://github.com/raz-canva) and [Daddoon](https://github.com/Daddoon) to give .NET Core 3.0 feedback!
 # 5.22.14
 
 ElectronNET.CLI:

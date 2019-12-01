@@ -1,5 +1,4 @@
 import { Menu, Tray, nativeImage } from 'electron';
-const path = require('path');
 let tray: Electron.Tray;
 let electronSocket;
 
@@ -94,12 +93,6 @@ export = (socket: SocketIO.Socket) => {
     socket.on('tray-setTitle', (title) => {
         if (tray) {
             tray.setTitle(title);
-        }
-    });
-
-    socket.on('tray-setHighlightMode', (mode) => {
-        if (tray) {
-            tray.setHighlightMode(mode);
         }
     });
 

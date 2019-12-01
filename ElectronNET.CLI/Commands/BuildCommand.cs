@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
@@ -40,6 +41,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
         private string _paramForceNodeInstall = "install-modules";
+        private string _manifest = "manifest";
 
         public Task<bool> ExecuteAsync()
         {
@@ -49,6 +51,13 @@ namespace ElectronNET.CLI.Commands
 
                 SimpleCommandLineParser parser = new SimpleCommandLineParser();
                 parser.Parse(_args);
+
+                if (!parser.Arguments.ContainsKey(_paramTarget))
+                {
+                    Console.WriteLine($"Error: missing '{_paramTarget}' argument.");
+                    Console.WriteLine(COMMAND_ARGUMENTS);
+                    return false;
+                }
 
                 var desiredPlatform = parser.Arguments[_paramTarget][0];
                 string specifiedFromCustom = string.Empty;
@@ -72,7 +81,13 @@ namespace ElectronNET.CLI.Commands
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
+                } 
+                else
+                {
+                    Directory.Delete(tempPath, true);
+                    Directory.CreateDirectory(tempPath);
                 }
+                
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
@@ -105,21 +120,6 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install --production", tempPath);
 
-                Console.WriteLine("Start npm install electron-builder...");
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-
-                {
-                    // Works proper on Windows... 
-                    ProcessHelper.CmdExecute("npm install electron-builder --global", tempPath);
-                }
-                else
-                {
-                    // ToDo: find another solution or document it proper
-                    // GH Issue https://github.com/electron-userland/electron-prebuilt/issues/48
-                    Console.WriteLine("Electron Builder - make sure you invoke 'sudo npm install electron-builder --global' at " + tempPath + " manually. Sry.");
-                }
-
                 Console.WriteLine("ElectronHostHook handling started...");
 
                 string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
@@ -130,13 +130,10 @@ namespace ElectronNET.CLI.Commands
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
                     Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install --production", hosthookDir);
+                    ProcessHelper.CmdExecute("npm install", hosthookDir);
 
-                    // ToDo: Global TypeScript installation is needed for ElectronHostHook
-                    //string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
-                    
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p . --sourceMap false", hosthookDir);
+                    ProcessHelper.CmdExecute(@"npx tsc -p . --sourceMap false", hosthookDir);
                 }
 
                 Console.WriteLine("Build Electron Desktop Application...");
@@ -168,10 +165,18 @@ namespace ElectronNET.CLI.Commands
 
                 // ToDo: Make the same thing easer with native c# - we can save a tmp file in production code :)
                 Console.WriteLine("Create electron-builder configuration file...");
-                ProcessHelper.CmdExecute($"node build-helper.js", tempPath);
+
+                string manifestFileName = "electron.manifest.json";
+
+                if(parser.Arguments.ContainsKey(_manifest))
+                {
+                    manifestFileName = parser.Arguments[_manifest].First();
+                }
+
+                ProcessHelper.CmdExecute($"node build-helper.js " + manifestFileName, tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=5.0.8 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder . --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=7.1.2 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

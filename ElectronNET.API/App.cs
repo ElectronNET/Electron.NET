@@ -351,7 +351,10 @@ namespace ElectronNET.API
 
         private event Action<bool> _accessibilitySupportChanged;
 
-        internal App() { }
+        internal App() 
+        {
+            CommandLine = new CommandLine();
+        }
 
         internal static App Instance
         {
@@ -1224,7 +1227,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool)success);
                 });
 
-                BridgeConnector.Socket.Emit("appSetBadgeCount");
+                BridgeConnector.Socket.Emit("appSetBadgeCount", count);
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1254,6 +1257,11 @@ namespace ElectronNET.API
                     .ConfigureAwait(false);
             }
         }
+
+        /// <summary>
+        /// Manipulate the command line arguments for your app that Chromium reads.
+        /// </summary>
+        public CommandLine CommandLine { get; internal set; }
 
         /// <summary>
         /// Whether the current desktop environment is Unity launcher.
@@ -1378,39 +1386,6 @@ namespace ElectronNET.API
         public void SetAboutPanelOptions(AboutPanelOptions options)
         {
             BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
-        }
-
-        /// <summary>
-        /// Append a switch (with optional value) to Chromium's command line. Note: This
-        /// will not affect process.argv, and is mainly used by developers to control some
-        /// low-level Chromium behaviors.
-        /// </summary>
-        /// <param name="theSwtich">A command-line switch.</param>
-        public void CommandLineAppendSwitch(string theSwtich)
-        {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", theSwtich);
-        }
-
-        /// <summary>
-        /// Append a switch (with optional value) to Chromium's command line. Note: This
-        /// will not affect process.argv, and is mainly used by developers to control some
-        /// low-level Chromium behaviors.
-        /// </summary>
-        /// <param name="theSwtich">A command-line switch.</param>
-        /// <param name="value">A value for the given switch.</param>
-        public void CommandLineAppendSwitch(string theSwtich, string value)
-        {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", theSwtich, value);
-        }
-
-        /// <summary>
-        /// Append an argument to Chromium's command line. The argument will be quoted
-        /// correctly.Note: This will not affect process.argv.
-        /// </summary>
-        /// <param name="value">The argument to append to the command line.</param>
-        public void CommandLineAppendArgument(string value)
-        {
-            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
         }
 
         /// <summary>

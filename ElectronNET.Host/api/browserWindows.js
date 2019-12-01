@@ -166,7 +166,7 @@ module.exports = (socket, app) => {
     }
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
-            options = Object.assign({}, options, { webPreferences: { nodeIntegration: true } });
+            options = Object.assign(Object.assign({}, options), { webPreferences: { nodeIntegration: true } });
         }
         window = new electron_1.BrowserWindow(options);
         lastOptions = options;
@@ -537,6 +537,21 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
+    });
+    socket.on('browserWindowAddExtension', (path) => {
+        const extensionName = electron_1.BrowserWindow.addExtension(path);
+        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
+    });
+    socket.on('browserWindowRemoveExtension', (name) => {
+        electron_1.BrowserWindow.removeExtension(name);
+    });
+    socket.on('browserWindowGetExtensions', () => {
+        const extensionsList = electron_1.BrowserWindow.getExtensions();
+        const chromeExtensionInfo = [];
+        Object.keys(extensionsList).forEach(key => {
+            chromeExtensionInfo.push(extensionsList[key]);
+        });
+        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {

@@ -1,6 +1,7 @@
 ﻿using ElectronNET.API;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ElectronNET.WebApp
 {
@@ -8,15 +9,15 @@ namespace ElectronNET.WebApp
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostingContext, logging) => { logging.AddConsole(); })
                 .UseElectron(args)
-                .UseStartup<Startup>()
-                .Build();
+                .UseStartup<Startup>();
         }
     }
 }

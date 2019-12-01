@@ -16,14 +16,17 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private const string ConfigName = "electron.manifest.json";
-
-        private string[] _args;
+        private static SimpleCommandLineParser _parser = new SimpleCommandLineParser();
+        private static string ConfigName = "electron.manifest.json";
+        private const string DefaultConfigFileName = "electron.manifest.json";
 
         public InitCommand(string[] args)
         {
-            _args = args;
+            _parser.Parse(args);
         }
+
+        private static string _aspCoreProjectPath = "project-path";
+        private static string _manifest = "manifest";
 
         public Task<bool> ExecuteAsync()
         {
@@ -31,11 +34,12 @@ namespace ElectronNET.CLI.Commands
             {
                 string aspCoreProjectPath = "";
 
-                if (_args.Length > 0)
+                if (_parser.Arguments.ContainsKey(_aspCoreProjectPath))
                 {
-                    if (Directory.Exists(_args[0]))
+                    string projectPath = _parser.Arguments[_aspCoreProjectPath].First();
+                    if (Directory.Exists(projectPath))
                     {
-                        aspCoreProjectPath = _args[0];
+                        aspCoreProjectPath = projectPath;
                     }
                 }
                 else
@@ -45,7 +49,15 @@ namespace ElectronNET.CLI.Commands
 
                 var currentDirectory = aspCoreProjectPath;
 
-                Console.WriteLine("Adding our config file to your project...");
+                if(_parser.Arguments.ContainsKey(_manifest))
+                {
+                    ConfigName = "electron.manifest." + _parser.Arguments[_manifest].First() + ".json";
+                    Console.WriteLine($"Adding your custom {ConfigName} config file to your project...");
+                }
+                else
+                {
+                    Console.WriteLine("Adding our config file to your project...");
+                }
 
                 var targetFilePath = Path.Combine(currentDirectory, ConfigName);
 
@@ -56,7 +68,7 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 // Deploy config file
-                EmbeddedFileHelper.DeployEmbeddedFile(currentDirectory, ConfigName);
+                EmbeddedFileHelper.DeployEmbeddedFileToTargetFile(currentDirectory, DefaultConfigFileName, ConfigName);
 
                 // search .csproj
                 Console.WriteLine($"Search your .csproj to add the needed {ConfigName}...");
@@ -99,7 +111,32 @@ namespace ElectronNET.CLI.Commands
 
             string launchSettingText = File.ReadAllText(launchSettingFile);
 
-            if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false)
+            if(_parser.Arguments.ContainsKey(_manifest))
+            {
+                string manifestName = _parser.Arguments[_manifest].First();
+
+                if(launchSettingText.Contains("start /manifest " + ConfigName) == false)
+                {
+                    StringBuilder debugProfileBuilder = new StringBuilder();
+                    debugProfileBuilder.AppendLine("profiles\": {");
+                    debugProfileBuilder.AppendLine("    \"Electron.NET App - " + manifestName + "\": {");
+                    debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
+                    debugProfileBuilder.AppendLine("      \"executablePath\": \"electronize\",");
+                    debugProfileBuilder.AppendLine("      \"commandLineArgs\": \"start /manifest " + ConfigName + "\",");
+                    debugProfileBuilder.AppendLine("      \"workingDirectory\": \".\"");
+                    debugProfileBuilder.AppendLine("    },");
+
+                    launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
+                    File.WriteAllText(launchSettingFile, launchSettingText);
+
+                    Console.WriteLine($"Debug profile added!");
+                }
+                else
+                {
+                    Console.WriteLine($"Debug profile already existing");
+                }
+            } 
+            else if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false)
             {
                 StringBuilder debugProfileBuilder = new StringBuilder();
                 debugProfileBuilder.AppendLine("profiles\": {");
