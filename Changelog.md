@@ -1,10 +1,31 @@
 # Not released
 
-ElectronNET.CLI
-
-* Fixed a bug where `electronize build` with no arguments would throw a `KeyNotFoundException`. 
+# 7.30.3
 
 # Released
+
+# 7.30.2
+
+ElectronNET.CLI:
+
+* Different manifest file support [\#340](https://github.com/ElectronNET/Electron.NET/issues/340)
+  * Create a additional manifest file: `electronize init /manifest test`
+  * Start the app with your additional manifest file: `electronize start /manifest electron.manifest.test.json`
+  * Build the app with your additional manifest file: `electronize build /target win /manifest electron.manifest.test.json`.
+
+* Command Line support [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+  * You can start the app with: `electronize start /args --dog=woof --test=true`
+  * Or as binary: `myapp.exe /args --dog=woof --test=true`
+* Fixed bug: Start process with listen port 8000 error. [\#308](https://github.com/ElectronNET/Electron.NET/issues/308) (thanks [thecodejedi](https://github.com/thecodejedi))
+* Fixed bug: `electronize build` with no arguments would throw a `KeyNotFoundException`. (thanks [jamiebrynes7](https://github.com/jamiebrynes7))
+
+ElectronNET.API:
+
+* New Feature: Electron 7.1.2 support, but not all new features (we search contributors) [\#341](https://github.com/ElectronNET/Electron.NET/issues/341)
+* New Feature: Electron.App.CommandLine API [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+* New Feature: Support of BrowserWindow.AddExtension, BrowserWindow.RemoveExtension, BrowserWindow.GetExtensions (thanks [Daddoon](https://github.com/Daddoon))
+
+Thank you for donation [robertmclaws](https://github.com/robertmclaws) ❤
 
 # 5.30.1
 
