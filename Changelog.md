@@ -8,12 +8,12 @@
 
 ElectronNET.CLI:
 
-* Different manifest file support [\#340](https://github.com/ElectronNET/Electron.NET/issues/340)
+* New Feature: Different manifest file support [\#340](https://github.com/ElectronNET/Electron.NET/issues/340)
   * Create a additional manifest file: `electronize init /manifest test`
   * Start the app with your additional manifest file: `electronize start /manifest electron.manifest.test.json`
   * Build the app with your additional manifest file: `electronize build /target win /manifest electron.manifest.test.json`.
 
-* Command Line support [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+* New Feature: Command Line support [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
   * You can start the app with: `electronize start /args --dog=woof --test=true`
   * Or as binary: `myapp.exe /args --dog=woof --test=true`
 * Fixed bug: Start process with listen port 8000 error. [\#308](https://github.com/ElectronNET/Electron.NET/issues/308) (thanks [thecodejedi](https://github.com/thecodejedi))
