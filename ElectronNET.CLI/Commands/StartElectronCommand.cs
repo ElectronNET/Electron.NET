@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +25,7 @@ namespace ElectronNET.CLI.Commands
         private string _aspCoreProjectPath = "project-path";
         private string _arguments = "args";
         private string _manifest = "manifest";
+        private string _paramDotNetConfig = "dotnet-configuration";
 
         public Task<bool> ExecuteAsync()
         {
@@ -50,6 +51,12 @@ namespace ElectronNET.CLI.Commands
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
                 }
 
+                string configuration = "Debug";
+                if (parser.Arguments.ContainsKey(_paramDotNetConfig))
+                {
+                    configuration = parser.Arguments[_paramDotNetConfig][0];
+                }
+
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
                 if (Directory.Exists(tempPath) == false)
                 {
@@ -59,7 +66,7 @@ namespace ElectronNET.CLI.Commands
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c {configuration} --output \"{tempBinPath}\"", aspCoreProjectPath);
 
                 if (resultCode != 0)
                 {

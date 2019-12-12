@@ -119,6 +119,13 @@ electronize init
 ```
 electronize start
 ```
+
+this will compile and start Debug configuration. To start other configuration use `/dotnet-configuration` parameter
+
+```
+electronize start /dotnet-configuration MacOsRelease
+```
+
 ### Note
 > Only the first electronize start is slow. The next will go on faster.
 
