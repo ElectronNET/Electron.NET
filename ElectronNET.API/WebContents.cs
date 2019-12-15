@@ -108,6 +108,53 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Get system printers.
+        /// </summary>
+        /// <returns>printers</returns>
+        public Task<PrinterInfo[]> GetPrintersAsync()
+        {
+            var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
+
+            BridgeConnector.Socket.On("webContents-getPrinters-completed", (printers) =>
+            {
+                BridgeConnector.Socket.Off("webContents-getPrinters-completed");
+
+                taskCompletionSource.SetResult(((Newtonsoft.Json.Linq.JArray)printers).ToObject<PrinterInfo[]>());
+            });
+
+            BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Prints window's web page.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns>success</returns>
+        public Task<bool> PrintAsync(PrintOptions options = null)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            BridgeConnector.Socket.On("webContents-print-completed", (success) =>
+            {
+                BridgeConnector.Socket.Off("webContents-print-completed");
+                taskCompletionSource.SetResult((bool)success);
+            });
+
+            if(options == null)
+            {
+                BridgeConnector.Socket.Emit("webContents-print", Id, "");
+            }
+            else
+            {
+                BridgeConnector.Socket.Emit("webContents-print", Id, JObject.FromObject(options, _jsonSerializer));
+            }
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
         /// Prints window's web page as PDF with Chromium's preview printing custom
         /// settings.The landscape will be ignored if @page CSS at-rule is used in the web page. 
         /// By default, an empty options will be regarded as: Use page-break-before: always; 
