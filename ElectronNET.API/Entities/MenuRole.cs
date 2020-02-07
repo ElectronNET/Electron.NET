@@ -8,7 +8,7 @@
         /// <summary>
         /// The undo
         /// </summary>
-        undo,
+        undo = 1,
 
         /// <summary>
         /// The redo
