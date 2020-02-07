@@ -31,8 +31,9 @@ namespace ElectronNET.WebApp.Controllers
                         {
                             // on reload, start fresh and close any old
                             // open secondary windows
+                            var mainWindowId = Electron.WindowManager.BrowserWindows.ToList().First().Id;
                             Electron.WindowManager.BrowserWindows.ToList().ForEach(browserWindow => {
-                                if(browserWindow.Id != 1)
+                                if(browserWindow.Id != mainWindowId)
                                 {
                                     browserWindow.Close();
                                 }

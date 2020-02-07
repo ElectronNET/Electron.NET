@@ -26,7 +26,11 @@ Well... there are lots of different approaches how to get a X-plat desktop app r
 
 # Requirements to run:
 
-The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 2.2, so our minimum base OS is the same as [.NET Core 2.2](https://github.com/dotnet/core/blob/master/release-notes/2.2/2.2-supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 3.0, so our minimum base OS is the same as [.NET Core 3.0](https://github.com/dotnet/core/blob/master/release-notes/3.0/3.0-supported-os.md).
+
+Also you should have installed:
+
+* npm 
 
 # Community
 
@@ -58,6 +62,11 @@ public static IWebHost BuildWebHost(string[] args)
 Open the Electron Window in the Startup.cs file: 
 
 ```csharp
+public void ConfigureServices(IServiceCollection services)
+{            
+    services.AddMvc(option => option.EnableEndpointRouting = false);
+}
+
 public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 {
     if (env.IsDevelopment())
@@ -96,12 +105,6 @@ To start the application make sure you have installed the "[ElectronNET.CLI](htt
 
 ```
 dotnet tool install ElectronNET.CLI -g
-```
-
-* Make sure you have __node.js v8.6.0__ and on __macOS/Linux__ the electron-builder installed! 
-
-```
-sudo npm install electron-builder --global
 ```
 
 At the first time, you need an Electron.NET project initialization. Type the following command in your ASP.NET Core folder:
@@ -156,16 +159,12 @@ electronize build /target custom win7-x86;win32 /electron-arch ia32
 
 The end result should be an electron app under your __/bin/desktop__ folder.
 
-## Starter kits
-
-There is a React/Typescript/MobX starter kit at https://github.com/yoDon/Electron.NET-React-Typescript-MobX
-
 ### Note
 > macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
 # Working with this Repo
 
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 1.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
+This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
 
 If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
 
@@ -242,7 +241,7 @@ In the Version 0.0.9 the CLI was not a global tool and needed to be registred li
 </ItemGroup>
 ```
 
-After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the follwoing command in your ASP.NET Core folder:
+After you edited the .csproj-file, you need to restore your NuGet packages within your Project. Run the following command in your ASP.NET Core folder:
 
 ```
 dotnet restore

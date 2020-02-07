@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let isQuitWindowAllClosed = true, electronSocket;
 module.exports = (socket, app) => {
     electronSocket = socket;
@@ -91,18 +100,17 @@ module.exports = (socket, app) => {
     //         nativeImage[indexCount] = nativeImage;
     //     }
     // }
-    socket.on('appGetFileIcon', (path, options) => {
+    socket.on('appGetFileIcon', (path, options) => __awaiter(void 0, void 0, void 0, function* () {
+        let error = {};
         if (options) {
-            app.getFileIcon(path, options, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = yield app.getFileIcon(path, options).catch((errorFileIcon) => error = errorFileIcon);
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
         else {
-            app.getFileIcon(path, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = yield app.getFileIcon(path).catch((errorFileIcon) => error = errorFileIcon);
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
-    });
+    }));
     socket.on('appSetPath', (name, path) => {
         app.setPath(name, path);
     });
@@ -208,12 +216,6 @@ module.exports = (socket, app) => {
     });
     socket.on('appSetAboutPanelOptions', (options) => {
         app.setAboutPanelOptions(options);
-    });
-    socket.on('appCommandLineAppendSwitch', (theSwitch, value) => {
-        app.commandLine.appendSwitch(theSwitch, value);
-    });
-    socket.on('appCommandLineAppendArgument', (value) => {
-        app.commandLine.appendArgument(value);
     });
     socket.on('appDockBounce', (type) => {
         const id = app.dock.bounce(type);

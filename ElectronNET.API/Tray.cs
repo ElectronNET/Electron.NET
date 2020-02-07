@@ -308,18 +308,6 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// macOS: Sets when the tray’s icon background becomes highlighted (in blue).
-        ///
-        /// Note: You can use highlightMode with a BrowserWindow by toggling between 
-        /// 'never' and 'always' modes when the window visibility changes.
-        /// </summary>
-        /// <param name="highlightMode"></param>
-        public void SetHighlightMode(HighlightMode highlightMode)
-        {
-            BridgeConnector.Socket.Emit("tray-setHighlightMode", highlightMode.ToString());
-        }
-
-        /// <summary>
         /// Windows: Displays a tray balloon.
         /// </summary>
         /// <param name="options"></param>

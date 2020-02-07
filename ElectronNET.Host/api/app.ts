@@ -113,15 +113,17 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     //     }
     // }
 
-    socket.on('appGetFileIcon', (path, options) => {
+    socket.on('appGetFileIcon', async (path, options) => {
+        let error = {};
+
         if (options) {
-            app.getFileIcon(path, options, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) =>  error = errorFileIcon);
+
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         } else {
-            app.getFileIcon(path, (error, nativeImage) => {
-                electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
-            });
+            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) =>  error = errorFileIcon);
+
+            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
     });
 
@@ -258,14 +260,6 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appSetAboutPanelOptions', (options) => {
         app.setAboutPanelOptions(options);
-    });
-
-    socket.on('appCommandLineAppendSwitch', (theSwitch, value) => {
-        app.commandLine.appendSwitch(theSwitch, value);
-    });
-
-    socket.on('appCommandLineAppendArgument', (value) => {
-        app.commandLine.appendArgument(value);
     });
 
     socket.on('appDockBounce', (type) => {

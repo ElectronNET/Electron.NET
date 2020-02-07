@@ -573,6 +573,10 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         getWindowById(id).setMenu(menu);
     });
 
+    socket.on('browserWindowRemoveMenu', (id) => {
+        getWindowById(id).removeMenu();
+    });
+
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {
             if (item.submenu && item.submenu.items.length > 0) {
@@ -700,6 +704,27 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
+    });
+
+    socket.on('browserWindowAddExtension', (path) => {
+        const extensionName = BrowserWindow.addExtension(path);
+
+        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
+    });
+
+    socket.on('browserWindowRemoveExtension', (name) => {
+        BrowserWindow.removeExtension(name);
+    });
+
+    socket.on('browserWindowGetExtensions', () => {
+        const extensionsList = BrowserWindow.getExtensions();
+        const chromeExtensionInfo = [];
+
+        Object.keys(extensionsList).forEach(key => {
+            chromeExtensionInfo.push(extensionsList[key]);
+        });
+
+        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
 
     function getWindowById(id: number): Electron.BrowserWindow {

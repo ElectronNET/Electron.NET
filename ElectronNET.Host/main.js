@@ -7,12 +7,18 @@ const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
+let commandLine;
 let splashScreen, hostHook;
 
+let manifestJsonFileName = 'electron.manifest.json';
+if(app.commandLine.hasSwitch('manifest')) {
+    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
+};
+
 const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
-const manifestJsonFilePath = path.join(currentBinPath, 'electron.manifest.json');
+const manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 const manifestJsonFile = require(manifestJsonFilePath);
-if (manifestJsonFile.singleInstance) {
+if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', () => {
         const windows = BrowserWindow.getAllWindows();
@@ -99,9 +105,9 @@ function startSocketApiBridge(port) {
     server.listen(port, 'localhost');
     server.on('listening', function () {
         console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
+        // Now that socket connection is established, we can guarantee port will not be open for portscanner
+        startAspCoreBackend(port);
     });
-
-    startAspCoreBackend(port);
 
     io.on('connection', (socket) => {
         global['electronsocket'] = socket;
@@ -110,6 +116,7 @@ function startSocketApiBridge(port) {
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
+        commandLine = require('./api/commandLine')(socket, app);
         autoUpdater = require('./api/autoUpdater')(socket);
         ipc = require('./api/ipc')(socket);
         menu = require('./api/menu')(socket);
@@ -145,12 +152,19 @@ function isModuleAvailable(name) {
 }
 
 function startAspCoreBackend(electronPort) {
+    if(manifestJsonFile.aspCoreBackendPort) {
+        startBackend(manifestJsonFile.aspCoreBackendPort)
+    } else {
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(electronPort + 1, 65535, 'localhost', function (error, electronWebPort) {
+            startBackend(electronWebPort);
+        });
+    }
 
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, electronWebPort) {
-        console.log('ASP.NET Core Port: ' + electronWebPort);
-        loadURL = `http://localhost:${electronWebPort}`;
-        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${electronWebPort}`];
+    function startBackend(aspCoreBackendPort) {
+        console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
+        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -165,5 +179,5 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
         });
-    });
+    }
 }

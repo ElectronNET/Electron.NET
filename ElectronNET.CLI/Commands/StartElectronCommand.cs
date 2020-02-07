@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
@@ -21,19 +22,27 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
+        private string _aspCoreProjectPath = "project-path";
+        private string _arguments = "args";
+        private string _manifest = "manifest";
+
         public Task<bool> ExecuteAsync()
         {
             return Task.Run(() =>
             {
                 Console.WriteLine("Start Electron Desktop Application...");
 
+                SimpleCommandLineParser parser = new SimpleCommandLineParser();
+                parser.Parse(_args);
+
                 string aspCoreProjectPath = "";
 
-                if (_args.Length > 0)
+                if (parser.Arguments.ContainsKey(_aspCoreProjectPath))
                 {
-                    if (Directory.Exists(_args[0]))
+                    string projectPath = parser.Arguments[_aspCoreProjectPath].First();
+                    if (Directory.Exists(projectPath))
                     {
-                        aspCoreProjectPath = _args[0];
+                        aspCoreProjectPath = projectPath;
                     }
                 }
                 else
@@ -76,27 +85,37 @@ namespace ElectronNET.CLI.Commands
                     string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
 
-                    Console.WriteLine("Start npm install for hosthooks...");
+                    Console.WriteLine("Start npm install for typescript & hosthooks...");
                     ProcessHelper.CmdExecute("npm install", hosthookDir);
 
-                    string tscPath = Path.Combine(tempPath, "node_modules", ".bin");
                     // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"tsc -p ../../ElectronHostHook", tscPath);
+                    ProcessHelper.CmdExecute(@"npx tsc -p ../../ElectronHostHook", tempPath);
+                }
+
+                string arguments = "";
+
+                if (parser.Arguments.ContainsKey(_arguments))
+                {
+                    arguments = string.Join(' ', parser.Arguments[_arguments]);
+                }
+
+                if (parser.Arguments.ContainsKey(_manifest))
+                {
+                    arguments += " --manifest=" + parser.Arguments[_manifest].First();
                 }
 
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
-
-
                 bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
                 if (isWindows)
                 {
                     Console.WriteLine("Invoke electron.cmd - in dir: " + path);
-                    ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js""", path);
+                    ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js"" " + arguments, path);
                 }
                 else
                 {
                     Console.WriteLine("Invoke electron - in dir: " + path);
-                    ProcessHelper.CmdExecute(@"./electron ""../../main.js""", path);
+                    ProcessHelper.CmdExecute(@"./electron ""../../main.js"" " + arguments, path);
                 }
 
                 return true;

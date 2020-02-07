@@ -42,7 +42,7 @@ module.exports = (socket) => {
         }
         notification.show();
     });
-    socket.on('notificationIsSupported', (options) => {
+    socket.on('notificationIsSupported', () => {
         const isSupported = electron_1.Notification.isSupported;
         electronSocket.emit('notificationIsSupportedComplete', isSupported);
     });

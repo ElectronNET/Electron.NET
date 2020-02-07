@@ -1,6 +1,5 @@
 "use strict";
 const electron_1 = require("electron");
-const path = require('path');
 let tray;
 let electronSocket;
 module.exports = (socket) => {
@@ -52,8 +51,8 @@ module.exports = (socket) => {
         addMenuItemClickConnector(menu.items, (id) => {
             electronSocket.emit('trayMenuItemClicked', id);
         });
-        const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
-        tray = new electron_1.Tray(imagePath);
+        const trayIcon = electron_1.nativeImage.createFromPath(image);
+        tray = new electron_1.Tray(trayIcon);
         tray.setContextMenu(menu);
     });
     socket.on('tray-destroy', () => {
@@ -80,11 +79,6 @@ module.exports = (socket) => {
     socket.on('tray-setTitle', (title) => {
         if (tray) {
             tray.setTitle(title);
-        }
-    });
-    socket.on('tray-setHighlightMode', (mode) => {
-        if (tray) {
-            tray.setHighlightMode(mode);
         }
     });
     socket.on('tray-displayBalloon', (options) => {

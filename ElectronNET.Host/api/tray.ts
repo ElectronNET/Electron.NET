@@ -1,5 +1,4 @@
 import { Menu, Tray, nativeImage } from 'electron';
-const path = require('path');
 let tray: Electron.Tray;
 let electronSocket;
 
@@ -60,9 +59,9 @@ export = (socket: SocketIO.Socket) => {
             electronSocket.emit('trayMenuItemClicked', id);
         });
 
-        const imagePath = path.join(__dirname.replace('api', ''), 'bin', image);
+        const trayIcon = nativeImage.createFromPath(image);
 
-        tray = new Tray(imagePath);
+        tray = new Tray(trayIcon);
         tray.setContextMenu(menu);
     });
 
@@ -94,12 +93,6 @@ export = (socket: SocketIO.Socket) => {
     socket.on('tray-setTitle', (title) => {
         if (tray) {
             tray.setTitle(title);
-        }
-    });
-
-    socket.on('tray-setHighlightMode', (mode) => {
-        if (tray) {
-            tray.setHighlightMode(mode);
         }
     });
 

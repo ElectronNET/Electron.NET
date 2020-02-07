@@ -1,20 +1,70 @@
 # Not released
 
+# 7.30.3
 
 # Released
 
-# 5.22.13
+# 7.30.2
 
 ElectronNET.CLI:
+
+* New Feature: Different manifest file support [\#340](https://github.com/ElectronNET/Electron.NET/issues/340)
+  * Create a additional manifest file: `electronize init /manifest test`
+  * Start the app with your additional manifest file: `electronize start /manifest electron.manifest.test.json`
+  * Build the app with your additional manifest file: `electronize build /target win /manifest electron.manifest.test.json`.
+
+* New Feature: Command Line support [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+  * You can start the app with: `electronize start /args --dog=woof --test=true`
+  * Or as binary: `myapp.exe /args --dog=woof --test=true`
+* Fixed bug: Start process with listen port 8000 error. [\#308](https://github.com/ElectronNET/Electron.NET/issues/308) (thanks [thecodejedi](https://github.com/thecodejedi))
+* Fixed bug: `electronize build` with no arguments would throw a `KeyNotFoundException`. (thanks [jamiebrynes7](https://github.com/jamiebrynes7))
+
+ElectronNET.API:
+
+* New Feature: Electron 7.1.2 support, but not all new features (we search contributors) [\#341](https://github.com/ElectronNET/Electron.NET/issues/341)
+* New Feature: Electron.App.CommandLine API [\#337](https://github.com/ElectronNET/Electron.NET/issues/337)
+* New Feature: Support of BrowserWindow.AddExtension, BrowserWindow.RemoveExtension, BrowserWindow.GetExtensions (thanks [Daddoon](https://github.com/Daddoon))
+
+Thank you for donation [robertmclaws](https://github.com/robertmclaws) ❤
+
+# 5.30.1
+
+ElectronNET.CLI:
+
+* Move to .NET Core 3.0
+* Use npm npx instead of global installations (thanks [jimbuck](https://github.com/jimbuck))
+
+ElectronNET.API:
+
+* Move to .NET Core 3.0
+* New Feature: Add BrowserWindow.RemoveMenu() (thanks [hack2root](https://github.com/hack2root))
+
+Thanks to [MaherJendoubi](https://github.com/MaherJendoubi), [kant2002](https://github.com/kant2002), [raz-canva](https://github.com/raz-canva) and [Daddoon](https://github.com/Daddoon) to give .NET Core 3.0 feedback!
+# 5.22.14
+
+ElectronNET.CLI:
+
+* Fixed bug: Build fails with latest electron-builder version [\#288](https://github.com/ElectronNET/Electron.NET/issues/288)
+
+ElectronNET.API:
+
+* New Feature: Full support for Auto Updater [(Based on electron-updater - Version 4.0.6)](https://www.electron.build/auto-update)
+* New Feature: Support for set a custom static Port to ASP.NET Backend [\#155](https://github.com/ElectronNET/Electron.NET/issues/155)
+* Fixed bug: Electron tray icon TypeError ([Electron original issue](https://github.com/electron/electron/issues/7657)) (thanks [Tum4ik](https://github.com/Tum4ik))
+* Fixed bug: Wrong tray icon path in the application built via `electronize build` command (thanks [Tum4ik](https://github.com/Tum4ik))
+* Fixed bug: fix async issue where same port is considered open [\#261](https://github.com/ElectronNET/Electron.NET/issues/261) (thanks [netpoetica](https://github.com/netpoetica))
+
+ElectronNET.WebApp:
+
+* Fixed usage of the `Electron.Tray.Show` according fixed bugs in the ElectronNET.CLI (thanks [Tum4ik](https://github.com/Tum4ik))
+
+# 5.22.13
 
 ElectronNET.API:
 
 * Fixed bug: Menu Item visibility [\#257](https://github.com/ElectronNET/Electron.NET/issues/257)
 * Fixed bug: electron.manifest.json - singleInstance not working [\#258](https://github.com/ElectronNET/Electron.NET/issues/258)
 * Fixed security issue: ASP.NET Core process is now bound to 127.0.0.1 instead of the broader localhost [\#258](https://github.com/ElectronNET/Electron.NET/pull/266)  
-
-ElectronNET.WebApp:
-
 
 # 5.22.12
 

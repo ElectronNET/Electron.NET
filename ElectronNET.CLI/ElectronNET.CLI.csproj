@@ -2,19 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>electronize</AssemblyName>
-    
+
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>dotnet-electronize</AssemblyName>
+    <ToolCommandName>electronize</ToolCommandName>
+
     <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
-    <Version>1.0.0.0</Version>
+    <!-- Version 99 is just set for local development stuff to avoid a conflict with "real" packages on NuGet.org -->
+    <Version>99.0.0.0</Version>
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Product>Electron.NET</Product>
     <Company />
-    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
-This package contains the dotnet tooling to electronize your application.</Description>
+    <Description>
+      Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
+      This package contains the dotnet tooling to electronize your application.
+    </Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
@@ -22,7 +27,7 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/ElectronNET/Electron.NET/master/assets/images/electron.net-logo-square.png</PackageIconUrl>
+    <PackageIcon>PackageIcon.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
   </PropertyGroup>
 
@@ -31,72 +36,39 @@ This package contains the dotnet tooling to electronize your application.</Descr
     <None Remove="ElectronHost\package.json" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
+  <ItemGroup>
+    <None Include="PackageIcon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-  
   <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\package.json" Link="ElectronHost\package.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\build-helper.js" Link="ElectronHost\build-helper.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
-  </ItemGroup>
-  
-    <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\index.ts" Link="ElectronHost\ElectronHostHook\index.ts" />
-	 <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\connector.ts" Link="ElectronHost\ElectronHostHook\connector.ts" />
-	<EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\tsconfig.json" Link="ElectronHost\ElectronHostHook\tsconfig.json" />
-	<EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\package.json" Link="ElectronHost\ElectronHostHook\package.json" />
-      <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\.gitignore" Link="ElectronHost\ElectronHostHook\.gitignore" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\connector.ts" Link="ElectronHost\ElectronHostHook\connector.ts" />
+    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\tsconfig.json" Link="ElectronHost\ElectronHostHook\tsconfig.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\package.json" Link="ElectronHost\ElectronHostHook\package.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\.gitignore" Link="ElectronHost\ElectronHostHook\.gitignore" />
     <EmbeddedResource Include="..\ElectronNET.Host\splashscreen\index.html" Link="ElectronHost\splashscreen\index.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\app.js" Link="ElectronHost\api\app.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\browserWindows.js" Link="ElectronHost\api\browserWindows.js" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <EmbeddedResource Include="..\ElectronNET.Host\api\commandLine.js" Link="ElectronHost\api\commandLine.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\dialog.js" Link="ElectronHost\api\dialog.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\menu.js" Link="ElectronHost\api\menu.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\ElectronNET.Host\api\clipboard.js" Link="ElectronHost\api\clipboard.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\autoUpdater.js" Link="ElectronHost\api\autoUpdater.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
