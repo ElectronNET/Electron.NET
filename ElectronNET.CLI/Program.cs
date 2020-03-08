@@ -25,6 +25,9 @@ namespace ElectronNET.CLI
                 case StartElectronCommand.COMMAND_NAME:
                     command = new StartElectronCommand(args.Skip(1).ToArray());
                     break;
+                case DebugElectronCommand.COMMAND_NAME:
+                    command = new DebugElectronCommand(args.Skip(1).ToArray());
+                    break;
                 case BuildCommand.COMMAND_NAME:
                     command = new BuildCommand(args.Skip(1).ToArray());
                     break;

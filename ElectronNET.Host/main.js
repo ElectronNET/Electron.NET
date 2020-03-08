@@ -162,22 +162,7 @@ function startAspCoreBackend(electronPort) {
     }
 
     function startBackend(aspCoreBackendPort) {
-        console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
-        loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
-        let binaryFile = manifestJsonFile.executable;
-
-        const os = require('os');
-        if (os.platform() === 'win32') {
-            binaryFile = binaryFile + '.exe';
-        }
-
-        let binFilePath = path.join(currentBinPath, binaryFile);
-        var options = { cwd: currentBinPath };
-        apiProcess = process(binFilePath, parameters, options);
-
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
-        });
+        console.log(`electronPort=${electronPort},electronWebPort=${aspCoreBackendPort}`);
+        console.log("Starting DotNet Watch");
     }
 }
