@@ -168,6 +168,17 @@ module.exports = (socket, app) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
             options = Object.assign(Object.assign({}, options), { webPreferences: { nodeIntegration: true } });
         }
+
+        if (windows.length > 0 && (options.liveReload || options.livereload || options.LiveReload)) {
+            var nWindow = getWindowById(windows[0].id);
+            nWindow.reload();
+            if (loadUrl) {
+                nWindow.loadURL(loadUrl);
+            }
+            electronSocket.emit('BrowserWindowCreated', nWindow.id);
+            return;
+        }
+
         window = new electron_1.BrowserWindow(options);
         lastOptions = options;
         window.on('closed', (sender) => {

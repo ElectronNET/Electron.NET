@@ -15,6 +15,13 @@
       "workingDirectory": "."
     },
 
+    "Electron.NET App Debug": {
+      "commandName": "Executable",
+      "executablePath": "electronize",
+      "commandLineArgs": "debug",
+      "workingDirectory": "."
+    },
+
     "IIS Express": {
       "commandName": "IISExpress",
       "environmentVariables": {

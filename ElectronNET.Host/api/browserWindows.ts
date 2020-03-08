@@ -185,6 +185,10 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         });
     });
 
+    socket.on('get-all-windows', () => {
+        electronSocket.emit('get-all-registered-windows', windows);
+    });
+
     function hasOwnChildreen(obj, ...childNames) {
         for (let i = 0; i < childNames.length; i++) {
             if (!obj || !obj.hasOwnProperty(childNames[i])) {
@@ -199,6 +203,17 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
             options = { ...options, webPreferences: { nodeIntegration: true } };
+        }
+
+        // live reload enabled
+        if (windows.length > 0 && (options.liveReload || options.livereload || options.LiveReload)) {
+            var nWindow = getWindowById(windows[0].id);
+            nWindow.reload();
+            if (loadUrl) {
+                nWindow.loadURL(loadUrl);
+            }
+            electronSocket.emit('BrowserWindowCreated', nWindow.id);
+            return;
         }
 
         window = new BrowserWindow(options);

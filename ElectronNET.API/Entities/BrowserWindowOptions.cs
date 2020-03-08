@@ -255,6 +255,12 @@ namespace ElectronNET.API.Entities
         public string TabbingIdentifier { get; set; }
 
         /// <summary>
+        /// This should be enabled only for development purposes. This will allow to auto reload the electron
+        /// when dotnet watch is ready.
+        /// </summary>
+        public bool LiveReload { get; set; }
+
+        /// <summary>
         /// Settings of web page's features.
         /// </summary>
         public WebPreferences WebPreferences { get; set; }
