@@ -1,1 +1,27 @@
-{"name":"electron.net.host","version":"1.0.0","description":"Electron-Host for Electron.NET.","repository":{"url":"https://github.com/ElectronNET/Electron.NET"},"main":"main.js","author":"Gregor Biswanger","license":"MIT","scripts":{"start":"tsc -p ."},"dependencies":{"electron-updater":"^4.0.6","image-size":"^0.7.4","portscanner":"^2.2.0","socket.io":"^2.2.0"},"devDependencies":{"@types/node":"^10.14.4","@types/socket.io":"^2.1.2","electron":"^7.1.2","tslint":"^5.20.1","typescript":"^3.7.2"}}
+{
+    "name": "electron.net.host",
+    "version": "1.0.0",
+    "description": "Electron-Host for Electron.NET.",
+    "repository": {
+        "url": "https://github.com/ElectronNET/Electron.NET"
+    },
+    "main": "main.js",
+    "author": "Gregor Biswanger",
+    "license": "MIT",
+    "scripts": {
+        "start": "tsc -p ."
+    },
+    "dependencies": {
+        "electron-updater": "^4.2.5",
+        "image-size": "^0.7.4",
+        "portscanner": "^2.2.0",
+        "socket.io": "^2.2.0"
+    },
+    "devDependencies": {
+        "@types/node": "^10.14.4",
+        "@types/socket.io": "^2.1.2",
+        "electron": "^8.2.3",
+        "tslint": "^6.1.1",
+        "typescript": "^3.8.3"
+    }
+}
