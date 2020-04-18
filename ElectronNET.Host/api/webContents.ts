@@ -30,6 +30,16 @@ export = (socket: SocketIO.Socket) => {
         }
     });
 
+    socket.on('webContents-getPrinters', async (id) => {
+        const printers = await getWindowById(id).webContents.getPrinters();
+        electronSocket.emit('webContents-getPrinters-completed', printers);
+    });
+
+    socket.on('webContents-print', async (id, options = {}) => {
+        await getWindowById(id).webContents.print(options);
+        electronSocket.emit('webContents-print-completed', true);
+    });
+
     socket.on('webContents-printToPDF', async (id, options = {}, path) => {
         const buffer = await getWindowById(id).webContents.printToPDF(options);
 

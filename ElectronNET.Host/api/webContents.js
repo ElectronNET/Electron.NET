@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 const electron_1 = require("electron");
 const fs = require('fs');
 let electronSocket;
@@ -26,8 +34,16 @@ module.exports = (socket) => {
             getWindowById(id).webContents.openDevTools();
         }
     });
-    socket.on('webContents-printToPDF', async (id, options = {}, path) => {
-        const buffer = await getWindowById(id).webContents.printToPDF(options);
+    socket.on('webContents-getPrinters', (id) => __awaiter(this, void 0, void 0, function* () {
+        const printers = yield getWindowById(id).webContents.getPrinters();
+        electronSocket.emit('webContents-getPrinters-completed', printers);
+    }));
+    socket.on('webContents-print', (id, options = {}) => __awaiter(this, void 0, void 0, function* () {
+        yield getWindowById(id).webContents.print(options);
+        electronSocket.emit('webContents-print-completed', true);
+    }));
+    socket.on('webContents-printToPDF', (id, options = {}, path) => __awaiter(this, void 0, void 0, function* () {
+        const buffer = yield getWindowById(id).webContents.printToPDF(options);
         fs.writeFile(path, buffer, (error) => {
             if (error) {
                 electronSocket.emit('webContents-printToPDF-completed', false);
@@ -36,7 +52,7 @@ module.exports = (socket) => {
                 electronSocket.emit('webContents-printToPDF-completed', true);
             }
         });
-    });
+    }));
     socket.on('webContents-getUrl', function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
@@ -45,31 +61,31 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
     });
-    socket.on('webContents-session-clearAuthCache', async (id, options, guid) => {
+    socket.on('webContents-session-clearAuthCache', (id, options, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearAuthCache(options);
+        yield browserWindow.webContents.session.clearAuthCache(options);
         electronSocket.emit('webContents-session-clearAuthCache-completed' + guid);
-    });
-    socket.on('webContents-session-clearCache', async (id, guid) => {
+    }));
+    socket.on('webContents-session-clearCache', (id, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearCache();
+        yield browserWindow.webContents.session.clearCache();
         electronSocket.emit('webContents-session-clearCache-completed' + guid);
-    });
-    socket.on('webContents-session-clearHostResolverCache', async (id, guid) => {
+    }));
+    socket.on('webContents-session-clearHostResolverCache', (id, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearHostResolverCache();
+        yield browserWindow.webContents.session.clearHostResolverCache();
         electronSocket.emit('webContents-session-clearHostResolverCache-completed' + guid);
-    });
-    socket.on('webContents-session-clearStorageData', async (id, guid) => {
+    }));
+    socket.on('webContents-session-clearStorageData', (id, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearStorageData({});
+        yield browserWindow.webContents.session.clearStorageData({});
         electronSocket.emit('webContents-session-clearStorageData-completed' + guid);
-    });
-    socket.on('webContents-session-clearStorageData-options', async (id, options, guid) => {
+    }));
+    socket.on('webContents-session-clearStorageData-options', (id, options, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearStorageData(options);
+        yield browserWindow.webContents.session.clearStorageData(options);
         electronSocket.emit('webContents-session-clearStorageData-options-completed' + guid);
-    });
+    }));
     socket.on('webContents-session-createInterruptedDownload', (id, options) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.createInterruptedDownload(options);
@@ -86,16 +102,16 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.flushStorageData();
     });
-    socket.on('webContents-session-getBlobData', async (id, identifier, guid) => {
+    socket.on('webContents-session-getBlobData', (id, identifier, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        const buffer = await browserWindow.webContents.session.getBlobData(identifier);
+        const buffer = yield browserWindow.webContents.session.getBlobData(identifier);
         electronSocket.emit('webContents-session-getBlobData-completed' + guid, buffer.buffer);
-    });
-    socket.on('webContents-session-getCacheSize', async (id, guid) => {
+    }));
+    socket.on('webContents-session-getCacheSize', (id, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        const size = await browserWindow.webContents.session.getCacheSize();
+        const size = yield browserWindow.webContents.session.getCacheSize();
         electronSocket.emit('webContents-session-getCacheSize-completed' + guid, size);
-    });
+    }));
     socket.on('webContents-session-getPreloads', (id, guid) => {
         const browserWindow = getWindowById(id);
         const preloads = browserWindow.webContents.session.getPreloads();
@@ -106,11 +122,11 @@ module.exports = (socket) => {
         const userAgent = browserWindow.webContents.session.getUserAgent();
         electronSocket.emit('webContents-session-getUserAgent-completed' + guid, userAgent);
     });
-    socket.on('webContents-session-resolveProxy', async (id, url, guid) => {
+    socket.on('webContents-session-resolveProxy', (id, url, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        const proxy = await browserWindow.webContents.session.resolveProxy(url);
+        const proxy = yield browserWindow.webContents.session.resolveProxy(url);
         electronSocket.emit('webContents-session-resolveProxy-completed' + guid, proxy);
-    });
+    }));
     socket.on('webContents-session-setDownloadPath', (id, path) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.setDownloadPath(path);
@@ -119,11 +135,11 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.setPreloads(preloads);
     });
-    socket.on('webContents-session-setProxy', async (id, configuration, guid) => {
+    socket.on('webContents-session-setProxy', (id, configuration, guid) => __awaiter(this, void 0, void 0, function* () {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.setProxy(configuration);
+        yield browserWindow.webContents.session.setProxy(configuration);
         electronSocket.emit('webContents-session-setProxy-completed' + guid);
-    });
+    }));
     socket.on('webContents-session-setUserAgent', (id, userAgent, acceptLanguages) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.setUserAgent(userAgent, acceptLanguages);
