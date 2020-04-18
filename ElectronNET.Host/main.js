@@ -79,6 +79,10 @@ function startSplashScreen() {
             show: true
         });
 
+        setTimeout(() => {
+            splashScreen.alwaysOnTop = false;
+        }, 1000);
+
         app.once('browser-window-focus', () => {
             app.once('browser-window-focus', () => {
                 splashScreen.destroy();

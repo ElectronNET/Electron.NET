@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let isQuitWindowAllClosed = true, electronSocket;
 module.exports = (socket, app) => {
     electronSocket = socket;
@@ -100,17 +91,17 @@ module.exports = (socket, app) => {
     //         nativeImage[indexCount] = nativeImage;
     //     }
     // }
-    socket.on('appGetFileIcon', (path, options) => __awaiter(void 0, void 0, void 0, function* () {
+    socket.on('appGetFileIcon', async (path, options) => {
         let error = {};
         if (options) {
-            const nativeImage = yield app.getFileIcon(path, options).catch((errorFileIcon) => error = errorFileIcon);
+            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) => error = errorFileIcon);
             electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
         else {
-            const nativeImage = yield app.getFileIcon(path).catch((errorFileIcon) => error = errorFileIcon);
+            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) => error = errorFileIcon);
             electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
         }
-    }));
+    });
     socket.on('appSetPath', (name, path) => {
         app.setPath(name, path);
     });

@@ -351,6 +351,40 @@ namespace ElectronNET.API
 
         private event Action<bool> _accessibilitySupportChanged;
 
+        /// <summary>
+        /// A property that indicates the current application's name, which is the
+        /// name in the application's `package.json` file.
+        ///
+        /// Usually the `name` field of `package.json` is a short lowercase name, according
+        /// to the npm modules spec.You should usually also specify a `productName` field,
+        /// which is your application's full capitalized name, and which will be preferred
+        /// over `name` by Electron.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return Task.Run<string>(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<string>();
+
+                    BridgeConnector.Socket.On("appGetNameCompleted", (result) =>
+                    {
+                        BridgeConnector.Socket.Off("appGetNameCompleted");
+                        taskCompletionSource.SetResult((string)result);
+                    });
+
+                    BridgeConnector.Socket.Emit("appGetName");
+
+                    return taskCompletionSource.Task;
+                }).Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetName", value);
+            }
+        }
+
         internal App() 
         {
             CommandLine = new CommandLine();
@@ -549,42 +583,6 @@ namespace ElectronNET.API
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
             }
-        }
-
-        /// <summary>
-        /// Usually the name field of package.json is a short lowercased name, according to
-        /// the npm modules spec. You should usually also specify a productName field, which
-        /// is your application's full capitalized name, and which will be preferred over
-        /// name by Electron.
-        /// </summary>
-        /// <returns>The current application’s name, which is the name in the application’s package.json file.</returns>
-        public async Task<string> GetNameAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetNameCompleted", (name) =>
-                {
-                    BridgeConnector.Socket.Off("appGetNameCompleted");
-                    taskCompletionSource.SetResult(name.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetName");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
-        }
-
-        /// <summary>
-        /// Overrides the current application's name.
-        /// </summary>
-        /// <param name="name">Application's name</param>
-        public void SetName(string name)
-        {
-            BridgeConnector.Socket.Emit("appSetName", name);
         }
 
         /// <summary>

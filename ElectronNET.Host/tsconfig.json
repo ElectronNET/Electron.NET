@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2015",
+        "target": "ES2019",
         "sourceMap": true,
         "skipLibCheck": true
     },

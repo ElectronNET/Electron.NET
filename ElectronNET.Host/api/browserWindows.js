@@ -166,7 +166,7 @@ module.exports = (socket, app) => {
     }
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
-            options = Object.assign(Object.assign({}, options), { webPreferences: { nodeIntegration: true } });
+            options = { ...options, webPreferences: { nodeIntegration: true } };
         }
         window = new electron_1.BrowserWindow(options);
         lastOptions = options;
