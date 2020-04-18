@@ -3,11 +3,13 @@
   "splashscreen": {
     "imageFile": ""
   },
+  "name": "{{executable}}",
+  "author": "",
   "singleInstance": false,
   "build": {
     "appId": "com.{{executable}}.app",
     "productName": "{{executable}}",
-    "copyright": "Copyright © 2019",
+    "copyright": "Copyright © 2020",
     "buildVersion": "1.0.0",
     "compression": "maximum",
     "directories": {

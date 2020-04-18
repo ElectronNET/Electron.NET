@@ -74,14 +74,10 @@ function startSplashScreen() {
             transparent: true,
             center: true,
             frame: false,
-            alwaysOnTop: true,
+            closable: false,
             skipTaskbar: true,
             show: true
         });
-
-        setTimeout(() => {
-            splashScreen.alwaysOnTop = false;
-        }, 1000);
 
         app.once('browser-window-focus', () => {
             app.once('browser-window-focus', () => {

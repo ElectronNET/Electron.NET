@@ -110,11 +110,10 @@ module.exports = (socket, app) => {
         electronSocket.emit('appGetVersionCompleted', version);
     });
     socket.on('appGetName', () => {
-        const name = app.getName();
-        electronSocket.emit('appGetNameCompleted', name);
+        electronSocket.emit('appGetNameCompleted', app.name);
     });
     socket.on('appSetName', (name) => {
-        app.setName(name);
+        app.name = name;
     });
     socket.on('appGetLocale', () => {
         const locale = app.getLocale();
