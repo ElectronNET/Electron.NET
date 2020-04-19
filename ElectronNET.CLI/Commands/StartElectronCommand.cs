@@ -59,7 +59,7 @@ namespace ElectronNET.CLI.Commands
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\"", aspCoreProjectPath);
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", aspCoreProjectPath);
 
                 if (resultCode != 0)
                 {
