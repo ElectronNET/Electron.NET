@@ -1301,7 +1301,9 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
                 {
                     BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
-                    taskCompletionSource.SetResult((LoginItemSettings)loginItemSettings);
+
+                    string jsonResult = ((JObject)loginItemSettings).ToString();
+                    taskCompletionSource.SetResult(JsonConvert.DeserializeObject<LoginItemSettings>(jsonResult));
                 });
 
                 BridgeConnector.Socket.Emit("appGetLoginItemSettings");
