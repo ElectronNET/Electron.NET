@@ -210,6 +210,11 @@ module.exports = (socket, app) => {
         if (loadUrl) {
             window.loadURL(loadUrl);
         }
+        if (app.commandLine.hasSwitch('clear-cache') &&
+            app.commandLine.getSwitchValue('clear-cache')) {
+            window.webContents.session.clearCache();
+            console.log('auto clear-cache active for new window.');
+        }
         windows.push(window);
         electronSocket.emit('BrowserWindowCreated', window.id);
     });

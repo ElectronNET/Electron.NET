@@ -25,6 +25,7 @@ namespace ElectronNET.CLI.Commands
         private string _aspCoreProjectPath = "project-path";
         private string _arguments = "args";
         private string _manifest = "manifest";
+        private string _clearCache = "clear-cache";
 
         public Task<bool> ExecuteAsync()
         {
@@ -102,6 +103,11 @@ namespace ElectronNET.CLI.Commands
                 if (parser.Arguments.ContainsKey(_manifest))
                 {
                     arguments += " --manifest=" + parser.Arguments[_manifest].First();
+                }
+
+                if (parser.Arguments.ContainsKey(_clearCache))
+                {
+                    arguments += " --clear-cache=true";
                 }
 
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
