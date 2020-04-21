@@ -1,12 +1,19 @@
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
+let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;
     socket.on('register-browserWindow-ready-to-show', (id) => {
+        if (readyToShowWindowsIds.includes(id)) {
+            readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
+            electronSocket.emit('browserWindow-ready-to-show' + id);
+        }
+
         getWindowById(id).on('ready-to-show', () => {
+            readyToShowWindowsIds.push(id);
             electronSocket.emit('browserWindow-ready-to-show' + id);
         });
     });
@@ -202,6 +209,14 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         }
 
         window = new BrowserWindow(options);
+        window.on('ready-to-show', () => {
+            if (readyToShowWindowsIds.includes(window.id)) {
+                readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
+            } else {
+                readyToShowWindowsIds.push(window.id);
+            }
+        });
+
         lastOptions = options;
 
         window.on('closed', (sender) => {

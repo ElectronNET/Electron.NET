@@ -2,11 +2,17 @@
 const electron_1 = require("electron");
 const path = require('path');
 const windows = [];
+let readyToShowWindowsIds = [];
 let window, lastOptions, electronSocket;
 module.exports = (socket, app) => {
     electronSocket = socket;
     socket.on('register-browserWindow-ready-to-show', (id) => {
+        if (readyToShowWindowsIds.includes(id)) {
+            readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
+            electronSocket.emit('browserWindow-ready-to-show' + id);
+        }
         getWindowById(id).on('ready-to-show', () => {
+            readyToShowWindowsIds.push(id);
             electronSocket.emit('browserWindow-ready-to-show' + id);
         });
     });
@@ -169,6 +175,14 @@ module.exports = (socket, app) => {
             options = { ...options, webPreferences: { nodeIntegration: true } };
         }
         window = new electron_1.BrowserWindow(options);
+        window.on('ready-to-show', () => {
+            if (readyToShowWindowsIds.includes(window.id)) {
+                readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
+            }
+            else {
+                readyToShowWindowsIds.push(window.id);
+            }
+        });
         lastOptions = options;
         window.on('closed', (sender) => {
             for (let index = 0; index < windows.length; index++) {
