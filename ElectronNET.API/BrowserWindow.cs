@@ -2305,6 +2305,17 @@ namespace ElectronNET.API
         /// </summary>
         public WebContents WebContents { get; internal set; }
 
+        /// <summary>
+        /// A BrowserView can be used to embed additional web content into a BrowserWindow. 
+        /// It is like a child window, except that it is positioned relative to its owning window. 
+        /// It is meant to be an alternative to the webview tag.
+        /// </summary>
+        /// <param name="browserView"></param>
+        public void SetBrowserView(BrowserView browserView)
+        {
+            BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

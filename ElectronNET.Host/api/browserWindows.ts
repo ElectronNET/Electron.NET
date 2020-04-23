@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, nativeImage } from 'electron';
+import { BrowserWindow, Menu, nativeImage, BrowserView } from 'electron';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
 let readyToShowWindowsIds: number[] = [];
@@ -746,6 +746,11 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         });
 
         electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
+    });
+
+    socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
+        const browserView = BrowserView.fromId(browserViewId);
+        getWindowById(id).setBrowserView(browserView);
     });
 
     function getWindowById(id: number): Electron.BrowserWindow {

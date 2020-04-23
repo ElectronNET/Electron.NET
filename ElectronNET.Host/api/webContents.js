@@ -136,7 +136,19 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.setUserAgent(userAgent, acceptLanguages);
     });
+    socket.on('webContents-loadURL', (id, url, options) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.loadURL(url, options).then(() => {
+            electronSocket.emit('webContents-loadURL-complete' + id);
+        }).catch((error) => {
+            console.error(error);
+            electronSocket.emit('webContents-loadURL-error' + id, error);
+        });
+    });
     function getWindowById(id) {
+        if (id >= 1000) {
+            return electron_1.BrowserView.fromId(id - 1000);
+        }
         return electron_1.BrowserWindow.fromId(id);
     }
 };

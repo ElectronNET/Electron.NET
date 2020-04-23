@@ -29,6 +29,7 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "autoUpdater.js", "api.");
+            EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserView.js", "api.");
 
             string splashscreenFolder = Path.Combine(tempPath, "splashscreen");
             if (Directory.Exists(splashscreenFolder) == false)

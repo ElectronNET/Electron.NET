@@ -572,6 +572,10 @@ module.exports = (socket, app) => {
         });
         electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
+    socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
+        const browserView = electron_1.BrowserView.fromId(browserViewId);
+        getWindowById(id).setBrowserView(browserView);
+    });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];

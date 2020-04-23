@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, BrowserView } from 'electron';
 const fs = require('fs');
 let electronSocket;
 
@@ -174,7 +174,22 @@ export = (socket: SocketIO.Socket) => {
         browserWindow.webContents.session.setUserAgent(userAgent, acceptLanguages);
     });
 
-    function getWindowById(id: number): Electron.BrowserWindow {
+    socket.on('webContents-loadURL', (id, url, options) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.loadURL(url, options).then(() => {
+            electronSocket.emit('webContents-loadURL-complete' + id);
+        }).catch((error) => {
+            console.error(error);
+            electronSocket.emit('webContents-loadURL-error' + id, error);
+        });
+    });
+
+    function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {
+
+        if (id >= 1000) {
+            return BrowserView.fromId(id - 1000);
+        }
+
         return BrowserWindow.fromId(id);
     }
 };

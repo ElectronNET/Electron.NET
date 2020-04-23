@@ -7,7 +7,7 @@ const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let commandLine;
+let commandLine, browserView;
 let splashScreen, hostHook;
 
 let manifestJsonFileName = 'electron.manifest.json';
@@ -128,6 +128,7 @@ function startSocketApiBridge(port) {
         shellApi = require('./api/shell')(socket);
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
+        browserView = require('./api/browserView')(socket);
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');

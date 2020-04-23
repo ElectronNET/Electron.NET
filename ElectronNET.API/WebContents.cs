@@ -205,7 +205,59 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-        
+
+        /// <summary>
+        /// The async method will resolve when the page has finished loading, 
+        /// and rejects if the page fails to load.
+        /// 
+        /// A noop rejection handler is already attached, which avoids unhandled rejection
+        /// errors.
+        ///
+        /// Loads the `url` in the window. The `url` must contain the protocol prefix, e.g.
+        /// the `http://` or `file://`. If the load should bypass http cache then use the
+        /// `pragma` header to achieve it.
+        /// </summary>
+        /// <param name="url"></param>
+        public Task LoadURLAsync(string url)
+        {
+            return LoadURLAsync(url, new LoadURLOptions());
+        }
+
+        /// <summary>
+        /// The async method will resolve when the page has finished loading, 
+        /// and rejects if the page fails to load.
+        /// 
+        /// A noop rejection handler is already attached, which avoids unhandled rejection
+        /// errors.
+        ///
+        /// Loads the `url` in the window. The `url` must contain the protocol prefix, e.g.
+        /// the `http://` or `file://`. If the load should bypass http cache then use the
+        /// `pragma` header to achieve it.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="options"></param>
+        public Task LoadURLAsync(string url, LoadURLOptions options)
+        {
+            var taskCompletionSource = new TaskCompletionSource<object>();
+
+            BridgeConnector.Socket.On("webContents-loadURL-complete" + Id, () =>
+            {
+                BridgeConnector.Socket.Off("webContents-loadURL-complete" + Id);
+                BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
+                taskCompletionSource.SetResult(null);
+            });
+
+            BridgeConnector.Socket.On("webContents-loadURL-error" + Id, (error) =>
+            {
+                BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
+                taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));
+            });
+
+            BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+
+            return taskCompletionSource.Task;
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

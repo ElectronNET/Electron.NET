@@ -66,6 +66,15 @@ namespace ElectronNET.API
         private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
 
         /// <summary>
+        /// Gets the browser views.
+        /// </summary>
+        /// <value>
+        /// The browser view.
+        /// </value>
+        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.AsReadOnly(); } }
+        private List<BrowserView> _browserViews = new List<BrowserView>();
+
+        /// <summary>
         /// Creates the window asynchronous.
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
@@ -153,6 +162,51 @@ namespace ElectronNET.API
         private bool isWindows10()
         {
             return RuntimeInformation.OSDescription.Contains("Windows 10");
+        }
+
+        /// <summary>
+        /// A BrowserView can be used to embed additional web content into a BrowserWindow. 
+        /// It is like a child window, except that it is positioned relative to its owning window. 
+        /// It is meant to be an alternative to the webview tag.
+        /// </summary>
+        /// <returns></returns>
+        public Task<BrowserView> CreateBrowserViewAsync()
+        {
+            return CreateBrowserViewAsync(new BrowserViewConstructorOptions());
+        }
+
+        /// <summary>
+        /// A BrowserView can be used to embed additional web content into a BrowserWindow. 
+        /// It is like a child window, except that it is positioned relative to its owning window. 
+        /// It is meant to be an alternative to the webview tag.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
+        {
+            var taskCompletionSource = new TaskCompletionSource<BrowserView>();
+
+            BridgeConnector.Socket.On("BrowserViewCreated", (id) =>
+            {
+                BridgeConnector.Socket.Off("BrowserViewCreated");
+
+                string browserViewId = id.ToString();
+                BrowserView browserView = new BrowserView(int.Parse(browserViewId));
+                browserView.Destroyed += (b) => _browserViews.Remove(b);
+
+                _browserViews.Add(browserView);
+
+                taskCompletionSource.SetResult(browserView);
+            });
+
+            var ownjsonSerializer = new JsonSerializer()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+
+            return taskCompletionSource.Task;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
