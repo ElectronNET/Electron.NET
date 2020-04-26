@@ -192,19 +192,10 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         });
     });
 
-    function hasOwnChildreen(obj, ...childNames) {
-        for (let i = 0; i < childNames.length; i++) {
-            if (!obj || !obj.hasOwnProperty(childNames[i])) {
-                return false;
-            }
-            obj = obj[childNames[i]];
-        }
-
-        return true;
-    }
-
     socket.on('createBrowserWindow', (options, loadUrl) => {
-        if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
+        if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
+            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true } };
+        } else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true } };
         }
 
