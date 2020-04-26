@@ -1,4 +1,4 @@
-import { clipboard } from 'electron';
+import { clipboard, nativeImage } from 'electron';
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
@@ -59,5 +59,17 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('clipboard-write', (data, type) => {
         clipboard.write(data, type);
+    });
+
+    socket.on('clipboard-readImage', (type) => {
+        var image = clipboard.readImage(type);
+        var b64 = image.getNativeHandle().buffer.toString('base64');
+        electronSocket.emit('clipboard-readImage-Completed', b64);
+    });
+
+    socket.on('clipboard-writeImage', (data, type) => {
+        var buff = Buffer.from(JSON.parse(data), 'base64');
+        const ni = nativeImage.createFromBuffer(buff);
+        clipboard.writeImage(ni, type);
     });
 };

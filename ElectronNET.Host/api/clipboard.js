@@ -48,5 +48,14 @@ module.exports = (socket) => {
     socket.on('clipboard-write', (data, type) => {
         electron_1.clipboard.write(data, type);
     });
+	socket.on('clipboard-readImage', (type) => {
+        const image = electron_1.clipboard.readImage(type);
+        electronSocket.emit('clipboard-readImage-Completed', image.getNativeHandle().buffer);
+    });
+    socket.on('clipboard-writeImage', (data, type) => {
+        const buff = Buffer.from(JSON.parse(data), 'base64');
+        const ni = electron_1.nativeImage.createFromBuffer(buff); 
+        electron_1.clipboard.writeImage(ni, type);
+    });
 };
 //# sourceMappingURL=clipboard.js.map

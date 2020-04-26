@@ -1,4 +1,5 @@
-﻿using ElectronNET.API.Entities;
+﻿using System;
+using ElectronNET.API.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -235,6 +236,43 @@ namespace ElectronNET.API
         public void Write(Data data, string type = "")
         {
             BridgeConnector.Socket.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
+        }
+
+        /// <summary>
+        /// Reads an image from the clipboard.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public Task<NativeImage> ReadImageAsync(string type = "")
+        {
+            var taskCompletionSource = new TaskCompletionSource<NativeImage>();
+
+            BridgeConnector.Socket.On("clipboard-readImage-Completed", (image) =>
+            {
+                BridgeConnector.Socket.Off("clipboard-readImage-Completed");
+
+                var b64 = image.ToString();
+                var bytes = Convert.FromBase64String(b64);
+
+                var nativeImage = NativeImage.CreateFromBuffer(bytes);
+
+                taskCompletionSource.SetResult(nativeImage);
+                
+            });
+
+            BridgeConnector.Socket.Emit("clipboard-readImage", type);
+            
+            return taskCompletionSource.Task;
+        }
+        
+        /// <summary>
+        /// Writes an image to the clipboard.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="type"></param>
+        public void WriteImage(NativeImage image, string type = "")
+        {
+            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image.GetBytes()), type);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
