@@ -1,7 +1,7 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const path = require('path');
-const process = require('child_process').spawn;
+const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const imageSize = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
@@ -11,12 +11,25 @@ let commandLine, browserView;
 let splashScreen, hostHook;
 
 let manifestJsonFileName = 'electron.manifest.json';
-if(app.commandLine.hasSwitch('manifest')) {
+let watchable = false;
+if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
 
-const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
-const manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+if (app.commandLine.hasSwitch('watch')) {
+    watchable = true;
+};
+
+let currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
+let manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+
+// if watch is enabled lets change the path
+if (watchable) {
+    currentBinPath = path.join(__dirname, '../../'); // go to project directory
+    currentBinPath = currentBinPath.substr(0, currentBinPath.length - 1);
+    manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+}
+
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
@@ -106,7 +119,11 @@ function startSocketApiBridge(port) {
     server.on('listening', function () {
         console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
-        startAspCoreBackend(port);
+        if (watchable) {
+            startAspCoreBackendWithWatch(port);
+        } else {
+            startAspCoreBackend(port);
+        }
     });
 
     io.on('connection', (socket) => {
@@ -153,7 +170,7 @@ function isModuleAvailable(name) {
 }
 
 function startAspCoreBackend(electronPort) {
-    if(manifestJsonFile.aspCoreBackendPort) {
+    if (manifestJsonFile.aspCoreBackendPort) {
         startBackend(manifestJsonFile.aspCoreBackendPort)
     } else {
         // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
@@ -175,7 +192,37 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        apiProcess = process(binFilePath, parameters, options);
+        apiProcess = cProcess(binFilePath, parameters, options);
+
+        apiProcess.stdout.on('data', (data) => {
+            console.log(`stdout: ${data.toString()}`);
+        });
+    }
+}
+
+function startAspCoreBackendWithWatch(electronPort) {
+    if (manifestJsonFile.aspCoreBackendPort) {
+        startBackend(manifestJsonFile.aspCoreBackendPort)
+    } else {
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(electronPort + 1, 65535, 'localhost', function (error, electronWebPort) {
+            startBackend(electronWebPort);
+        });
+    }
+
+    function startBackend(aspCoreBackendPort) {
+        console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
+        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        const parameters = ['watch','run', `--project ${currentBinPath}`, `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+
+        console.log(currentBinPath);
+        var options = {
+            cwd: currentBinPath,
+            env: {
+                PATH: process.env.PATH
+            }
+        };
+        apiProcess = cProcess('dotnet', parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
