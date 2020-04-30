@@ -65,14 +65,14 @@ namespace ElectronNET.CLI.Commands
                 if (parser != null && parser.Contains("watch"))
                 {
 
-                    // if not exists then create mklink
-                    if (!Directory.Exists($"{tempBinPath}")) Directory.CreateDirectory(tempBinPath);
-                    if (!Directory.Exists($"{tempBinPath}\\wwwroot")) resultCode = ProcessHelper.CmdExecute($"mklink /D {tempBinPath}\\wwwroot wwwroot", aspCoreProjectPath);
+                    // no need for this code i will remove this before PRS
+                    //if (!Directory.Exists($"{tempBinPath}")) Directory.CreateDirectory(tempBinPath);
+                    //if (!Directory.Exists($"{tempBinPath}\\wwwroot")) resultCode = ProcessHelper.CmdExecute($"mklink /D {tempBinPath}\\wwwroot wwwroot", aspCoreProjectPath);
 
-                    if (!File.Exists($"{tempBinPath}\\electron.manifest.json"))
-                    {
-                        resultCode = ProcessHelper.CmdExecute($"mklink /h {tempBinPath}\\electron.manifest.json electron.manifest.json", aspCoreProjectPath);
-                    }
+                    //if (!File.Exists($"{tempBinPath}\\electron.manifest.json"))
+                    //{
+                    //    resultCode = ProcessHelper.CmdExecute($"mklink /h {tempBinPath}\\electron.manifest.json electron.manifest.json", aspCoreProjectPath);
+                    //}
 
                 }
                 else
