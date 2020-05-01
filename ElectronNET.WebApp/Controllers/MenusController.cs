@@ -112,7 +112,9 @@ namespace ElectronNET.WebApp.Controllers
                 new MenuItem { Label = "Electron.NET", Type = MenuType.checkbox, Checked = true }
             };
 
-            var mainWindow = Electron.WindowManager.BrowserWindows.First();
+            var mainWindow = Electron.WindowManager.BrowserWindows.FirstOrDefault();
+            if (mainWindow == null) return;
+
             Electron.Menu.SetContextMenu(mainWindow, menu);
 
             Electron.IpcMain.On("show-context-menu", (args) =>

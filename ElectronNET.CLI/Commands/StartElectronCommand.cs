@@ -60,7 +60,12 @@ namespace ElectronNET.CLI.Commands
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", aspCoreProjectPath);
+                var resultCode = 0;
+
+                if (parser != null && !parser.Arguments.ContainsKey("watch"))
+                {
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", aspCoreProjectPath);
+                }
 
                 if (resultCode != 0)
                 {
@@ -110,6 +115,11 @@ namespace ElectronNET.CLI.Commands
                     arguments += " --clear-cache=true";
                 }
 
+                if (parser.Arguments.ContainsKey("watch"))
+                {
+                    arguments += " --watch=true";
+                }
+
                 string path = Path.Combine(tempPath, "node_modules", ".bin");
                 bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
@@ -117,6 +127,7 @@ namespace ElectronNET.CLI.Commands
                 {
                     Console.WriteLine("Invoke electron.cmd - in dir: " + path);
                     ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js"" " + arguments, path);
+
                 }
                 else
                 {

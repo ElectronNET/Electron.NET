@@ -1,22 +1,36 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const path = require('path');
-const process = require('child_process').spawn;
+const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const imageSize = require('image-size');
+const chalk = require('chalk');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let splashScreen, hostHook;
+let mainWindowId;
 
 let manifestJsonFileName = 'electron.manifest.json';
-if(app.commandLine.hasSwitch('manifest')) {
+let watchable = false;
+if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
 
-const currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
-const manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+if (app.commandLine.hasSwitch('watch')) {
+    watchable = true;
+};
+
+let currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
+let manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+
+// if watch is enabled lets change the path
+if (watchable) {
+    currentBinPath = path.join(__dirname, '../../'); // go to project directory
+    manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+}
+
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
@@ -42,7 +56,7 @@ app.on('ready', () => {
 
     // hostname needs to belocalhost, otherwise Windows Firewall will be triggered.
     portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, port) {
-        console.log('Electron Socket IO Port: ' + port);
+        console.log(chalk.blue('Electron Socket IO Port: ' + port));
         startSocketApiBridge(port);
     });
 
@@ -62,8 +76,8 @@ function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
-            console.log(error);
+            console.log(chalk.bold.red(`load splashscreen error:`));
+            console.log(chalk.bold.red(error));
 
             throw new Error(error.message);
         }
@@ -104,15 +118,46 @@ function startSocketApiBridge(port) {
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
-        console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
+        console.log(chalk.bgGreenBright('Electron Socket started on port %s at %s', server.address().port, server.address().address));
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
-        startAspCoreBackend(port);
+        if (watchable) {
+            startAspCoreBackendWithWatch(port);
+        } else {
+            startAspCoreBackend(port);
+        }
     });
 
+    // prototype
+    app['mainWindowURL'] = "";
+    app['mainWindow'] = null;
+
     io.on('connection', (socket) => {
+
+        // we need to remove previously cache instances 
+        // otherwise it will fire the same event multiple depends how many time
+        // live reload watch happen.
+        socket.on('disconnect', function () {
+            console.log(chalk.bold.red('Got disconnect!'));
+            delete require.cache[require.resolve('./api/app')];
+            delete require.cache[require.resolve('./api/browserWindows')];
+            delete require.cache[require.resolve('./api/commandLine')];
+            delete require.cache[require.resolve('./api/autoUpdater')];
+            delete require.cache[require.resolve('./api/ipc')];
+            delete require.cache[require.resolve('./api/menu')];
+            delete require.cache[require.resolve('./api/dialog')];
+            delete require.cache[require.resolve('./api/notification')];
+            delete require.cache[require.resolve('./api/tray')];
+            delete require.cache[require.resolve('./api/webContents')];
+            delete require.cache[require.resolve('./api/globalShortcut')];
+            delete require.cache[require.resolve('./api/shell')];
+            delete require.cache[require.resolve('./api/screen')];
+            delete require.cache[require.resolve('./api/clipboard')];
+            delete require.cache[require.resolve('./api/browserView')];
+        });
+
         global['electronsocket'] = socket;
         global['electronsocket'].setMaxListeners(0);
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+        console.log(chalk.bold.bgCyan('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date()));
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
@@ -130,6 +175,8 @@ function startSocketApiBridge(port) {
         clipboard = require('./api/clipboard')(socket);
         browserView = require('./api/browserView')(socket);
 
+
+
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
 
@@ -139,7 +186,7 @@ function startSocketApiBridge(port) {
                 hostHook.onHostReady();
             }
         } catch (error) {
-            console.log(error.message);
+            console.log(chalk.bold.red(error.message));
         }
     });
 }
@@ -153,7 +200,7 @@ function isModuleAvailable(name) {
 }
 
 function startAspCoreBackend(electronPort) {
-    if(manifestJsonFile.aspCoreBackendPort) {
+    if (manifestJsonFile.aspCoreBackendPort) {
         startBackend(manifestJsonFile.aspCoreBackendPort)
     } else {
         // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
@@ -175,10 +222,37 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        apiProcess = process(binFilePath, parameters, options);
+        apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
+        });
+    }
+}
+
+function startAspCoreBackendWithWatch(electronPort) {
+    if (manifestJsonFile.aspCoreBackendPort) {
+        startBackend(manifestJsonFile.aspCoreBackendPort)
+    } else {
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(electronPort + 1, 65535, 'localhost', function (error, electronWebPort) {
+            startBackend(electronWebPort);
+        });
+    }
+
+    function startBackend(aspCoreBackendPort) {
+        console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
+        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        const parameters = ['watch', 'run', `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+
+        var options = {
+            cwd: currentBinPath,
+            env: process.env,
+        };
+        apiProcess = cProcess('dotnet', parameters, options);
+
+        apiProcess.stdout.on('data', (data) => {
+            console.log(chalk.bold.blue(`${data.toString()}`));
         });
     }
 }
