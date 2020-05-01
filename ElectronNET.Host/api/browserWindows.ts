@@ -3,8 +3,7 @@ const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
-let mainWindowId;
-
+let mainWindowURL;
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;
     socket.on('register-browserWindow-ready-to-show', (id) => {
@@ -200,24 +199,16 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             options = { ...options, webPreferences: { nodeIntegration: true } };
         }
 
-        // lets not recreate the same window if its already open
-        let nWindow = null;
-
-        if (app.commandLine.hasSwitch('watch')) {
-            (app as any).on('hot-reload', (id) => {
-                mainWindowId = id;
-                nWindow = getWindowById(mainWindowId);
-                if (nWindow) {
-                    nWindow.reload();
-                    if (loadUrl) {
-                        nWindow.loadURL(loadUrl);
-                    }
-                    return;
-                }
-            })
+        // we dont want to recreate the window when watch is ready.
+        if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
+            window = app['mainWindow'];
+            if (window) {
+                window.reload();
+            }
+        } else {
+            window = new BrowserWindow(options);
         }
 
-        window = new BrowserWindow(options);
         window.on('ready-to-show', () => {
             if (readyToShowWindowsIds.includes(window.id)) {
                 readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
@@ -263,10 +254,10 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             console.log('auto clear-cache active for new window.');
         }
 
-        // set main window id
-        if (mainWindowId == undefined) {
-            mainWindowId = window.id;
-            app.emit("mainWindow", mainWindowId);
+        // set main window url
+        if (app['mainWindowURL'] == undefined || app['mainWindowURL'] == "") {
+            app['mainWindowURL'] = loadUrl;
+            app['mainWindow'] = window;
         }
 
         windows.push(window);
@@ -767,6 +758,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         const browserView = BrowserView.fromId(browserViewId);
         getWindowById(id).setBrowserView(browserView);
     });
+
 
     function getWindowById(id: number): Electron.BrowserWindow {
         for (let index = 0; index < windows.length; index++) {
