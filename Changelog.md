@@ -1,12 +1,13 @@
 # Not released
 
+
+# Released
+
 # 8.31.1
 
 ElectronNET.API:
 
 * New Feature: Electron 8.2.3 support, but not all new features (we search contributors)
-
-# Released
 
 # 7.30.2
 
