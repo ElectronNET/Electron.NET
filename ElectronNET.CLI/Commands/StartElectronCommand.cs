@@ -62,20 +62,7 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = 0;
 
-                if (parser != null && parser.Contains("watch"))
-                {
-
-                    // no need for this code i will remove this before PRS
-                    //if (!Directory.Exists($"{tempBinPath}")) Directory.CreateDirectory(tempBinPath);
-                    //if (!Directory.Exists($"{tempBinPath}\\wwwroot")) resultCode = ProcessHelper.CmdExecute($"mklink /D {tempBinPath}\\wwwroot wwwroot", aspCoreProjectPath);
-
-                    //if (!File.Exists($"{tempBinPath}\\electron.manifest.json"))
-                    //{
-                    //    resultCode = ProcessHelper.CmdExecute($"mklink /h {tempBinPath}\\electron.manifest.json electron.manifest.json", aspCoreProjectPath);
-                    //}
-
-                }
-                else
+                if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
                     resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", aspCoreProjectPath);
                 }

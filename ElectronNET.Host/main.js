@@ -9,6 +9,7 @@ let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let splashScreen, hostHook;
+let mainWindowId;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -26,7 +27,6 @@ let manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 // if watch is enabled lets change the path
 if (watchable) {
     currentBinPath = path.join(__dirname, '../../'); // go to project directory
-    currentBinPath = currentBinPath.substr(0, currentBinPath.length - 1);
     manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 }
 
@@ -60,6 +60,11 @@ app.on('ready', () => {
     });
 
 });
+
+app.on("mainWindow", id => {
+    mainWindowId = id;
+    console.log(` Main Window ID = ${id}`);
+})
 
 function isSplashScreenEnabled() {
     if (manifestJsonFile.hasOwnProperty('splashscreen')) {
@@ -130,6 +135,11 @@ function startSocketApiBridge(port) {
         global['electronsocket'] = socket;
         global['electronsocket'].setMaxListeners(0);
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+
+        // send signal to reload
+        if (mainWindowId != undefined) {
+            app.emit("hot-reload", mainWindowId);
+        }
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
@@ -213,14 +223,12 @@ function startAspCoreBackendWithWatch(electronPort) {
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = ['watch','run', `--project ${currentBinPath}`, `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = ['watch', 'run', `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
 
         console.log(currentBinPath);
         var options = {
             cwd: currentBinPath,
-            env: {
-                PATH: process.env.PATH
-            }
+            env: process.env,
         };
         apiProcess = cProcess('dotnet', parameters, options);
 

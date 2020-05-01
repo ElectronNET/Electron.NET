@@ -3,6 +3,7 @@ const path = require('path');
 const windows: Electron.BrowserWindow[] = [];
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
+let mainWindowId;
 
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;
@@ -199,6 +200,23 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             options = { ...options, webPreferences: { nodeIntegration: true } };
         }
 
+        // lets not recreate the same window if its already open
+        let nWindow = null;
+
+        if (app.commandLine.hasSwitch('watch')) {
+            (app as any).on('hot-reload', (id) => {
+                mainWindowId = id;
+                nWindow = getWindowById(mainWindowId);
+                if (nWindow) {
+                    nWindow.reload();
+                    if (loadUrl) {
+                        nWindow.loadURL(loadUrl);
+                    }
+                    return;
+                }
+            })
+        }
+
         window = new BrowserWindow(options);
         window.on('ready-to-show', () => {
             if (readyToShowWindowsIds.includes(window.id)) {
@@ -243,6 +261,12 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             app.commandLine.getSwitchValue('clear-cache')) {
             window.webContents.session.clearCache();
             console.log('auto clear-cache active for new window.');
+        }
+
+        // set main window id
+        if (mainWindowId == undefined) {
+            mainWindowId = window.id;
+            app.emit("mainWindow", mainWindowId);
         }
 
         windows.push(window);
