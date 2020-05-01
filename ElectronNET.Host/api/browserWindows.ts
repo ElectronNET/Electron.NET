@@ -204,6 +204,9 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             window = app['mainWindow'];
             if (window) {
                 window.reload();
+                windows.push(window);
+                electronSocket.emit('BrowserWindowCreated', window.id);
+                return;
             }
         } else {
             window = new BrowserWindow(options);

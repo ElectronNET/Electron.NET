@@ -174,6 +174,9 @@ module.exports = (socket, app) => {
             window = app['mainWindow'];
             if (window) {
                 window.reload();
+                windows.push(window);
+                electronSocket.emit('BrowserWindowCreated', window.id);
+                return;
             }
         }
         else {
