@@ -40,6 +40,8 @@ Also you should have installed:
 
 We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
 
+[![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net)
+
 ## 👩‍🏫 Usage
 
 To activate and communicate with the "native" (sort of native...) Electron API include the [ElectronNET.API NuGet package](https://www.nuget.org/packages/ElectronNET.API/) in your ASP.NET Core app.
@@ -174,6 +176,8 @@ The problem working with this repository is, that NuGet has a pretty aggressive 
 ## 🙏 Donate
 
 We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
+
+[![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net)
 
 ## 🎉 License
 MIT-licensed
