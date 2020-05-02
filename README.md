@@ -19,12 +19,12 @@ The CLI extensions hosts our toolset to build and start Electron.NET application
 
 Well... there are lots of different approaches how to get a X-plat desktop app running. We thought it would be nice for .NET devs to use the ASP.NET Core environment and just embed it inside a pretty robust X-plat enviroment called Electron. Porting Electron to .NET is not a goal of this project, at least we don't have any clue how to do it. We just combine ASP.NET Core & Electron. 
 
-# 📦 NuGet:
+## 📦 NuGet:
 
 * API [![NuGet](https://img.shields.io/nuget/v/ElectronNET.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.API/) 
 * CLI [![NuGet](https://img.shields.io/nuget/v/ElectronNET.CLI.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.CLI/)
 
-# 🛠 Requirements to run:
+## 🛠 Requirements to run:
 
 The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET Core 3.1, so our minimum base OS is the same as [.NET Core 3.1](https://github.com/dotnet/core/blob/master/release-notes/3.1/3.1-supported-os.md).
 
@@ -32,22 +32,22 @@ Also you should have installed:
 
 * npm [contained in nodejs](https://nodejs.org)
 
-# 💬 Community
+## 💬 Community
 
 [![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-# 🙏 Donate
+## 🙏 Donate
 
 We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
 
-# 👩‍🏫 Usage
+## 👩‍🏫 Usage
 
 To activate and communicate with the "native" (sort of native...) Electron API include the [ElectronNET.API NuGet package](https://www.nuget.org/packages/ElectronNET.API/) in your ASP.NET Core app.
 
 ````
 PM> Install-Package ElectronNET.API
 ````
-## Program.cs
+### Program.cs
 
 You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension. 
 
@@ -61,7 +61,7 @@ You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension.
                 });
 ```
 
-## Startup.cs
+### Startup.cs
 
 Open the Electron Window in the Startup.cs file: 
 
@@ -151,7 +151,7 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 ### Note
 > macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
-# 👨‍💻 Authors
+## 👨‍💻 Authors
 
 * **Gregor Biswanger** - (Microsoft MVP, Intel Black Belt and Intel Software Innovator) is a freelance lecturer, consultant, trainer, author and speaker. He is a consultant for large and medium-sized companies, organizations and agencies for software architecture, web- and cross-platform development. You can find Gregor often on the road attending or speaking at international conferences. - [Cross-Platform-Blog](http://www.cross-platform-blog.com) - Twitter [@BFreakout](https://www.twitter.com/BFreakout)  
 * **Robert Muehsig** - Software Developer - from Dresden, Germany, now living & working in Switzerland. Microsoft MVP & Web Geek. - [codeinside Blog](https://blog.codeinside.eu) - Twitter [@robert0muehsig](https://twitter.com/robert0muehsig)  
@@ -159,11 +159,11 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
   
   
-# 🙋‍♀️🙋‍♂ Contributing
+## 🙋‍♀️🙋‍♂ Contributing
 Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
 Please make sure all commits are properly documented.
 
-# 🧪 Working with this Repo
+## 🧪 Working with this Repo
 
 This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
 
@@ -171,18 +171,18 @@ If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkou
 
 The problem working with this repository is, that NuGet has a pretty aggressive cache, see [here for further information](https://github.com/ElectronNET/Electron.NET/wiki).
 
-# 🙏 Donate
+## 🙏 Donate
 
 We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
 
-# 🎉 License
+## 🎉 License
 MIT-licensed
 
 **Enjoy!**
 
-# 📝 Important notes
+## 📝 Important notes
 
-## ElectronNET.API & ElectronNET.CLI Version 8.31.1
+### ElectronNET.API & ElectronNET.CLI Version 8.31.1
 
 Make sure you also have the new Electron.NET API & CLI 8.31.1 version.
 
@@ -229,7 +229,7 @@ dotnet tool update ElectronNET.CLI -g
 }
 ```
 
-## ElectronNET.CLI Version 0.0.9
+### ElectronNET.CLI Version 0.0.9
 
 In the Version 0.0.9 the CLI was not a global tool and needed to be registred like this in the .csproj:
 
@@ -252,7 +252,7 @@ If you still use this version you will need to invoke it like this:
 electronize ...
 ```
 
-## Node Integration
+### Node Integration
 Electron.NET requires Node Integration to be enabled for IPC to function.  If you are not using the IPC functionality you can disable Node Integration like so:
 
 ```csharp
