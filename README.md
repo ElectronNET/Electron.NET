@@ -48,13 +48,13 @@ PM> Install-Package ElectronNET.API
 You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension. 
 
 ```csharp
-public static IWebHost BuildWebHost(string[] args)
-{
-    return WebHost.CreateDefaultBuilder(args)
-        .UseStartup<Startup>()
-        .UseElectron(args)
-        .Build();
-}
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseElectron(args);
+                    webBuilder.UseStartup<Startup>();
+                });
 ```
 
 ## Startup.cs
@@ -62,41 +62,13 @@ public static IWebHost BuildWebHost(string[] args)
 Open the Electron Window in the Startup.cs file: 
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{            
-    services.AddMvc(option => option.EnableEndpointRouting = false);
-}
-
-public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
-    if (env.IsDevelopment())
-    {
-        app.UseDeveloperExceptionPage();
-        app.UseBrowserLink();
-    }
-    else
-    {
-        app.UseExceptionHandler("/Home/Error");
-    }
-
-    app.UseStaticFiles();
-
-    app.UseMvc(routes =>
-    {
-        routes.MapRoute(
-            name: "default",
-            template: "{controller=Home}/{action=Index}/{id?}");
-    });
+    ...
 
     // Open the Electron-Window here
     Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
 }
-```
-
-__Please note:__ Currently it is important to use ASP.NET Core with MVC. If you are working with the dotnet CLI, use
-
-```
-dotnet new mvc
 ```
 
 ## Start the Application
@@ -119,12 +91,25 @@ electronize init
 ```
 electronize start
 ```
+
+### Note
+> Only the first electronize start is slow. The next will go on faster.
+
+## Develop Electron.NET apps using a file watcher
+
+The file watcher is included with version 8.31.1 of Electron.NET. For example, a file change can trigger compilation, test execution, or deployment. The Electron.NET window will automatically refresh and new code changes will be visible more quickly. The following Electron.NET CLI command is required:
+
+```
+electronize start /watch
+```
+
 ### Note
 > Only the first electronize start is slow. The next will go on faster.
 
 ## Debug
 
 Start your Electron.NET application with the Electron.NET CLI command. In Visual Studio attach to your running application instance. Go in the __Debug__ Menu and click on __Attach to Process...__. Sort by your projectname on the right and select it on the list.
+
 
 ## Usage of the Electron-API
 
@@ -181,7 +166,7 @@ Please make sure all commits are properly documented.
   
 See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
 
-## Donate
+# Donate
 
 We do this open source work in our free time. If you'd like us to invest more time on it, please [donate](https://donorbox.org/electron-net). Donation can be used to increase some issue priority. Thank you!
 
@@ -192,9 +177,15 @@ MIT-licensed
 
 # Important notes
 
-## ElectronNET.API & ElectronNET.CLI Version 5.22.12
+## ElectronNET.API & ElectronNET.CLI Version 8.31.1
 
-Make sure you also have the new Electron.NET CLI 5.22.12 version. This now uses [electron-builder](https://www.electron.build/configuration/configuration) and the necessary configuration to build is made in the **electron.manifest.json** file. In addition, own Electron.NET configurations are stored. Please make sure that your **electron.manifest.json** file has the following new structure:
+Make sure you also have the new Electron.NET API & CLI 8.31.1 version.
+
+```
+dotnet tool update ElectronNET.CLI -g
+```
+
+ This now uses [electron-builder](https://www.electron.build/configuration/configuration) and the necessary configuration to build is made in the **electron.manifest.json** file (on the build part). In addition, own Electron.NET configurations are stored (on the root). Please make sure that your **electron.manifest.json** file has the following new structure:
 
 ```
 {
@@ -202,11 +193,13 @@ Make sure you also have the new Electron.NET CLI 5.22.12 version. This now uses 
   "splashscreen": {
     "imageFile": ""
   },
+  "name": "{{executable}}",
+  "author": "",
   "singleInstance": false,
   "build": {
     "appId": "com.{{executable}}.app",
     "productName": "{{executable}}",
-    "copyright": "Copyright © 2019",
+    "copyright": "Copyright © 2020",
     "buildVersion": "1.0.0",
     "compression": "maximum",
     "directories": {
@@ -251,7 +244,7 @@ dotnet restore
 If you still use this version you will need to invoke it like this:
 
 ```
-dotnet electronize ...
+electronize ...
 ```
 
 ## Node Integration
