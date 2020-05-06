@@ -4,6 +4,7 @@ const path = require('path');
 const windows = [];
 let readyToShowWindowsIds = [];
 let window, lastOptions, electronSocket;
+let mainWindowURL;
 module.exports = (socket, app) => {
     electronSocket = socket;
     socket.on('register-browserWindow-ready-to-show', (id) => {
@@ -168,7 +169,19 @@ module.exports = (socket, app) => {
         else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true } };
         }
-        window = new electron_1.BrowserWindow(options);
+        // we dont want to recreate the window when watch is ready.
+        if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
+            window = app['mainWindow'];
+            if (window) {
+                window.reload();
+                windows.push(window);
+                electronSocket.emit('BrowserWindowCreated', window.id);
+                return;
+            }
+        }
+        else {
+            window = new electron_1.BrowserWindow(options);
+        }
         window.on('ready-to-show', () => {
             if (readyToShowWindowsIds.includes(window.id)) {
                 readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
@@ -208,6 +221,11 @@ module.exports = (socket, app) => {
             app.commandLine.getSwitchValue('clear-cache')) {
             window.webContents.session.clearCache();
             console.log('auto clear-cache active for new window.');
+        }
+        // set main window url
+        if (app['mainWindowURL'] == undefined || app['mainWindowURL'] == "") {
+            app['mainWindowURL'] = loadUrl;
+            app['mainWindow'] = window;
         }
         windows.push(window);
         electronSocket.emit('BrowserWindowCreated', window.id);

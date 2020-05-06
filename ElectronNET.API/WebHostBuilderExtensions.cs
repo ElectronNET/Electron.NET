@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System;
+using System.IO;
 
 namespace ElectronNET.API
 {
@@ -22,16 +23,27 @@ namespace ElectronNET.API
                 {
                     BridgeSettings.SocketPort = argument.ToUpper().Replace("/ELECTRONPORT=", "");
                     Console.WriteLine("Use Electron Port: " + BridgeSettings.SocketPort);
-                } else if(argument.ToUpper().Contains("ELECTRONWEBPORT"))
+                }
+                else if (argument.ToUpper().Contains("ELECTRONWEBPORT"))
                 {
                     BridgeSettings.WebPort = argument.ToUpper().Replace("/ELECTRONWEBPORT=", "");
                 }
             }
 
-            if(HybridSupport.IsElectronActive)
+            if (HybridSupport.IsElectronActive)
             {
-                builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
-                    .UseUrls("http://127.0.0.1:" + BridgeSettings.WebPort);
+                // check for the content folder if its exists in base director otherwise no need to include
+                // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
+                // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
+                if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
+                {
+                    builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
+                        .UseUrls("http://localhost:" + BridgeSettings.WebPort);
+                }
+                else
+                {
+                    builder.UseUrls("http://localhost:" + BridgeSettings.WebPort);
+                }
             }
 
             return builder;
