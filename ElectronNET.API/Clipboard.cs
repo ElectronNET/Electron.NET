@@ -1,10 +1,8 @@
-﻿using System;
-using ElectronNET.API.Entities;
+﻿using ElectronNET.API.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
-using Console = System.Console;
 
 namespace ElectronNET.API
 {
