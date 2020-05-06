@@ -101,7 +101,6 @@ pasteBtn.addEventListener('click', () => {
                         <button class="demo-button" id="copy-image-to">Copy</button>
                         <textarea id="paste-image-div" onpaste="console.log('onpastefromhtml')"></textarea>
                         <div class="demo-image-box" id="image-paste-div"></div>
-                        <!--<input class="demo-input" id="copy-to-input" aria-label="Click copy" placeholder="Click copy."></input>-->
                     </div>
                     <p>In this example we copy an image to the Clipboard. After clicking 'Copy' use the text area to paste (CMD + V or CTRL + V) the image from the clipboard.</p>
                     <h5>Main Process (C#)</h5>
@@ -129,9 +128,45 @@ copyBtn.addEventListener('click', () => {
             </div>
         </div>
 
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="copy-to-demo-toggle" class="js-container-target demo-toggle-button">
+                    Paste Image
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="paste-image-from">Paste</button>
+                        <img class="demo-image-box" id="paste-image-from-div"></img>
+                    </div>
+                    <p>In this example we paste an image from the Clipboard. After clicking 'Paste', if your clipboard contained an image, the image will show up next to the paste button.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("paste-image-to", async test =>
+{
+    var nativeImage = await Electron.Clipboard.ReadImageAsync();
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "paste-image-from", JsonConvert.SerializeObject(nativeImage));
+});</code></pre>
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Electron.js Support in Electron.NET.</strong>
+                        <p>The <code>clipboard</code> module is built into Electron.js (therefore you can use this in the renderer processes).</p>
+                        <pre><code class="language-js">const { nativeImage, clipboard } = require('electron');
+
+const pasteBtn = document.getElementById('paste-to-image');
+
+copyBtn.addEventListener('click', () => {
+    const image = clipboard.readImage();
+    document.getElementById('image-holder').src = image.toDataURL();
+})</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <script>
             (function () {
-                const { ipcRenderer } = require("electron");
+                const { ipcRenderer, nativeImage } = require("electron");
 
                 document.getElementById("copy-to").addEventListener("click", () => {
                     document.getElementById('copy-to-input').placeholder = 'Copied! Paste here to see.';
@@ -146,9 +181,27 @@ copyBtn.addEventListener('click', () => {
                     ipcRenderer.send("copy-image-to", 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACmklEQVR42oVTX0hTURj/zr2b07utMR0st2m30UxZJRHpWNDjRkUPvgUZQdGD4Esq6yWf9EVx9iL4EAiBVNDDHqxs9RBI+ZcorLVSkemcNdmct827Oe92Ot1b270i9MHHOfc73/f7fvd3zofggGU/OD1k8RJ3E2/6Gw4TnyYerDoXei3PR/82uwtOliydlJbtoA1OhtY7AFVZxDOc3YRiegkELsRjPjKKMYxoz3+NlAAyc00sBuhTm9ztavNFoBizhIqVbYrZOOzHp0DYmhkHhHt1reGIePTrfeOQ2tzaranzAqI1cmJlw1IYF3KwF30F+a0Fv8Ed7kHbU40elc4SYOxXGJoxibmDl++D70W/AkeMvewX94VsEvjV57yQjrWhxNuTfsbW0lVlaynxHbw6AL4Jn9QSkdb4QIzQ4TfmIbsxP4zibxpmjE6vS33EfCjzEn+MFHrkuTikQsFZFJt07BxtvWSgVBXwX8MyQYU8xOcmObQ+cWLH6rpAANQy2RU3LKssX0tR2IfY7DsOrQbsM7VnHK5Kg04S69o8+J62HEpAfpbjMvBjcXkWrTw77jeyxq7qeqOUdH0J2u7pwNFsUbyF5cVNCAxkwPe4QfxORVKQXNsZRt+esJ5KvSpQ26hnKrQ0JBI5GLvLSSCntFLxl12x+NYDA5hqNJDnC/Dze4bPpgtt4o+Gxo8NGS10t9lOA6VCkEhViCByE4ur96C4j2BrVYDtWMHvvLHWIwJ8flTPEqp91dZie40Ng0ZbFIVKxCT+JqsEsscjSEYpUkyRpwy9p2+uR0pSfxqrYxFGnYxB6NDXCIzOKEDlHyCSkctQkEmpIJ1U8TxHj5L0kebb0fIwye3jQ5uH9PUiQIpxxoCnSSx49k5UMc6/ARiuBRgyrEC3AAAAAElFTkSuQmCC');
                 });
 
+                document.getElementById("paste-image-from").addEventListener("click", () => {
+                    ipcRenderer.send("paste-image-to");
+                });
+
                 ipcRenderer.on("paste-from", (sender, text) => {
                     const message = `Clipboard contents: ${text}`;
                     document.getElementById("paste-from").innerText = message;
+                });
+
+                ipcRenderer.on("paste-image-from", (sender, data) => {
+                    console.log(data);
+                    var data = JSON.parse(data);
+                    const ni = nativeImage.createEmpty();
+                    for (var i in data) {
+                        var scaleFactor = i;
+                        var bytes = data[i];
+                        var buff = Buffer.from(bytes, 'base64');
+                        ni.addRepresentation({ scaleFactor: scaleFactor, buffer: buff });
+                    }
+
+                    document.getElementById("paste-image-from-div").src = ni.toDataURL();
                 });
 
 

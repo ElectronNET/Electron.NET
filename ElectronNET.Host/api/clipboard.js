@@ -50,11 +50,18 @@ module.exports = (socket) => {
     });
 	socket.on('clipboard-readImage', (type) => {
         const image = electron_1.clipboard.readImage(type);
-        electronSocket.emit('clipboard-readImage-Completed', image.getNativeHandle().buffer);
+        electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
     });
     socket.on('clipboard-writeImage', (data, type) => {
-        const buff = Buffer.from(JSON.parse(data), 'base64');
-        const ni = electron_1.nativeImage.createFromBuffer(buff); 
+        var data = JSON.parse(data);
+        const ni = electron_1.nativeImage.createEmpty();
+        for (var i in data) {
+            var scaleFactor = i;
+            var bytes = data[i];
+            var buff = Buffer.from(bytes, 'base64');
+            ni.addRepresentation({ scaleFactor: scaleFactor, buffer: buff });
+        }
+
         electron_1.clipboard.writeImage(ni, type);
     });
 };

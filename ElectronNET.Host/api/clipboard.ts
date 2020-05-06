@@ -63,13 +63,19 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('clipboard-readImage', (type) => {
         var image = clipboard.readImage(type);
-        var b64 = image.getNativeHandle().buffer.toString('base64');
-        electronSocket.emit('clipboard-readImage-Completed', b64);
+        electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
     });
 
     socket.on('clipboard-writeImage', (data, type) => {
-        var buff = Buffer.from(JSON.parse(data), 'base64');
-        const ni = nativeImage.createFromBuffer(buff);
+        var data = JSON.parse(data);
+        const ni = nativeImage.createEmpty();
+        for (var i in data) {
+            var scaleFactor = i;
+            var bytes = data[i];
+            var buff = Buffer.from(bytes, 'base64');
+            ni.addRepresentation({ scaleFactor: +scaleFactor, buffer: buff });
+        }
+        
         clipboard.writeImage(ni, type);
     });
 };

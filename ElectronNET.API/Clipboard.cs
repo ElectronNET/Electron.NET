@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
+using Console = System.Console;
 
 namespace ElectronNET.API
 {
@@ -251,10 +252,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("clipboard-readImage-Completed");
 
-                var b64 = image.ToString();
-                var bytes = Convert.FromBase64String(b64);
-
-                var nativeImage = NativeImage.CreateFromBuffer(bytes);
+                var nativeImage = ((JObject)image).ToObject<NativeImage>();
 
                 taskCompletionSource.SetResult(nativeImage);
                 
@@ -272,7 +270,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void WriteImage(NativeImage image, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image.GetBytes()), type);
+            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
