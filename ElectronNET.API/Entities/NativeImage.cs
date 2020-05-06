@@ -265,7 +265,6 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Deprecated. Whether the image is a template image.
         /// </summary>
-        /// <param name="option"></param>
         public bool IsTemplateImage => _isTemplateImage;
 
         /// <summary>

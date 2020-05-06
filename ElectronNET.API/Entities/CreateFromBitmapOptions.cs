@@ -1,13 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CreateFromBitmapOptions
     {
+        /// <summary>
+        /// Gets or sets the width
+        /// </summary>
         public int? Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height
+        /// </summary>
         public int? Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scalefactor
+        /// </summary>
         public float ScaleFactor { get; set; } = 1.0f;
     }
 }
