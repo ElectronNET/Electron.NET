@@ -1,13 +1,38 @@
 # Not released
 
+# 8.31.2
+
+ElectronNET.API:
+
+* New Feature: NativeImage Support (thanks [ThrDev](https://github.com/ThrDev)) [\#394](https://github.com/ElectronNET/Electron.NET/pull/394)  
 
 # Released
 
 # 8.31.1
 
+ElectronNET.CLI:
+* New Feature: Set a name and author of the app in `electron.manifest.json` [\#348](https://github.com/ElectronNET/Electron.NET/issues/348#issuecomment-615977950) [\#310](https://github.com/ElectronNET/Electron.NET/issues/310#issuecomment-617361086)
+* New Feature: Live reload (thanks [syedadeel2](https://github.com/syedadeel2)) [\#390](https://github.com/ElectronNET/Electron.NET/pull/390)  
+`electronize start /watch`
+* New Feature: Every new window will created with an clear cache [\#273](https://github.com/ElectronNET/Electron.NET/issues/273)  
+`electronize start /clear-cache`
+
 ElectronNET.API:
 
-* New Feature: Electron 8.2.3 support, but not all new features (we search contributors)
+* New Feature: Native Electron 8.2.3 support, but not all new features (we search contributors)
+* New Feature: We incease the startup time for ~25-36% [\#356](https://github.com/ElectronNET/Electron.NET/issues/356)
+* New Feature: Added print capability (thanks [x-xx-o](https://github.com/x-xx-o)) [\#355](https://github.com/ElectronNET/Electron.NET/pull/355)
+* New Feature: BrowserView API [\#371](https://github.com/ElectronNET/Electron.NET/issues/371)
+* Changed App.GetNameAsync and App.SetNameAsync to the App.Name Property [\#350](https://github.com/ElectronNET/Electron.NET/issues/350)
+* Fixed bug: Splash Screen disappearing on click [\#357](https://github.com/ElectronNET/Electron.NET/issues/357)
+* Fixed bug: Start MenuRole enum at 1 (thanks [jjuback](https://github.com/jjuback)) [\#369](https://github.com/ElectronNET/Electron.NET/pull/369)
+* Fixed bug: BridgeConnector not connected (spam console) [\#347](https://github.com/ElectronNET/Electron.NET/issues/347)
+* Fixed bug: BrowserWindowOptions is not setting Width and Height properly [\#373](https://github.com/ElectronNET/Electron.NET/issues/373)
+* Fixed bug: IpcMain.Once(string) is not one time use, is not removing listener [\#366](https://github.com/ElectronNET/Electron.NET/issues/366)
+* Fixed bug: IpcMain.RemoveAllListeners(string) is not removing the listeners [\#365](https://github.com/ElectronNET/Electron.NET/issues/365)
+* Fixed bug: GetLoginItemSettingsAsync does not work [\#352](https://github.com/ElectronNET/Electron.NET/issues/352)
+* Fixed bug: Using OnReadyToShow to display the main window in Blazor does not seem to work with Show set to false [\#361](https://github.com/ElectronNET/Electron.NET/issues/361)
+* Fixed bug: Unable to disable WebSecurity along with NodeIntegration enabled [\#389](https://github.com/ElectronNET/Electron.NET/issues/389)
 
 # 7.30.2
 
