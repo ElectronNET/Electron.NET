@@ -203,3 +203,7 @@
   font-weight: 600;
 }
 
+/* Clipboard paste image ------------------ */
+.demo-image-box {
+    padding-left: 15px;
+}

@@ -237,6 +237,40 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
         }
 
+        /// <summary>
+        /// Reads an image from the clipboard.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public Task<NativeImage> ReadImageAsync(string type = "")
+        {
+            var taskCompletionSource = new TaskCompletionSource<NativeImage>();
+
+            BridgeConnector.Socket.On("clipboard-readImage-Completed", (image) =>
+            {
+                BridgeConnector.Socket.Off("clipboard-readImage-Completed");
+
+                var nativeImage = ((JObject)image).ToObject<NativeImage>();
+
+                taskCompletionSource.SetResult(nativeImage);
+                
+            });
+
+            BridgeConnector.Socket.Emit("clipboard-readImage", type);
+            
+            return taskCompletionSource.Task;
+        }
+        
+        /// <summary>
+        /// Writes an image to the clipboard.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="type"></param>
+        public void WriteImage(NativeImage image, string type = "")
+        {
+            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

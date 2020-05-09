@@ -41,6 +41,7 @@ This package contains the API to access the "native" electron API.</Description>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SocketIoClientDotNet" Version="1.0.5" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
 </Project>

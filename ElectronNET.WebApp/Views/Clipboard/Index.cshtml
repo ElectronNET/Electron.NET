@@ -8,7 +8,7 @@
                 </h1>
                 <h3>The <code>Electron.Clipboard</code> provides methods to perform copy and paste operations.</h3>
                 <p>This module also has methods for copying text as markup (HTML) to the clipboard.</p>
-                
+
                 <p>You find the sample source code in <code>Controllers\ClipboardController.cs</code>.</p>
             </div>
         </header>
@@ -90,23 +90,205 @@ pasteBtn.addEventListener('click', () => {
             </div>
         </div>
 
-         <script>
-            (function(){
-                const { ipcRenderer } = require("electron");
-                
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="copy-to-demo-toggle" class="js-container-target demo-toggle-button">
+                    Copy Image
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="copy-image-to">Copy</button>
+                        <textarea id="paste-image-div" onpaste="console.log('onpastefromhtml')"></textarea>
+                        <div class="demo-image-box" id="image-paste-div"></div>
+                    </div>
+                    <p>In this example we copy an image to the Clipboard. After clicking 'Copy' use the text area to paste (CMD + V or CTRL + V) the image from the clipboard.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("copy-image-to", async (test) =>
+{
+    var nativeImage = NativeImage.CreateFromDataURL(test.ToString());
+    Electron.Clipboard.WriteImage(nativeImage);
+});</code></pre>
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Electron.js Support in Electron.NET.</strong>
+                        <p>The <code>clipboard</code> module is built into Electron.js (therefore you can use this in the renderer processes).</p>
+                        <pre><code class="language-js">const { nativeImage, clipboard } = require('electron');
+
+const copyBtn = document.getElementById('copy-to-image');
+const imageDataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACmklEQVR42oVTX0hTURj/zr2b07utMR0st2m30UxZJRHpWNDjRkUPvgUZQdGD4Esq6yWf9EVx9iL4EAiBVNDDHqxs9RBI+ZcorLVSkemcNdmct827Oe92Ot1b270i9MHHOfc73/f7fvd3zofggGU/OD1k8RJ3E2/6Gw4TnyYerDoXei3PR/82uwtOliydlJbtoA1OhtY7AFVZxDOc3YRiegkELsRjPjKKMYxoz3+NlAAyc00sBuhTm9ztavNFoBizhIqVbYrZOOzHp0DYmhkHhHt1reGIePTrfeOQ2tzaranzAqI1cmJlw1IYF3KwF30F+a0Fv8Ed7kHbU40elc4SYOxXGJoxibmDl++D70W/AkeMvewX94VsEvjV57yQjrWhxNuTfsbW0lVlaynxHbw6AL4Jn9QSkdb4QIzQ4TfmIbsxP4zibxpmjE6vS33EfCjzEn+MFHrkuTikQsFZFJt07BxtvWSgVBXwX8MyQYU8xOcmObQ+cWLH6rpAANQy2RU3LKssX0tR2IfY7DsOrQbsM7VnHK5Kg04S69o8+J62HEpAfpbjMvBjcXkWrTw77jeyxq7qeqOUdH0J2u7pwNFsUbyF5cVNCAxkwPe4QfxORVKQXNsZRt+esJ5KvSpQ26hnKrQ0JBI5GLvLSSCntFLxl12x+NYDA5hqNJDnC/Dze4bPpgtt4o+Gxo8NGS10t9lOA6VCkEhViCByE4ur96C4j2BrVYDtWMHvvLHWIwJ8flTPEqp91dZie40Ng0ZbFIVKxCT+JqsEsscjSEYpUkyRpwy9p2+uR0pSfxqrYxFGnYxB6NDXCIzOKEDlHyCSkctQkEmpIJ1U8TxHj5L0kebb0fIwye3jQ5uH9PUiQIpxxoCnSSx49k5UMc6/ARiuBRgyrEC3AAAAAElFTkSuQmCC';
+
+copyBtn.addEventListener('click', () => {
+    var image = nativeImage.CreateFromDataURL(imageDataUrl);
+    clipboard.WriteImage(image);
+})
+</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo">
+            <div class="demo-wrapper">
+                <button id="copy-to-demo-toggle" class="js-container-target demo-toggle-button">
+                    Paste Image
+                    <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Both</div>
+                </button>
+                <div class="demo-box">
+                    <div class="demo-controls">
+                        <button class="demo-button" id="paste-image-from">Paste</button>
+                        <img class="demo-image-box" id="paste-image-from-div"></img>
+                    </div>
+                    <p>In this example we paste an image from the Clipboard. After clicking 'Paste', if your clipboard contained an image, the image will show up next to the paste button.</p>
+                    <h5>Main Process (C#)</h5>
+                    <pre><code class="csharp">Electron.IpcMain.On("paste-image-to", async test =>
+{
+    var nativeImage = await Electron.Clipboard.ReadImageAsync();
+    var mainWindow = Electron.WindowManager.BrowserWindows.First();
+    Electron.IpcMain.Send(mainWindow, "paste-image-from", JsonConvert.SerializeObject(nativeImage));
+});</code></pre>
+                    <div class="demo-protip">
+                        <h2>ProTip</h2>
+                        <strong>Electron.js Support in Electron.NET.</strong>
+                        <p>The <code>clipboard</code> module is built into Electron.js (therefore you can use this in the renderer processes).</p>
+                        <pre><code class="language-js">const { nativeImage, clipboard } = require('electron');
+
+const pasteBtn = document.getElementById('paste-to-image');
+
+copyBtn.addEventListener('click', () => {
+    const image = clipboard.readImage();
+    document.getElementById('image-holder').src = image.toDataURL();
+})</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            (function () {
+                const { ipcRenderer, nativeImage } = require("electron");
+
                 document.getElementById("copy-to").addEventListener("click", () => {
                     document.getElementById('copy-to-input').placeholder = 'Copied! Paste here to see.';
                     ipcRenderer.send("copy-to", "Electron.NET Demo!");
                 });
-                
+
                 document.getElementById("paste-to").addEventListener("click", () => {
                     ipcRenderer.send("paste-to", "What a demo!");
+                });
+
+                document.getElementById("copy-image-to").addEventListener("click", () => {
+                    ipcRenderer.send("copy-image-to", 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACmklEQVR42oVTX0hTURj/zr2b07utMR0st2m30UxZJRHpWNDjRkUPvgUZQdGD4Esq6yWf9EVx9iL4EAiBVNDDHqxs9RBI+ZcorLVSkemcNdmct827Oe92Ot1b270i9MHHOfc73/f7fvd3zofggGU/OD1k8RJ3E2/6Gw4TnyYerDoXei3PR/82uwtOliydlJbtoA1OhtY7AFVZxDOc3YRiegkELsRjPjKKMYxoz3+NlAAyc00sBuhTm9ztavNFoBizhIqVbYrZOOzHp0DYmhkHhHt1reGIePTrfeOQ2tzaranzAqI1cmJlw1IYF3KwF30F+a0Fv8Ed7kHbU40elc4SYOxXGJoxibmDl++D70W/AkeMvewX94VsEvjV57yQjrWhxNuTfsbW0lVlaynxHbw6AL4Jn9QSkdb4QIzQ4TfmIbsxP4zibxpmjE6vS33EfCjzEn+MFHrkuTikQsFZFJt07BxtvWSgVBXwX8MyQYU8xOcmObQ+cWLH6rpAANQy2RU3LKssX0tR2IfY7DsOrQbsM7VnHK5Kg04S69o8+J62HEpAfpbjMvBjcXkWrTw77jeyxq7qeqOUdH0J2u7pwNFsUbyF5cVNCAxkwPe4QfxORVKQXNsZRt+esJ5KvSpQ26hnKrQ0JBI5GLvLSSCntFLxl12x+NYDA5hqNJDnC/Dze4bPpgtt4o+Gxo8NGS10t9lOA6VCkEhViCByE4ur96C4j2BrVYDtWMHvvLHWIwJ8flTPEqp91dZie40Ng0ZbFIVKxCT+JqsEsscjSEYpUkyRpwy9p2+uR0pSfxqrYxFGnYxB6NDXCIzOKEDlHyCSkctQkEmpIJ1U8TxHj5L0kebb0fIwye3jQ5uH9PUiQIpxxoCnSSx49k5UMc6/ARiuBRgyrEC3AAAAAElFTkSuQmCC');
+                });
+
+                document.getElementById("paste-image-from").addEventListener("click", () => {
+                    ipcRenderer.send("paste-image-to");
                 });
 
                 ipcRenderer.on("paste-from", (sender, text) => {
                     const message = `Clipboard contents: ${text}`;
                     document.getElementById("paste-from").innerText = message;
                 });
+
+                ipcRenderer.on("paste-image-from", (sender, data) => {
+                    console.log(data);
+                    var data = JSON.parse(data);
+                    const ni = nativeImage.createEmpty();
+                    for (var i in data) {
+                        var scaleFactor = i;
+                        var bytes = data[i];
+                        var buff = Buffer.from(bytes, 'base64');
+                        ni.addRepresentation({ scaleFactor: scaleFactor, buffer: buff });
+                    }
+
+                    document.getElementById("paste-image-from-div").src = ni.toDataURL();
+                });
+
+
+                var PasteImage = function (el) {
+                    this._el = el;
+                    this._listenForPaste();
+                };
+
+                PasteImage.prototype._getURLObj = function () {
+                    return window.URL || window.webkitURL;
+                };
+
+                PasteImage.prototype._pasteImage = function (image) {
+                    this.emit('paste-image', image);
+                };
+
+                PasteImage.prototype._pasteImageSource = function (src) {
+                    var self = this,
+                        image = new Image();
+
+                    image.onload = function () {
+                        self._pasteImage(image);
+                    };
+
+                    image.src = src;
+                };
+
+                PasteImage.prototype._onPaste = function (e) {
+
+                    // We need to check if event.clipboardData is supported (Chrome & IE)
+                    if (e.clipboardData && e.clipboardData.items) {
+
+                        // Get the items from the clipboard
+                        var items = e.clipboardData.items;
+
+                        // Loop through all items, looking for any kind of image
+                        for (var i = 0; i < items.length; i++) {
+                            if (items[i].type.indexOf('image') !== -1) {
+                                // We need to represent the image as a file
+                                var blob = items[i].getAsFile();
+
+                                // Use a URL or webkitURL (whichever is available to the browser) to create a
+                                // temporary URL to the object
+                                var URLObj = this._getURLObj();
+                                var source = URLObj.createObjectURL(blob);
+
+                                // The URL can then be used as the source of an image
+                                this._pasteImageSource(source);
+
+                                // Prevent the image (or URL) from being pasted into the contenteditable element
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                };
+
+                PasteImage.prototype._listenForPaste = function () {
+                    var self = this;
+
+                    self._origOnPaste = self._el.onpaste;
+
+                    self._el.addEventListener('paste', function (e) {
+
+                        self._onPaste(e);
+
+                        // Preserve an existing onpaste event handler
+                        if (self._origOnPaste) {
+                            self._origOnPaste.apply(this, arguments);
+                        }
+
+                    });
+                };
+
+                PasteImage.prototype.on = function (event, callback) {
+                    this._callback = callback;
+                };
+
+                PasteImage.prototype.emit = function (event, arg) {
+                    this._callback(arg);
+                };
+
+                var pasteImage = new PasteImage(document.getElementById('paste-image-div'));
+
+                pasteImage.on('paste-image', function (image) {
+                    document.getElementById('image-paste-div').appendChild(image);
+                });
+
 
             }());
         </script>
