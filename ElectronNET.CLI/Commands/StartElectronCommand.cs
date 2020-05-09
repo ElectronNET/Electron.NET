@@ -26,6 +26,7 @@ namespace ElectronNET.CLI.Commands
         private string _arguments = "args";
         private string _manifest = "manifest";
         private string _clearCache = "clear-cache";
+        private string _paramPublishReadyToRun = "PublishReadyToRun";
 
         public Task<bool> ExecuteAsync()
         {
@@ -62,9 +63,19 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = 0;
 
+                string publishReadyToRun = "/p:PublishReadyToRun=";
+                if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
+                {
+                    publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
+                }
+                else
+                {
+                    publishReadyToRun += "true";
+                }
+
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)

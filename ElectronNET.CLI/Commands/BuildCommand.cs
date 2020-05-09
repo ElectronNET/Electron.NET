@@ -42,6 +42,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramPackageJson = "package-json";
         private string _paramForceNodeInstall = "install-modules";
         private string _manifest = "manifest";
+        private string _paramPublishReadyToRun = "PublishReadyToRun";
 
         public Task<bool> ExecuteAsync()
         {
@@ -95,7 +96,17 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
 
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c {configuration} --output \"{tempBinPath}\" /p:PublishReadyToRun=true --no-self-contained", Directory.GetCurrentDirectory());
+                string publishReadyToRun = "/p:PublishReadyToRun=";
+                if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
+                {
+                    publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
+                } 
+                else
+                {
+                    publishReadyToRun += "true";
+                }
+
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c {configuration} --output \"{tempBinPath}\" {publishReadyToRun} --self-contained", Directory.GetCurrentDirectory());
 
                 if (resultCode != 0)
                 {
