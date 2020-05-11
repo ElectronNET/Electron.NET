@@ -9,10 +9,17 @@ module.exports = (socket) => {
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, browserWindowId) => {
             electronSocket.emit('contextMenuItemClicked', [id, browserWindowId]);
         });
-        contextMenuItems.push({
+        const index = contextMenuItems.findIndex(contextMenu => contextMenu.browserWindowId === browserWindowId);
+        const contextMenuItem = {
             menu: menu,
             browserWindowId: browserWindowId
-        });
+        };
+        if (index === -1) {
+            contextMenuItems.push(contextMenuItem);
+        }
+        else {
+            contextMenuItems[index] = contextMenuItem;
+        }
     });
     function addContextMenuItemClickConnector(menuItems, browserWindowId, callback) {
         menuItems.forEach((item) => {

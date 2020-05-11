@@ -48,8 +48,8 @@ module.exports = (socket) => {
     socket.on('clipboard-write', (data, type) => {
         electron_1.clipboard.write(data, type);
     });
-	socket.on('clipboard-readImage', (type) => {
-        const image = electron_1.clipboard.readImage(type);
+    socket.on('clipboard-readImage', (type) => {
+        var image = electron_1.clipboard.readImage(type);
         electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
     });
     socket.on('clipboard-writeImage', (data, type) => {
@@ -59,9 +59,8 @@ module.exports = (socket) => {
             var scaleFactor = i;
             var bytes = data[i];
             var buff = Buffer.from(bytes, 'base64');
-            ni.addRepresentation({ scaleFactor: scaleFactor, buffer: buff });
+            ni.addRepresentation({ scaleFactor: +scaleFactor, buffer: buff });
         }
-
         electron_1.clipboard.writeImage(ni, type);
     });
 };
