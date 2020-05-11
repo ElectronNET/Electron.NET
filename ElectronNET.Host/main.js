@@ -8,6 +8,7 @@ let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
+let powerMonitor;
 let splashScreen, hostHook;
 let mainWindowId;
 
@@ -152,6 +153,7 @@ function startSocketApiBridge(port) {
             delete require.cache[require.resolve('./api/screen')];
             delete require.cache[require.resolve('./api/clipboard')];
             delete require.cache[require.resolve('./api/browserView')];
+            delete require.cache[require.resolve('./api/powerMonitor')];
         });
 
         global['electronsocket'] = socket;
@@ -173,6 +175,7 @@ function startSocketApiBridge(port) {
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
         browserView = require('./api/browserView')(socket);
+        powerMonitor = require('./api/powerMonitor')(socket);
 
 
 

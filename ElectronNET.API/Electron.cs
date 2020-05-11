@@ -73,5 +73,10 @@
         /// <c>electronize add HostHook</c>
         /// </summary>
         public static HostHook HostHook { get { return HostHook.Instance; } }
+
+        /// <summary>
+        /// Allows you to execute native Lock and Unlock process.       
+        /// </summary>
+        public static PowerMonitor PowerMonitor { get { return PowerMonitor.Instance; } }
     }
 }
