@@ -1,5 +1,9 @@
 # Not released
 
+
+
+# Released
+
 # 8.31.2
 
 ElectronNET.CLI:
@@ -14,8 +18,6 @@ ElectronNET.API:
 * New Feature: NativeImage Support (thanks [ThrDev](https://github.com/ThrDev)) [\#394](https://github.com/ElectronNET/Electron.NET/pull/394)  
 * New Feature: Update menu items for context menu and system tray on-the-fly. [\#270](https://github.com/ElectronNET/Electron.NET/pull/270)  
 
-
-# Released
 
 # 8.31.1
 
