@@ -13,12 +13,12 @@ namespace ElectronNET.WebApp.Controllers
             {
                 Electron.PowerMonitor.OnLockScreen += () =>
                 {
-                    Console.WriteLine("Screeen Bloqueado desde C#");
+                    Console.WriteLine("Screen Locked detected from C #");
                 };
 
                 Electron.PowerMonitor.OnUnLockScreen += () =>
                 {
-                    Console.WriteLine("Desbloquedo desde C#");
+                    Console.WriteLine("Screen unlocked detected from C # ");
                 };
             }
                 return View();
