@@ -1,11 +1,4 @@
-﻿using ElectronNET.API.Entities;
-using ElectronNET.API.Extensions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace ElectronNET.API
 {
@@ -14,9 +7,6 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class PowerMonitor
     {
-           
-
-
         /// <summary>
         /// Emitted when the system is about to lock the screen. 
         /// </summary>
@@ -74,9 +64,6 @@ namespace ElectronNET.API
         }
 
         private event Action _unlockScreen;
-
-
-
         private static PowerMonitor _powerMonitor;
         private static object _syncRoot = new object();
 
@@ -100,8 +87,5 @@ namespace ElectronNET.API
                 return _powerMonitor;
             }
         }
-
-
-       
     }
 }

@@ -71,6 +71,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\clipboard.js" Link="ElectronHost\api\clipboard.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\autoUpdater.js" Link="ElectronHost\api\autoUpdater.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\browserView.js" Link="ElectronHost\api\browserView.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\powerMonitor.js" Link="ElectronHost\api\powerMonitor.js" />
   </ItemGroup>
 
   <ItemGroup>

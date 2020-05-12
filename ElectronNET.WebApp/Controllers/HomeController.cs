@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
-using ElectronNET.API.Entities;
 using System;
 
 namespace ElectronNET.WebApp.Controllers
@@ -13,15 +12,16 @@ namespace ElectronNET.WebApp.Controllers
             {
                 Electron.PowerMonitor.OnLockScreen += () =>
                 {
-                    Console.WriteLine("Screen Locked detected from C #");
+                    Console.WriteLine("Screen Locked detected from C#");
                 };
 
                 Electron.PowerMonitor.OnUnLockScreen += () =>
                 {
-                    Console.WriteLine("Screen unlocked detected from C # ");
+                    Console.WriteLine("Screen unlocked detected from C# ");
                 };
             }
-                return View();
+            
+            return View();
         }
     }
 }

@@ -177,8 +177,6 @@ function startSocketApiBridge(port) {
         browserView = require('./api/browserView')(socket);
         powerMonitor = require('./api/powerMonitor')(socket);
 
-
-
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
 
