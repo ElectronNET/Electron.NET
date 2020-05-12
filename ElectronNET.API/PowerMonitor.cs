@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ElectronNET.API
 {
     /// <summary>
-    /// Add icons and context menus to the system's notification area.
+    /// Monitor power state changes..
     /// </summary>
     public sealed class PowerMonitor
     {
@@ -18,8 +18,7 @@ namespace ElectronNET.API
 
 
         /// <summary>
-        /// Windows: Emitted when the tray balloon is closed 
-        /// because of timeout or user manually closes it.
+        /// Emitted when the system is about to lock the screen. 
         /// </summary>
         public event Action OnLockScreen
         {
@@ -48,8 +47,7 @@ namespace ElectronNET.API
         private event Action _lockScreen;
 
         /// <summary>
-        /// Windows: Emitted when the tray balloon is closed 
-        /// because of timeout or user manually closes it.
+        /// Emitted when the system is about to unlock the screen. 
         /// </summary>
         public event Action OnUnLockScreen
         {
