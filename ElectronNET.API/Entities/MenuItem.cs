@@ -69,13 +69,11 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// If false, the menu item will be greyed out and unclickable.
         /// </summary>
-        [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// If false, the menu item will be entirely hidden.
         /// </summary>
-        [DefaultValue(true)]
         public bool Visible { get; set; } = true;
 
         /// <summary>

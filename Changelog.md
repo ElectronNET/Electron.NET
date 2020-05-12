@@ -1,12 +1,23 @@
 # Not released
 
+
+
+# Released
+
 # 8.31.2
+
+ElectronNET.CLI:
+* New Feature: Deactivate PublishReadyToRun for build or start [\#395](https://github.com/ElectronNET/Electron.NET/issues/395)
+  
+   `electronize build /target win /PublishReadyToRun false`  
+   `electronize start /PublishReadyToRun false`   
+* Fixed bug: Application window doesn't open after packaging  [\#387](https://github.com/ElectronNET/Electron.NET/issues/387)
 
 ElectronNET.API:
 
 * New Feature: NativeImage Support (thanks [ThrDev](https://github.com/ThrDev)) [\#394](https://github.com/ElectronNET/Electron.NET/pull/394)  
+* New Feature: Update menu items for context menu and system tray on-the-fly. [\#270](https://github.com/ElectronNET/Electron.NET/pull/270)  
 
-# Released
 
 # 8.31.1
 

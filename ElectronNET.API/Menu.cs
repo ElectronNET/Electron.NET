@@ -82,25 +82,25 @@ namespace ElectronNET.API
         /// <param name="menuItems">The menu items.</param>
         public void SetContextMenu(BrowserWindow browserWindow, MenuItem[] menuItems)
         {
+            menuItems.AddMenuItemsId();
+            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
+
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
             {
-                menuItems.AddMenuItemsId();
-                BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
                 _contextMenuItems.Add(browserWindow.Id, menuItems.ToList());
-
                 var x = _contextMenuItems.ToDictionary(kv => kv.Key, kv => kv.Value.AsReadOnly());
                 ContextMenuItems = new ReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>>(x);
-
-                BridgeConnector.Socket.Off("contextMenuItemClicked");
-                BridgeConnector.Socket.On("contextMenuItemClicked", (results) =>
-                {
-                    var id = ((JArray)results).First.ToString();
-                    var browserWindowId = (int)((JArray)results).Last;
-
-                    MenuItem menuItem = _contextMenuItems[browserWindowId].GetMenuItem(id);
-                    menuItem.Click?.Invoke();
-                });
             }
+
+            BridgeConnector.Socket.Off("contextMenuItemClicked");
+            BridgeConnector.Socket.On("contextMenuItemClicked", (results) =>
+            {
+                var id = ((JArray)results).First.ToString();
+                var browserWindowId = (int)((JArray)results).Last;
+
+                MenuItem menuItem = _contextMenuItems[browserWindowId].GetMenuItem(id);
+                menuItem.Click?.Invoke();
+            });
         }
 
         /// <summary>
@@ -115,8 +115,7 @@ namespace ElectronNET.API
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Ignore
         };
     }
 }
