@@ -10,7 +10,7 @@ let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let powerMonitor;
 let splashScreen, hostHook;
-let mainWindowId;
+let mainWindowId, nativeTheme;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -154,6 +154,7 @@ function startSocketApiBridge(port) {
             delete require.cache[require.resolve('./api/clipboard')];
             delete require.cache[require.resolve('./api/browserView')];
             delete require.cache[require.resolve('./api/powerMonitor')];
+            delete require.cache[require.resolve('./api/nativeTheme')];
         });
 
         global['electronsocket'] = socket;
@@ -176,6 +177,7 @@ function startSocketApiBridge(port) {
         clipboard = require('./api/clipboard')(socket);
         browserView = require('./api/browserView')(socket);
         powerMonitor = require('./api/powerMonitor')(socket);
+        nativeTheme = require('./api/nativeTheme')(socket);
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');

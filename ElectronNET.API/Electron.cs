@@ -78,5 +78,10 @@
         /// Allows you to execute native Lock and Unlock process.       
         /// </summary>
         public static PowerMonitor PowerMonitor { get { return PowerMonitor.Instance; } }
+
+        /// <summary>
+        /// Read and respond to changes in Chromium's native color theme.
+        /// </summary>
+        public static NativeTheme NativeTheme { get { return NativeTheme.Instance; } }
     }
 }
