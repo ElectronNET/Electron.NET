@@ -62,20 +62,22 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('clipboard-readImage', (type) => {
-        var image = clipboard.readImage(type);
+        const image = clipboard.readImage(type);
         electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
     });
 
     socket.on('clipboard-writeImage', (data, type) => {
-        var data = JSON.parse(data);
-        const ni = nativeImage.createEmpty();
-        for (var i in data) {
-            var scaleFactor = i;
-            var bytes = data[i];
-            var buff = Buffer.from(bytes, 'base64');
-            ni.addRepresentation({ scaleFactor: +scaleFactor, buffer: buff });
+        const dataContent = JSON.parse(data);
+        const image = nativeImage.createEmpty();
+
+        // tslint:disable-next-line: forin
+        for (const key in dataContent) {
+            const scaleFactor = key;
+            const bytes = data[key];
+            const buffer = Buffer.from(bytes, 'base64');
+            image.addRepresentation({ scaleFactor: +scaleFactor, buffer: buffer });
         }
-        
-        clipboard.writeImage(ni, type);
+
+        clipboard.writeImage(image, type);
     });
 };

@@ -1,6 +1,10 @@
 # Not released
 
+# 8.31.3
 
+ElectronNET.API:
+
+* New Feature: PowerMonitor API Support (thanks [gustavo-lara-molina](https://github.com/gustavo-lara-molina)) [\#399](https://github.com/ElectronNET/Electron.NET/pull/399)
 
 # Released
 

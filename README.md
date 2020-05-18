@@ -54,13 +54,13 @@ PM> Install-Package ElectronNET.API
 You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension. 
 
 ```csharp
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseElectron(args);
-                    webBuilder.UseStartup<Startup>();
-                });
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.UseElectron(args);
+            webBuilder.UseStartup<Startup>();
+        });
 ```
 
 ### Startup.cs
@@ -167,6 +167,8 @@ Please make sure all commits are properly documented.
 
 ## 🧪 Working with this Repo
 
+This video provides an introduction to development for Electron.NET: [Electron.NET - Contributing Getting Started](https://youtu.be/Po-saU_Z6Ws)  
+  
 This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
 
 If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
