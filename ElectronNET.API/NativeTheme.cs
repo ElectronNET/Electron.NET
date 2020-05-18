@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Extensions;
 
 namespace ElectronNET.API
 {
@@ -33,24 +35,9 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Checks if the new ThemeSource is valid.
-        /// </summary>
-        /// <param name="themeSource">The new ThemeSource to check.</param>
-        /// <returns>True, if is a valid ThemeSource.</returns>
-        internal bool IsValidThemeSource(string themeSource)
-        {
-            var result =
-                string.Equals(themeSource, "dark", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(themeSource, "light", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(themeSource, "system", StringComparison.OrdinalIgnoreCase);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Setting this property to 'system' will remove the override and everything will be reset to the OS default. By default 'ThemeSource' is 'system'.
+        /// Setting this property to <see cref="ThemeSourceMode.System"/> will remove the override and everything will be reset to the OS default. By default 'ThemeSource' is <see cref="ThemeSourceMode.System"/>.
         /// <para/>
-        /// Settings this property to 'dark' will have the following effects:
+        /// Settings this property to <see cref="ThemeSourceMode.Dark"/> will have the following effects:
         /// <list type="bullet">
         /// <item>
         /// <description><see cref="ShouldUseDarkColorsAsync"/> will be <see langword="true"/> when accessed</description>
@@ -69,10 +56,10 @@ namespace ElectronNET.API
         /// </item> 
         /// </list>
         /// <para/>
-        /// Settings this property to 'light' will have the following effects:
+        /// Settings this property to <see cref="ThemeSourceMode.Light"/> will have the following effects:
         /// <list type="bullet">
         /// <item>
-        /// <description><see cref="ShouldUseDarkColorsAsync"/> will be <see langword="false"/> false when accessed</description>
+        /// <description><see cref="ShouldUseDarkColorsAsync"/> will be <see langword="false"/> when accessed</description>
         /// </item>
         /// <item>
         /// <description>Any UI Electron renders on Linux and Windows including context menus, devtools, etc. will use the light UI.</description>
@@ -91,42 +78,40 @@ namespace ElectronNET.API
         /// <para/>
         /// <list type="bullet">
         /// <item>
-        /// <description>Follow OS: SetThemeSource("system");</description>
+        /// <description>Follow OS: SetThemeSource(ThemeSourceMode.System);</description>
         /// </item>
         /// <item>
-        /// <description>Dark Mode: SetThemeSource("dark");</description>
+        /// <description>Dark Mode: SetThemeSource(ThemeSourceMode.Dark);</description>
         /// </item>
         /// <item>
-        /// <description>Light Mode: SetThemeSource("light");</description>
+        /// <description>Light Mode: SetThemeSource(ThemeSourceMode.Light);</description>
         /// </item>
         /// </list>
         /// Your application should then always use <see cref="ShouldUseDarkColorsAsync"/> to determine what CSS to apply.
         /// </summary>
         /// <param name="themeSource">The new ThemeSource.</param>
-        public void SetThemeSource(string themeSource)
+        public void SetThemeSource(ThemeSourceMode themeSourceMode)
         {
-            // Check for supported themeSource, otherwise it sets the default
-            if (!IsValidThemeSource(themeSource))
-            {
-                themeSource = "system";
-            }
+            var themeSource = themeSourceMode.GetDescription();
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource.ToLower());
+            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
         }
 
         /// <summary>
-        /// A <see cref="string"/> property that can be 'system', 'light' or 'dark'. It is used to override (<seealso cref="SetThemeSource"/>) and
+        /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<string> GetThemeSourceAsync()
+        public Task<ThemeSourceMode> GetThemeSourceAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
 
             BridgeConnector.Socket.On("nativeTheme-themeSource-getCompleted", (themeSource) =>
             {
                 BridgeConnector.Socket.Off("nativeTheme-themeSource-getCompleted");
 
-                taskCompletionSource.SetResult((string)themeSource);
+                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)themeSource, true);
+
+                taskCompletionSource.SetResult(themeSourceValue);
             });
 
             BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
