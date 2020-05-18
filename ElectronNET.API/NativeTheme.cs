@@ -44,7 +44,6 @@ namespace ElectronNET.API
                 string.Equals(themeSource, "light", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(themeSource, "system", StringComparison.OrdinalIgnoreCase);
 
-
             return result;
         }
 
@@ -119,7 +118,6 @@ namespace ElectronNET.API
         /// A <see cref="string"/> property that can be 'system', 'light' or 'dark'. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        /// <returns></returns>
         public Task<string> GetThemeSourceAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
@@ -138,8 +136,8 @@ namespace ElectronNET.API
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has a dark mode enabled or is
-        /// being instructed to show a dark-style UI.If you want to modify this value you
-        /// should use 'themeSource' below.
+        /// being instructed to show a dark-style UI. If you want to modify this value you
+        /// should use <see cref="SetThemeSource"/>.
         /// </summary>
         public Task<bool> ShouldUseDarkColorsAsync()
         {
