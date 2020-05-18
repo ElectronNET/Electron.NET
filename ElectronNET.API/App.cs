@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +32,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-window-all-closed" + GetHashCode(), () =>
                     {
-                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed)
+                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                         {
                             _windowAllClosed();
                         }
