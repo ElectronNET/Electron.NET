@@ -37,7 +37,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.PowerMonitor.OnBattery += () =>
                 {
-                    Console.WriteLine("The system about to reboot or shut down.");
+                    Console.WriteLine("The system about to  changes to battery power");
                 };
 
             }

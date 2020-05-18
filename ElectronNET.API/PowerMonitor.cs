@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -66,7 +67,7 @@ namespace ElectronNET.API
         private event Action _unlockScreen;
 
         /// <summary>
-        ///Emitted when the system is suspending.
+        /// Emitted when the system is suspending.
         /// </summary>
         public event Action OnSuspend
         {
@@ -95,7 +96,7 @@ namespace ElectronNET.API
         private event Action _suspend;
 
         /// <summary>
-        ///Emitted when system is resuming.
+        /// Emitted when system is resuming.
         /// </summary>
         public event Action OnResume
         {
@@ -124,7 +125,7 @@ namespace ElectronNET.API
         private event Action _resume;
 
         /// <summary>
-        ///Emitted when the system changes to AC power.
+        /// Emitted when the system changes to AC power.
         /// </summary>
         public event Action OnAC
         {
@@ -153,7 +154,7 @@ namespace ElectronNET.API
         private event Action _onAC;
 
         /// <summary>
-        ///Emitted when system changes to battery power.
+        /// Emitted when system changes to battery power.
         /// </summary>
         public event Action OnBattery
         {
@@ -183,10 +184,10 @@ namespace ElectronNET.API
 
 
         /// <summary>
-        ///Emitted when the system is about to reboot or shut down. If the event handler
-        ///invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
-        ///order for the app to exit cleanly.If `e.preventDefault()` is called, the app
-        ///should exit as soon as possible by calling something like `app.quit()`.
+        /// Emitted when the system is about to reboot or shut down. If the event handler
+        /// invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
+        /// order for the app to exit cleanly.If `e.preventDefault()` is called, the app
+        /// should exit as soon as possible by calling something like `app.quit()`.
         /// </summary>
         public event Action OnShutdown
         {
@@ -213,6 +214,47 @@ namespace ElectronNET.API
         }
 
         private event Action _shutdown;
+
+        /// <summary>
+        /// Idle time in seconds
+        /// Calculate system idle time in seconds.
+        /// </summary>
+        public Task<int> GetSystemIdleTimeAsync()
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+
+            BridgeConnector.Socket.On("pm-getSystemIdleTime-completed", (idleTime) =>
+            {
+                BridgeConnector.Socket.Off("pm-getSystemIdleTime-completed");
+                taskCompletionSource.SetResult((int)idleTime);
+            });
+
+            BridgeConnector.Socket.Emit("pm-getSystemIdleTime");
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// The system's current state. Can be `active`, `idle`, `locked` or `unknown`.
+        ///
+        /// Calculate the system idle state. `idleThreshold` is the amount of time (in
+        /// seconds) before considered idle.  `locked` is available on supported systems
+        /// only.
+        /// </summary>
+        public Task<string> GetSystemIdleStateAsync(int IdleThreshold)
+        {
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("pm-getSystemIdleState-completed", (idleTime) =>
+            {
+                BridgeConnector.Socket.Off("pm-getSystemIdleState-completed");
+                taskCompletionSource.SetResult((string)idleTime);
+            });
+
+            BridgeConnector.Socket.Emit("pm-getSystemIdleState");
+
+            return taskCompletionSource.Task;
+        }
 
         private static PowerMonitor _powerMonitor;
         private static object _syncRoot = new object();
