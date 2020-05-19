@@ -1527,6 +1527,34 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("appDockSetIcon", image);
         }
 
+        /// <summary>
+        /// A String which is the user agent string Electron will use as a global fallback.
+        /// </summary>
+        public string UserAgentFallback
+        {
+            get
+            {
+                return Task.Run<string>(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<string>();
+
+                    BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
+                    {
+                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
+                        taskCompletionSource.SetResult((string)result);
+                    });
+
+                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
+
+                    return taskCompletionSource.Task;
+                }).Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+            }
+        }
+
         internal void PreventQuit()
         {
             _preventQuit = true;

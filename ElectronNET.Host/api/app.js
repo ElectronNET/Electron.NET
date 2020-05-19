@@ -241,5 +241,11 @@ module.exports = (socket, app) => {
     socket.on('appDockSetIcon', (image) => {
         app.dock.setIcon(image);
     });
+    socket.on('appGetUserAgentFallback', () => {
+        electronSocket.emit('appGetUserAgentFallbackCompleted', app.userAgentFallback);
+    });
+    socket.on('appSetUserAgentFallback', (userAgent) => {
+        app.userAgentFallback = userAgent;
+    });
 };
 //# sourceMappingURL=app.js.map

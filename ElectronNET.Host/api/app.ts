@@ -304,4 +304,12 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     socket.on('appDockSetIcon', (image) => {
         app.dock.setIcon(image);
     });
+
+    socket.on('appGetUserAgentFallback', () => {
+        electronSocket.emit('appGetUserAgentFallbackCompleted', app.userAgentFallback);
+    });
+
+    socket.on('appSetUserAgentFallback', (userAgent) => {
+        app.userAgentFallback = userAgent;
+    });
 };
