@@ -62,6 +62,11 @@ app.on('ready', () => {
 
 });
 
+app.on('quit', async (event, exitCode) => {
+    await server.close();
+    apiProcess.kill();
+});
+
 function isSplashScreenEnabled() {
     if (manifestJsonFile.hasOwnProperty('splashscreen')) {
         if (manifestJsonFile.splashscreen.hasOwnProperty('imageFile')) {
