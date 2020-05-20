@@ -2,7 +2,7 @@
   "profiles": {
     "ElectronNET.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "start /project-path \"C:\\Users\\Rizvi\\source\\repos\\Electron.NET\\ElectronNET.WebApp\" /watch"
+      "commandLineArgs": "start /project-path \"$(SolutionDir)\\ElectronNET.WebApp\" /watch"
     }
   }
 }
