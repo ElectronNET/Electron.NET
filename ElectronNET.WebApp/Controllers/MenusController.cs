@@ -2,11 +2,23 @@
 using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API.Entities;
 using ElectronNET.API;
+using Microsoft.Extensions.Hosting;
 
 namespace ElectronNET.WebApp.Controllers
 {
     public class MenusController : Controller
     {
+        public MenusController(IHostApplicationLifetime hostApplicationLifetime)
+        {
+            hostApplicationLifetime.ApplicationStarted.Register(() =>
+            {
+                if (HybridSupport.IsElectronActive)
+                {
+                    CreateContextMenu();
+                }
+            });
+        }
+
         public IActionResult Index()
         {
             if (HybridSupport.IsElectronActive)
@@ -93,7 +105,6 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.Menu.SetApplicationMenu(menu);
 
-                CreateContextMenu();
             }
 
             return View();
@@ -113,12 +124,11 @@ namespace ElectronNET.WebApp.Controllers
             };
 
             var mainWindow = Electron.WindowManager.BrowserWindows.FirstOrDefault();
-            if (mainWindow == null) return;
-
             Electron.Menu.SetContextMenu(mainWindow, menu);
 
             Electron.IpcMain.On("show-context-menu", (args) =>
             {
+                var mainWindow = Electron.WindowManager.BrowserWindows.FirstOrDefault();
                 Electron.Menu.ContextMenuPopup(mainWindow);
             });
         }
