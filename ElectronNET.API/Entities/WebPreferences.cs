@@ -173,7 +173,7 @@ namespace ElectronNET.API.Entities
 
         /// <summary>
         /// Whether to run Electron APIs and the specified preload script in a separate
-        /// JavaScript context.Defaults to false. The context that the preload script runs
+        /// JavaScript context. Defaults to false. The context that the preload script runs
         /// in will still have full access to the document and window globals but it will
         /// use its own set of JavaScript builtins (Array, Object, JSON, etc.) and will be
         /// isolated from any changes made to the global environment by the loaded page.The
@@ -185,8 +185,8 @@ namespace ElectronNET.API.Entities
         /// Context' entry in the combo box at the top of the Console tab. This option is
         /// currently experimental and may change or be removed in future Electron releases.
         /// </summary>
-        [DefaultValue(true)]
-        public bool ContextIsolation { get; set; } = true;
+        [DefaultValue(false)]
+        public bool ContextIsolation { get; set; }
 
         /// <summary>
         /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
