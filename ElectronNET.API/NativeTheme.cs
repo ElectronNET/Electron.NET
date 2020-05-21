@@ -89,7 +89,7 @@ namespace ElectronNET.API
         /// </list>
         /// Your application should then always use <see cref="ShouldUseDarkColorsAsync"/> to determine what CSS to apply.
         /// </summary>
-        /// <param name="themeSource">The new ThemeSource.</param>
+        /// <param name="themeSourceMode">The new ThemeSource.</param>
         public void SetThemeSource(ThemeSourceMode themeSourceMode)
         {
             var themeSource = themeSourceMode.GetDescription();
