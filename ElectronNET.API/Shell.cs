@@ -63,18 +63,18 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="fullPath"></param>
         /// <returns>Whether the item was successfully opened.</returns>
-        public Task<bool> OpenItemAsync(string fullPath)
+        public Task<bool> OpenPathAsync(string fullPath)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-openItemCompleted", (success) =>
+            BridgeConnector.Socket.On("shell-openPathCompleted", (success) =>
             {
-                BridgeConnector.Socket.Off("shell-openItemCompleted");
+                BridgeConnector.Socket.Off("shell-openPathCompleted");
 
                 taskCompletionSource.SetResult((bool)success);
             });
 
-            BridgeConnector.Socket.Emit("shell-openItem", fullPath);
+            BridgeConnector.Socket.Emit("shell-openPath", fullPath);
 
             return taskCompletionSource.Task;
         }

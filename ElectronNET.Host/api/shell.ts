@@ -9,10 +9,10 @@ export = (socket: SocketIO.Socket) => {
         electronSocket.emit('shell-showItemInFolderCompleted', success);
     });
 
-    socket.on('shell-openItem', (fullPath) => {
-        const success = shell.openItem(fullPath);
+    socket.on('shell-openPath', async (fullPath) => {
+        const success = await shell.openPath(fullPath);
 
-        electronSocket.emit('shell-openItemCompleted', success);
+        electronSocket.emit('shell-openPathCompleted', success);
     });
 
     socket.on('shell-openExternal', (url, options) => {
