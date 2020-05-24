@@ -6,6 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace ElectronNET.API
 {
@@ -351,6 +352,11 @@ namespace ElectronNET.API
         }
 
         private event Action<bool> _accessibilitySupportChanged;
+
+        /// <summary>
+        /// Application host fully started.
+        /// </summary>
+        public bool IsReady { get; internal set; }
 
         /// <summary>
         /// A property that indicates the current application's name, which is the
