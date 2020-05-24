@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ElectronNET.API
 {
@@ -32,6 +33,11 @@ namespace ElectronNET.API
 
             if (HybridSupport.IsElectronActive)
             {
+                builder.ConfigureServices(services =>
+                {
+                    services.AddHostedService<LifetimeServiceHost>();
+                });
+
                 // check for the content folder if its exists in base director otherwise no need to include
                 // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
                 // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
