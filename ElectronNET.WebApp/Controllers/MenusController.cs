@@ -11,9 +11,13 @@ namespace ElectronNET.WebApp.Controllers
         {
             if (HybridSupport.IsElectronActive)
             {
-                if (Electron.App.IsReady)
+                if(Electron.App.IsReady)
                 {
                     CreateContextMenu();
+                } 
+                else
+                {
+                    Electron.App.Ready += () => CreateContextMenu();
                 }
 
                 var menu = new MenuItem[] {

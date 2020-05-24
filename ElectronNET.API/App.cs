@@ -354,9 +354,27 @@ namespace ElectronNET.API
         private event Action<bool> _accessibilitySupportChanged;
 
         /// <summary>
+        /// Emitted when the application has finished basic startup.
+        /// </summary>
+        public event Action Ready;
+
+        /// <summary>
         /// Application host fully started.
         /// </summary>
-        public bool IsReady { get; internal set; }
+        public bool IsReady 
+        { 
+            get { return _isReady; }
+            internal set
+            {
+                _isReady = value;
+
+                if(value)
+                {
+                    Ready?.Invoke();
+                }
+            }
+        }
+        private bool _isReady = false;
 
         /// <summary>
         /// A property that indicates the current application's name, which is the
