@@ -15,6 +15,7 @@ ElectronNET.API:
 * New Feature: Cookie API Support (thanks [freosc](https://github.com/freosc)) [\#413](https://github.com/ElectronNET/Electron.NET/pull/413)
 * App-Api Enhancement: MenuItems with Submenus need an submenu type workaround [\#412](https://github.com/ElectronNET/Electron.NET/issues/412)
 * App-Api Enhancement: Added UserAgentFallback (thanks [Mandrakia](https://github.com/Mandrakia)) [\#406](https://github.com/ElectronNET/Electron.NET/pull/406)
+* App-Api Enhancement: New App.IsReady property and App.Ready event (thanks [konstantingross](https://github.com/konstantingross)) [\#415](https://github.com/ElectronNET/Electron.NET/pull/415)
 * Notification-Api Enhancement: Added missing properties in Notifications (thanks [konstantingross](https://github.com/konstantingross)) [\#410](https://github.com/ElectronNET/Electron.NET/pull/410)
 * MacOS Enhancement: Application exit logic (thanks [dafergu2](https://github.com/dafergu2)) [\#405](https://github.com/ElectronNET/Electron.NET/pull/405)
 * Fixed bug: ElectronNET.API.Entities.WebPreferences.ContextIsolation [DefaultValue(true)] [\#411](https://github.com/ElectronNET/Electron.NET/issues/411)
