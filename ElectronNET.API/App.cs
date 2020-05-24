@@ -356,7 +356,24 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the application has finished basic startup.
         /// </summary>
-        public event Action Ready;
+        public event Action Ready 
+        {
+            add
+            {
+                if(IsReady)
+                {
+                    value();
+                }
+
+                _ready += value;
+            }
+            remove
+            {
+                _ready -= value;
+            }
+        }
+
+        private event Action _ready;
 
         /// <summary>
         /// Application host fully started.
@@ -370,7 +387,7 @@ namespace ElectronNET.API
 
                 if(value)
                 {
-                    Ready?.Invoke();
+                    _ready?.Invoke();
                 }
             }
         }
