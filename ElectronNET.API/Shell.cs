@@ -59,22 +59,22 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Open the given file in the desktop’s default manner.
+        /// Open the given file in the desktop's default manner.
         /// </summary>
-        /// <param name="fullPath"></param>
-        /// <returns>Whether the item was successfully opened.</returns>
-        public Task<bool> OpenPathAsync(string fullPath)
+        /// <param name="path">The path to the file.</param>
+        /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
+        public Task<string> OpenPathAsync(string path)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<string>();
 
             BridgeConnector.Socket.On("shell-openPathCompleted", (success) =>
             {
                 BridgeConnector.Socket.Off("shell-openPathCompleted");
 
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult((string) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-openPath", fullPath);
+            BridgeConnector.Socket.Emit("shell-openPath", path);
 
             return taskCompletionSource.Task;
         }
