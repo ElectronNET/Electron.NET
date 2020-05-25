@@ -623,6 +623,10 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
         getWindowById(id).setProgressBar(progress);
     });
 
+    socket.on('browserWindowSetProgressBar', (id, progress, options) => {
+        getWindowById(id).setProgressBar(progress, options);
+    });
+
     socket.on('browserWindowSetHasShadow', (id, hasShadow) => {
         getWindowById(id).setHasShadow(hasShadow);
     });
