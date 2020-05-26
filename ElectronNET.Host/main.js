@@ -141,8 +141,8 @@ function startSocketApiBridge(port) {
         // we need to remove previously cache instances 
         // otherwise it will fire the same event multiple depends how many time
         // live reload watch happen.
-        socket.on('disconnect', function () {
-            console.log('Got disconnect!');
+        socket.on('disconnect', function (reason) {
+            console.log('Got disconnect! Reason: ' + reason);
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
             delete require.cache[require.resolve('./api/commandLine')];
