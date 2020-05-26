@@ -3,7 +3,7 @@
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// Defines the ThemeSourceMode enumeration.
+    /// Defines the ShortcutLinkOperation enumeration.
     /// </summary>
     public enum ShortcutLinkOperation
     {
