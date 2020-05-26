@@ -6,6 +6,7 @@
   "name": "{{executable}}",
   "author": "",
   "singleInstance": false,
+  "environment": "Production",
   "build": {
     "appId": "com.{{executable}}.app",
     "productName": "{{executable}}",
@@ -19,14 +20,14 @@
       {
         "from": "./bin",
         "to": "bin",
-        "filter": ["**/*"]
+        "filter": [ "**/*" ]
       }
     ],
     "files": [
       {
         "from": "./ElectronHostHook/node_modules",
         "to": "ElectronHostHook/node_modules",
-        "filter": ["**/*"]
+        "filter": [ "**/*" ]
       },
       "**/*"
     ]
