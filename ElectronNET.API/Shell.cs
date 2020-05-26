@@ -101,7 +101,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-openExternalCompleted");
 
-                taskCompletionSource.SetResult((string)error);
+                taskCompletionSource.SetResult((string) error);
             });
 
             if (options == null)
@@ -161,7 +161,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
 
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult((bool) success);
             });
 
             BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
