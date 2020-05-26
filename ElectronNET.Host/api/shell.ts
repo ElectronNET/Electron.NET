@@ -15,26 +15,25 @@ export = (socket: SocketIO.Socket) => {
         electronSocket.emit('shell-openPathCompleted', errorMessage);
     });
 
-    socket.on('shell-openExternal', (url, options) => {
-        let success = true;
+    socket.on('shell-openExternal', async (url, options) => {
+        let result = "";
 
         if (options) {
-            shell.openExternal(url, options).catch((error) => {
-                success = false;
-                electronSocket.emit('shell-openExternalCallback', [url, error]);
-            });
-        } else {
-            shell.openExternal(url).catch((error) => {
-                success = false;
-                electronSocket.emit('shell-openExternalCallback', [url, error]);
+            await shell.openExternal(url, options).catch(e => {
+                result = e.message;
+            });            
+        }
+        else {
+            await shell.openExternal(url).catch((e) => {
+                result = e.message;                
             });
         }
 
-        electronSocket.emit('shell-openExternalCompleted', success);
+        electronSocket.emit('shell-openExternalCompleted', result);
     });
 
-    socket.on('shell-moveItemToTrash', (fullPath) => {
-        const success = shell.moveItemToTrash(fullPath);
+    socket.on('shell-moveItemToTrash', (fullPath, deleteOnFail) => {
+        const success = shell.moveItemToTrash(fullPath, deleteOnFail);
 
         electronSocket.emit('shell-moveItemToTrashCompleted', success);
     });

@@ -11,24 +11,22 @@ module.exports = (socket) => {
         const errorMessage = await electron_1.shell.openPath(path);
         electronSocket.emit('shell-openPathCompleted', errorMessage);
     });
-    socket.on('shell-openExternal', (url, options) => {
-        let success = true;
+    socket.on('shell-openExternal', async (url, options) => {
+        let result = "";
         if (options) {
-            electron_1.shell.openExternal(url, options).catch((error) => {
-                success = false;
-                electronSocket.emit('shell-openExternalCallback', [url, error]);
+            await electron_1.shell.openExternal(url, options).catch(e => {
+                result = e.message;
             });
         }
         else {
-            electron_1.shell.openExternal(url).catch((error) => {
-                success = false;
-                electronSocket.emit('shell-openExternalCallback', [url, error]);
+            await electron_1.shell.openExternal(url).catch((e) => {
+                result = e.message;
             });
         }
-        electronSocket.emit('shell-openExternalCompleted', success);
+        electronSocket.emit('shell-openExternalCompleted', result);
     });
-    socket.on('shell-moveItemToTrash', (fullPath) => {
-        const success = electron_1.shell.moveItemToTrash(fullPath);
+    socket.on('shell-moveItemToTrash', (fullPath, deleteOnFail) => {
+        const success = electron_1.shell.moveItemToTrash(fullPath, deleteOnFail);
         electronSocket.emit('shell-moveItemToTrashCompleted', success);
     });
     socket.on('shell-beep', () => {
