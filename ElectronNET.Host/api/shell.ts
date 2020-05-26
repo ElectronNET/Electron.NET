@@ -13,7 +13,7 @@ export = (socket: SocketIO.Socket) => {
         const errorMessage = await shell.openPath(path);
 
         electronSocket.emit('shell-openPathCompleted', errorMessage);
-    })
+    });
 
     socket.on('shell-openExternal', (url, options) => {
         let success = true;
