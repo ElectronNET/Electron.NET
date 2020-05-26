@@ -7,9 +7,9 @@ module.exports = (socket) => {
         const success = electron_1.shell.showItemInFolder(fullPath);
         electronSocket.emit('shell-showItemInFolderCompleted', success);
     });
-    socket.on('shell-openPath', async (fullPath) => {
-        const success = await electron_1.shell.openPath(fullPath);
-        electronSocket.emit('shell-openPathCompleted', success);
+    socket.on('shell-openPath', async (path) => {
+        const errorMessage = await electron_1.shell.openPath(path);
+        electronSocket.emit('shell-openPathCompleted', errorMessage);
     });
     socket.on('shell-openExternal', (url, options) => {
         let success = true;
