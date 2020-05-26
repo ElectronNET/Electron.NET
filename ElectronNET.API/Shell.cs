@@ -40,17 +40,14 @@ namespace ElectronNET.API
         /// <summary>
         /// Show the given file in a file manager. If possible, select the file.
         /// </summary>
-        /// <param name="fullPath"></param>
-        /// <returns>Whether the item was successfully shown.</returns>
-        public Task<bool> ShowItemInFolderAsync(string fullPath)
+        /// <param name="fullPath">The full path to the directory / file.</param>
+        public Task ShowItemInFolderAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<object>();
 
-            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", (success) =>
+            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () =>
             {
                 BridgeConnector.Socket.Off("shell-showItemInFolderCompleted");
-
-                taskCompletionSource.SetResult((bool)success);
             });
 
             BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);

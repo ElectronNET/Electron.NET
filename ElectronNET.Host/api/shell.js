@@ -4,8 +4,8 @@ let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
     socket.on('shell-showItemInFolder', (fullPath) => {
-        const success = electron_1.shell.showItemInFolder(fullPath);
-        electronSocket.emit('shell-showItemInFolderCompleted', success);
+        electron_1.shell.showItemInFolder(fullPath);
+        electronSocket.emit('shell-showItemInFolderCompleted');
     });
     socket.on('shell-openPath', async (path) => {
         const errorMessage = await electron_1.shell.openPath(path);

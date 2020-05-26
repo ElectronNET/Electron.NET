@@ -4,9 +4,9 @@ let electronSocket;
 export = (socket: SocketIO.Socket) => {
     electronSocket = socket;
     socket.on('shell-showItemInFolder', (fullPath) => {
-        const success = shell.showItemInFolder(fullPath);
+        shell.showItemInFolder(fullPath);
 
-        electronSocket.emit('shell-showItemInFolderCompleted', success);
+        electronSocket.emit('shell-showItemInFolderCompleted');
     });
 
     socket.on('shell-openPath', async (path) => {
