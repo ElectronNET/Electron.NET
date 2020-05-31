@@ -1,8 +1,7 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace ElectronNET.API
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 

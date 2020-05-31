@@ -6,16 +6,15 @@
     public class LoginSettings
     {
         /// <summary>
-        /// true to open the app at login, false to remove the app as a login item. Defaults
-        /// to false.
+        /// <see langword="true"/> to open the app at login, <see langword="false"/> to remove the app as a login item.
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public bool OpenAtLogin { get; set; }
 
         /// <summary>
-        /// true to open the app as hidden. Defaults to false. The user can edit this
-        /// setting from the System Preferences so
-        /// app.getLoginItemStatus().wasOpenedAsHidden should be checked when the app is
-        /// opened to know the current value.This setting is only supported on macOS.
+        /// <see langword="true"/> to open the app as hidden. Defaults to <see langword="false"/>. The user can edit this
+        /// setting from the System Preferences so app.getLoginItemSettings().wasOpenedAsHidden should be checked when the app is
+        /// opened to know the current value. This setting is not available on <see href="https://www.electronjs.org/docs/tutorial/mac-app-store-submission-guide">MAS builds</see>.
         /// </summary>
         public bool OpenAsHidden { get; set; }
 

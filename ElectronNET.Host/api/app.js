@@ -70,8 +70,8 @@ module.exports = (socket, app) => {
     socket.on('appRelaunch', (options) => {
         app.relaunch(options);
     });
-    socket.on('appFocus', () => {
-        app.focus();
+    socket.on('appFocus', (options) => {
+        app.focus(options);
     });
     socket.on('appHide', () => {
         app.hide();
@@ -82,6 +82,9 @@ module.exports = (socket, app) => {
     socket.on('appGetAppPath', () => {
         const path = app.getAppPath();
         electronSocket.emit('appGetAppPathCompleted', path);
+    });
+    socket.on('appSetAppLogsPath', (path) => {
+        app.setAppLogsPath(path);
     });
     socket.on('appGetPath', (name) => {
         const path = app.getPath(name);
@@ -160,15 +163,25 @@ module.exports = (socket, app) => {
         const success = app.requestSingleInstanceLock();
         electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
     });
+    socket.on('appHasSingleInstanceLock', () => {
+        const hasLock = app.hasSingleInstanceLock();
+        electronSocket.emit('appHasSingleInstanceLockCompleted', hasLock);
+    });
     socket.on('appReleaseSingleInstanceLock', () => {
         app.releaseSingleInstanceLock();
     });
-    socket.on('appSetUserActivity', (type, userInfo, webpageURL) => {
-        app.setUserActivity(type, userInfo, webpageURL);
+    socket.on('appSetUserActivity', (type, userInfo, webpageUrl) => {
+        app.setUserActivity(type, userInfo, webpageUrl);
     });
     socket.on('appGetCurrentActivityType', () => {
         const activityType = app.getCurrentActivityType();
         electronSocket.emit('appGetCurrentActivityTypeCompleted', activityType);
+    });
+    socket.on('appInvalidateCurrentActivity', () => {
+        app.invalidateCurrentActivity();
+    });
+    socket.on('appResignCurrentActivity', () => {
+        app.resignCurrentActivity();
     });
     socket.on('appSetAppUserModelId', (id) => {
         app.setAppUserModelId(id);
@@ -208,6 +221,12 @@ module.exports = (socket, app) => {
     socket.on('appIsAccessibilitySupportEnabled', () => {
         const isAccessibilitySupportEnabled = app.isAccessibilitySupportEnabled();
         electronSocket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
+    });
+    socket.on('appSetAccessibilitySupportEnabled', (enabled) => {
+        app.setAccessibilitySupportEnabled(enabled);
+    });
+    socket.on('appShowAboutPanel', () => {
+        app.showAboutPanel();
     });
     socket.on('appSetAboutPanelOptions', (options) => {
         app.setAboutPanelOptions(options);
