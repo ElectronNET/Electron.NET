@@ -290,51 +290,7 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('appSetAboutPanelOptions', (options) => {
         app.setAboutPanelOptions(options);
-    });
-
-    socket.on('appDockBounce', (type) => {
-        const id = app.dock.bounce(type);
-        electronSocket.emit('appDockBounceCompleted', id);
-    });
-
-    socket.on('appDockCancelBounce', (id) => {
-        app.dock.cancelBounce(id);
-    });
-
-    socket.on('appDockDownloadFinished', (filePath) => {
-        app.dock.downloadFinished(filePath);
-    });
-
-    socket.on('appDockSetBadge', (text) => {
-        app.dock.setBadge(text);
-    });
-
-    socket.on('appDockGetBadge', () => {
-        const text = app.dock.getBadge();
-        electronSocket.emit('appDockGetBadgeCompleted', text);
-    });
-
-    socket.on('appDockHide', () => {
-        app.dock.hide();
-    });
-
-    socket.on('appDockShow', () => {
-        app.dock.show();
-    });
-
-    socket.on('appDockIsVisible', () => {
-        const isVisible = app.dock.isVisible();
-        electronSocket.emit('appDockIsVisibleCompleted', isVisible);
-    });
-
-    // TODO: Menü Lösung muss noch implementiert werden
-    socket.on('appDockSetMenu', (menu) => {
-        app.dock.setMenu(menu);
-    });
-
-    socket.on('appDockSetIcon', (image) => {
-        app.dock.setIcon(image);
-    });
+    });    
 
     socket.on('appGetUserAgentFallback', () => {
         electronSocket.emit('appGetUserAgentFallbackCompleted', app.userAgentFallback);
