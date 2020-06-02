@@ -12,7 +12,7 @@ namespace ElectronNET.WebApp.Controllers
             {
                 Electron.IpcMain.On("open-file-manager", async (args) =>
                 {
-                    string path = await Electron.App.GetPathAsync(PathName.home);
+                    string path = await Electron.App.GetPathAsync(PathName.Home);
                     await Electron.Shell.ShowItemInFolderAsync(path);
 
                 });

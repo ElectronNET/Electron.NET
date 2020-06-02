@@ -1,4 +1,4 @@
-﻿namespace ElectronNET.API
+﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 

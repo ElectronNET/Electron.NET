@@ -83,5 +83,10 @@
         /// Read and respond to changes in Chromium's native color theme.
         /// </summary>
         public static NativeTheme NativeTheme { get { return NativeTheme.Instance; } }
+
+        /// <summary>
+        /// Control your app in the macOS dock.
+        /// </summary>
+        public static Dock Dock { get { return Dock.Instance; } }
     }
 }

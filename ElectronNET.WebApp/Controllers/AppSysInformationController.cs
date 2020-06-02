@@ -21,7 +21,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.IpcMain.On("sys-info", async (args) =>
                 {
-                    string homePath = await Electron.App.GetPathAsync(PathName.home);
+                    string homePath = await Electron.App.GetPathAsync(PathName.Home);
 
                     var mainWindow = Electron.WindowManager.BrowserWindows.First();
                     Electron.IpcMain.Send(mainWindow, "got-sys-info", homePath);
