@@ -52,5 +52,10 @@
         /// The title.
         /// </value>
         public string Title { get; set; }
+
+        /// <summary>
+        /// The working directory. Default is <see cref="string.Empty"/>.
+        /// </summary>
+        public string WorkingDirectory { get; set; }
     }
 }

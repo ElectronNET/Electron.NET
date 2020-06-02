@@ -18,7 +18,7 @@ namespace ElectronNET.WebApp.Controllers
                     var saveOptions = new SaveDialogOptions
                     {
                         Title = "Save an PDF-File",
-                        DefaultPath = await Electron.App.GetPathAsync(PathName.documents),
+                        DefaultPath = await Electron.App.GetPathAsync(PathName.Documents),
                         Filters = new FileFilter[]
                         {
                         new FileFilter { Name = "PDF", Extensions = new string[] { "pdf" } }

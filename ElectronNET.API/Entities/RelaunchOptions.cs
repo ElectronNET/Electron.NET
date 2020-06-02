@@ -1,7 +1,7 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Controls the behavior of <see cref="App.Relaunch(RelaunchOptions)"/>.
     /// </summary>
     public class RelaunchOptions
     {
