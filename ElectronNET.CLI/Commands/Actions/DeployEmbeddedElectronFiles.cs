@@ -20,6 +20,7 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "commandLine.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "dialog.js", "api.");
+            EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "dock.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "menu.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "notification.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "tray.js", "api.");

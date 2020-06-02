@@ -10,11 +10,10 @@
   "profiles": {
     "Electron.NET App": {
       "commandName": "Executable",
-      "executablePath": "electronize",
+      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\netcoreapp3.1\\dotnet-electronize.exe",
       "commandLineArgs": "start",
-      "workingDirectory": "."
+      "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
     },
-
     "IIS Express": {
       "commandName": "IISExpress",
       "environmentVariables": {
