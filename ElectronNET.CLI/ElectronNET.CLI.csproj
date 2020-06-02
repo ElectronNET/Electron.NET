@@ -61,6 +61,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\browserWindows.js" Link="ElectronHost\api\browserWindows.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\commandLine.js" Link="ElectronHost\api\commandLine.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\dialog.js" Link="ElectronHost\api\dialog.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\dock.js" Link="ElectronHost\api\dock.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\menu.js" Link="ElectronHost\api\menu.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
