@@ -14,7 +14,7 @@ ElectronNET.API:
 * New Feature: PowerMonitor API Support (thanks [gustavo-lara-molina](https://github.com/gustavo-lara-molina)) [\#399](https://github.com/ElectronNET/Electron.NET/pull/399) [\#423](https://github.com/ElectronNET/Electron.NET/pull/423)
 * New Feature: NativeTheme API Support (thanks [konstantingross](https://github.com/konstantingross)) [\#402](https://github.com/ElectronNET/Electron.NET/pull/402)
 * New Feature: Cookie API Support (thanks [freosc](https://github.com/freosc)) [\#413](https://github.com/ElectronNET/Electron.NET/pull/413)
-* Changed Feature: Removed dock methods from App API and moved to Dock API (thanks konstantingross) [\#422](https://github.com/ElectronNET/Electron.NET/pull/422)
+* Changed Feature: Removed dock methods from App API and moved to Dock API (thanks [konstantingross](https://github.com/konstantingross)) [\#422](https://github.com/ElectronNET/Electron.NET/pull/422)
 * App-Api Enhancement: MenuItems with Submenus need an submenu type workaround [\#412](https://github.com/ElectronNET/Electron.NET/issues/412)
 * App-Api Enhancement: Added UserAgentFallback (thanks [Mandrakia](https://github.com/Mandrakia)) [\#406](https://github.com/ElectronNET/Electron.NET/pull/406)
 * App-Api Enhancement: Summaries rewritten, new App.IsReady / App.HasSingleInstanceLock property, App.Ready event, App.Focus with force parameter method, many parameters changes (thanks [konstantingross](https://github.com/konstantingross)) [\#415](https://github.com/ElectronNET/Electron.NET/pull/415) [\#422](https://github.com/ElectronNET/Electron.NET/pull/422)
