@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace ElectronNET.API
 {
@@ -31,7 +33,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-window-all-closed" + GetHashCode(), () =>
                     {
-                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed)
+                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                         {
                             _windowAllClosed();
                         }
@@ -350,6 +352,46 @@ namespace ElectronNET.API
         }
 
         private event Action<bool> _accessibilitySupportChanged;
+
+        /// <summary>
+        /// Emitted when the application has finished basic startup.
+        /// </summary>
+        public event Action Ready 
+        {
+            add
+            {
+                if(IsReady)
+                {
+                    value();
+                }
+
+                _ready += value;
+            }
+            remove
+            {
+                _ready -= value;
+            }
+        }
+
+        private event Action _ready;
+
+        /// <summary>
+        /// Application host fully started.
+        /// </summary>
+        public bool IsReady 
+        { 
+            get { return _isReady; }
+            internal set
+            {
+                _isReady = value;
+
+                if(value)
+                {
+                    _ready?.Invoke();
+                }
+            }
+        }
+        private bool _isReady = false;
 
         /// <summary>
         /// A property that indicates the current application's name, which is the
@@ -1525,6 +1567,34 @@ namespace ElectronNET.API
         public void DockSetIcon(string image)
         {
             BridgeConnector.Socket.Emit("appDockSetIcon", image);
+        }
+
+        /// <summary>
+        /// A String which is the user agent string Electron will use as a global fallback.
+        /// </summary>
+        public string UserAgentFallback
+        {
+            get
+            {
+                return Task.Run<string>(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<string>();
+
+                    BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
+                    {
+                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
+                        taskCompletionSource.SetResult((string)result);
+                    });
+
+                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
+
+                    return taskCompletionSource.Task;
+                }).Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+            }
         }
 
         internal void PreventQuit()

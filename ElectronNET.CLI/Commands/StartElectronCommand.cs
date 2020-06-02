@@ -27,6 +27,7 @@ namespace ElectronNET.CLI.Commands
         private string _manifest = "manifest";
         private string _clearCache = "clear-cache";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
+        private string _paramDotNetConfig = "dotnet-configuration";
 
         public Task<bool> ExecuteAsync()
         {
@@ -73,9 +74,15 @@ namespace ElectronNET.CLI.Commands
                     publishReadyToRun += "true";
                 }
 
+                string configuration = "Debug";
+                if (parser.Arguments.ContainsKey(_paramDotNetConfig))
+                {
+                    configuration = parser.Arguments[_paramDotNetConfig][0];
+                }
+
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)
@@ -149,7 +156,5 @@ namespace ElectronNET.CLI.Commands
                 return true;
             });
         }
-
-
     }
 }

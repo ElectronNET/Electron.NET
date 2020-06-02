@@ -56,6 +56,8 @@ namespace ElectronNET.API
             _menuItems.Clear();
 
             menuItems.AddMenuItemsId();
+            menuItems.AddSubmenuTypes();
+
             BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _menuItems.AddRange(menuItems);
 
@@ -83,6 +85,8 @@ namespace ElectronNET.API
         public void SetContextMenu(BrowserWindow browserWindow, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
+            menuItems.AddSubmenuTypes();
+
             BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
 
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))

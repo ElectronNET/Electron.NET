@@ -48,5 +48,24 @@ namespace ElectronNET.API.Extensions
 
             return result;
         }
+
+        public static MenuItem[] AddSubmenuTypes(this MenuItem[] menuItems)
+        {
+            for (int index = 0; index < menuItems.Length; index++)
+            {
+                var menuItem = menuItems[index];
+                if (menuItem?.Submenu?.Length > 0)
+                {
+                    if(menuItem.Type == MenuType.normal)
+                    {
+                        menuItem.Type = MenuType.submenu;
+                    }
+
+                    AddSubmenuTypes(menuItem.Submenu);
+                }
+            }
+
+            return menuItems;
+        }
     }
 }

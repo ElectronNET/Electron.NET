@@ -62,6 +62,11 @@ app.on('ready', () => {
 
 });
 
+app.on('quit', async (event, exitCode) => {
+    await server.close();
+    apiProcess.kill();
+});
+
 function isSplashScreenEnabled() {
     if (manifestJsonFile.hasOwnProperty('splashscreen')) {
         if (manifestJsonFile.splashscreen.hasOwnProperty('imageFile')) {
@@ -136,8 +141,8 @@ function startSocketApiBridge(port) {
         // we need to remove previously cache instances 
         // otherwise it will fire the same event multiple depends how many time
         // live reload watch happen.
-        socket.on('disconnect', function () {
-            console.log('Got disconnect!');
+        socket.on('disconnect', function (reason) {
+            console.log('Got disconnect! Reason: ' + reason);
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
             delete require.cache[require.resolve('./api/commandLine')];
@@ -214,7 +219,7 @@ function startAspCoreBackend(electronPort) {
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = [`/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -245,7 +250,7 @@ function startAspCoreBackendWithWatch(electronPort) {
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = ['watch', 'run', `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
 
         var options = {
             cwd: currentBinPath,
@@ -257,4 +262,12 @@ function startAspCoreBackendWithWatch(electronPort) {
             console.log(`stdout: ${data.toString()}`);
         });
     }
+}
+
+function getEnvironmentParameter() {
+    if(manifestJsonFile.environment) {
+        return '--environment=' + manifestJsonFile.environment;
+    }
+
+    return '';
 }
