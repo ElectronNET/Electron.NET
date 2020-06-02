@@ -38,14 +38,4 @@ export = (socket: SocketIO.Socket) => {
             electronSocket.emit('pm-shutdown');
         });
     });
-    socket.on('pm-getSystemIdleTime', () => {
-        var idleTime = powerMonitor.getSystemIdleTime();
-
-        electronSocket.emit('pm-getSystemIdleTime-completed', idleTime);
-    });
-    socket.on('pm-getSystemIdleState', (idleThreshold ) => {
-        var idleState = powerMonitor.getSystemIdleState(idleThreshold );
-
-        electronSocket.emit('pm-getSystemIdleState-completed', idleState);
-    });
 };

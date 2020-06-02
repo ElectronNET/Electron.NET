@@ -37,7 +37,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.PowerMonitor.OnBattery += () =>
                 {
-                    Console.WriteLine("The system about to  changes to battery power");
+                    Console.WriteLine("The system is about to change to battery power");
                 };
 
             }

@@ -38,13 +38,5 @@ module.exports = (socket) => {
             electronSocket.emit('pm-shutdown');
         });
     });
-    socket.on('pm-getSystemIdleTime', () => {
-        var idleTime = electron_1.powerMonitor.getSystemIdleTime();
-        electronSocket.emit('pm-getSystemIdleTime-completed', idleTime);
-    });
-    socket.on('pm-getSystemIdleState', (idleThreshold) => {
-        var idleState = electron_1.powerMonitor.getSystemIdleState(idleThreshold);
-        electronSocket.emit('pm-getSystemIdleState-completed', idleState);
-    });
 };
 //# sourceMappingURL=powerMonitor.js.map

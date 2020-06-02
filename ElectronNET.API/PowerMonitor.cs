@@ -215,47 +215,6 @@ namespace ElectronNET.API
 
         private event Action _shutdown;
 
-        /// <summary>
-        /// Idle time in seconds
-        /// Calculate system idle time in seconds.
-        /// </summary>
-        public Task<int> GetSystemIdleTimeAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<int>();
-
-            BridgeConnector.Socket.On("pm-getSystemIdleTime-completed", (idleTime) =>
-            {
-                BridgeConnector.Socket.Off("pm-getSystemIdleTime-completed");
-                taskCompletionSource.SetResult((int)idleTime);
-            });
-
-            BridgeConnector.Socket.Emit("pm-getSystemIdleTime");
-
-            return taskCompletionSource.Task;
-        }
-
-        /// <summary>
-        /// The system's current state. Can be `active`, `idle`, `locked` or `unknown`.
-        ///
-        /// Calculate the system idle state. `idleThreshold` is the amount of time (in
-        /// seconds) before considered idle.  `locked` is available on supported systems
-        /// only.
-        /// </summary>
-        public Task<string> GetSystemIdleStateAsync(int IdleThreshold)
-        {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("pm-getSystemIdleState-completed", (idleTime) =>
-            {
-                BridgeConnector.Socket.Off("pm-getSystemIdleState-completed");
-                taskCompletionSource.SetResult((string)idleTime);
-            });
-
-            BridgeConnector.Socket.Emit("pm-getSystemIdleState");
-
-            return taskCompletionSource.Task;
-        }
-
         private static PowerMonitor _powerMonitor;
         private static object _syncRoot = new object();
 
