@@ -16,6 +16,7 @@ ElectronNET.API:
 * New Feature: Cookie API Support (thanks [freosc](https://github.com/freosc)) [\#413](https://github.com/ElectronNET/Electron.NET/pull/413)
 * App-Api Enhancement: MenuItems with Submenus need an submenu type workaround [\#412](https://github.com/ElectronNET/Electron.NET/issues/412)
 * App-Api Enhancement: Added UserAgentFallback (thanks [Mandrakia](https://github.com/Mandrakia)) [\#406](https://github.com/ElectronNET/Electron.NET/pull/406)
+* App-Api Enhancement: Summaries rewritten, new App.IsReady / App.HasSingleInstanceLock property, App.Ready event, App.Focus with force parameter method, many parameters changes (thanks [konstantingross](https://github.com/konstantingross)) [\#415](https://github.com/ElectronNET/Electron.NET/pull/415) [\#422](https://github.com/ElectronNET/Electron.NET/pull/422)
 * App-Api Enhancement: New App.IsReady property and App.Ready event (thanks [konstantingross](https://github.com/konstantingross)) [\#415](https://github.com/ElectronNET/Electron.NET/pull/415)
 * Shell-Api Enhancement: API fixes for Electron 9.0.0 / Added missing parameters / Summaries rewritten (thanks [konstantingross](https://github.com/konstantingross)) [\#417](https://github.com/ElectronNET/Electron.NET/pull/417) [\#418](https://github.com/ElectronNET/Electron.NET/pull/418)
 * Notification-Api Enhancement: Added missing properties in Notifications (thanks [konstantingross](https://github.com/konstantingross)) [\#410](https://github.com/ElectronNET/Electron.NET/pull/410)
