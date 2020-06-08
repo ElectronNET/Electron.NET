@@ -20,9 +20,15 @@ namespace ElectronNET.API
         /// </value>
         public int Id { get; private set; }
 
+        /// <summary>
+        /// Query and modify a session's cookies.
+        /// </summary>
+        public Cookies Cookies { get; }
+
         internal Session(int id)
         {
             Id = id;
+            Cookies = new Cookies(id);
         }
 
         /// <summary>
