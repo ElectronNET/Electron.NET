@@ -2,27 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API.Entities;
 using ElectronNET.API;
-using Microsoft.Extensions.Hosting;
 
 namespace ElectronNET.WebApp.Controllers
 {
     public class MenusController : Controller
     {
-        public MenusController(IHostApplicationLifetime hostApplicationLifetime)
-        {
-            hostApplicationLifetime.ApplicationStarted.Register(() =>
-            {
-                if (HybridSupport.IsElectronActive)
-                {
-                    CreateContextMenu();
-                }
-            });
-        }
-
         public IActionResult Index()
         {
             if (HybridSupport.IsElectronActive)
             {
+                Electron.App.Ready += () => CreateContextMenu();
+
                 var menu = new MenuItem[] {
                 new MenuItem { Label = "Edit", Submenu = new MenuItem[] {
                     new MenuItem { Label = "Undo", Accelerator = "CmdOrCtrl+Z", Role = MenuRole.undo },

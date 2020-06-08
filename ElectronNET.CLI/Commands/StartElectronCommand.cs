@@ -74,7 +74,7 @@ namespace ElectronNET.CLI.Commands
                     publishReadyToRun += "true";
                 }
 
-                string configuration = "Release";
+                string configuration = "Debug";
                 if (parser.Arguments.ContainsKey(_paramDotNetConfig))
                 {
                     configuration = parser.Arguments[_paramDotNetConfig][0];
@@ -82,7 +82,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c {configuration} --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)
@@ -156,7 +156,5 @@ namespace ElectronNET.CLI.Commands
                 return true;
             });
         }
-
-
     }
 }

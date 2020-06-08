@@ -3,6 +3,7 @@
   "splashscreen": {
     "imageFile": "/wwwroot/assets/img/about@2x.png"
   },
+  "environment": "Production",
   "singleInstance": false,
   "build": {
     "appId": "com.electronnetapidemos.app",

@@ -1,23 +1,28 @@
-﻿namespace ElectronNET.API
+﻿using System.ComponentModel;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Defines the ShortcutLinkOperation enumeration.
     /// </summary>
     public enum ShortcutLinkOperation
     {
         /// <summary>
         /// Creates a new shortcut, overwriting if necessary.
         /// </summary>
-        create,
+        [Description("create")]
+        Create,
 
         /// <summary>
         /// Updates specified properties only on an existing shortcut.
         /// </summary>
-        update,
+        [Description("update")]
+        Update,
 
         /// <summary>
-        /// Overwrites an existing shortcut, fails if the shortcut doesn’t exist.
+        /// Overwrites an existing shortcut, fails if the shortcut doesn't exist.
         /// </summary>
-        replace
+        [Description("replace")]
+        Replace
     }
 }
