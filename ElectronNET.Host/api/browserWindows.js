@@ -435,6 +435,10 @@ module.exports = (socket, app) => {
         const isKiosk = getWindowById(id).isKiosk();
         electronSocket.emit('browserWindow-isKiosk-completed', isKiosk);
     });
+    socket.on('browserWindowGetNativeWindowHandle', (id) => {
+        const nativeWindowHandle = getWindowById(id).getNativeWindowHandle().readInt32LE(0).toString(16);
+        electronSocket.emit('browserWindow-getNativeWindowHandle-completed', nativeWindowHandle);
+    });
     socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
         getWindowById(id).setRepresentedFilename(filename);
     });
