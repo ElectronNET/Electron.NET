@@ -22,12 +22,15 @@ ElectronNET.API:
 * Shell-Api Enhancement: API fixes for Electron 9.0.0 / Added missing parameters / Summaries rewritten (thanks [konstantingross](https://github.com/konstantingross)) [\#417](https://github.com/ElectronNET/Electron.NET/pull/417) [\#418](https://github.com/ElectronNET/Electron.NET/pull/418)
 * Notification-Api Enhancement: Added missing properties in Notifications (thanks [konstantingross](https://github.com/konstantingross)) [\#410](https://github.com/ElectronNET/Electron.NET/pull/410)
 * BrowserWindows-Api Enhancement: Add missing API call for SetProgressBar options (thanks [konstantingross](https://github.com/konstantingross)) [\#416](https://github.com/ElectronNET/Electron.NET/pull/416)
+* BrowserWindow Enhancement: Add BrowserWindow.GetNativeWindowHandle() (thanks [kdlslyv](https://github.com/kdlslyv)) [\#429](https://github.com/ElectronNET/Electron.NET/pull/429)
 * MacOS Enhancement: Application exit logic (thanks [dafergu2](https://github.com/dafergu2)) [\#405](https://github.com/ElectronNET/Electron.NET/pull/405)
 * Fixed bug: ElectronNET.API.Entities.WebPreferences.ContextIsolation [DefaultValue(true)] [\#411](https://github.com/ElectronNET/Electron.NET/issues/411)
 
 ElectronNET.WebApp (internal use):
 * Improvement debugging and testing new API calls (without install ElectronNET.CLI) (thanks [konstantingross](https://github.com/konstantingross)) [\#425](https://github.com/ElectronNET/Electron.NET/pull/425)
 * Fixed bug: Cannot find modules in ElectronHostHook (thanks [konstantingross](https://github.com/konstantingross)) [\#425](https://github.com/ElectronNET/Electron.NET/pull/425)
+
+Thank you for donation [Phil Seeman](https://github.com/mpnow) ❤
 
 # Released
 
