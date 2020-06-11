@@ -1810,6 +1810,25 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Returns the native type of the handle is HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.
+        /// </summary>
+        /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
+        public Task<string> GetNativeWindowHandle()
+        {
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("browserWindow-getNativeWindowHandle-completed", (nativeWindowHandle) =>
+            {
+                BridgeConnector.Socket.Off("browserWindow-getNativeWindowHandle-completed");
+                taskCompletionSource.SetResult(nativeWindowHandle.ToString());
+            });
+
+            BridgeConnector.Socket.Emit("browserWindowGetNativeWindowHandle", Id);
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
         /// Sets the pathname of the file the window represents, 
         /// and the icon of the file will show in window’s title bar.
         /// </summary>
