@@ -72,13 +72,14 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
                 Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+                taskCompletionSource.SetException(new Exception($"Host Hook Exception {result}"));
             });
 
             BridgeConnector.Socket.On(socketEventName + "Complete" + guid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
                 BridgeConnector.Socket.Off(socketEventName + "Complete" + guid);
-                T data;
+                T data = default;
 
                 try
                 {
@@ -105,7 +106,8 @@ namespace ElectronNET.API
                 }
                 catch (Exception exception)
                 {
-                    throw new InvalidCastException("Return value does not match with the generic type.", exception);
+                    taskCompletionSource.SetException(exception);
+                    //throw new InvalidCastException("Return value does not match with the generic type.", exception);
                 }
 
                 taskCompletionSource.SetResult(data);
