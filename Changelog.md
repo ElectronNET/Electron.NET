@@ -1,5 +1,7 @@
 # Not released
 
+# Released
+
 # 9.31.1
 
 ElectronNET.CLI:
@@ -31,8 +33,6 @@ ElectronNET.WebApp (internal use):
 * Fixed bug: Cannot find modules in ElectronHostHook (thanks [konstantingross](https://github.com/konstantingross)) [\#425](https://github.com/ElectronNET/Electron.NET/pull/425)
 
 Thank you for donation [Phil Seeman](https://github.com/mpnow) ❤
-
-# Released
 
 # 8.31.2
 
