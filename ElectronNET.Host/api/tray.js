@@ -47,13 +47,17 @@ module.exports = (socket) => {
         }
     });
     socket.on('create-tray', (image, menuItems) => {
-        const menu = electron_1.Menu.buildFromTemplate(menuItems);
-        addMenuItemClickConnector(menu.items, (id) => {
-            electronSocket.emit('trayMenuItemClicked', id);
-        });
         const trayIcon = electron_1.nativeImage.createFromPath(image);
         tray = new electron_1.Tray(trayIcon);
-        tray.setContextMenu(menu);
+
+        if (menuItems) {
+            const menu = electron_1.Menu.buildFromTemplate(menuItems);
+            addMenuItemClickConnector(menu.items, (id) => {
+                electronSocket.emit('trayMenuItemClicked', id);
+            });
+
+            tray.setContextMenu(menu);
+        }
     });
     socket.on('tray-destroy', () => {
         if (tray) {
