@@ -49,13 +49,11 @@ module.exports = (socket) => {
     socket.on('create-tray', (image, menuItems) => {
         const trayIcon = electron_1.nativeImage.createFromPath(image);
         tray = new electron_1.Tray(trayIcon);
-
         if (menuItems) {
             const menu = electron_1.Menu.buildFromTemplate(menuItems);
             addMenuItemClickConnector(menu.items, (id) => {
                 electronSocket.emit('trayMenuItemClicked', id);
             });
-
             tray.setContextMenu(menu);
         }
     });
