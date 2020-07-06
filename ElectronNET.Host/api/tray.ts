@@ -53,16 +53,18 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('create-tray', (image, menuItems) => {
-        const menu = Menu.buildFromTemplate(menuItems);
-
-        addMenuItemClickConnector(menu.items, (id) => {
-            electronSocket.emit('trayMenuItemClicked', id);
-        });
-
         const trayIcon = nativeImage.createFromPath(image);
 
         tray = new Tray(trayIcon);
-        tray.setContextMenu(menu);
+
+        if (menuItems) {
+            const menu = Menu.buildFromTemplate(menuItems);
+    
+            addMenuItemClickConnector(menu.items, (id) => {
+                electronSocket.emit('trayMenuItemClicked', id);
+            });
+            tray.setContextMenu(menu);
+        }
     });
 
     socket.on('tray-destroy', () => {

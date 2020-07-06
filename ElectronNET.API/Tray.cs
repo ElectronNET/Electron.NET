@@ -264,6 +264,15 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Shows the Traybar (empty).
+        /// </summary>
+        /// <param name="image">The image.</param>
+        public void Show(string image)
+        {
+            BridgeConnector.Socket.Emit("create-tray", image);
+        }
+
+        /// <summary>
         /// Destroys the tray icon immediately.
         /// </summary>
         public void Destroy()
