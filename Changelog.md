@@ -2,6 +2,10 @@
 
 # Released
 
+# 9.31.2
+
+* Electron-Builder fixed for Windows builds.
+
 # 9.31.1
 
 ElectronNET.CLI:
