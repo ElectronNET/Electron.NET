@@ -1,5 +1,7 @@
 # Not released
 
+# Released
+
 # 9.31.1
 
 ElectronNET.CLI:
@@ -10,7 +12,7 @@ ElectronNET.CLI:
 
 ElectronNET.API:
 
-* New Feature: Native Electron 9.0.1 support, but not all new features (we search contributors)
+* New Feature: Native Electron 9.0.3 support, but not all new features (we search contributors)
 * New Feature: PowerMonitor API Support (thanks [gustavo-lara-molina](https://github.com/gustavo-lara-molina)) [\#399](https://github.com/ElectronNET/Electron.NET/pull/399) [\#423](https://github.com/ElectronNET/Electron.NET/pull/423)
 * New Feature: NativeTheme API Support (thanks [konstantingross](https://github.com/konstantingross)) [\#402](https://github.com/ElectronNET/Electron.NET/pull/402)
 * New Feature: Cookie API Support (thanks [freosc](https://github.com/freosc)) [\#413](https://github.com/ElectronNET/Electron.NET/pull/413)
@@ -22,6 +24,7 @@ ElectronNET.API:
 * Shell-Api Enhancement: API fixes for Electron 9.0.0 / Added missing parameters / Summaries rewritten (thanks [konstantingross](https://github.com/konstantingross)) [\#417](https://github.com/ElectronNET/Electron.NET/pull/417) [\#418](https://github.com/ElectronNET/Electron.NET/pull/418)
 * Notification-Api Enhancement: Added missing properties in Notifications (thanks [konstantingross](https://github.com/konstantingross)) [\#410](https://github.com/ElectronNET/Electron.NET/pull/410)
 * BrowserWindows-Api Enhancement: Add missing API call for SetProgressBar options (thanks [konstantingross](https://github.com/konstantingross)) [\#416](https://github.com/ElectronNET/Electron.NET/pull/416)
+* BrowserWindow Enhancement: Add BrowserWindow.GetNativeWindowHandle() (thanks [kdlslyv](https://github.com/kdlslyv)) [\#429](https://github.com/ElectronNET/Electron.NET/pull/429)
 * MacOS Enhancement: Application exit logic (thanks [dafergu2](https://github.com/dafergu2)) [\#405](https://github.com/ElectronNET/Electron.NET/pull/405)
 * Fixed bug: ElectronNET.API.Entities.WebPreferences.ContextIsolation [DefaultValue(true)] [\#411](https://github.com/ElectronNET/Electron.NET/issues/411)
 
@@ -29,7 +32,7 @@ ElectronNET.WebApp (internal use):
 * Improvement debugging and testing new API calls (without install ElectronNET.CLI) (thanks [konstantingross](https://github.com/konstantingross)) [\#425](https://github.com/ElectronNET/Electron.NET/pull/425)
 * Fixed bug: Cannot find modules in ElectronHostHook (thanks [konstantingross](https://github.com/konstantingross)) [\#425](https://github.com/ElectronNET/Electron.NET/pull/425)
 
-# Released
+Thank you for donation [Phil Seeman](https://github.com/mpnow) ❤
 
 # 8.31.2
 
