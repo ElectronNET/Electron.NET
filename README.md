@@ -188,9 +188,9 @@ MIT-licensed
 
 ## 📝 Important notes
 
-### ElectronNET.API & ElectronNET.CLI Version 8.31.1
+### ElectronNET.API & ElectronNET.CLI Version 9.31.2
 
-Make sure you also have the new Electron.NET API & CLI 8.31.1 version.
+Make sure you also have the new Electron.NET API & CLI 9.31.2 version.
 
 ```
 dotnet tool update ElectronNET.CLI -g
