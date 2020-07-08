@@ -88,6 +88,7 @@ function startSplashScreen() {
             throw new Error(error.message);
         }
 
+        console.log("splashscreen ", dimensions.width, dimensions.height);
         splashScreen = new BrowserWindow({
             width: dimensions.width,
             height: dimensions.height,
@@ -144,6 +145,7 @@ function startSocketApiBridge(port) {
         // live reload watch happen.
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
+            socket.removeAllListeners();
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
             delete require.cache[require.resolve('./api/commandLine')];
@@ -232,10 +234,16 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
+        console.log("Starting child process", binFilePath, parameters, options);
         apiProcess = cProcess(binFilePath, parameters, options);
-
+        console.log("Started");
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
+        });
+        apiProcess.on('exit', (code) =>
+        {
+            console.log(`child process exit: ${code}`);
+            app.exit(code);
         });
     }
 }
@@ -259,10 +267,16 @@ function startAspCoreBackendWithWatch(electronPort) {
             cwd: currentBinPath,
             env: process.env,
         };
+        console.log("Starting child process", binFilePath, parameters, options);
         apiProcess = cProcess('dotnet', parameters, options);
-
+        console.log("Started");
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
+        });
+        apiProcess.on('exit', (code) =>
+        {
+            console.log(`child process exit: ${code}`);
+            app.exit(code);
         });
     }
 }

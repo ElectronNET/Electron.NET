@@ -93,6 +93,11 @@ export = (socket: SocketIO.Socket) => {
         autoUpdater.updateConfigPath = value;
     });
 
+    socket.on('autoUpdater-currentVersion-get', () =>
+    {
+        electronSocket.emit('autoUpdater-currentVersion-get-reply', autoUpdater.currentVersion);
+    });
+
     socket.on('autoUpdater-channel-get', () => {
         electronSocket.emit('autoUpdater-channel-get-reply', autoUpdater.channel || '');
     });
@@ -101,18 +106,41 @@ export = (socket: SocketIO.Socket) => {
         autoUpdater.channel = value;
     });
 
+    socket.on('autoUpdater-requestHeaders-get', () =>
+    {
+        electronSocket.emit('autoUpdater-requestHeaders-get-reply', autoUpdater.requestHeaders);
+    });
+
+    socket.on('autoUpdater-requestHeaders-set', (value) =>
+    {
+        autoUpdater.requestHeaders = value;
+    });
+
     // Methods ********
 
-    socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
-        const updateCheckResult = await autoUpdater.checkForUpdatesAndNotify();
-        electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
+    socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) =>
+    {
+        autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) =>
+        {
+            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
+        }).catch((error) =>
+        {
+            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyError' + guid, error);
+        });
     });
 
-    socket.on('autoUpdaterCheckForUpdates', async (guid) => {
+    socket.on('autoUpdaterCheckForUpdates', async (guid) =>
+    {
         // autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
-        const updateCheckResult = await autoUpdater.checkForUpdates();
-        electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
+        autoUpdater.checkForUpdates().then((updateCheckResult) =>
+        {
+            electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
+        }).catch((error) =>
+        {
+            electronSocket.emit('autoUpdaterCheckForUpdatesError' + guid, error);
+        });
     });
+
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         autoUpdater.quitAndInstall(isSilent, isForceRunAfter);

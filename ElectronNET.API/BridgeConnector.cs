@@ -23,6 +23,14 @@ namespace ElectronNET.API
                             {
                                 Console.WriteLine("BridgeConnector connected!");
                             });
+                            _socket.On(Socket.EVENT_CONNECT_ERROR, (args) =>
+                            {
+                                Console.WriteLine("Socket error! {0}", args??"no args");
+                            });
+                            _socket.On(Socket.EVENT_DISCONNECT, (args) =>
+                            {
+                                Console.WriteLine("Socket Disconnect! {0}", args ?? "no args");
+                            });
                         }
                     }
                 }
