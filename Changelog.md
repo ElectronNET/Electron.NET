@@ -2,6 +2,10 @@
 
 # Released
 
+# 9.31.2
+
+* Electron-Builder fixed for Windows builds.
+
 # 9.31.1
 
 ElectronNET.CLI:
@@ -25,6 +29,7 @@ ElectronNET.API:
 * Notification-Api Enhancement: Added missing properties in Notifications (thanks [konstantingross](https://github.com/konstantingross)) [\#410](https://github.com/ElectronNET/Electron.NET/pull/410)
 * BrowserWindows-Api Enhancement: Add missing API call for SetProgressBar options (thanks [konstantingross](https://github.com/konstantingross)) [\#416](https://github.com/ElectronNET/Electron.NET/pull/416)
 * BrowserWindow Enhancement: Add BrowserWindow.GetNativeWindowHandle() (thanks [kdlslyv](https://github.com/kdlslyv)) [\#429](https://github.com/ElectronNET/Electron.NET/pull/429)
+* HostHook-Api Enhancement: HostHook.CallAsync should use TaskCompletionSource.SetException instead of throwing exception (thanks [Fre V](https://github.com/freosc)) [\#430](https://github.com/ElectronNET/Electron.NET/pull/430)
 * MacOS Enhancement: Application exit logic (thanks [dafergu2](https://github.com/dafergu2)) [\#405](https://github.com/ElectronNET/Electron.NET/pull/405)
 * Fixed bug: ElectronNET.API.Entities.WebPreferences.ContextIsolation [DefaultValue(true)] [\#411](https://github.com/ElectronNET/Electron.NET/issues/411)
 
