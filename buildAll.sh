@@ -30,11 +30,15 @@ pushd $dir/ElectronNET.WebApp
     echo "/target linux (dev-build)"
     electronize build /target linux
     
-    echo "/target osx (dev-build)"
-    electronize build /target osx
-    
-    echo "/target custom win7-x86;win (dev-build)"
-    electronize build /target custom "win7-x86;win"
+    # Cannot public osx/win on windows due to:
+    # NETSDK1095: Optimizing assemblies for performance is not supported for the selected target platform or architecture.
+    if [[ "$OSTYPE" != "linux-gnu"* ]]; then
+        echo "/target osx (dev-build)"
+        electronize build /target osx
+        
+        echo "/target custom win7-x86;win (dev-build)"
+        electronize build /target custom "win7-x86;win"
+    fi
 popd
 
 # Be aware, that for non-electronnet-dev environments the correct 
