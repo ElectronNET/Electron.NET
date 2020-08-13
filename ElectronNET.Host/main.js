@@ -1,5 +1,6 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
+const { protocol } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
@@ -51,6 +52,14 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
 }
 
 app.on('ready', () => {
+
+    // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
+    // https://github.com/electron/electron/issues/23757
+    protocol.registerFileProtocol('file', (request, callback) => {
+        const pathname = request.url.replace('file:///', '');
+        callback(pathname);
+    });
+    
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
