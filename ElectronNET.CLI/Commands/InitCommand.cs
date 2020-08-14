@@ -70,19 +70,22 @@ namespace ElectronNET.CLI.Commands
                 // Deploy config file
                 EmbeddedFileHelper.DeployEmbeddedFileToTargetFile(currentDirectory, DefaultConfigFileName, ConfigName);
 
-                // search .csproj
-                Console.WriteLine($"Search your .csproj to add the needed {ConfigName}...");
-                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                // search .csproj/.fsproj (.csproj has higher precedence)
+                Console.WriteLine($"Search your .csproj/fsproj to add the needed {ConfigName}...");
+                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly)
+                    .Union(Directory.EnumerateFiles(currentDirectory, "*.fsproj", SearchOption.TopDirectoryOnly))
+                    .FirstOrDefault();
 
-                // update config file with the name of the csproj
-                // ToDo: If the csproj name != application name, this will fail
+                // update config file with the name of the csproj/fsproj
+                // ToDo: If the csproj/fsproj name != application name, this will fail
                 string text = File.ReadAllText(targetFilePath);
                 text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
                 File.WriteAllText(targetFilePath, text);
 
-                Console.WriteLine($"Found your .csproj: {projectFile} - check for existing config or update it.");
+                var extension = Path.GetExtension(projectFile);
+                Console.WriteLine($"Found your {extension}: {projectFile} - check for existing config or update it.");
 
-                if (!EditCsProj(projectFile)) return false;
+                if (!EditProjectFile(projectFile)) return false;
 
                 // search launchSettings.json
                 Console.WriteLine($"Search your .launchSettings to add our electron debug profile...");
@@ -158,7 +161,7 @@ namespace ElectronNET.CLI.Commands
             }
         }
 
-        private static bool EditCsProj(string projectFile)
+        private static bool EditProjectFile(string projectFile)
         {
             using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -174,11 +177,11 @@ namespace ElectronNET.CLI.Commands
 
                 if (xmlDocument.ToString().Contains($"Content Update=\"{ConfigName}\""))
                 {
-                    Console.WriteLine($"{ConfigName} already in csproj.");
+                    Console.WriteLine($"{ConfigName} already in csproj/fsproj.");
                     return false;
                 }
 
-                Console.WriteLine($"{ConfigName} will be added to csproj.");
+                Console.WriteLine($"{ConfigName} will be added to csproj/fsproj.");
 
                 string itemGroupXmlString = "<ItemGroup>" +
                                             "<Content Update=\"" + ConfigName + "\">" +
@@ -204,7 +207,7 @@ namespace ElectronNET.CLI.Commands
 
             }
 
-            Console.WriteLine($"{ConfigName} added in csproj!");
+            Console.WriteLine($"{ConfigName} added in csproj/fsproj!");
             return true;
         }
     }
