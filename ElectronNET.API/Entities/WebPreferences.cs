@@ -142,7 +142,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Defaults to 16.
         /// </summary>
-        public int DefaultFontSize { get; set; }
+        public int DefaultFontSize { get; set; } = 16;
 
         /// <summary>
         /// Defaults to 13.
