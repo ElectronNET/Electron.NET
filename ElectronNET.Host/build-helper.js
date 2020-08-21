@@ -11,7 +11,8 @@ if(builderConfiguration.hasOwnProperty('buildVersion')) {
     packageJson.name = dasherize(manifestFile.name || 'electron-net');
     packageJson.author = manifestFile.author || '';
     packageJson.version = builderConfiguration.buildVersion;
-    
+    packageJson.description = manifestFile.description || '';
+
     fs.writeFile('./package.json', JSON.stringify(packageJson), (error) => {
         if(error) {
             console.log(error.message);
