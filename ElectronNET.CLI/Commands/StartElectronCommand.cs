@@ -28,6 +28,7 @@ namespace ElectronNET.CLI.Commands
         private string _clearCache = "clear-cache";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
         private string _paramDotNetConfig = "dotnet-configuration";
+        private string _paramTarget = "target";
 
         public Task<bool> ExecuteAsync()
         {
@@ -59,8 +60,6 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-                var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
-
                 string tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = 0;
 
@@ -72,6 +71,21 @@ namespace ElectronNET.CLI.Commands
                 else
                 {
                     publishReadyToRun += "true";
+                }
+
+                // If target is specified as a command line argument, use it.
+                // Format is the same as the build command. 
+                // If target is not specified, autodetect it.
+                var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
+                if (parser.Arguments.ContainsKey(_paramTarget))
+                {
+                    var desiredPlatform = parser.Arguments[_paramTarget][0];
+                    string specifiedFromCustom = string.Empty;
+                    if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
+                    {
+                        specifiedFromCustom = parser.Arguments[_paramTarget][1];
+                    }
+                    platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
                 }
 
                 string configuration = "Debug";

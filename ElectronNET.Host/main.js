@@ -1,5 +1,6 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
+const { protocol } = require('electron');
 const { ipcMain  } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
@@ -52,6 +53,14 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
 }
 
 app.on('ready', () => {
+
+    // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
+    // https://github.com/electron/electron/issues/23757
+    protocol.registerFileProtocol('file', (request, callback) => {
+        const pathname = request.url.replace('file:///', '');
+        callback(pathname);
+    });
+    
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
@@ -173,8 +182,8 @@ function startSocketApiBridge(port) {
         });
 
         global['electronsocket'] = socket;
-        //global['electronsocket'].setMaxListeners(0);
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, socket.listenerCount());
+        global['electronsocket'].setMaxListeners(0);
+        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
@@ -275,6 +284,7 @@ function startAspCoreBackendWithWatch(electronPort) {
         };
         console.log("Starting child process", binFilePath, parameters, options);
         apiProcess = cProcess('dotnet', parameters, options);
+
         console.log("Started");
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);

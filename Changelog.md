@@ -1,5 +1,20 @@
 # Not released
 
+# 9.31.3
+
+ElectronNET.CLI:
+
+* New Feature: Set a description of the app in `electron.manifest.json` (thanks [BurtsevC](https://github.com/BurtsevC)) [\#433](https://github.com/ElectronNET/Electron.NET/pull/433)
+* New Feature: Set a target for the start command (thanks [gabecook](https://github.com/gabecook)) [\#463](https://github.com/ElectronNET/Electron.NET/pull/463)
+* New Feature: `electronize init` support for F# projects (thanks [kojo12228](https://github.com/kojo12228)) [\#457](https://github.com/ElectronNET/Electron.NET/pull/457)
+* New Feature: Linux support for the buildAll.sh (thanks [duncanawoods](https://github.com/duncanawoods)) [\#465](https://github.com/ElectronNET/Electron.NET/pull/465)
+* Fixed bug: ERR_UNKNOWN_URL_SCHEME by intercepting file:// protocol (thanks [duncanawoods](https://github.com/duncanawoods)) [\#467](https://github.com/ElectronNET/Electron.NET/pull/467)
+
+ElectronNET.API:
+
+* New Feature: Native Electron 9.2.0 support, but not all new features (we search contributors)
+* Fixed bug: Set default WebPreferences.DefaultFontSize (thanks [duncanawoods](https://github.com/duncanawoods)) [\#468](https://github.com/ElectronNET/Electron.NET/pull/468)
+
 # Released
 
 # 9.31.2

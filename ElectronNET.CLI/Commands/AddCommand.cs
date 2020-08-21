@@ -75,13 +75,16 @@ namespace ElectronNET.CLI.Commands
                 // ToDo: Not sure if this runs under linux/macos
                 ProcessHelper.CmdExecute(@"npx tsc -p ../../", targetFilePath);
 
-                // search .csproj
-                Console.WriteLine($"Search your .csproj to add configure CopyToPublishDirectory to 'Never'");
-                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                // search .csproj or .fsproj (.csproj has higher precedence)
+                Console.WriteLine($"Search your .csproj/.fsproj to add configure CopyToPublishDirectory to 'Never'");
+                var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly)
+                    .Union(Directory.EnumerateFiles(currentDirectory, "*.fsproj", SearchOption.TopDirectoryOnly))
+                    .FirstOrDefault();
 
-                Console.WriteLine($"Found your .csproj: {projectFile} - check for existing CopyToPublishDirectory setting or update it.");
+                var extension = Path.GetExtension(projectFile);
+                Console.WriteLine($"Found your {extension}: {projectFile} - check for existing CopyToPublishDirectory setting or update it.");
 
-                if (!EditCsProj(projectFile)) return false;
+                if (!EditProjectFile(projectFile)) return false;
 
                 Console.WriteLine($"Everything done - happy electronizing with your custom npm packages!");
 
@@ -90,7 +93,7 @@ namespace ElectronNET.CLI.Commands
         }
 
         // ToDo: Cleanup this copy/past code.
-        private static bool EditCsProj(string projectFile)
+        private static bool EditProjectFile(string projectFile)
         {
             using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -128,7 +131,7 @@ namespace ElectronNET.CLI.Commands
 
             }
 
-            Console.WriteLine($"Publish setting added in csproj!");
+            Console.WriteLine($"Publish setting added in csproj/fsproj!");
             return true;
         }
 
