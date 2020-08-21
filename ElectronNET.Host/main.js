@@ -1,7 +1,6 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const { protocol } = require('electron');
-const { ipcMain  } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
@@ -98,7 +97,6 @@ function startSplashScreen() {
             throw new Error(error.message);
         }
 
-        console.log("splashscreen ", dimensions.width, dimensions.height);
         splashScreen = new BrowserWindow({
             width: dimensions.width,
             height: dimensions.height,
@@ -149,17 +147,12 @@ function startSocketApiBridge(port) {
     app['mainWindow'] = null;
 
     io.on('connection', (socket) => {
+
         // we need to remove previously cache instances 
         // otherwise it will fire the same event multiple depends how many time
         // live reload watch happen.
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
-
-            //todo fre: added to avoid memory leak when re-adding the eventlisteners
-            ipcMain.eventNames().forEach(n =>
-            {
-                ipcMain.removeAllListeners(n)
-            });
            
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
@@ -249,16 +242,10 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        console.log("Starting child process", binFilePath, parameters, options);
         apiProcess = cProcess(binFilePath, parameters, options);
-        console.log("Started");
+
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
-        });
-        apiProcess.on('exit', (code) =>
-        {
-            console.log(`child process exit: ${code}`);
-            app.exit(code);
         });
     }
 }
@@ -282,17 +269,10 @@ function startAspCoreBackendWithWatch(electronPort) {
             cwd: currentBinPath,
             env: process.env,
         };
-        console.log("Starting child process", binFilePath, parameters, options);
         apiProcess = cProcess('dotnet', parameters, options);
 
-        console.log("Started");
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
-        });
-        apiProcess.on('exit', (code) =>
-        {
-            console.log(`child process exit: ${code}`);
-            app.exit(code);
         });
     }
 }
