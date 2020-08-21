@@ -1,5 +1,0 @@
-﻿added npm package serialize-error to CLI api as a dependency
-It's used because node errors aren't stringified completely. ("message" gets lost in normal stringify while sending over socket)
-
-catch() clauses in electron-updater
-

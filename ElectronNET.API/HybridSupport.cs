@@ -1,6 +1,4 @@
-﻿using Quobject.SocketIoClientDotNet.Client;
-
-namespace ElectronNET.API
+﻿namespace ElectronNET.API
 {
     /// <summary>
     /// 
@@ -20,10 +18,5 @@ namespace ElectronNET.API
                 return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static Socket Socket { get { return BridgeConnector.Socket; } }
     }
 }

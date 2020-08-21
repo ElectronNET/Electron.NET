@@ -23,14 +23,6 @@ namespace ElectronNET.API
                             {
                                 Console.WriteLine("BridgeConnector connected!");
                             });
-                            _socket.On(Socket.EVENT_CONNECT_ERROR, (args) =>
-                            {
-                                Console.WriteLine("Socket error! {0}", args??"no args");
-                            });
-                            _socket.On(Socket.EVENT_DISCONNECT, (args) =>
-                            {
-                                Console.WriteLine("Socket Disconnect! {0}", args ?? "no args");
-                            });
                         }
                     }
                 }
@@ -41,7 +33,6 @@ namespace ElectronNET.API
                         if (_socket == null && !HybridSupport.IsElectronActive)
                         {
                             _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
-                            Console.WriteLine("Electron not active. Socket created.");
                         }
                     }
                 }
