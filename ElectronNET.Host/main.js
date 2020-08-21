@@ -153,7 +153,6 @@ function startSocketApiBridge(port) {
         // live reload watch happen.
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
-           
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
             delete require.cache[require.resolve('./api/commandLine')];
