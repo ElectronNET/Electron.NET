@@ -4,9 +4,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -221,7 +218,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return AsyncHelper.RunSync(async () => await ChannelAsync);
+                return ChannelAsync.Result;
             }
         }
 
@@ -284,10 +281,10 @@ namespace ElectronNET.API
             }
         }
 
-    /// <summary>
-    /// Emitted when there is an error while updating.
-    /// </summary>
-    public event Action<string> OnError
+        /// <summary>
+        /// Emitted when there is an error while updating.
+        /// </summary>
+        public event Action<string> OnError
         {
             add
             {
@@ -512,7 +509,7 @@ namespace ElectronNET.API
                 string message = "An error occurred in CheckForUpdatesAsync";
                 if (error != null && !string.IsNullOrEmpty(error.ToString()))
                     message = JsonConvert.SerializeObject(error);
-                taskCompletionSource.SetException(new ElectronException(message));
+                taskCompletionSource.SetException(new Exception(message));
             });
 
             BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdates", guid);
@@ -554,7 +551,7 @@ namespace ElectronNET.API
                 string message = "An error occurred in autoUpdaterCheckForUpdatesAndNotify";
                 if (error != null)
                     message = JsonConvert.SerializeObject(error);
-                taskCompletionSource.SetException(new ElectronException(message));
+                taskCompletionSource.SetException(new Exception(message));
             });
 
             BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdatesAndNotify", guid);

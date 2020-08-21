@@ -411,7 +411,7 @@ namespace ElectronNET.API
             [Obsolete("Use the asynchronous version NameAsync instead")]
             get
             {
-                return AsyncHelper.RunSync(async () => await NameAsync);
+                return NameAsync.Result;
             }
             set
             {
@@ -447,29 +447,6 @@ namespace ElectronNET.API
                 });
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public Task<string> GetName()
-
-        {
-           
-                var taskCompletionSource = new TaskCompletionSource<string>();
-
-                BridgeConnector.Socket.On("appGetNameCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appGetNameCompleted");
-                    taskCompletionSource.SetResult((string)result);
-                });
-
-                BridgeConnector.Socket.Emit("appGetName");
-
-                return taskCompletionSource.Task;
-            
-        }
-
 
 
         internal App() 
@@ -1524,7 +1501,7 @@ namespace ElectronNET.API
             [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
             get
             {
-                return AsyncHelper.RunSync(async () => await UserAgentFallbackAsync);
+                return UserAgentFallbackAsync.Result;
             }
             set
             {
@@ -1549,10 +1526,10 @@ namespace ElectronNET.API
                     var taskCompletionSource = new TaskCompletionSource<string>();
 
                     BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
-                                {
-                                    BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
-                                    taskCompletionSource.SetResult((string)result);
-                                });
+                    {
+                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
+                        taskCompletionSource.SetResult((string)result);
+                    });
 
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 

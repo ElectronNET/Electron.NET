@@ -141,7 +141,6 @@ export = (socket: SocketIO.Socket) => {
         });
     });
 
-
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
     });
