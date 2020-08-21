@@ -41,6 +41,7 @@ namespace ElectronNET.API
                         if (_socket == null && !HybridSupport.IsElectronActive)
                         {
                             _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
+                            Console.WriteLine("Electron not active. Socket created.");
                         }
                     }
                 }

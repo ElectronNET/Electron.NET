@@ -1,5 +1,6 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
+const { ipcMain  } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
@@ -139,13 +140,18 @@ function startSocketApiBridge(port) {
     app['mainWindow'] = null;
 
     io.on('connection', (socket) => {
-
         // we need to remove previously cache instances 
         // otherwise it will fire the same event multiple depends how many time
         // live reload watch happen.
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
-            socket.removeAllListeners();
+
+            //todo fre: added to avoid memory leak when re-adding the eventlisteners
+            ipcMain.eventNames().forEach(n =>
+            {
+                ipcMain.removeAllListeners(n)
+            });
+           
             delete require.cache[require.resolve('./api/app')];
             delete require.cache[require.resolve('./api/browserWindows')];
             delete require.cache[require.resolve('./api/commandLine')];
@@ -167,8 +173,8 @@ function startSocketApiBridge(port) {
         });
 
         global['electronsocket'] = socket;
-        global['electronsocket'].setMaxListeners(0);
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+        //global['electronsocket'].setMaxListeners(0);
+        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, socket.listenerCount());
 
         appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
