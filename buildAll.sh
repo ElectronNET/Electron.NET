@@ -17,7 +17,7 @@ echo "Restore & Build CLI"
 pushd $dir/ElectronNET.CLI
     dotnet restore
     dotnet build
-podp
+popd
 
 echo "Restore & Build WebApp Demo"
 pushd $dir/ElectronNET.WebApp
