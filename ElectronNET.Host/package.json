@@ -21,7 +21,7 @@
     "devDependencies": {
         "@types/node": "^10.14.4",
         "@types/socket.io": "^2.1.2",
-        "electron": "^9.2.0",
+        "electron": "^9.3.0",
         "tslint": "^6.1.1",
         "typescript": "^3.8.3"
     }
