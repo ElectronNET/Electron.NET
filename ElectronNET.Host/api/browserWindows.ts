@@ -1,6 +1,6 @@
 import { BrowserWindow, Menu, nativeImage, BrowserView } from 'electron';
 const path = require('path');
-const windows: Electron.BrowserWindow[] = [];
+const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;

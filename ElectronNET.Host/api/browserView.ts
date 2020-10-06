@@ -1,5 +1,5 @@
 import { BrowserView } from 'electron';
-let browserViews: Electron.BrowserView[] = [];
+let browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
 let browserView: BrowserView, electronSocket;
 
 export = (socket: SocketIO.Socket) => {

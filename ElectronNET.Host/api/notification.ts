@@ -1,5 +1,5 @@
 import { Notification } from 'electron';
-const notifications: Electron.Notification[] = [];
+const notifications: Electron.Notification[] = (global['notifications'] = global['notifications'] || []) as Electron.Notification[];
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {

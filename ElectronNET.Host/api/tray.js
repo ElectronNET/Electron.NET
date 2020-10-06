@@ -1,108 +1,107 @@
 "use strict";
-const electron_1 = require("electron");
-let tray;
-let electronSocket;
-module.exports = (socket) => {
+var electron_1 = require("electron");
+var tray = (global['tray'] = global['tray'] || { value: null });
+var electronSocket;
+module.exports = function (socket) {
     electronSocket = socket;
-    socket.on('register-tray-click', (id) => {
-        if (tray) {
-            tray.on('click', (event, bounds) => {
+    socket.on('register-tray-click', function (id) {
+        if (tray.value) {
+            tray.value.on('click', function (event, bounds) {
                 electronSocket.emit('tray-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-right-click', (id) => {
-        if (tray) {
-            tray.on('right-click', (event, bounds) => {
+    socket.on('register-tray-right-click', function (id) {
+        if (tray.value) {
+            tray.value.on('right-click', function (event, bounds) {
                 electronSocket.emit('tray-right-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-double-click', (id) => {
-        if (tray) {
-            tray.on('double-click', (event, bounds) => {
+    socket.on('register-tray-double-click', function (id) {
+        if (tray.value) {
+            tray.value.on('double-click', function (event, bounds) {
                 electronSocket.emit('tray-double-click-event' + id, [event.__proto__, bounds]);
             });
         }
     });
-    socket.on('register-tray-balloon-show', (id) => {
-        if (tray) {
-            tray.on('balloon-show', () => {
+    socket.on('register-tray-balloon-show', function (id) {
+        if (tray.value) {
+            tray.value.on('balloon-show', function () {
                 electronSocket.emit('tray-balloon-show-event' + id);
             });
         }
     });
-    socket.on('register-tray-balloon-click', (id) => {
-        if (tray) {
-            tray.on('balloon-click', () => {
+    socket.on('register-tray-balloon-click', function (id) {
+        if (tray.value) {
+            tray.value.on('balloon-click', function () {
                 electronSocket.emit('tray-balloon-click-event' + id);
             });
         }
     });
-    socket.on('register-tray-balloon-closed', (id) => {
-        if (tray) {
-            tray.on('balloon-closed', () => {
+    socket.on('register-tray-balloon-closed', function (id) {
+        if (tray.value) {
+            tray.value.on('balloon-closed', function () {
                 electronSocket.emit('tray-balloon-closed-event' + id);
             });
         }
     });
-    socket.on('create-tray', (image, menuItems) => {
-        const trayIcon = electron_1.nativeImage.createFromPath(image);
-        tray = new electron_1.Tray(trayIcon);
+    socket.on('create-tray', function (image, menuItems) {
+        var trayIcon = electron_1.nativeImage.createFromPath(image);
+        tray.value = new electron_1.Tray(trayIcon);
         if (menuItems) {
-            const menu = electron_1.Menu.buildFromTemplate(menuItems);
-            addMenuItemClickConnector(menu.items, (id) => {
+            var menu = electron_1.Menu.buildFromTemplate(menuItems);
+            addMenuItemClickConnector(menu.items, function (id) {
                 electronSocket.emit('trayMenuItemClicked', id);
             });
-            tray.setContextMenu(menu);
+            tray.value.setContextMenu(menu);
         }
     });
-    socket.on('tray-destroy', () => {
-        if (tray) {
-            tray.destroy();
+    socket.on('tray-destroy', function () {
+        if (tray.value) {
+            tray.value.destroy();
         }
     });
-    socket.on('tray-setImage', (image) => {
-        if (tray) {
-            tray.setImage(image);
+    socket.on('tray-setImage', function (image) {
+        if (tray.value) {
+            tray.value.setImage(image);
         }
     });
-    socket.on('tray-setPressedImage', (image) => {
-        if (tray) {
-            const img = electron_1.nativeImage.createFromPath(image);
-            tray.setPressedImage(img);
+    socket.on('tray-setPressedImage', function (image) {
+        if (tray.value) {
+            var img = electron_1.nativeImage.createFromPath(image);
+            tray.value.setPressedImage(img);
         }
     });
-    socket.on('tray-setToolTip', (toolTip) => {
-        if (tray) {
-            tray.setToolTip(toolTip);
+    socket.on('tray-setToolTip', function (toolTip) {
+        if (tray.value) {
+            tray.value.setToolTip(toolTip);
         }
     });
-    socket.on('tray-setTitle', (title) => {
-        if (tray) {
-            tray.setTitle(title);
+    socket.on('tray-setTitle', function (title) {
+        if (tray.value) {
+            tray.value.setTitle(title);
         }
     });
-    socket.on('tray-displayBalloon', (options) => {
-        if (tray) {
-            tray.displayBalloon(options);
+    socket.on('tray-displayBalloon', function (options) {
+        if (tray.value) {
+            tray.value.displayBalloon(options);
         }
     });
-    socket.on('tray-isDestroyed', () => {
-        if (tray) {
-            const isDestroyed = tray.isDestroyed();
+    socket.on('tray-isDestroyed', function () {
+        if (tray.value) {
+            var isDestroyed = tray.value.isDestroyed();
             electronSocket.emit('tray-isDestroyedCompleted', isDestroyed);
         }
     });
     function addMenuItemClickConnector(menuItems, callback) {
-        menuItems.forEach((item) => {
+        menuItems.forEach(function (item) {
             if (item.submenu && item.submenu.items.length > 0) {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = function () { callback(item.id); };
             }
         });
     }
 };
-//# sourceMappingURL=tray.js.map

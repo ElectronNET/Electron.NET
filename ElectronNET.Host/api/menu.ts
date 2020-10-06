@@ -1,5 +1,5 @@
 import { Menu, BrowserWindow } from 'electron';
-const contextMenuItems = [];
+const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
