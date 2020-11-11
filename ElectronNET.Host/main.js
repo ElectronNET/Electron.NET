@@ -63,13 +63,15 @@ app.on('ready', () => {
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
-
+    let defaultElectronPort = 8000;
+    if (manifestJsonFile.electronPort) {
+        defaultElectronPort = (manifestJsonFile.aspCoreBackendPort)
+    } 
     // hostname needs to belocalhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, port) {
+    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
         console.log('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
-
 });
 
 app.on('quit', async (event, exitCode) => {
