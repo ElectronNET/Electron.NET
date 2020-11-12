@@ -27,6 +27,7 @@ namespace ElectronNET.CLI.Commands
         private string _manifest = "manifest";
         private string _clearCache = "clear-cache";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
+        private string _paramPublishSingleFile = "PublishSingleFile";
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramTarget = "target";
 
@@ -73,8 +74,18 @@ namespace ElectronNET.CLI.Commands
                     publishReadyToRun += "true";
                 }
 
+                string publishSingleFile = "/p:PublishSingleFile=";
+                if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
+                {
+                    publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
+                }
+                else
+                {
+                    publishSingleFile += "true";
+                }
+
                 // If target is specified as a command line argument, use it.
-                // Format is the same as the build command. 
+                // Format is the same as the build command.
                 // If target is not specified, autodetect it.
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
                 if (parser.Arguments.ContainsKey(_paramTarget))
@@ -96,7 +107,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)
