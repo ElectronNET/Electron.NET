@@ -408,6 +408,27 @@ namespace ElectronNET.API
         /// </summary>
         public string Name
         {
+            [Obsolete("Use the asynchronous version NameAsync instead")]
+            get
+            {
+                return NameAsync.Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetName", value);
+            }
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
+        /// application's package.json file.
+        ///
+        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
+        /// should usually also specify a productName field, which is your application's full capitalized name, and
+        /// which will be preferred over name by Electron.
+        /// </summary>
+        public Task<string> NameAsync
+        {
             get
             {
                 return Task.Run<string>(() =>
@@ -423,13 +444,10 @@ namespace ElectronNET.API
                     BridgeConnector.Socket.Emit("appGetName");
 
                     return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("appSetName", value);
+                });
             }
         }
+
 
         internal App() 
         {
@@ -1480,6 +1498,27 @@ namespace ElectronNET.API
         /// </summary>
         public string UserAgentFallback
         {
+            [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
+            get
+            {
+                return UserAgentFallbackAsync.Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+            }
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
+        /// <para/>
+        /// This is the user agent that will be used when no user agent is set at the webContents or
+        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
+        /// custom value as early as possible in your app's initialization to ensure that your overridden value
+        /// is used.
+        /// </summary>
+        public Task<string> UserAgentFallbackAsync
+        {
             get
             {
                 return Task.Run<string>(() =>
@@ -1495,11 +1534,7 @@ namespace ElectronNET.API
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 
                     return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+                });
             }
         }
 
