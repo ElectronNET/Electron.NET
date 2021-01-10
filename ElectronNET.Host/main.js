@@ -13,6 +13,8 @@ let powerMonitor;
 let splashScreen, hostHook;
 let mainWindowId, nativeTheme;
 let dock;
+let launchFile;
+let launchUrl;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -32,6 +34,18 @@ if (watchable) {
     currentBinPath = path.join(__dirname, '../../'); // go to project directory
     manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 }
+
+//  handle macOS events for opening the app with a file, etc
+app.on('will-finish-launching', () => {
+	app.on('open-file', (evt, file) => {
+		evt.preventDefault();
+		launchFile = file;
+	})
+	app.on('open-url', (evt, url) => {
+		evt.preventDefault();
+		launchUrl = url;
+	})
+});
 
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
@@ -177,7 +191,7 @@ function startSocketApiBridge(port) {
         global['electronsocket'].setMaxListeners(0);
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
-        appApi = require('./api/app')(socket, app);
+		appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
         commandLine = require('./api/commandLine')(socket, app);
         autoUpdater = require('./api/autoUpdater')(socket);
@@ -194,7 +208,35 @@ function startSocketApiBridge(port) {
         browserView = require('./api/browserView')(socket);
         powerMonitor = require('./api/powerMonitor')(socket);
         nativeTheme = require('./api/nativeTheme')(socket);
-        dock = require('./api/dock')(socket);
+		dock = require('./api/dock')(socket);
+		
+		socket.on('register-app-open-file-event', (id) => {
+			electronSocket = socket;
+
+			app.on('open-file', (event, file) => {
+				event.preventDefault();
+	
+				electronSocket.emit('app-open-file' + id, file);
+			});
+			
+			if (launchFile) {
+				electronSocket.emit('app-open-file' + id, launchFile);
+			}
+		});
+		
+		socket.on('register-app-open-url-event', (id) => {
+			electronSocket = socket;
+
+			app.on('open-url', (event, url) => {
+				event.preventDefault();
+	
+				electronSocket.emit('app-open-url' + id, url);
+			});
+			
+			if (launchUrl) {
+				electronSocket.emit('app-open-url' + id, launchUrl);
+			}
+		});
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
