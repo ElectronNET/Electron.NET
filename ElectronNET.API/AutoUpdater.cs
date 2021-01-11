@@ -1,6 +1,9 @@
 ﻿using ElectronNET.API.Entities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -183,10 +186,47 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// The current application version
+        /// </summary>
+        public Task<SemVer> CurrentVersionAsync
+        {
+            get
+            {
+                return Task.Run<SemVer>(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<SemVer>();
+
+                    BridgeConnector.Socket.On("autoUpdater-currentVersion-get-reply", (result) =>
+                    {
+                        BridgeConnector.Socket.Off("autoUpdater-currentVersion-get-reply");
+                        SemVer version = ((JObject)result).ToObject<SemVer>();
+                        taskCompletionSource.SetResult(version);
+                    });
+                    BridgeConnector.Socket.Emit("autoUpdater-currentVersion-get");
+
+                    return taskCompletionSource.Task;
+                });
+            }
+        }
+
+        /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
+        [Obsolete("Use the asynchronous version ChannelAsync instead")]
         public string Channel
+        {
+            get
+            {
+                return ChannelAsync.Result;
+            }
+        }
+
+        /// <summary>
+        /// Get the update channel. Not applicable for GitHub. 
+        /// Doesn’t return channel from the update configuration, only if was previously set.
+        /// </summary>
+        public Task<string> ChannelAsync
         {
             get
             {
@@ -199,11 +239,45 @@ namespace ElectronNET.API
                         BridgeConnector.Socket.Off("autoUpdater-channel-get-reply");
                         taskCompletionSource.SetResult(result.ToString());
                     });
-
                     BridgeConnector.Socket.Emit("autoUpdater-channel-get");
 
                     return taskCompletionSource.Task;
-                }).Result;
+                });
+            }
+        }
+
+
+
+        /// <summary>
+        /// The request headers.
+        /// </summary>
+        public Task<Dictionary<string, string>> RequestHeadersAsync
+        {
+            get
+            {
+                return Task.Run(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>();
+                    BridgeConnector.Socket.On("autoUpdater-requestHeaders-get-reply", (headers) =>
+                    {
+                        BridgeConnector.Socket.Off("autoUpdater-requestHeaders-get-reply");
+                        Dictionary<string, string> result = ((JObject)headers).ToObject<Dictionary<string, string>>();
+                        taskCompletionSource.SetResult(result);
+                    });
+                    BridgeConnector.Socket.Emit("autoUpdater-requestHeaders-get");
+                    return taskCompletionSource.Task;
+                });
+            }
+        }
+
+        /// <summary>
+        /// The request headers.
+        /// </summary>
+        public Dictionary<string, string> RequestHeaders
+        {
+            set
+            {
+                BridgeConnector.Socket.Emit("autoUpdater-requestHeaders-set", JObject.FromObject(value, _jsonSerializer));
             }
         }
 
@@ -417,8 +491,25 @@ namespace ElectronNET.API
 
             BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesComplete" + guid, (updateCheckResult) =>
             {
+                try
+                {
+                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesComplete" + guid);
+                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesError" + guid);
+                    taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
+            });
+            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesError" + guid, (error) =>
+            {
                 BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesComplete" + guid);
-                taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesError" + guid);
+                string message = "An error occurred in CheckForUpdatesAsync";
+                if (error != null && !string.IsNullOrEmpty(error.ToString()))
+                    message = JsonConvert.SerializeObject(error);
+                taskCompletionSource.SetException(new Exception(message));
             });
 
             BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdates", guid);
@@ -439,8 +530,28 @@ namespace ElectronNET.API
 
             BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid, (updateCheckResult) =>
             {
+                try
+                {
+                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
+                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
+                    if (updateCheckResult == null)
+                        taskCompletionSource.SetResult(null);
+                    else
+                        taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
+            });
+            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesAndNotifyError" + guid, (error) =>
+            {
                 BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
-                taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
+                string message = "An error occurred in autoUpdaterCheckForUpdatesAndNotify";
+                if (error != null)
+                    message = JsonConvert.SerializeObject(error);
+                taskCompletionSource.SetException(new Exception(message));
             });
 
             BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdatesAndNotify", guid);
@@ -501,5 +612,10 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
+
+        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
     }
 }

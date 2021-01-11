@@ -64,8 +64,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Clears the session’s HTTP authentication cache.
         /// </summary>
-        /// <param name="options"></param>
-        public Task ClearAuthCacheAsync(RemoveClientCertificate options)
+        public Task ClearAuthCacheAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
             string guid = Guid.NewGuid().ToString();
@@ -76,7 +75,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, guid);
 
             return taskCompletionSource.Task;
         }

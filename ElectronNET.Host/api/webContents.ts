@@ -1,4 +1,5 @@
-import { BrowserWindow, BrowserView } from 'electron';
+import { BrowserWindow } from 'electron';
+import { browserViewMediateService } from './browserView';
 const fs = require('fs');
 let electronSocket;
 
@@ -62,9 +63,9 @@ export = (socket: SocketIO.Socket) => {
         browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
     });
 
-    socket.on('webContents-session-clearAuthCache', async (id, options, guid) => {
+    socket.on('webContents-session-clearAuthCache', async (id, guid) => {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearAuthCache(options);
+        await browserWindow.webContents.session.clearAuthCache();
 
         electronSocket.emit('webContents-session-clearAuthCache-completed' + guid);
     });
@@ -224,7 +225,7 @@ export = (socket: SocketIO.Socket) => {
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {
 
         if (id >= 1000) {
-            return BrowserView.fromId(id - 1000);
+            return browserViewMediateService(id - 1000);
         }
 
         return BrowserWindow.fromId(id);

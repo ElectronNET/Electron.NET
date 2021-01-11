@@ -90,15 +90,6 @@ module.exports = (socket, app) => {
         const path = app.getPath(name);
         electronSocket.emit('appGetPathCompleted', path);
     });
-    // const nativeImages = {};
-    // function addNativeImage(nativeImage: Electron.NativeImage) {
-    //     if(Object.keys(nativeImages).length === 0) {
-    //         nativeImage['1'] = nativeImage;
-    //     } else {
-    //         let indexCount = Object.keys(nativeImages).length + 1;
-    //         nativeImage[indexCount] = nativeImage;
-    //     }
-    // }
     socket.on('appGetFileIcon', async (path, options) => {
         let error = {};
         if (options) {

@@ -2,9 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -28,30 +25,6 @@ namespace ElectronNET.API
         /// Render and control web pages.
         /// </summary>
         public WebContents WebContents { get; internal set; }
-
-        /// <summary>
-        /// Whether the view is destroyed.
-        /// </summary>
-        public Task<bool> IsDestroyedAsync
-        {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("browserView-isDestroyed-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("browserView-isDestroyed-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("browserView-isDestroyed", Id);
-
-                    return taskCompletionSource.Task;
-                });
-            }
-        }
 
         /// <summary>
         /// Resizes and moves the view to the supplied bounds relative to the window.
@@ -83,8 +56,6 @@ namespace ElectronNET.API
             }
         }
 
-        internal Action<BrowserView> Destroyed;
-
         /// <summary>
         /// BrowserView
         /// </summary>
@@ -95,18 +66,6 @@ namespace ElectronNET.API
             // Workaround: increase the Id so as not to conflict with BrowserWindow id
             // the backend detect about the value an BrowserView
             WebContents = new WebContents(id + 1000);
-        }
-
-        /// <summary>
-        /// Force closing the view, the `unload` and `beforeunload` events won't be emitted
-        /// for the web page.After you're done with a view, call this function in order to
-        /// free memory and other resources as soon as possible.
-        /// </summary>
-        public void Destroy()
-        {
-            BridgeConnector.Socket.Emit("browserView-destroy", Id);
-
-            Destroyed?.Invoke(this);
         }
 
         /// <summary>

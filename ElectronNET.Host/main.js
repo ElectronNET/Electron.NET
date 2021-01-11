@@ -13,6 +13,8 @@ let powerMonitor;
 let splashScreen, hostHook;
 let mainWindowId, nativeTheme;
 let dock;
+let launchFile;
+let launchUrl;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -32,6 +34,18 @@ if (watchable) {
     currentBinPath = path.join(__dirname, '../../'); // go to project directory
     manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 }
+
+//  handle macOS events for opening the app with a file, etc
+app.on('will-finish-launching', () => {
+    app.on('open-file', (evt, file) => {
+        evt.preventDefault();
+        launchFile = file;
+    })
+    app.on('open-url', (evt, url) => {
+        evt.preventDefault();
+        launchUrl = url;
+    })
+});
 
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
@@ -63,13 +77,16 @@ app.on('ready', () => {
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
-
-    // hostname needs to belocalhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, port) {
+    // Added default port as configurable for port restricted environments.
+    let defaultElectronPort = 8000;
+    if (manifestJsonFile.electronPort) {
+        defaultElectronPort = (manifestJsonFile.electronPort)
+    }
+    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
         console.log('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
-
 });
 
 app.on('quit', async (event, exitCode) => {
@@ -188,6 +205,34 @@ function startSocketApiBridge(port) {
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
+
+        socket.on('register-app-open-file-event', (id) => {
+            electronSocket = socket;
+
+            app.on('open-file', (event, file) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-file' + id, file);
+            });
+
+            if (launchFile) {
+                electronSocket.emit('app-open-file' + id, launchFile);
+            }
+        });
+
+        socket.on('register-app-open-url-event', (id) => {
+            electronSocket = socket;
+
+            app.on('open-url', (event, url) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-url' + id, url);
+            });
+
+            if (launchUrl) {
+                electronSocket.emit('app-open-url' + id, launchUrl);
+            }
+        });
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');

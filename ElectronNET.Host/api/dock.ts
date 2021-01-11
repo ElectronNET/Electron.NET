@@ -2,7 +2,7 @@ import { app } from 'electron';
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
-    electronSocket = socket;    
+    electronSocket = socket;
 
     socket.on('dock-bounce', (type) => {
         const id = app.dock.bounce(type);

@@ -1,10 +1,8 @@
 "use strict";
 const electron_updater_1 = require("electron-updater");
-const path = require('path');
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
-    // Events ********
     socket.on('register-autoUpdater-error-event', (id) => {
         electron_updater_1.autoUpdater.on('error', (error) => {
             electronSocket.emit('autoUpdater-error' + id, error.message);
@@ -72,21 +70,34 @@ module.exports = (socket) => {
     socket.on('autoUpdater-updateConfigPath-set', (value) => {
         electron_updater_1.autoUpdater.updateConfigPath = value;
     });
+    socket.on('autoUpdater-currentVersion-get', () => {
+        electronSocket.emit('autoUpdater-currentVersion-get-reply', electron_updater_1.autoUpdater.currentVersion);
+    });
     socket.on('autoUpdater-channel-get', () => {
         electronSocket.emit('autoUpdater-channel-get-reply', electron_updater_1.autoUpdater.channel || '');
     });
     socket.on('autoUpdater-channel-set', (value) => {
         electron_updater_1.autoUpdater.channel = value;
     });
-    // Methods ********
+    socket.on('autoUpdater-requestHeaders-get', () => {
+        electronSocket.emit('autoUpdater-requestHeaders-get-reply', electron_updater_1.autoUpdater.requestHeaders);
+    });
+    socket.on('autoUpdater-requestHeaders-set', (value) => {
+        electron_updater_1.autoUpdater.requestHeaders = value;
+    });
     socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
-        const updateCheckResult = await electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
-        electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
+        electron_updater_1.autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) => {
+            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
+        }).catch((error) => {
+            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyError' + guid, error);
+        });
     });
     socket.on('autoUpdaterCheckForUpdates', async (guid) => {
-        // autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
-        const updateCheckResult = await electron_updater_1.autoUpdater.checkForUpdates();
-        electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
+        electron_updater_1.autoUpdater.checkForUpdates().then((updateCheckResult) => {
+            electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
+        }).catch((error) => {
+            electronSocket.emit('autoUpdaterCheckForUpdatesError' + guid, error);
+        });
     });
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);

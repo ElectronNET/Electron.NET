@@ -11,4 +11,3 @@ export class HookService extends Connector {
         // execute your own JavaScript Host logic here
     }
 }
-

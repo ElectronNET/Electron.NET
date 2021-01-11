@@ -1,9 +1,10 @@
 # Not released
 
-# 9.31.3
+# 11.5.1
 
 ElectronNET.CLI:
 
+* New Feature: Added new build and start commandline options for single exe (thanks [nathanwienand](https://github.com/nathanwienand)) [\#506](https://github.com/ElectronNET/Electron.NET/pull/506)
 * New Feature: Set a description of the app in `electron.manifest.json` (thanks [BurtsevC](https://github.com/BurtsevC)) [\#433](https://github.com/ElectronNET/Electron.NET/pull/433)
 * New Feature: Set a target for the start command (thanks [gabecook](https://github.com/gabecook)) [\#463](https://github.com/ElectronNET/Electron.NET/pull/463)
 * New Feature: `electronize init` support for F# projects (thanks [kojo12228](https://github.com/kojo12228)) [\#457](https://github.com/ElectronNET/Electron.NET/pull/457)
@@ -12,7 +13,12 @@ ElectronNET.CLI:
 
 ElectronNET.API:
 
-* New Feature: Native Electron 9.2.0 support, but not all new features (we search contributors)
+* New Feature: Native Electron 11.1.1 support, but not all new features (we search contributors)
+* Breaking API Changes (from native Electron 11.0): - Removed: BrowserView.{destroy, fromId, fromWebContents, getAllViews} and id property of BrowserView
+* New Feature: Upgrade to .NET 5 (thanks [scottkuhl](https://github.com/scottkuhl)) [\#509](https://github.com/ElectronNET/Electron.NET/pull/509)
+* New Feature: Adding a configurable default electron port. (thanks [aarong-av](https://github.com/aarong-av)) [\#505](https://github.com/ElectronNET/Electron.NET/pull/505)
+* New Feature: Added support for launching the application with a file on MacOS (thanks [dlitty](https://github.com/dlitty)) [\#478](https://github.com/ElectronNET/Electron.NET/pull/478)
+* Improved: Avoid Blocking Calls in App and AutoUpdater (thanks [freosc](https://github.com/freosc)) [\#474](https://github.com/ElectronNET/Electron.NET/pull/474)
 * Fixed bug: Set default WebPreferences.DefaultFontSize (thanks [duncanawoods](https://github.com/duncanawoods)) [\#468](https://github.com/ElectronNET/Electron.NET/pull/468)
 
 # Released
