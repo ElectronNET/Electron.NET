@@ -1,11 +1,8 @@
 import { autoUpdater } from 'electron-updater';
-const path = require('path');
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
     electronSocket = socket;
-
-    // Events ********
 
     socket.on('register-autoUpdater-error-event', (id) => {
         autoUpdater.on('error', (error) => {
@@ -93,8 +90,7 @@ export = (socket: SocketIO.Socket) => {
         autoUpdater.updateConfigPath = value;
     });
 
-    socket.on('autoUpdater-currentVersion-get', () =>
-    {
+    socket.on('autoUpdater-currentVersion-get', () => {
         electronSocket.emit('autoUpdater-currentVersion-get-reply', autoUpdater.currentVersion);
     });
 
@@ -106,37 +102,26 @@ export = (socket: SocketIO.Socket) => {
         autoUpdater.channel = value;
     });
 
-    socket.on('autoUpdater-requestHeaders-get', () =>
-    {
+    socket.on('autoUpdater-requestHeaders-get', () => {
         electronSocket.emit('autoUpdater-requestHeaders-get-reply', autoUpdater.requestHeaders);
     });
 
-    socket.on('autoUpdater-requestHeaders-set', (value) =>
-    {
+    socket.on('autoUpdater-requestHeaders-set', (value) => {
         autoUpdater.requestHeaders = value;
     });
 
-    // Methods ********
-
-    socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) =>
-    {
-        autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) =>
-        {
+    socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
+        autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
-        }).catch((error) =>
-        {
+        }).catch((error) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyError' + guid, error);
         });
     });
 
-    socket.on('autoUpdaterCheckForUpdates', async (guid) =>
-    {
-        // autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
-        autoUpdater.checkForUpdates().then((updateCheckResult) =>
-        {
+    socket.on('autoUpdaterCheckForUpdates', async (guid) => {
+        autoUpdater.checkForUpdates().then((updateCheckResult) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
-        }).catch((error) =>
-        {
+        }).catch((error) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesError' + guid, error);
         });
     });

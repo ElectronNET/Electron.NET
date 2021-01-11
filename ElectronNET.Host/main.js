@@ -37,14 +37,14 @@ if (watchable) {
 
 //  handle macOS events for opening the app with a file, etc
 app.on('will-finish-launching', () => {
-	app.on('open-file', (evt, file) => {
-		evt.preventDefault();
-		launchFile = file;
-	})
-	app.on('open-url', (evt, url) => {
-		evt.preventDefault();
-		launchUrl = url;
-	})
+    app.on('open-file', (evt, file) => {
+        evt.preventDefault();
+        launchFile = file;
+    })
+    app.on('open-url', (evt, url) => {
+        evt.preventDefault();
+        launchUrl = url;
+    })
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
@@ -73,7 +73,7 @@ app.on('ready', () => {
         const pathname = request.url.replace('file:///', '');
         callback(pathname);
     });
-    
+
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
@@ -81,7 +81,7 @@ app.on('ready', () => {
     let defaultElectronPort = 8000;
     if (manifestJsonFile.electronPort) {
         defaultElectronPort = (manifestJsonFile.electronPort)
-    } 
+    }
     // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
     portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
         console.log('Electron Socket IO Port: ' + port);
@@ -194,7 +194,7 @@ function startSocketApiBridge(port) {
         global['electronsocket'].setMaxListeners(0);
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
-		appApi = require('./api/app')(socket, app);
+        appApi = require('./api/app')(socket, app);
         browserWindows = require('./api/browserWindows')(socket, app);
         commandLine = require('./api/commandLine')(socket, app);
         autoUpdater = require('./api/autoUpdater')(socket);
@@ -208,38 +208,38 @@ function startSocketApiBridge(port) {
         shellApi = require('./api/shell')(socket);
         screen = require('./api/screen')(socket);
         clipboard = require('./api/clipboard')(socket);
-        browserView = require('./api/browserView')(socket);
+        browserView = require('./api/browserView').browserViewApi(socket);
         powerMonitor = require('./api/powerMonitor')(socket);
         nativeTheme = require('./api/nativeTheme')(socket);
-		dock = require('./api/dock')(socket);
-		
-		socket.on('register-app-open-file-event', (id) => {
-			electronSocket = socket;
+        dock = require('./api/dock')(socket);
 
-			app.on('open-file', (event, file) => {
-				event.preventDefault();
-	
-				electronSocket.emit('app-open-file' + id, file);
-			});
-			
-			if (launchFile) {
-				electronSocket.emit('app-open-file' + id, launchFile);
-			}
-		});
-		
-		socket.on('register-app-open-url-event', (id) => {
-			electronSocket = socket;
+        socket.on('register-app-open-file-event', (id) => {
+            electronSocket = socket;
 
-			app.on('open-url', (event, url) => {
-				event.preventDefault();
-	
-				electronSocket.emit('app-open-url' + id, url);
-			});
-			
-			if (launchUrl) {
-				electronSocket.emit('app-open-url' + id, launchUrl);
-			}
-		});
+            app.on('open-file', (event, file) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-file' + id, file);
+            });
+
+            if (launchFile) {
+                electronSocket.emit('app-open-file' + id, launchFile);
+            }
+        });
+
+        socket.on('register-app-open-url-event', (id) => {
+            electronSocket = socket;
+
+            app.on('open-url', (event, url) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-url' + id, url);
+            });
+
+            if (launchUrl) {
+                electronSocket.emit('app-open-url' + id, launchUrl);
+            }
+        });
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
@@ -322,7 +322,7 @@ function startAspCoreBackendWithWatch(electronPort) {
 }
 
 function getEnvironmentParameter() {
-    if(manifestJsonFile.environment) {
+    if (manifestJsonFile.environment) {
         return '--environment=' + manifestJsonFile.environment;
     }
 

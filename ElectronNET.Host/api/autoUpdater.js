@@ -1,10 +1,8 @@
 "use strict";
 const electron_updater_1 = require("electron-updater");
-const path = require('path');
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
-    // Events ********
     socket.on('register-autoUpdater-error-event', (id) => {
         electron_updater_1.autoUpdater.on('error', (error) => {
             electronSocket.emit('autoUpdater-error' + id, error.message);
@@ -87,7 +85,6 @@ module.exports = (socket) => {
     socket.on('autoUpdater-requestHeaders-set', (value) => {
         electron_updater_1.autoUpdater.requestHeaders = value;
     });
-    // Methods ********
     socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
         electron_updater_1.autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
@@ -96,7 +93,6 @@ module.exports = (socket) => {
         });
     });
     socket.on('autoUpdaterCheckForUpdates', async (guid) => {
-        // autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
         electron_updater_1.autoUpdater.checkForUpdates().then((updateCheckResult) => {
             electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
         }).catch((error) => {

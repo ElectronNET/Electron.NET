@@ -59,7 +59,7 @@ export = (socket: SocketIO.Socket) => {
 
         if (menuItems) {
             const menu = Menu.buildFromTemplate(menuItems);
-    
+
             addMenuItemClickConnector(menu.items, (id) => {
                 electronSocket.emit('trayMenuItemClicked', id);
             });

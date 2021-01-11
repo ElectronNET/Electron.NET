@@ -16,16 +16,15 @@ export = (socket: SocketIO.Socket) => {
     });
 
     socket.on('shell-openExternal', async (url, options) => {
-        let result = "";
+        let result = '';
 
         if (options) {
             await shell.openExternal(url, options).catch(e => {
                 result = e.message;
-            });            
-        }
-        else {
+            });
+        } else {
             await shell.openExternal(url).catch((e) => {
-                result = e.message;                
+                result = e.message;
             });
         }
 

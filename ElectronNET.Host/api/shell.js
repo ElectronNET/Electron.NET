@@ -12,7 +12,7 @@ module.exports = (socket) => {
         electronSocket.emit('shell-openPathCompleted', errorMessage);
     });
     socket.on('shell-openExternal', async (url, options) => {
-        let result = "";
+        let result = '';
         if (options) {
             await electron_1.shell.openExternal(url, options).catch(e => {
                 result = e.message;
