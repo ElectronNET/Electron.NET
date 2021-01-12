@@ -2,7 +2,7 @@
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
 const path = require('path');
-const windows = [];
+const windows = (global['browserWindows'] = global['browserWindows'] || []);
 let readyToShowWindowsIds = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;

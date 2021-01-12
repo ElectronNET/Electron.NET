@@ -16,7 +16,7 @@
         "electron-updater": "^4.3.5",
         "image-size": "^0.9.3",
         "portscanner": "^2.2.0",
-        "socket.io": "^3.0.5"
+        "socket.io": "^2.2.0"
     },
     "devDependencies": {
         "@types/node": "^10.17.20",

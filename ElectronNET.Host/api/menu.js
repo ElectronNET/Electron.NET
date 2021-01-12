@@ -1,6 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
-const contextMenuItems = [];
+const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;

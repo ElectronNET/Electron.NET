@@ -19,6 +19,7 @@ ElectronNET.API:
 * New Feature: Adding a configurable default electron port. (thanks [aarong-av](https://github.com/aarong-av)) [\#505](https://github.com/ElectronNET/Electron.NET/pull/505)
 * New Feature: Added support for launching the application with a file on MacOS (thanks [dlitty](https://github.com/dlitty)) [\#478](https://github.com/ElectronNET/Electron.NET/pull/478)
 * Improved: Avoid Blocking Calls in App and AutoUpdater (thanks [freosc](https://github.com/freosc)) [\#474](https://github.com/ElectronNET/Electron.NET/pull/474)
+* Fixed bug: Maintain references between socket.io connection events (thanks [danatcofo](https://github.com/danatcofo )) [\#468](https://github.com/ElectronNET/Electron.NET/pull/486)
 * Fixed bug: Set default WebPreferences.DefaultFontSize (thanks [duncanawoods](https://github.com/duncanawoods)) [\#468](https://github.com/ElectronNET/Electron.NET/pull/468)
 
 # Released

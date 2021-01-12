@@ -201,7 +201,7 @@ function startSocketApiBridge(port) {
         if (shellApi === undefined) shellApi = require('./api/shell')(socket);
         if (screen === undefined) screen = require('./api/screen')(socket);
         if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
-        if (browserView === undefined) browserView = require('./api/browserView')(socket);
+        if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
