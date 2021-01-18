@@ -270,3 +270,16 @@ BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
 }
 
 ```
+
+### Dependency Injection
+
+ElectronNET.Api can be added to your DI container within the Startup class. All of the modules available in Electron will be added as Singletons.
+
+```csharp
+using ElectronNET.API;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddElectron()
+}
+```
