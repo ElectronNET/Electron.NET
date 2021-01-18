@@ -1,5 +1,5 @@
 import { Menu, BrowserWindow } from 'electron';
-const contextMenuItems = [];
+const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
@@ -7,8 +7,8 @@ export = (socket: SocketIO.Socket) => {
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
-        addContextMenuItemClickConnector(menu.items, browserWindowId, (id, browserWindowId) => {
-            electronSocket.emit('contextMenuItemClicked', [id, browserWindowId]);
+        addContextMenuItemClickConnector(menu.items, browserWindowId, (id, windowId) => {
+            electronSocket.emit('contextMenuItemClicked', [id, windowId]);
         });
 
         const index = contextMenuItems.findIndex(contextMenu => contextMenu.browserWindowId === browserWindowId);

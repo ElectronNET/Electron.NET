@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HookService = void 0;
 const connector_1 = require("./connector");
 const excelCreator_1 = require("./excelCreator");
 class HookService extends connector_1.Connector {

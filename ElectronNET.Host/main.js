@@ -13,6 +13,8 @@ let powerMonitor;
 let splashScreen, hostHook;
 let mainWindowId, nativeTheme;
 let dock;
+let launchFile;
+let launchUrl;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -32,6 +34,18 @@ if (watchable) {
     currentBinPath = path.join(__dirname, '../../'); // go to project directory
     manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 }
+
+//  handle macOS events for opening the app with a file, etc
+app.on('will-finish-launching', () => {
+    app.on('open-file', (evt, file) => {
+        evt.preventDefault();
+        launchFile = file;
+    })
+    app.on('open-url', (evt, url) => {
+        evt.preventDefault();
+        launchUrl = url;
+    })
+});
 
 const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
@@ -59,17 +73,20 @@ app.on('ready', () => {
         const pathname = request.url.replace('file:///', '');
         callback(pathname);
     });
-    
+
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
-
-    // hostname needs to belocalhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(8000, 65535, 'localhost', function (error, port) {
+    // Added default port as configurable for port restricted environments.
+    let defaultElectronPort = 8000;
+    if (manifestJsonFile.electronPort) {
+        defaultElectronPort = (manifestJsonFile.electronPort)
+    }
+    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
         console.log('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
-
 });
 
 app.on('quit', async (event, exitCode) => {
@@ -148,53 +165,74 @@ function startSocketApiBridge(port) {
 
     io.on('connection', (socket) => {
 
-        // we need to remove previously cache instances 
-        // otherwise it will fire the same event multiple depends how many time
-        // live reload watch happen.
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
-            delete require.cache[require.resolve('./api/app')];
-            delete require.cache[require.resolve('./api/browserWindows')];
-            delete require.cache[require.resolve('./api/commandLine')];
-            delete require.cache[require.resolve('./api/autoUpdater')];
-            delete require.cache[require.resolve('./api/ipc')];
-            delete require.cache[require.resolve('./api/menu')];
-            delete require.cache[require.resolve('./api/dialog')];
-            delete require.cache[require.resolve('./api/notification')];
-            delete require.cache[require.resolve('./api/tray')];
-            delete require.cache[require.resolve('./api/webContents')];
-            delete require.cache[require.resolve('./api/globalShortcut')];
-            delete require.cache[require.resolve('./api/shell')];
-            delete require.cache[require.resolve('./api/screen')];
-            delete require.cache[require.resolve('./api/clipboard')];
-            delete require.cache[require.resolve('./api/browserView')];
-            delete require.cache[require.resolve('./api/powerMonitor')];
-            delete require.cache[require.resolve('./api/nativeTheme')];
-            delete require.cache[require.resolve('./api/dock')];
+            try {
+                if (hostHook) {
+                    const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
+                    delete require.cache[require.resolve(hostHookScriptFilePath)];
+                    hostHook = undefined;
+                }
+
+            } catch (error) {
+                console.error(error.message);
+            }
         });
 
-        global['electronsocket'] = socket;
-        global['electronsocket'].setMaxListeners(0);
+
+        if (global['electronsocket'] === undefined) {
+            global['electronsocket'] = socket;
+            global['electronsocket'].setMaxListeners(0);
+        }
+
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
-        appApi = require('./api/app')(socket, app);
-        browserWindows = require('./api/browserWindows')(socket, app);
-        commandLine = require('./api/commandLine')(socket, app);
-        autoUpdater = require('./api/autoUpdater')(socket);
-        ipc = require('./api/ipc')(socket);
-        menu = require('./api/menu')(socket);
-        dialogApi = require('./api/dialog')(socket);
-        notification = require('./api/notification')(socket);
-        tray = require('./api/tray')(socket);
-        webContents = require('./api/webContents')(socket);
-        globalShortcut = require('./api/globalShortcut')(socket);
-        shellApi = require('./api/shell')(socket);
-        screen = require('./api/screen')(socket);
-        clipboard = require('./api/clipboard')(socket);
-        browserView = require('./api/browserView')(socket);
-        powerMonitor = require('./api/powerMonitor')(socket);
-        nativeTheme = require('./api/nativeTheme')(socket);
-        dock = require('./api/dock')(socket);
+        if (appApi === undefined) appApi = require('./api/app')(socket, app);
+        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
+        if (commandLine === undefined) commandLine = require('./api/commandLine')(socket, app);
+        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket);
+        if (ipc === undefined) ipc = require('./api/ipc')(socket);
+        if (menu === undefined) menu = require('./api/menu')(socket);
+        if (dialogApi === undefined) dialogApi = require('./api/dialog')(socket);
+        if (notification === undefined) notification = require('./api/notification')(socket);
+        if (tray === undefined) tray = require('./api/tray')(socket);
+        if (webContents === undefined) webContents = require('./api/webContents')(socket);
+        if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(socket);
+        if (shellApi === undefined) shellApi = require('./api/shell')(socket);
+        if (screen === undefined) screen = require('./api/screen')(socket);
+        if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
+        if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
+        if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
+        if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
+        if (dock === undefined) dock = require('./api/dock')(socket);
+
+        socket.on('register-app-open-file-event', (id) => {
+            electronSocket = socket;
+
+            app.on('open-file', (event, file) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-file' + id, file);
+            });
+
+            if (launchFile) {
+                electronSocket.emit('app-open-file' + id, launchFile);
+            }
+        });
+
+        socket.on('register-app-open-url-event', (id) => {
+            electronSocket = socket;
+
+            app.on('open-url', (event, url) => {
+                event.preventDefault();
+
+                electronSocket.emit('app-open-url' + id, url);
+            });
+
+            if (launchUrl) {
+                electronSocket.emit('app-open-url' + id, launchUrl);
+            }
+        });
 
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
@@ -277,7 +315,7 @@ function startAspCoreBackendWithWatch(electronPort) {
 }
 
 function getEnvironmentParameter() {
-    if(manifestJsonFile.environment) {
+    if (manifestJsonFile.environment) {
         return '--environment=' + manifestJsonFile.environment;
     }
 

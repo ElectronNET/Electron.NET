@@ -1,6 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
-const notifications = [];
+const notifications = (global['notifications'] = global['notifications'] || []);
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;

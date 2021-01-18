@@ -1,7 +1,8 @@
 "use strict";
 const electron_1 = require("electron");
+const browserView_1 = require("./browserView");
 const path = require('path');
-const windows = [];
+const windows = (global['browserWindows'] = global['browserWindows'] || []);
 let readyToShowWindowsIds = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
@@ -592,13 +593,12 @@ module.exports = (socket, app) => {
         electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
-        const browserView = electron_1.BrowserView.fromId(browserViewId);
-        getWindowById(id).setBrowserView(browserView);
+        getWindowById(id).setBrowserView(browserView_1.browserViewMediateService(browserViewId));
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];
-            if (element.id == id) {
+            if (element.id === id) {
                 return element;
             }
         }

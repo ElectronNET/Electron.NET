@@ -1,6 +1,7 @@
-import { BrowserWindow, Menu, nativeImage, BrowserView } from 'electron';
+import { BrowserWindow, Menu, nativeImage } from 'electron';
+import { browserViewMediateService } from './browserView';
 const path = require('path');
-const windows: Electron.BrowserWindow[] = [];
+const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
@@ -554,8 +555,8 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowGetNativeWindowHandle', (id) => {
-      const nativeWindowHandle = getWindowById(id).getNativeWindowHandle().readInt32LE(0).toString(16);
-      electronSocket.emit('browserWindow-getNativeWindowHandle-completed', nativeWindowHandle);
+        const nativeWindowHandle = getWindowById(id).getNativeWindowHandle().readInt32LE(0).toString(16);
+        electronSocket.emit('browserWindow-getNativeWindowHandle-completed', nativeWindowHandle);
     });
 
     socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
@@ -767,15 +768,13 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
-        const browserView = BrowserView.fromId(browserViewId);
-        getWindowById(id).setBrowserView(browserView);
+        getWindowById(id).setBrowserView(browserViewMediateService(browserViewId));
     });
-
 
     function getWindowById(id: number): Electron.BrowserWindow {
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];
-            if (element.id == id) {
+            if (element.id === id) {
                 return element;
             }
         }

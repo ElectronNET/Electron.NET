@@ -20,7 +20,7 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
                                                  "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
                                                  "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
-                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'"  + Environment.NewLine +                                 
+                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -42,6 +42,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramForceNodeInstall = "install-modules";
         private string _manifest = "manifest";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
+        private string _paramPublishSingleFile = "PublishSingleFile";
 
         public Task<bool> ExecuteAsync()
         {
@@ -77,17 +78,17 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
-                
+
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
-                } 
+                }
                 else
                 {
                     Directory.Delete(tempPath, true);
                     Directory.CreateDirectory(tempPath);
                 }
-                
+
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
@@ -99,13 +100,23 @@ namespace ElectronNET.CLI.Commands
                 if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
                 {
                     publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
-                } 
+                }
                 else
                 {
                     publishReadyToRun += "true";
                 }
 
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} --self-contained", Directory.GetCurrentDirectory());
+                string publishSingleFile = "/p:PublishSingleFile=";
+                if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
+                {
+                    publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
+                }
+                else
+                {
+                    publishSingleFile += "true";
+                }
+
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --self-contained", Directory.GetCurrentDirectory());
 
                 if (resultCode != 0)
                 {
@@ -127,7 +138,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
 
-                Console.WriteLine("Start npm install...");
+                    Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                 Console.WriteLine("ElectronHostHook handling started...");
@@ -156,7 +167,7 @@ namespace ElectronNET.CLI.Commands
                 }
                 else if (parser.Arguments.ContainsKey(_paramOutputDirectory))
                 {
-                    buildPath = Path.Combine(Directory.GetCurrentDirectory(),parser.Arguments[_paramOutputDirectory][0]);
+                    buildPath = Path.Combine(Directory.GetCurrentDirectory(), parser.Arguments[_paramOutputDirectory][0]);
                 }
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
@@ -178,7 +189,7 @@ namespace ElectronNET.CLI.Commands
 
                 string manifestFileName = "electron.manifest.json";
 
-                if(parser.Arguments.ContainsKey(_manifest))
+                if (parser.Arguments.ContainsKey(_manifest))
                 {
                     manifestFileName = parser.Arguments[_manifest].First();
                 }
@@ -186,7 +197,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute($"node build-helper.js " + manifestFileName, tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=9.2.0 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=11.1.1 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

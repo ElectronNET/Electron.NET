@@ -1,5 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
+const browserView_1 = require("./browserView");
 const fs = require('fs');
 let electronSocket;
 module.exports = (socket) => {
@@ -53,9 +54,9 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
     });
-    socket.on('webContents-session-clearAuthCache', async (id, options, guid) => {
+    socket.on('webContents-session-clearAuthCache', async (id, guid) => {
         const browserWindow = getWindowById(id);
-        await browserWindow.webContents.session.clearAuthCache(options);
+        await browserWindow.webContents.session.clearAuthCache();
         electronSocket.emit('webContents-session-clearAuthCache-completed' + guid);
     });
     socket.on('webContents-session-clearCache', async (id, guid) => {
@@ -174,7 +175,7 @@ module.exports = (socket) => {
     });
     function getWindowById(id) {
         if (id >= 1000) {
-            return electron_1.BrowserView.fromId(id - 1000);
+            return browserView_1.browserViewMediateService(id - 1000);
         }
         return electron_1.BrowserWindow.fromId(id);
     }

@@ -74,5 +74,7 @@ function showNav() {
     document.querySelector('.js-nav').classList.add('is-shown');
 }
 
-activateDefaultSection();
-displayAbout();
+setTimeout(() => {
+  activateDefaultSection();
+  displayAbout();
+}, 1000);

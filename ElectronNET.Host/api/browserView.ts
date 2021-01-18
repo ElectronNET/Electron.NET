@@ -1,8 +1,8 @@
 import { BrowserView } from 'electron';
-let browserViews: Electron.BrowserView[] = [];
+const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
 let browserView: BrowserView, electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+const browserViewApi = (socket: SocketIO.Socket) => {
     electronSocket = socket;
 
     socket.on('createBrowserView', (options) => {
@@ -11,15 +11,10 @@ export = (socket: SocketIO.Socket) => {
         }
 
         browserView = new BrowserView(options);
+        browserView['id'] = browserViews.length + 1;
         browserViews.push(browserView);
 
-        electronSocket.emit('BrowserViewCreated', browserView.id);
-    });
-
-    socket.on('browserView-isDestroyed', (id) => {
-        const isDestroyed = getBrowserViewById(id).isDestroyed();
-
-        electronSocket.emit('browserView-isDestroyed-reply', isDestroyed);
+        electronSocket.emit('BrowserViewCreated', browserView['id']);
     });
 
     socket.on('browserView-getBounds', (id) => {
@@ -30,12 +25,6 @@ export = (socket: SocketIO.Socket) => {
 
     socket.on('browserView-setBounds', (id, bounds) => {
         getBrowserViewById(id).setBounds(bounds);
-    });
-
-    socket.on('browserView-destroy', (id) => {
-        const browserViewIndex = browserViews.findIndex(b => b.id === id);
-        getBrowserViewById(id).destroy();
-        browserViews.splice(browserViewIndex, 1);
     });
 
     socket.on('browserView-setAutoResize', (id, options) => {
@@ -56,13 +45,19 @@ export = (socket: SocketIO.Socket) => {
 
         return true;
     }
+};
 
-    function getBrowserViewById(id: number) {
-        for (let index = 0; index < browserViews.length; index++) {
-            const browserViewItem = browserViews[index];
-            if (browserViewItem.id === id) {
-                return browserViewItem;
-            }
+const browserViewMediateService = (browserViewId: number): BrowserView => {
+    return getBrowserViewById(browserViewId);
+};
+
+function getBrowserViewById(id: number) {
+    for (let index = 0; index < browserViews.length; index++) {
+        const browserViewItem = browserViews[index];
+        if (browserViewItem['id'] === id) {
+            return browserViewItem;
         }
     }
-};
+}
+
+export { browserViewApi, browserViewMediateService };

@@ -192,7 +192,6 @@ namespace ElectronNET.API
 
                 string browserViewId = id.ToString();
                 BrowserView browserView = new BrowserView(int.Parse(browserViewId));
-                browserView.Destroyed += (b) => _browserViews.Remove(b);
 
                 _browserViews.Add(browserView);
 

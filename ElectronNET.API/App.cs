@@ -399,6 +399,70 @@ namespace ElectronNET.API
         private bool _isReady = false;
 
         /// <summary>
+        /// Emitted when a MacOS user wants to open a file with the application. The open-file event is usually emitted
+        /// when the application is already open and the OS wants to reuse the application to open the file.
+        /// open-file is also emitted when a file is dropped onto the dock and the application is not yet running.
+        /// <para/>
+        /// On Windows, you have to parse the arguments using App.CommandLine to get the filepath.
+        /// </summary>
+        public event Action<string> OpenFile
+        {
+            add
+            {
+                if (_openFile == null)
+                {
+                    BridgeConnector.Socket.On("app-open-file" + GetHashCode(), (file) =>
+                    {
+                        _openFile(file.ToString());
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-open-file-event", GetHashCode());
+                }
+                _openFile += value;
+            }
+            remove
+            {
+                _openFile -= value;
+
+                if (_openFile == null)
+                    BridgeConnector.Socket.Off("app-open-file" + GetHashCode());
+            }
+        }
+
+        private event Action<string> _openFile;
+
+
+        /// <summary>
+        /// Emitted when a MacOS user wants to open a URL with the application. Your application's Info.plist file must
+        /// define the URL scheme within the CFBundleURLTypes key, and set NSPrincipalClass to AtomApplication.
+        /// </summary>
+        public event Action<string> OpenUrl
+        {
+            add
+            {
+                if (_openUrl == null)
+                {
+                    BridgeConnector.Socket.On("app-open-url" + GetHashCode(), (url) =>
+                    {
+                        _openUrl(url.ToString());
+                    });
+
+                    BridgeConnector.Socket.Emit("register-app-open-url-event", GetHashCode());
+                }
+                _openUrl += value;
+            }
+            remove
+            {
+                _openUrl -= value;
+
+                if (_openUrl == null)
+                    BridgeConnector.Socket.Off("app-open-url" + GetHashCode());
+            }
+        }
+
+        private event Action<string> _openUrl;
+
+        /// <summary>
         /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
         /// application's package.json file.
         ///
@@ -407,6 +471,27 @@ namespace ElectronNET.API
         /// which will be preferred over name by Electron.
         /// </summary>
         public string Name
+        {
+            [Obsolete("Use the asynchronous version NameAsync instead")]
+            get
+            {
+                return NameAsync.Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetName", value);
+            }
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
+        /// application's package.json file.
+        ///
+        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
+        /// should usually also specify a productName field, which is your application's full capitalized name, and
+        /// which will be preferred over name by Electron.
+        /// </summary>
+        public Task<string> NameAsync
         {
             get
             {
@@ -423,13 +508,10 @@ namespace ElectronNET.API
                     BridgeConnector.Socket.Emit("appGetName");
 
                     return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("appSetName", value);
+                });
             }
         }
+
 
         internal App() 
         {
@@ -1480,6 +1562,27 @@ namespace ElectronNET.API
         /// </summary>
         public string UserAgentFallback
         {
+            [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
+            get
+            {
+                return UserAgentFallbackAsync.Result;
+            }
+            set
+            {
+                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+            }
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
+        /// <para/>
+        /// This is the user agent that will be used when no user agent is set at the webContents or
+        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
+        /// custom value as early as possible in your app's initialization to ensure that your overridden value
+        /// is used.
+        /// </summary>
+        public Task<string> UserAgentFallbackAsync
+        {
             get
             {
                 return Task.Run<string>(() =>
@@ -1495,11 +1598,7 @@ namespace ElectronNET.API
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 
                     return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+                });
             }
         }
 
