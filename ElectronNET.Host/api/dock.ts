@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, Menu } from 'electron';
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
@@ -39,8 +39,17 @@ export = (socket: SocketIO.Socket) => {
         electronSocket.emit('dock-isVisible-completed', isVisible);
     });
 
-    // TODO: Menu (macOS) still to be implemented
-    socket.on('dock-setMenu', (menu) => {
+    socket.on('dock-setMenu', (menuItems) => {
+        let menu = null;
+
+        if (menuItems) {
+            menu = Menu.buildFromTemplate(menuItems);
+
+            addMenuItemClickConnector(menu.items, (id) => {
+                electronSocket.emit('dockMenuItemClicked', id);
+            });
+        }
+
         app.dock.setMenu(menu);
     });
 
@@ -53,4 +62,16 @@ export = (socket: SocketIO.Socket) => {
     socket.on('dock-setIcon', (image) => {
         app.dock.setIcon(image);
     });
+
+    function addMenuItemClickConnector(menuItems, callback) {
+        menuItems.forEach((item) => {
+            if (item.submenu && item.submenu.items.length > 0) {
+                addMenuItemClickConnector(item.submenu.items, callback);
+            }
+
+            if ('id' in item && item.id) {
+                item.click = () => { callback(item.id); };
+            }
+        });
+    }
 };
