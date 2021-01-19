@@ -145,7 +145,7 @@ Those three "default" targets will produce x64 packages for those platforms.
 For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
 
 ```
-electronize build /target custom win7-x86;win32 /electron-arch ia32 
+electronize build /target custom "win7-x86;win32" /electron-arch ia32 
 ```
 
 The end result should be an electron app under your __/bin/desktop__ folder.
