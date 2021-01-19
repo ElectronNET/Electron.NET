@@ -111,6 +111,30 @@ export = (socket: SocketIO.Socket) => {
         }
     });
 
+    socket.on('register-tray-on-event', (eventName, listenerName) => {
+        if (tray.value){
+            tray.value.on(eventName, (...args) => {
+                if (args.length > 1) {
+                    electronSocket.emit(listenerName, args[1]);
+                } else {
+                    electronSocket.emit(listenerName);
+                }
+            });
+        }
+    });
+
+    socket.on('register-tray-once-event', (eventName, listenerName) => {
+        if (tray.value){
+            tray.value.once(eventName, (...args) => {
+                if (args.length > 1) {
+                    electronSocket.emit(listenerName, args[1]);
+                } else {
+                    electronSocket.emit(listenerName);
+                }
+            });
+        }
+    });
+
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {
             if (item.submenu && item.submenu.items.length > 0) {

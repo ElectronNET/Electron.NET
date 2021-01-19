@@ -351,5 +351,35 @@ namespace ElectronNET.API
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
         };
+
+        private const string ModuleName = "tray";
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action fn)
+            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action<object> fn)
+            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action fn)
+            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action<object> fn)
+            => Events.Instance.Once(ModuleName, eventName, fn);
     }
 }

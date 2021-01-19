@@ -287,4 +287,24 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     socket.on('appSetUserAgentFallback', (userAgent) => {
         app.userAgentFallback = userAgent;
     });
+
+    socket.on('register-app-on-event', (eventName, listenerName) => {
+        app.on(eventName, (...args) => {
+            if (args.length > 1) {
+                electronSocket.emit(listenerName, args[1]);
+            } else {
+                electronSocket.emit(listenerName);
+            }
+        });
+    });
+
+    socket.on('register-app-once-event', (eventName, listenerName) => {
+        app.once(eventName, (...args) => {
+            if (args.length > 1) {
+                electronSocket.emit(listenerName, args[1]);
+            } else {
+                electronSocket.emit(listenerName);
+            }
+        });
+    });
 };
