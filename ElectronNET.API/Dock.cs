@@ -1,8 +1,11 @@
-﻿using System.Threading;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace ElectronNET.API
 {
@@ -162,12 +165,29 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// TODO: Menu (macOS) still to be implemented
+        /// Gets the dock menu items.
+        /// </summary>
+        /// <value>
+        /// The menu items.
+        /// </value>
+        public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
+        private List<MenuItem> _items = new List<MenuItem>();
+
+        /// <summary>
         /// Sets the application's dock menu.
         /// </summary>
-        public void SetMenu()
+        public void SetMenu(MenuItem[] menuItems)
         {
-            BridgeConnector.Socket.Emit("dock-setMenu");
+            menuItems.AddMenuItemsId();
+            BridgeConnector.Socket.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            _items.AddRange(menuItems);
+
+            BridgeConnector.Socket.Off("dockMenuItemClicked");
+            BridgeConnector.Socket.On("dockMenuItemClicked", (id) => {
+                MenuItem menuItem = _items.GetMenuItem(id.ToString());
+                menuItem?.Click();
+            });
+           
         }
 
         /// <summary>
@@ -202,5 +222,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("dock-setIcon", image);
         }
+
+        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
     }
 }

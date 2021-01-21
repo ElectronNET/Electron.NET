@@ -1608,5 +1608,35 @@ namespace ElectronNET.API
         }
 
         private bool _preventQuit = false;
+
+        private const string ModuleName = "app";
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="App"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action fn)
+            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="App"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action<object> fn)
+            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="App"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action fn)
+            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="App"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action<object> fn)
+            => Events.Instance.Once(ModuleName, eventName, fn);
     }
 }

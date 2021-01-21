@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace ElectronNET.API.Entities
 {
@@ -206,5 +206,11 @@ namespace ElectronNET.API.Entities
         /// </value>
         [DefaultValue(false)]
         public bool WebviewTag { get; set; } = false;
+
+        /// <summary>
+        /// Whether to enable the remote module. Defaults to false.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool EnableRemoteModule { get; set; } = false;
     }
 }

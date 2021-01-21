@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
@@ -36,6 +36,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		buildAll.sh = buildAll.sh
 		buildReleaseNuGetPackages.cmd = buildReleaseNuGetPackages.cmd
 		Changelog.md = Changelog.md
+		README.md = README.md
+		start.cmd = start.cmd
+		start.sh = start.sh
 	EndProjectSection
 EndProject
 Global

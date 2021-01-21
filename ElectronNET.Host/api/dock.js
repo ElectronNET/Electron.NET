@@ -30,8 +30,14 @@ module.exports = (socket) => {
         const isVisible = electron_1.app.dock.isVisible();
         electronSocket.emit('dock-isVisible-completed', isVisible);
     });
-    // TODO: Menu (macOS) still to be implemented
-    socket.on('dock-setMenu', (menu) => {
+    socket.on('dock-setMenu', (menuItems) => {
+        let menu = null;
+        if (menuItems) {
+            menu = electron_1.Menu.buildFromTemplate(menuItems);
+            addMenuItemClickConnector(menu.items, (id) => {
+                electronSocket.emit('dockMenuItemClicked', id);
+            });
+        }
         electron_1.app.dock.setMenu(menu);
     });
     // TODO: Menu (macOS) still to be implemented
@@ -42,5 +48,15 @@ module.exports = (socket) => {
     socket.on('dock-setIcon', (image) => {
         electron_1.app.dock.setIcon(image);
     });
+    function addMenuItemClickConnector(menuItems, callback) {
+        menuItems.forEach((item) => {
+            if (item.submenu && item.submenu.items.length > 0) {
+                addMenuItemClickConnector(item.submenu.items, callback);
+            }
+            if ('id' in item && item.id) {
+                item.click = () => { callback(item.id); };
+            }
+        });
+    }
 };
 //# sourceMappingURL=dock.js.map
