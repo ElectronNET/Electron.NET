@@ -16,6 +16,29 @@ ElectronNET.API:
 * New Feature: Native Electron 11.1.1 support, but not all new features (we search contributors)
 * Breaking API Changes (from native Electron 11.0): - Removed: BrowserView.{destroy, fromId, fromWebContents, getAllViews} and id property of BrowserView
 * New Feature: Upgrade to .NET 5 (thanks [scottkuhl](https://github.com/scottkuhl)) [\#509](https://github.com/ElectronNET/Electron.NET/pull/509)
+* New Feature: Extension Method for adding the Electron static class members to the standard MS DI Containers, this is a QOL issue only. `services.AddElectron()` (thanks [danatcofo](https://github.com/danatcofo )) [\#528](https://github.com/ElectronNET/Electron.NET/pull/528)
+* New Feature: SetMenu completed for the Dock (MacOS) (thanks [danatcofo](https://github.com/danatcofo )) [\#528](https://github.com/ElectronNET/Electron.NET/pull/528)
+
+Example for the Dock Menu
+
+`Electron.Dock.SetMenu(new [] {
+   new MenuItem {
+      Label = "Dock Menu Item",
+      Click = () => {
+         // do something
+      }
+   },
+});`
+
+Example for consuming the activate event (MacOs only)
+
+`Electron.App.On("activate", obj => {
+   var hasWindows = (bool)obj;
+   // do something
+});`
+
+* New Feature: On and Once implementations for the App and Tray to cover the plethora of events that are not mapped explicitly in those two modules. (thanks [danatcofo](https://github.com/danatcofo )) [\#528](https://github.com/ElectronNET/Electron.NET/pull/528)
+* New Feature: Adding the `EnableRemoteModule` property to the WebPreferences object. As of Electron 10, this property defaulted to false and without it exposed you can't use the remote module within a window. (thanks [danatcofo](https://github.com/danatcofo )) [\#528](https://github.com/ElectronNET/Electron.NET/pull/528)
 * New Feature: Adding a configurable default electron port. (thanks [aarong-av](https://github.com/aarong-av)) [\#505](https://github.com/ElectronNET/Electron.NET/pull/505)
 * New Feature: Added support for launching the application with a file on MacOS (thanks [dlitty](https://github.com/dlitty)) [\#478](https://github.com/ElectronNET/Electron.NET/pull/478)
 * Improved: Avoid Blocking Calls in App and AutoUpdater (thanks [freosc](https://github.com/freosc)) [\#474](https://github.com/ElectronNET/Electron.NET/pull/474)

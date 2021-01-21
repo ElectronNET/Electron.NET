@@ -77,4 +77,4 @@ function showNav() {
 setTimeout(() => {
   activateDefaultSection();
   displayAbout();
-}, 1000);
+}, 100);
