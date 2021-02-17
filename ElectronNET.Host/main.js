@@ -125,6 +125,7 @@ function startSplashScreen() {
             skipTaskbar: true,
             show: true
         });
+        splashScreen.setIgnoreMouseEvents(true);
 
         app.once('browser-window-created', () => {
             splashScreen.destroy();
