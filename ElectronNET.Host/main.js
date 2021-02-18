@@ -123,6 +123,7 @@ function startSplashScreen() {
             closable: false,
             resizable: false,
             skipTaskbar: true,
+            alwaysOnTop: true,
             show: true
         });
         splashScreen.setIgnoreMouseEvents(true);
