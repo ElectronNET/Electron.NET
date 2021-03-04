@@ -1,4 +1,5 @@
-﻿using System;
+﻿BuildCommand.cs
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
                                                  "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
                                                  "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
+                                                 "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -43,6 +45,7 @@ namespace ElectronNET.CLI.Commands
         private string _manifest = "manifest";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
         private string _paramPublishSingleFile = "PublishSingleFile";
+        private string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
         {
@@ -52,6 +55,11 @@ namespace ElectronNET.CLI.Commands
 
                 SimpleCommandLineParser parser = new SimpleCommandLineParser();
                 parser.Parse(_args);
+
+                //This version will be shared between the dotnet publish and electron-builder commands
+                string version = null;
+                if (parser.Arguments.ContainsKey(_paramVersion))
+                    version = parser.Arguments[_paramVersion][0];
 
                 if (!parser.Arguments.ContainsKey(_paramTarget))
                 {
@@ -116,7 +124,11 @@ namespace ElectronNET.CLI.Commands
                     publishSingleFile += "true";
                 }
 
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --self-contained", Directory.GetCurrentDirectory());
+                var dotNetVersionArguments = !string.IsNullOrWhiteSpace(version)
+                    ? $"/p:Version={version}"
+                    : "";
+
+                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" {dotNetVersionArguments} --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --self-contained", Directory.GetCurrentDirectory());
 
                 if (resultCode != 0)
                 {
@@ -194,7 +206,10 @@ namespace ElectronNET.CLI.Commands
                     manifestFileName = parser.Arguments[_manifest].First();
                 }
 
-                ProcessHelper.CmdExecute($"node build-helper.js " + manifestFileName, tempPath);
+                ProcessHelper.CmdExecute(
+                    string.IsNullOrWhiteSpace(version)
+                        ? $"node build-helper.js {manifestFileName}"
+                        : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
                 ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=11.1.1 {electronParams}", tempPath);
