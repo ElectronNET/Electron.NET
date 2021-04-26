@@ -5,7 +5,7 @@ const electron_1 = require("electron");
 const browserViews = (global['browserViews'] = global['browserViews'] || []);
 let browserView, electronSocket;
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
-const browserViewApi = (socket, app) => {
+const browserViewApi = (socket) => {
     electronSocket = socket;
     socket.on('createBrowserView', (options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {

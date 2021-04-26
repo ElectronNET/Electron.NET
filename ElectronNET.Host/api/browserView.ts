@@ -3,7 +3,7 @@ const browserViews: BrowserView[] = (global['browserViews'] = global['browserVie
 let browserView: BrowserView, electronSocket;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
-const browserViewApi = (socket: SocketIO.Socket, app: Electron.App) => {
+const browserViewApi = (socket: SocketIO.Socket) => {
     electronSocket = socket;
 
     socket.on('createBrowserView', (options) => {
