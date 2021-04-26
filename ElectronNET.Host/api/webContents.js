@@ -173,6 +173,27 @@ module.exports = (socket) => {
             electronSocket.emit('webContents-loadURL-error' + id, error);
         });
     });
+    socket.on('webContents-insertCSS', (id, isBrowserWindow, path) => {
+        if (isBrowserWindow) {
+            const browserWindow = getWindowById(id);
+            if (browserWindow) {
+                browserWindow.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+            }
+        }
+        else {
+            const browserViews = (global['browserViews'] = global['browserViews'] || []);
+            let view = null;
+            for (let i = 0; i < browserViews.length; i++) {
+                if (browserViews[i]['id'] + 1000 === id) {
+                    view = browserViews[i];
+                    break;
+                }
+            }
+            if (view) {
+                view.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+            }
+        }
+    });
     function getWindowById(id) {
         if (id >= 1000) {
             return browserView_1.browserViewMediateService(id - 1000);
