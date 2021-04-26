@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, BrowserWindow, BrowserView } from 'electron';
 let electronSocket;
 
 export = (socket: SocketIO.Socket) => {
@@ -36,6 +36,21 @@ export = (socket: SocketIO.Socket) => {
 
         if (window) {
             window.webContents.send(channel, ...data);
+        }
+    });
+
+    socket.on('sendToIpcRendererBrowserView', (id, channel, ...data) => {
+        const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
+        let view: BrowserView = null;
+        for (let i = 0; i < browserViews.length; i++) {
+            if (browserViews[i]['id'] === id) {
+                view = browserViews[i];
+                break;
+            }
+        }
+
+        if (view) {
+            view.webContents.send(channel, ...data);
         }
     });
 };
