@@ -4,7 +4,8 @@ exports.browserViewMediateService = exports.browserViewApi = void 0;
 const electron_1 = require("electron");
 const browserViews = (global['browserViews'] = global['browserViews'] || []);
 let browserView, electronSocket;
-const browserViewApi = (socket) => {
+const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
+const browserViewApi = (socket, app) => {
     electronSocket = socket;
     socket.on('createBrowserView', (options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
@@ -12,6 +13,12 @@ const browserViewApi = (socket) => {
         }
         browserView = new electron_1.BrowserView(options);
         browserView['id'] = browserViews.length + 1;
+        if (options.proxy) {
+            browserView.webContents.session.setProxy({ proxyRules: options.proxy });
+        }
+        if (options.proxy && options.proxyCredentials) {
+            proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
+        }
         browserViews.push(browserView);
         electronSocket.emit('BrowserViewCreated', browserView['id']);
     });
