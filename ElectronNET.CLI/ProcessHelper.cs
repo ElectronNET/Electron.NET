@@ -19,7 +19,8 @@ namespace ElectronNET.CLI
                 else
                 {
                     // works for OSX and Linux (at least on Ubuntu)
-                    cmd.StartInfo = new ProcessStartInfo("bash", "-c " + command);
+                    var escapedArgs = command.Replace("\"", "\\\"");
+                    cmd.StartInfo = new ProcessStartInfo("bash", $"-c \"{escapedArgs}\"");
                 }
 
                 cmd.StartInfo.RedirectStandardInput = true;
