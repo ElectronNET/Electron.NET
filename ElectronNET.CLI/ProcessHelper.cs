@@ -36,6 +36,7 @@ namespace ElectronNET.CLI
                     cmd.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
                 }
 
+                Console.WriteLine(command);
                 cmd.Start();
                 cmd.BeginOutputReadLine();
                 cmd.BeginErrorReadLine();
