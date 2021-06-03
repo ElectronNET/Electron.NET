@@ -113,7 +113,7 @@ namespace ElectronNET.CLI.Commands
                 }
                 else
                 {
-                    publishSingleFile += "true";
+                    publishSingleFile += "false";
                 }
 
                 var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --self-contained", Directory.GetCurrentDirectory());
