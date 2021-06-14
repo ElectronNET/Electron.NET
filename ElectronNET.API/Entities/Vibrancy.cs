@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -10,7 +10,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The appearance based
         /// </summary>
-        [JsonProperty("appearance-based")]
+        [EnumMember(Value = "appearance-based")]
         appearanceBased,
 
         /// <summary>
@@ -51,13 +51,13 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The medium light
         /// </summary>
-        [JsonProperty("medium-light")]
+        [EnumMember(Value = "medium-light")]
         mediumLight,
 
         /// <summary>
         /// The ultra dark
         /// </summary>
-        [JsonProperty("ultra-dark")]
+        [EnumMember(Value = "ultra-dark")]
         ultraDark
     }
 }
