@@ -36,6 +36,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramElectronArch = "electron-arch";
         private string _paramElectronParams = "electron-params";
+        private string _paramElectronVersion = "electron-version";
         private string _paramOutputDirectory = "relative-path";
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
@@ -179,6 +180,12 @@ namespace ElectronNET.CLI.Commands
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
+                string electronVersion = "12.0.12";
+                if (parser.Arguments.ContainsKey(_paramElectronVersion))
+                {
+                    electronVersion = parser.Arguments[_paramElectronVersion][0];
+                }
+
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
                 {
@@ -198,7 +205,7 @@ namespace ElectronNET.CLI.Commands
                 ProcessHelper.CmdExecute($"node build-helper.js " + manifestFileName, tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=12.0.12 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
