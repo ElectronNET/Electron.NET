@@ -70,7 +70,7 @@ steps:
   displayName: 'push API to nuget'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/ElectronNET.API.$(PackageVersion).nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/h5.ElectronNET.API.$(PackageVersion).nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'nuget-curiosity'
 
@@ -78,6 +78,6 @@ steps:
   displayName: 'push CLI to nuget'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/ElectronNET.CLI.$(PackageVersion).nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/h5.ElectronNET.CLI.$(PackageVersion).nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'nuget-curiosity'
