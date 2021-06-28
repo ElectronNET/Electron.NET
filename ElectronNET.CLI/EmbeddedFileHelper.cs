@@ -7,13 +7,16 @@ namespace ElectronNET.CLI
     public static class EmbeddedFileHelper
     {
         private const string ResourcePath = "ElectronNET.CLI.{0}";
+        private const string ResourcePath2 = "ElectronNet.CLI.{0}";
 
         private static Stream GetTestResourceFileStream(string folderAndFileInProjectPath)
         {
             var asm = Assembly.GetExecutingAssembly();
             var resource = string.Format(ResourcePath, folderAndFileInProjectPath);
+            var resource2 = string.Format(ResourcePath2, folderAndFileInProjectPath);
 
-            var stream = asm.GetManifestResourceStream(resource);
+            var stream = asm.GetManifestResourceStream(resource) ?? asm.GetManifestResourceStream(resource2);
+
             if(stream is null)
             {
                 PrintAllResources();

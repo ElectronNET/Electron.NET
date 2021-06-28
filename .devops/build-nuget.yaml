@@ -1,7 +1,7 @@
 variables:
   PackageVersion: 12.0.0.$(Build.BuildId)
-  projectAPI:  './ElectronNet.API/ElectronNet.API.csproj'
-  projectCLI:  './ElectronNet.CLI/ElectronNet.CLI.csproj'
+  projectAPI:  './ElectronNET.API/ElectronNET.API.csproj'
+  projectCLI:  './ElectronNET.CLI/ElectronNET.CLI.csproj'
 
 trigger:
 - master
