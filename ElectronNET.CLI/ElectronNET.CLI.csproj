@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
 
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>dotnet-electronize</AssemblyName>
+    <AssemblyName>dotnet-electronize-h5</AssemblyName>
     <ToolCommandName>electronize-h5</ToolCommandName>
 
     <PackageType>DotnetCliTool</PackageType>
