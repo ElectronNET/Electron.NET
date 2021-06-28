@@ -6,7 +6,7 @@ namespace ElectronNET.CLI
 {
     public static class EmbeddedFileHelper
     {
-        private const string ResourcePath = "ElectronNET.CLI.{0}";
+        private const string ResourcePath = "h5.ElectronNET.CLI.{0}";
 
         private static Stream GetTestResourceFileStream(string folderAndFileInProjectPath)
         {
