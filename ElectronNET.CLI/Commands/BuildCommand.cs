@@ -136,10 +136,11 @@ namespace ElectronNET.CLI.Commands
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
+                if (!Directory.Exists(checkForNodeModulesDirPath)|| parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
+                {
                     Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
+                    ProcessHelper.CmdExecute("npm install --production", tempPath);
+                }
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
