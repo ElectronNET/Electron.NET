@@ -15,10 +15,10 @@ namespace ElectronNET.API.Entities
         public bool DevTools { get; set; } = true;
 
         /// <summary>
-        /// Whether node integration is enabled. Required to enable IPC. Default is true.
+        /// Whether node integration is enabled. Required to enable IPC. Default is false.
         /// </summary>
-        [DefaultValue(true)]
-        public bool NodeIntegration { get; set; } = true;
+        [DefaultValue(false)]
+        public bool NodeIntegration { get; set; } = false;
 
         /// <summary>
         /// Whether node integration is enabled in web workers. Default is false.
@@ -184,9 +184,10 @@ namespace ElectronNET.API.Entities
         /// can access this context in the dev tools by selecting the 'Electron Isolated
         /// Context' entry in the combo box at the top of the Console tab. This option is
         /// currently experimental and may change or be removed in future Electron releases.
+        /// Default value is true.
         /// </summary>
-        [DefaultValue(false)]
-        public bool ContextIsolation { get; set; }
+        [DefaultValue(true)]
+        public bool ContextIsolation { get; set; } = true;
 
         /// <summary>
         /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
