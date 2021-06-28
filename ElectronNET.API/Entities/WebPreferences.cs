@@ -185,8 +185,8 @@ namespace ElectronNET.API.Entities
         /// Context' entry in the combo box at the top of the Console tab. This option is
         /// currently experimental and may change or be removed in future Electron releases.
         /// </summary>
-        [DefaultValue(false)]
-        public bool ContextIsolation { get; set; }
+        [DefaultValue(true)]
+        public bool ContextIsolation { get; set; } = true;
 
         /// <summary>
         /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
