@@ -1,5 +1,5 @@
 variables:
-  ENETVER: 11.5.1
+  ENETVER: 12.0.0.$(Build.BuildId)
   projectAPI:  './ElectronNet.API/ElectronNet.API.csproj'
   projectCLI:  './ElectronNet.CLI/ElectronNet.CLI.csproj'
 
@@ -40,13 +40,13 @@ steps:
   inputs:
     command: 'build'
     projects: '$(projectAPI)'
-    arguments: '--configuration Release --force /property:Version=%ENETVER%'
+    arguments: '--configuration Release --force /property:Version=$(ENETVER)'
     
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: '$(projectCLI)'
-    arguments: '--configuration Release --force /property:Version=%ENETVER%'
+    arguments: '--configuration Release --force /property:Version=$(ENETVER)'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -54,7 +54,7 @@ steps:
     packagesToPack: '$(projectAPI)'
     configuration: 'Release'
     versioningScheme: 'off'
-    buildProperties: 'Version=%ENETVER%'
+    buildProperties: 'Version=$(ENETVER)'
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -62,4 +62,4 @@ steps:
     packagesToPack: '$(projectCLI)'
     configuration: 'Release'
     versioningScheme: 'off'
-    buildProperties: 'Version=%ENETVER%'
+    buildProperties: 'Version=$(ENETVER)'
