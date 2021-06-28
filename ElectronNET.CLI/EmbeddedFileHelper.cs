@@ -28,7 +28,7 @@ namespace ElectronNET.CLI
             }
         }
 
-        private static void PrintAllResources()
+        public static void PrintAllResources()
         {
             var asm = Assembly.GetExecutingAssembly();
 
