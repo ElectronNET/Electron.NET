@@ -5,6 +5,9 @@ const dasherize = require('dasherize');
 const fs = require('fs');
 
 const builderConfiguration = { ...manifestFile.build };
+if(process.argv.length > 3) {
+    builderConfiguration.buildVersion = process.argv[3];
+}
 if(builderConfiguration.hasOwnProperty('buildVersion')) {
     // @ts-ignore
     const packageJson = require('./package');

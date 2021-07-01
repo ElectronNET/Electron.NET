@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ElectronNET.CLI
 {
@@ -29,10 +31,24 @@ namespace ElectronNET.CLI
             }
             if (currentName != "")
                 Arguments[currentName] = values.ToArray();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Arguments: \n\t{string.Join("\n\t",Arguments.Keys.Select(i => $"{i} = {string.Join(" ", Arguments[i])}"))}");
+            Console.ResetColor();
         }
         public bool Contains(string name)
         {
             return Arguments.ContainsKey(name);
+        }
+
+        internal bool TryGet(string key, out string[] value)
+        {
+            value = null;
+            if (!Contains(key)) {
+                return false;
+            }
+            value = Arguments[key];
+            return true;
         }
     }
 }

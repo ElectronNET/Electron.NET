@@ -179,6 +179,45 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Send a message to the BrowserView renderer process asynchronously via channel, you can also send
+        /// arbitrary arguments. Arguments will be serialized in JSON internally and hence
+        /// no functions or prototype chain will be included. The renderer process handles it by
+        /// listening for channel with ipcRenderer module.
+        /// </summary>
+        /// <param name="browserView">BrowserView with channel.</param>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="data">Arguments data.</param>
+        public void Send(BrowserView browserView, string channel, params object[] data)
+        {
+            List<JObject> jobjects = new List<JObject>();
+            List<JArray> jarrays = new List<JArray>();
+            List<object> objects = new List<object>();
+
+            foreach (var parameterObject in data)
+            {
+                if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
+                {
+                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
+                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                {
+                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
+                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                {
+                    objects.Add(parameterObject);
+                }
+            }
+
+            if(jobjects.Count > 0 || jarrays.Count > 0)
+            {
+                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+            }
+            else
+            {
+                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
+            }
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
