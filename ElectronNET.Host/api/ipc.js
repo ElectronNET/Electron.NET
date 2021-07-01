@@ -32,5 +32,18 @@ module.exports = (socket) => {
             window.webContents.send(channel, ...data);
         }
     });
+    socket.on('sendToIpcRendererBrowserView', (id, channel, ...data) => {
+        const browserViews = (global['browserViews'] = global['browserViews'] || []);
+        let view = null;
+        for (let i = 0; i < browserViews.length; i++) {
+            if (browserViews[i]['id'] === id) {
+                view = browserViews[i];
+                break;
+            }
+        }
+        if (view) {
+            view.webContents.send(channel, ...data);
+        }
+    });
 };
 //# sourceMappingURL=ipc.js.map
