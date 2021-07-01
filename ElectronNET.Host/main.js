@@ -121,14 +121,15 @@ function startSplashScreen() {
             center: true,
             frame: false,
             closable: false,
+            resizable: false,
             skipTaskbar: true,
+            alwaysOnTop: true,
             show: true
         });
+        splashScreen.setIgnoreMouseEvents(true);
 
-        app.once('browser-window-focus', () => {
-            app.once('browser-window-focus', () => {
-                splashScreen.destroy();
-            });
+        app.once('browser-window-created', () => {
+            splashScreen.destroy();
         });
 
         const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
