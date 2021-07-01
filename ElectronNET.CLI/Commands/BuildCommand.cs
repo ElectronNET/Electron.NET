@@ -22,6 +22,7 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
                                                  "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
+                                                 "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -102,32 +103,18 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
+                
+                var dotNetPublishFlags = GetDotNetPublishFlags(parser);
 
-                string publishReadyToRun = "/p:PublishReadyToRun=";
-                if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
-                {
-                    publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
-                }
-                else
-                {
-                    publishReadyToRun += "true";
-                }
+                var command =
+                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
+                
+                // output the command 
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(command);
+                Console.ResetColor();
 
-                string publishSingleFile = "/p:PublishSingleFile=";
-                if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
-                {
-                    publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
-                }
-                else
-                {
-                    publishSingleFile += "true";
-                }
-
-                var dotNetVersionArguments = !string.IsNullOrWhiteSpace(version)
-                    ? $"/p:Version={version}"
-                    : "";
-
-                var resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" {dotNetVersionArguments} --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --self-contained", Directory.GetCurrentDirectory());
+                var resultCode = ProcessHelper.CmdExecute(command, Directory.GetCurrentDirectory());
 
                 if (resultCode != 0)
                 {
@@ -217,6 +204,44 @@ namespace ElectronNET.CLI.Commands
 
                 return true;
             });
+        }
+
+        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
+        {
+            var dotNetPublishFlags = new Dictionary<string, string>
+            {
+                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
+                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "true"},
+            };
+
+            foreach (var parm in parser.Arguments.Keys.Where(key => key.StartsWith("p:") || key.StartsWith("property:")))
+            {
+                var split = parm.IndexOf('=');
+                if (split < 0)
+                {
+                    continue;
+                }
+
+                var key = $"/{parm.Substring(0, split)}";
+                // normalize the key
+                if (key.StartsWith("/property:"))
+                {
+                    key = key.Replace("/property:", "/p:");
+                }
+
+                var value = parm.Substring(split + 1);
+
+                if (dotNetPublishFlags.ContainsKey(key))
+                {
+                    dotNetPublishFlags[key] = value;
+                }
+                else
+                {
+                    dotNetPublishFlags.Add(key, value);
+                }
+            }
+
+            return dotNetPublishFlags;
         }
     }
 }
