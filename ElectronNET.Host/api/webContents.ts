@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, BrowserView } from 'electron';
 import { browserViewMediateService } from './browserView';
 const fs = require('fs');
 let electronSocket;
@@ -220,6 +220,27 @@ export = (socket: SocketIO.Socket) => {
             console.error(error);
             electronSocket.emit('webContents-loadURL-error' + id, error);
         });
+    });
+
+    socket.on('webContents-insertCSS', (id, isBrowserWindow, path) => {
+        if (isBrowserWindow) {
+            const browserWindow = getWindowById(id);
+            if (browserWindow) {
+                browserWindow.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+            }
+        } else {
+            const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
+            let view: BrowserView = null;
+            for (let i = 0; i < browserViews.length; i++) {
+                if (browserViews[i]['id'] + 1000 === id) {
+                    view = browserViews[i];
+                    break;
+                }
+            }
+            if (view) {
+                view.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+            }
+        }
     });
 
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {
