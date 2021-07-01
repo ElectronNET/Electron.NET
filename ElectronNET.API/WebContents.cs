@@ -258,6 +258,18 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
+        /// <summary>
+        /// Inserts CSS into the web page.
+        /// See: https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options
+        /// Works for both BrowserWindows and BrowserViews.
+        /// </summary>
+        /// <param name="isBrowserWindow">Whether the webContents belong to a BrowserWindow or not (the other option is a BrowserView)</param>
+        /// <param name="path">Absolute path to the CSS file location</param>
+        public void InsertCSS(bool isBrowserWindow, string path)
+        {
+            BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

@@ -258,5 +258,17 @@ namespace ElectronNET.API.Entities
         /// Settings of web page's features.
         /// </summary>
         public WebPreferences WebPreferences { get; set; }
+
+        /// <summary>
+        /// A proxy to set on creation in the format host:port.
+        /// The proxy can be alternatively set using the BrowserWindow.WebContents.SetProxyAsync function.
+        /// </summary>
+        public string Proxy { get; set; }
+
+        /// <summary>
+        /// The credentials of the Proxy in the format username:password.
+        /// These will only be used if the Proxy field is also set.
+        /// </summary>
+        public string ProxyCredentials { get; set; }
     }
 }

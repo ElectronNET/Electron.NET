@@ -1,5 +1,9 @@
 # Not released
 
+# 11.5.2
+
+# Released
+
 # 11.5.1
 
 ElectronNET.CLI:
@@ -44,8 +48,6 @@ Example for consuming the activate event (MacOs only)
 * Improved: Avoid Blocking Calls in App and AutoUpdater (thanks [freosc](https://github.com/freosc)) [\#474](https://github.com/ElectronNET/Electron.NET/pull/474)
 * Fixed bug: Maintain references between socket.io connection events (thanks [danatcofo](https://github.com/danatcofo )) [\#468](https://github.com/ElectronNET/Electron.NET/pull/486)
 * Fixed bug: Set default WebPreferences.DefaultFontSize (thanks [duncanawoods](https://github.com/duncanawoods)) [\#468](https://github.com/ElectronNET/Electron.NET/pull/468)
-
-# Released
 
 # 9.31.2
 

@@ -5,8 +5,23 @@ const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['br
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
+const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
+
 export = (socket: SocketIO.Socket, app: Electron.App) => {
     electronSocket = socket;
+
+    app.on('login', (event, webContents, request, authInfo, callback) => {
+        if (authInfo.isProxy) {
+            let proxy = `${authInfo.host}:${authInfo.port}`
+            if (proxy in proxyToCredentialsMap && proxyToCredentialsMap[proxy].split(':').length === 2) {
+                event.preventDefault()
+                let user = proxyToCredentialsMap[proxy].split(':')[0]
+                let pass = proxyToCredentialsMap[proxy].split(':')[1]
+                callback(user, pass)
+            }
+        }
+    })
+
     socket.on('register-browserWindow-ready-to-show', (id) => {
         if (readyToShowWindowsIds.includes(id)) {
             readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
@@ -211,6 +226,14 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             }
         } else {
             window = new BrowserWindow(options);
+        }
+
+        if (options.proxy) {
+            window.webContents.session.setProxy({proxyRules: options.proxy});
+        }
+
+        if (options.proxy && options.proxyCredentials) {
+            proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
 
         window.on('ready-to-show', () => {
