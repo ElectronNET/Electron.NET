@@ -1,9 +1,10 @@
+import { Socket } from 'net';
 import { BrowserWindow, BrowserView } from 'electron';
 import { browserViewMediateService } from './browserView';
 const fs = require('fs');
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
@@ -241,6 +242,30 @@ export = (socket: SocketIO.Socket) => {
                 view.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
             }
         }
+    });
+
+    socket.on('webContents-session-getAllExtensions', (id) => {
+        const browserWindow = getWindowById(id);
+        const extensionsList = browserWindow.webContents.session.getAllExtensions();
+        const chromeExtensionInfo = [];
+
+        Object.keys(extensionsList).forEach(key => {
+            chromeExtensionInfo.push(extensionsList[key]);
+        });
+
+        electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);
+    });
+
+    socket.on('webContents-session-removeExtension', (id, name) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.session.removeExtension(name);
+    });
+
+    socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
+        const browserWindow = getWindowById(id);
+        const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
+
+        electronSocket.emit('webContents-session-loadExtension-completed', extension);
     });
 
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {

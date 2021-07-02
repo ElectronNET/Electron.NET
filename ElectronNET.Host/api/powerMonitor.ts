@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { powerMonitor } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('register-pm-lock-screen', () => {
         powerMonitor.on('lock-screen', () => {

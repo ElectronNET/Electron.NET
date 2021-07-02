@@ -1,8 +1,9 @@
+import { Socket } from 'net';
 import { Menu, Tray, nativeImage } from 'electron';
 let tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { value: null });
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('register-tray-click', (id) => {
         if (tray.value) {

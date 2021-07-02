@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { clipboard, nativeImage } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('clipboard-readText', (type) => {
         const text = clipboard.readText(type);

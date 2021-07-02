@@ -194,6 +194,24 @@ module.exports = (socket) => {
             }
         }
     });
+    socket.on('webContents-session-getAllExtensions', (id) => {
+        const browserWindow = getWindowById(id);
+        const extensionsList = browserWindow.webContents.session.getAllExtensions();
+        const chromeExtensionInfo = [];
+        Object.keys(extensionsList).forEach(key => {
+            chromeExtensionInfo.push(extensionsList[key]);
+        });
+        electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);
+    });
+    socket.on('webContents-session-removeExtension', (id, name) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.session.removeExtension(name);
+    });
+    socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
+        const browserWindow = getWindowById(id);
+        const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
+        electronSocket.emit('webContents-session-loadExtension-completed', extension);
+    });
     function getWindowById(id) {
         if (id >= 1000) {
             return browserView_1.browserViewMediateService(id - 1000);

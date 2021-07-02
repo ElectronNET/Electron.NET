@@ -1,7 +1,8 @@
 import { ipcMain, BrowserWindow, BrowserView } from 'electron';
+import { Socket } from 'net';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {

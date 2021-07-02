@@ -120,20 +120,19 @@ namespace ElectronNET.API
         /// Move the given file to trash and returns a <see cref="bool"/> status for the operation.
         /// </summary>
         /// <param name="fullPath">The full path to the directory / file.</param>
-        /// <param name="deleteOnFail">Whether or not to unilaterally remove the item if the Trash is disabled or unsupported on the volume.</param>
         /// <returns> Whether the item was successfully moved to the trash.</returns>
-        public Task<bool> MoveItemToTrashAsync(string fullPath, bool deleteOnFail)
+        public Task<bool> TrashItemAsync(string fullPath)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-moveItemToTrashCompleted", (success) =>
+            BridgeConnector.Socket.On("shell-trashItem-completed", (success) =>
             {
-                BridgeConnector.Socket.Off("shell-moveItemToTrashCompleted");
+                BridgeConnector.Socket.Off("shell-trashItem-completed");
 
                 taskCompletionSource.SetResult((bool) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-moveItemToTrash", fullPath, deleteOnFail);
+            BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
 
             return taskCompletionSource.Task;
         }

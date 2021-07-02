@@ -4,7 +4,7 @@ const { protocol } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
-const imageSize = require('image-size');
+const { imageSize } = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
@@ -164,6 +164,7 @@ function startSocketApiBridge(port) {
     app['mainWindowURL'] = "";
     app['mainWindow'] = null;
 
+    // @ts-ignore
     io.on('connection', (socket) => {
 
         socket.on('disconnect', function (reason) {
@@ -208,30 +209,30 @@ function startSocketApiBridge(port) {
         if (dock === undefined) dock = require('./api/dock')(socket);
 
         socket.on('register-app-open-file-event', (id) => {
-            electronSocket = socket;
+            global['electronsocket'] = socket;
 
             app.on('open-file', (event, file) => {
                 event.preventDefault();
 
-                electronSocket.emit('app-open-file' + id, file);
+                global['electronsocket'].emit('app-open-file' + id, file);
             });
 
             if (launchFile) {
-                electronSocket.emit('app-open-file' + id, launchFile);
+                global['electronsocket'].emit('app-open-file' + id, launchFile);
             }
         });
 
         socket.on('register-app-open-url-event', (id) => {
-            electronSocket = socket;
+            global['electronsocket'] = socket;
 
             app.on('open-url', (event, url) => {
                 event.preventDefault();
 
-                electronSocket.emit('app-open-url' + id, url);
+                global['electronsocket'].emit('app-open-url' + id, url);
             });
 
             if (launchUrl) {
-                electronSocket.emit('app-open-url' + id, launchUrl);
+                global['electronsocket'].emit('app-open-url' + id, launchUrl);
             }
         });
 

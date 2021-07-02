@@ -9,7 +9,7 @@ const browserViewApi = (socket) => {
     electronSocket = socket;
     socket.on('createBrowserView', (options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
-            options = { ...options, webPreferences: { nodeIntegration: true } };
+            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
         browserView = new electron_1.BrowserView(options);
         browserView['id'] = browserViews.length + 1;

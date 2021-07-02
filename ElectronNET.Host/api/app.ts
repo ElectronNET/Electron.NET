@@ -1,6 +1,8 @@
+import { Socket } from "net";
+
 let isQuitWindowAllClosed = true, electronSocket;
 let appWindowAllClosedEventId;
-export = (socket: SocketIO.Socket, app: Electron.App) => {
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
 
     // By default, quit when all windows are closed

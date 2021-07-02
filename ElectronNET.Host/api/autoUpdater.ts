@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { autoUpdater } from 'electron-updater';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
 
     socket.on('register-autoUpdater-error-event', (id) => {

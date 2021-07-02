@@ -177,10 +177,10 @@ module.exports = (socket, app) => {
     });
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
-            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true } };
+            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
         }
         else if (!options.webPreferences) {
-            options = { ...options, webPreferences: { nodeIntegration: true } };
+            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
@@ -594,21 +594,6 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
-    });
-    socket.on('browserWindowAddExtension', (path) => {
-        const extensionName = electron_1.BrowserWindow.addExtension(path);
-        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
-    });
-    socket.on('browserWindowRemoveExtension', (name) => {
-        electron_1.BrowserWindow.removeExtension(name);
-    });
-    socket.on('browserWindowGetExtensions', () => {
-        const extensionsList = electron_1.BrowserWindow.getExtensions();
-        const chromeExtensionInfo = [];
-        Object.keys(extensionsList).forEach(key => {
-            chromeExtensionInfo.push(extensionsList[key]);
-        });
-        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
         getWindowById(id).setBrowserView(browserView_1.browserViewMediateService(browserViewId));
