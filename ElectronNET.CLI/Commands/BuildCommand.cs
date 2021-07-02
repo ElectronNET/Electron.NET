@@ -13,7 +13,7 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
         public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
                                                  " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
-                                                 " e.g. '/target win' or '/target custom \"win7-x86;win32\"'" + Environment.NewLine +
+                                                 " e.g. '/target win' or '/target custom \"win7-x86;win\"'" + Environment.NewLine +
                                                  "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
                                                  "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
                                                  "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
