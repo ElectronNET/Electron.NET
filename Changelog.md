@@ -8,6 +8,7 @@ ElectronNET.CLI:
 * Fixed bug: Allow for property overrides to be passed in (thanks [danatcofo](https://github.com/danatcofo)) [\#531](https://github.com/ElectronNET/Electron.NET/pull/531)  
 Use `/p:propertyName=value` or `/property:propertyName=value` to pass in property overrides. This is equivalent to the `-p:` option documented here: [https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)  
 * Fixed bug: Add ability to pass an argument for "Version" for both the "dotnet publish" and "electron-builder" commands (thanks [tub5](https://github.com/tub5)) [\#546](https://github.com/ElectronNET/Electron.NET/pull/546)  
+* Fixed bug: Version flag not persisting with the referenced executable (thanks [tub5](https://github.com/tub5)) [\#585](https://github.com/ElectronNET/Electron.NET/pull/585)  
 * Fixed bug: Changes PublishSingleFile default to false for NET5 compatibility (thanks [cristiangiagante](https://github.com/cristiangiagante)) [\#570](https://github.com/ElectronNET/Electron.NET/pull/570)  
   
 ElectronNET.API:  

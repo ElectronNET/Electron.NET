@@ -148,11 +148,11 @@ module.exports = (socket, app) => {
         app.setJumpList(categories);
     });
     socket.on('appRequestSingleInstanceLock', () => {
-        app.on('second-instance', (args, workingDirectory) => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
-        });
         const success = app.requestSingleInstanceLock();
         electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
+        app.on('second-instance', (event, args = [], workingDirectory = '') => {
+            electronSocket.emit('secondInstance', [args, workingDirectory]);
+        });
     });
     socket.on('appHasSingleInstanceLock', () => {
         const hasLock = app.hasSingleInstanceLock();
