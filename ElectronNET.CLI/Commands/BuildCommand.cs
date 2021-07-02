@@ -214,6 +214,14 @@ namespace ElectronNET.CLI.Commands
                 {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "true"},
             };
 
+            if (parser.Arguments.ContainsKey(_paramVersion))
+            {
+                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:Version=") && !key.StartsWith("property:Version=")))
+                    dotNetPublishFlags.Add("/p:Version", parser.Arguments[_paramVersion][0]);
+                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:ProductVersion=") && !key.StartsWith("property:ProductVersion=")))
+                    dotNetPublishFlags.Add("/p:ProductVersion", parser.Arguments[_paramVersion][0]);
+            }
+
             foreach (var parm in parser.Arguments.Keys.Where(key => key.StartsWith("p:") || key.StartsWith("property:")))
             {
                 var split = parm.IndexOf('=');
