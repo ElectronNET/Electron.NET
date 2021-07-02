@@ -16,6 +16,7 @@ ElectronNET.API:
 * Breaking API Changes (from native Electron 13.1.5): 
    - `Shell.MoveItemToTrashAsync` renamed with `Shell.TrashItemAsync`  
    - The deprecated extension APIs have been removed: `BrowserWindow.GetAllExtensionsAsync()`, `BrowserWindow.RemoveExtension()`, `BrowserWindow.AddExtensionAsync()`. Use the session APIs instead: `Session.GetAllExtensionsAsync()`, `Session.RemoveExtension()`, `Session.LoadExtensionAsync()`.  
+* New Feature: singleInstance handle command line arguments [\#520](https://github.com/ElectronNET/Electron.NET/issues/520)  
 * New Feature: Add WebContents [insertCSS](https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options) functionality (thanks [nfichter](https://github.com/nfichter)) [\#559](https://github.com/ElectronNET/Electron.NET/pull/559)  
 * New Feature: Allow IpcMain to send IPC messages to BrowserViews (thanks [nfichter](https://github.com/nfichter)) [\#560](https://github.com/ElectronNET/Electron.NET/pull/560)  
 * New Feature: Add support for proxies that require basic username/password authentication (thanks [nfichter](https://github.com/nfichter)) [\#561](https://github.com/ElectronNET/Electron.NET/pull/561)  
