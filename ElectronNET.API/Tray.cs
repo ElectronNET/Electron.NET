@@ -23,12 +23,9 @@ namespace ElectronNET.API
             {
                 if (_click == null)
                 {
-                    BridgeConnector.On("tray-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _click(trayClickEventArgs, bounds);
+                        _click(result.eventArgs, result.bounds);
                     });
 
                     BridgeConnector.Emit("register-tray-click", GetHashCode());
@@ -55,12 +52,9 @@ namespace ElectronNET.API
             {
                 if (_rightClick == null)
                 {
-                    BridgeConnector.On("tray-right-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-right-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _rightClick(trayClickEventArgs, bounds);
+                        _rightClick(result.eventArgs, result.bounds);
                     });
 
                     BridgeConnector.Emit("register-tray-right-click", GetHashCode());
@@ -87,12 +81,9 @@ namespace ElectronNET.API
             {
                 if (_doubleClick == null)
                 {
-                    BridgeConnector.On("tray-double-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-double-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _doubleClick(trayClickEventArgs, bounds);
+                        _doubleClick(result.eventArgs, result.bounds);
                     });
 
                     BridgeConnector.Emit("register-tray-double-click", GetHashCode());

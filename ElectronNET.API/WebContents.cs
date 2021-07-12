@@ -34,7 +34,7 @@ namespace ElectronNET.API
             {
                 if (_crashed == null)
                 {
-                    BridgeConnector.On("webContents-crashed" + Id, (killed) =>
+                    BridgeConnector.On<bool>("webContents-crashed" + Id, (killed) =>
                     {
                         _crashed((bool)killed);
                     });
@@ -115,11 +115,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
 
-            BridgeConnector.On("webContents-getPrinters-completed", (printers) =>
+            BridgeConnector.On<PrinterInfo[]>("webContents-getPrinters-completed", (printers) =>
             {
                 BridgeConnector.Off("webContents-getPrinters-completed");
 
-                taskCompletionSource.SetResult(((Newtonsoft.Json.Linq.JArray)printers).ToObject<PrinterInfo[]>());
+                taskCompletionSource.SetResult(printers);
             });
 
             BridgeConnector.Emit("webContents-getPrinters", Id);
@@ -136,7 +136,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.On("webContents-print-completed", (success) =>
+            BridgeConnector.On<bool>("webContents-print-completed", (success) =>
             {
                 BridgeConnector.Off("webContents-print-completed");
                 taskCompletionSource.SetResult((bool)success);
@@ -167,7 +167,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.On("webContents-printToPDF-completed", (success) =>
+            BridgeConnector.On<bool>("webContents-printToPDF-completed", (success) =>
             {
                 BridgeConnector.Off("webContents-printToPDF-completed");
                 taskCompletionSource.SetResult((bool)success);
@@ -195,7 +195,7 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
 
             var eventString = "webContents-getUrl" + Id;
-            BridgeConnector.On(eventString, (url) =>
+            BridgeConnector.On<string>(eventString, (url) =>
             {
                 BridgeConnector.Off(eventString);
                 taskCompletionSource.SetResult((string)url);
@@ -247,7 +247,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.On("webContents-loadURL-error" + Id, (error) =>
+            BridgeConnector.On<string>("webContents-loadURL-error" + Id, (error) =>
             {
                 BridgeConnector.Off("webContents-loadURL-error" + Id);
                 taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));

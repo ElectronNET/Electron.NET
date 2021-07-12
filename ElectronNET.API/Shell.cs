@@ -63,7 +63,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.On("shell-openPathCompleted", (errorMessage) =>
+            BridgeConnector.On<string>("shell-openPathCompleted", (errorMessage) =>
             {
                 BridgeConnector.Off("shell-openPathCompleted");
 
@@ -97,7 +97,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.On("shell-openExternalCompleted", (error) =>
+            BridgeConnector.On<string>("shell-openExternalCompleted", (error) =>
             {
                 BridgeConnector.Off("shell-openExternalCompleted");
 
@@ -125,7 +125,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.On("shell-trashItem-completed", (success) =>
+            BridgeConnector.On<bool>("shell-trashItem-completed", (success) =>
             {
                 BridgeConnector.Off("shell-trashItem-completed");
 
@@ -156,7 +156,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.On("shell-writeShortcutLinkCompleted", (success) =>
+            BridgeConnector.On<bool>("shell-writeShortcutLinkCompleted", (success) =>
             {
                 BridgeConnector.Off("shell-writeShortcutLinkCompleted");
 
@@ -178,14 +178,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
 
-            BridgeConnector.On("shell-readShortcutLinkCompleted", (shortcutDetails) =>
+            BridgeConnector.On<ShortcutDetails>("shell-readShortcutLinkCompleted", (shortcutDetails) =>
             {
                 BridgeConnector.Off("shell-readShortcutLinkCompleted");
-
-                var shortcutObject = shortcutDetails as JObject;
-                var details = shortcutObject?.ToObject<ShortcutDetails>();
-
-                taskCompletionSource.SetResult(details);
+                taskCompletionSource.SetResult(shortcutDetails);
             });
 
             BridgeConnector.Emit("shell-readShortcutLink", shortcutPath);

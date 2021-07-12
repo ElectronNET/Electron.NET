@@ -10,7 +10,7 @@ namespace ElectronNET.WebApp
     {
         public static void Main(string[] args)
         {
-            Debugger.Launch();
+            //Debugger.Launch();
             CreateWebHostBuilder(args).Build().Run();
         }
 
