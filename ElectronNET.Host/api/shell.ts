@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { shell } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('shell-showItemInFolder', (fullPath) => {
         shell.showItemInFolder(fullPath);
@@ -31,10 +32,17 @@ export = (socket: SocketIO.Socket) => {
         electronSocket.emit('shell-openExternalCompleted', result);
     });
 
-    socket.on('shell-moveItemToTrash', (fullPath, deleteOnFail) => {
-        const success = shell.moveItemToTrash(fullPath, deleteOnFail);
+    socket.on('shell-trashItem', async (fullPath, deleteOnFail) => {
+        let success = false;
 
-        electronSocket.emit('shell-moveItemToTrashCompleted', success);
+        try {
+            await shell.trashItem(fullPath);
+            success = true;
+        } catch (error) {
+            success = false;    
+        }
+
+        electronSocket.emit('shell-trashItem-completed', success);
     });
 
     socket.on('shell-beep', () => {

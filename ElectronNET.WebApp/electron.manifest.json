@@ -8,8 +8,8 @@
   "build": {
     "appId": "com.electronnetapidemos.app",
     "productName": "ElectronNET API Demos",
-    "copyright": "Copyright � 2019",
-    "buildVersion": "5.22.12",
+    "copyright": "Copyright � 2019-2021",
+    "buildVersion": "13.5.1",
     "compression": "maximum",
     "win": {
       "icon": "Assets/electron.ico",

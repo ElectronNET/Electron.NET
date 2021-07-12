@@ -1,17 +1,28 @@
+import { Socket } from 'net';
 import { BrowserView } from 'electron';
 const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
 let browserView: BrowserView, electronSocket;
+const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
-const browserViewApi = (socket: SocketIO.Socket) => {
+const browserViewApi = (socket: Socket) => {
     electronSocket = socket;
 
     socket.on('createBrowserView', (options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
-            options = { ...options, webPreferences: { nodeIntegration: true } };
+            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
 
         browserView = new BrowserView(options);
         browserView['id'] = browserViews.length + 1;
+
+        if (options.proxy) {
+            browserView.webContents.session.setProxy({proxyRules: options.proxy});
+        }
+
+        if (options.proxy && options.proxyCredentials) {
+            proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
+        }
+
         browserViews.push(browserView);
 
         electronSocket.emit('BrowserViewCreated', browserView['id']);

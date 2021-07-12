@@ -6,8 +6,20 @@ const windows = (global['browserWindows'] = global['browserWindows'] || []);
 let readyToShowWindowsIds = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
+const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
 module.exports = (socket, app) => {
     electronSocket = socket;
+    app.on('login', (event, webContents, request, authInfo, callback) => {
+        if (authInfo.isProxy) {
+            let proxy = `${authInfo.host}:${authInfo.port}`;
+            if (proxy in proxyToCredentialsMap && proxyToCredentialsMap[proxy].split(':').length === 2) {
+                event.preventDefault();
+                let user = proxyToCredentialsMap[proxy].split(':')[0];
+                let pass = proxyToCredentialsMap[proxy].split(':')[1];
+                callback(user, pass);
+            }
+        }
+    });
     socket.on('register-browserWindow-ready-to-show', (id) => {
         if (readyToShowWindowsIds.includes(id)) {
             readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
@@ -165,10 +177,10 @@ module.exports = (socket, app) => {
     });
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
-            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true } };
+            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
         }
         else if (!options.webPreferences) {
-            options = { ...options, webPreferences: { nodeIntegration: true } };
+            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
@@ -182,6 +194,12 @@ module.exports = (socket, app) => {
         }
         else {
             window = new electron_1.BrowserWindow(options);
+        }
+        if (options.proxy) {
+            window.webContents.session.setProxy({ proxyRules: options.proxy });
+        }
+        if (options.proxy && options.proxyCredentials) {
+            proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
         window.on('ready-to-show', () => {
             if (readyToShowWindowsIds.includes(window.id)) {
@@ -576,21 +594,6 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
-    });
-    socket.on('browserWindowAddExtension', (path) => {
-        const extensionName = electron_1.BrowserWindow.addExtension(path);
-        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
-    });
-    socket.on('browserWindowRemoveExtension', (name) => {
-        electron_1.BrowserWindow.removeExtension(name);
-    });
-    socket.on('browserWindowGetExtensions', () => {
-        const extensionsList = electron_1.BrowserWindow.getExtensions();
-        const chromeExtensionInfo = [];
-        Object.keys(extensionsList).forEach(key => {
-            chromeExtensionInfo.push(extensionsList[key]);
-        });
-        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
         getWindowById(id).setBrowserView(browserView_1.browserViewMediateService(browserViewId));

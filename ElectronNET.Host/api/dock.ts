@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { app, Menu } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
 
     socket.on('dock-bounce', (type) => {

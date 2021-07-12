@@ -1,6 +1,7 @@
+import { Socket } from 'net';
 let electronSocket;
 
-export = (socket: SocketIO.Socket, app: Electron.App) => {
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
 
     socket.on('appCommandLineAppendSwitch', (the_switch: string, value: string) => {

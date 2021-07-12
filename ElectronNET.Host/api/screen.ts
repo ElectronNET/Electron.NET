@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { screen } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('register-screen-display-added', (id) => {
         screen.on('display-added', (event, display) => {

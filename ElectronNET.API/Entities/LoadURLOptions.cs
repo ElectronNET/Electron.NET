@@ -26,5 +26,11 @@
         /// Extra headers for the request.
         /// </summary>
         public string ExtraHeaders { get; set; }
+
+        /// <summary>
+        /// PostData Object for the request.
+        /// Can be <see cref="UploadRawData"/>, <see cref="UploadFile"/> or <see cref="Blob"/>
+        /// </summary>
+        public IPostData[] PostData { get; set; }
     }
 }

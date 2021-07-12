@@ -375,6 +375,81 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("webContents-session-setUserAgent", Id, userAgent, acceptLanguages);
         }
 
+        /// <summary>
+        /// The keys are the extension names and each value is an object containing name and version properties.
+        /// Note: This API cannot be called before the ready event of the app module is emitted.
+        /// </summary>
+        /// <returns></returns>
+        public Task<ChromeExtensionInfo[]> GetAllExtensionsAsync()
+        {
+            var taskCompletionSource = new TaskCompletionSource<ChromeExtensionInfo[]>();
+
+            BridgeConnector.Socket.On("webContents-session-getAllExtensions-completed", (extensionslist) =>
+            {
+                BridgeConnector.Socket.Off("webContents-session-getAllExtensions-completed");
+                var chromeExtensionInfos = ((JArray)extensionslist).ToObject<ChromeExtensionInfo[]>();
+
+                taskCompletionSource.SetResult(chromeExtensionInfos);
+            });
+
+            BridgeConnector.Socket.Emit("webContents-session-getAllExtensions", Id);
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Remove Chrome extension with the specified name.
+        /// Note: This API cannot be called before the ready event of the app module is emitted.
+        /// </summary>
+        /// <param name="name">Name of the Chrome extension to remove</param>
+        public void RemoveExtension(string name)
+        {
+            BridgeConnector.Socket.Emit("webContents-session-removeExtension", Id, name);
+        }
+
+        /// <summary>
+        /// resolves when the extension is loaded.
+        ///
+        /// This method will raise an exception if the extension could not be loaded.If
+        /// there are warnings when installing the extension (e.g. if the extension requests
+        /// an API that Electron does not support) then they will be logged to the console.
+        ///
+        /// Note that Electron does not support the full range of Chrome extensions APIs.
+        /// See Supported Extensions APIs for more details on what is supported.
+        ///
+        /// Note that in previous versions of Electron, extensions that were loaded would be
+        /// remembered for future runs of the application.This is no longer the case:
+        /// `loadExtension` must be called on every boot of your app if you want the
+        /// extension to be loaded.
+        ///
+        /// This API does not support loading packed (.crx) extensions.
+        ///
+        ///** Note:** This API cannot be called before the `ready` event of the `app` module
+        /// is emitted.
+        ///
+        ///** Note:** Loading extensions into in-memory(non-persistent) sessions is not supported and will throw an error.
+        /// </summary>
+        /// <param name="path">Path to the Chrome extension</param>
+        /// <param name="allowFileAccess">Whether to allow the extension to read local files over `file://` protocol and
+        /// inject content scripts into `file://` pages. This is required e.g. for loading
+        /// devtools extensions on `file://` URLs. Defaults to false.</param>
+        /// <returns></returns>
+        public Task<Extension> LoadExtensionAsync(string path, bool allowFileAccess = false)
+        {
+            var taskCompletionSource = new TaskCompletionSource<Extension>();
+
+            BridgeConnector.Socket.On("webContents-session-loadExtension-completed", (extension) =>
+            {
+                BridgeConnector.Socket.Off("webContents-session-loadExtension-completed");
+
+                taskCompletionSource.SetResult(((JObject)extension).ToObject<Extension>());
+            });
+
+            BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess);
+
+            return taskCompletionSource.Task;
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

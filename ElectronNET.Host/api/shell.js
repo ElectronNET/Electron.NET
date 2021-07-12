@@ -25,9 +25,16 @@ module.exports = (socket) => {
         }
         electronSocket.emit('shell-openExternalCompleted', result);
     });
-    socket.on('shell-moveItemToTrash', (fullPath, deleteOnFail) => {
-        const success = electron_1.shell.moveItemToTrash(fullPath, deleteOnFail);
-        electronSocket.emit('shell-moveItemToTrashCompleted', success);
+    socket.on('shell-trashItem', async (fullPath, deleteOnFail) => {
+        let success = false;
+        try {
+            await electron_1.shell.trashItem(fullPath);
+            success = true;
+        }
+        catch (error) {
+            success = false;
+        }
+        electronSocket.emit('shell-trashItem-completed', success);
     });
     socket.on('shell-beep', () => {
         electron_1.shell.beep();

@@ -1,7 +1,8 @@
 import { globalShortcut } from 'electron';
+import { Socket } from 'net';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {

@@ -1,6 +1,8 @@
+import { Socket } from "net";
+
 let isQuitWindowAllClosed = true, electronSocket;
 let appWindowAllClosedEventId;
-export = (socket: SocketIO.Socket, app: Electron.App) => {
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
 
     // By default, quit when all windows are closed
@@ -184,12 +186,12 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
     });
 
     socket.on('appRequestSingleInstanceLock', () => {
-        app.on('second-instance', (args, workingDirectory) => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
-        });
-
         const success = app.requestSingleInstanceLock();
         electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
+
+        app.on('second-instance', (event, args = [], workingDirectory = '') => {
+            electronSocket.emit('secondInstance', [args, workingDirectory]);
+        });
     });
 
     socket.on('appHasSingleInstanceLock', () => {

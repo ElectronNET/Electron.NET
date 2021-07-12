@@ -1,3 +1,4 @@
+import { Socket } from 'net';
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 import { browserViewMediateService } from './browserView';
 const path = require('path');
@@ -5,8 +6,23 @@ const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['br
 let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
-export = (socket: SocketIO.Socket, app: Electron.App) => {
+const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
+
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
+
+    app.on('login', (event, webContents, request, authInfo, callback) => {
+        if (authInfo.isProxy) {
+            let proxy = `${authInfo.host}:${authInfo.port}`
+            if (proxy in proxyToCredentialsMap && proxyToCredentialsMap[proxy].split(':').length === 2) {
+                event.preventDefault()
+                let user = proxyToCredentialsMap[proxy].split(':')[0]
+                let pass = proxyToCredentialsMap[proxy].split(':')[1]
+                callback(user, pass)
+            }
+        }
+    })
+
     socket.on('register-browserWindow-ready-to-show', (id) => {
         if (readyToShowWindowsIds.includes(id)) {
             readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
@@ -195,9 +211,9 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('createBrowserWindow', (options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
-            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true } };
+            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
         } else if (!options.webPreferences) {
-            options = { ...options, webPreferences: { nodeIntegration: true } };
+            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
 
         // we dont want to recreate the window when watch is ready.
@@ -211,6 +227,14 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
             }
         } else {
             window = new BrowserWindow(options);
+        }
+
+        if (options.proxy) {
+            window.webContents.session.setProxy({proxyRules: options.proxy});
+        }
+
+        if (options.proxy && options.proxyCredentials) {
+            proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
 
         window.on('ready-to-show', () => {
@@ -744,27 +768,6 @@ export = (socket: SocketIO.Socket, app: Electron.App) => {
 
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id).setVibrancy(type);
-    });
-
-    socket.on('browserWindowAddExtension', (path) => {
-        const extensionName = BrowserWindow.addExtension(path);
-
-        electronSocket.emit('browserWindow-addExtension-completed', extensionName);
-    });
-
-    socket.on('browserWindowRemoveExtension', (name) => {
-        BrowserWindow.removeExtension(name);
-    });
-
-    socket.on('browserWindowGetExtensions', () => {
-        const extensionsList = BrowserWindow.getExtensions();
-        const chromeExtensionInfo = [];
-
-        Object.keys(extensionsList).forEach(key => {
-            chromeExtensionInfo.push(extensionsList[key]);
-        });
-
-        electronSocket.emit('browserWindow-getExtensions-completed', chromeExtensionInfo);
     });
 
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {

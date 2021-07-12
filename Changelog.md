@@ -1,6 +1,30 @@
 # Not released
 
-# 11.5.2
+# 13.5.1
+
+ElectronNET.CLI:
+
+* New Feature: Using exit code instead of seek for the term 'error' (thanks [TSrgy](https://github.com/TSrgy)) [\#562](https://github.com/ElectronNET/Electron.NET/pull/562)  
+* Fixed bug: Allow for property overrides to be passed in (thanks [danatcofo](https://github.com/danatcofo)) [\#531](https://github.com/ElectronNET/Electron.NET/pull/531)  
+Use `/p:propertyName=value` or `/property:propertyName=value` to pass in property overrides. This is equivalent to the `-p:` option documented here: [https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)  
+* Fixed bug: Add ability to pass an argument for "Version" for both the "dotnet publish" and "electron-builder" commands (thanks [tub5](https://github.com/tub5)) [\#546](https://github.com/ElectronNET/Electron.NET/pull/546)  
+* Fixed bug: Version flag not persisting with the referenced executable (thanks [tub5](https://github.com/tub5)) [\#585](https://github.com/ElectronNET/Electron.NET/pull/585)  
+* Fixed bug: Changes PublishSingleFile default to false for NET5 compatibility (thanks [cristiangiagante](https://github.com/cristiangiagante)) [\#570](https://github.com/ElectronNET/Electron.NET/pull/570)  
+  
+ElectronNET.API:  
+  
+* New Feature: Native Electron 13.1.5 support, but not all new features (we search contributors)   
+* Breaking API Changes (from native Electron 13.1.5): 
+   - `Shell.MoveItemToTrashAsync` renamed with `Shell.TrashItemAsync`  
+   - The deprecated extension APIs have been removed: `BrowserWindow.GetAllExtensionsAsync()`, `BrowserWindow.RemoveExtension()`, `BrowserWindow.AddExtensionAsync()`. Use the session APIs instead: `Session.GetAllExtensionsAsync()`, `Session.RemoveExtension()`, `Session.LoadExtensionAsync()`.  
+* New Feature: singleInstance handle command line arguments [\#520](https://github.com/ElectronNET/Electron.NET/issues/520)  
+* New Feature: Add WebContents [insertCSS](https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options) functionality (thanks [nfichter](https://github.com/nfichter)) [\#559](https://github.com/ElectronNET/Electron.NET/pull/559)  
+* New Feature: Allow IpcMain to send IPC messages to BrowserViews (thanks [nfichter](https://github.com/nfichter)) [\#560](https://github.com/ElectronNET/Electron.NET/pull/560)  
+* New Feature: Add support for proxies that require basic username/password authentication (thanks [nfichter](https://github.com/nfichter)) [\#561](https://github.com/ElectronNET/Electron.NET/pull/561)  
+* New Feature: Add PostData to LoadURLOptions to allow http-posts in LoadURL calls (thanks [Funkrusha](https://github.com/Funkrusha)) [\#547](https://github.com/ElectronNET/Electron.NET/pull/547)  
+* Fixed bug: Fix splash screen interaction causing crashes, ghost dragging, and resizable behavior #540 (thanks [MiniguyBrendan](https://github.com/MiniguyBrendan)) [\#540](https://github.com/ElectronNET/Electron.NET/pull/540)  
+* Fixed bug: Vibrancy serialization fix (thanks [tantumalice](https://github.com/tantumalice)) [\#573](https://github.com/ElectronNET/Electron.NET/pull/573)  
+
 
 # Released
 

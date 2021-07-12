@@ -1,7 +1,8 @@
+import { Socket } from 'net';
 import { BrowserWindow, dialog } from 'electron';
 let electronSocket;
 
-export = (socket: SocketIO.Socket) => {
+export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('showMessageBox', async (browserWindow, options, guid) => {
         if ('id' in browserWindow) {
