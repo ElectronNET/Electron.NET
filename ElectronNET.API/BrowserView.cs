@@ -31,29 +31,24 @@ namespace ElectronNET.API
         /// 
         /// (experimental)
         /// </summary>
-        public Rectangle Bounds
+        public Task<Rectangle> GetBoundsAsync()
         {
-            get
-            {
-                return Task.Run<Rectangle>(() =>
+                var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+
+                BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
                 {
-                    var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+                    BridgeConnector.Socket.Off("browserView-getBounds-reply");
+                    taskCompletionSource.SetResult((Rectangle)result);
+                });
 
-                    BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult((Rectangle)result);
-                    });
+                BridgeConnector.Socket.Emit("browserView-getBounds", Id);
 
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
+            return taskCompletionSource.Task;
+        }
 
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
-            }
+        public void SetBounds(Rectangle value)
+        {
+            BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
         }
 
         /// <summary>

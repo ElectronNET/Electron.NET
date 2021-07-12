@@ -473,11 +473,6 @@ namespace ElectronNET.API
         /// </summary>
         public string Name
         {
-            [Obsolete("Use the asynchronous version NameAsync instead")]
-            get
-            {
-                return NameAsync.Result;
-            }
             set
             {
                 BridgeConnector.Socket.Emit("appSetName", value);
@@ -492,25 +487,19 @@ namespace ElectronNET.API
         /// should usually also specify a productName field, which is your application's full capitalized name, and
         /// which will be preferred over name by Electron.
         /// </summary>
-        public Task<string> NameAsync
+        public Task<string> GetNameAsync()
         {
-            get
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("appGetNameCompleted", (result) =>
             {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
+                BridgeConnector.Socket.Off("appGetNameCompleted");
+                taskCompletionSource.SetResult((string)result);
+            });
 
-                    BridgeConnector.Socket.On("appGetNameCompleted", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("appGetNameCompleted");
-                        taskCompletionSource.SetResult((string)result);
-                    });
+            BridgeConnector.Socket.Emit("appGetName");
 
-                    BridgeConnector.Socket.Emit("appGetName");
-
-                    return taskCompletionSource.Task;
-                });
-            }
+            return taskCompletionSource.Task;
         }
 
 
@@ -1571,11 +1560,6 @@ namespace ElectronNET.API
         /// </summary>
         public string UserAgentFallback
         {
-            [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
-            get
-            {
-                return UserAgentFallbackAsync.Result;
-            }
             set
             {
                 BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
@@ -1590,25 +1574,19 @@ namespace ElectronNET.API
         /// custom value as early as possible in your app's initialization to ensure that your overridden value
         /// is used.
         /// </summary>
-        public Task<string> UserAgentFallbackAsync
+        public Task<string> GetUserAgentFallbackAsync()
         {
-            get
+            var taskCompletionSource = new TaskCompletionSource<string>();
+
+            BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
             {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
+                BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
+                taskCompletionSource.SetResult((string)result);
+            });
 
-                    BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
-                        taskCompletionSource.SetResult((string)result);
-                    });
+            BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 
-                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
-
-                    return taskCompletionSource.Task;
-                });
-            }
+            return taskCompletionSource.Task;
         }
 
         internal void PreventQuit()
