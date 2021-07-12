@@ -538,6 +538,9 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Manually set that the app is ready instead of using the UseElectron extension method
+        /// </summary>
         public static void ManuallySetIsReady()
         {
             Instance.IsReady = true;
