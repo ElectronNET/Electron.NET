@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ElectronNET.WebApp
 {
@@ -9,6 +10,7 @@ namespace ElectronNET.WebApp
     {
         public static void Main(string[] args)
         {
+            //Debugger.Launch();
             CreateWebHostBuilder(args).Build().Run();
         }
 

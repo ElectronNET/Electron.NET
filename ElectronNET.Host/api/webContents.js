@@ -141,7 +141,7 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, [cookie, cause, removed]);
+            electronSocket.emit('webContents-session-cookies-changed' + id, new { cookie: cookie, cause: cause, removed: removed });
         });
     });
     socket.on('webContents-session-cookies-get', async (id, filter, guid) => {

@@ -48,7 +48,7 @@ namespace ElectronNET.API
         {
             GenerateIDsForDefinedActions(notificationOptions);
 
-            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
+            BridgeConnector.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
         }
 
         private static void GenerateIDsForDefinedActions(NotificationOptions notificationOptions)
@@ -60,9 +60,9 @@ namespace ElectronNET.API
                 notificationOptions.ShowID = Guid.NewGuid().ToString();
                 isActionDefined = true;
 
-                BridgeConnector.Socket.Off("NotificationEventShow");
-                BridgeConnector.Socket.On("NotificationEventShow", (id) => {
-                    _notificationOptions.Single(x => x.ShowID == id.ToString()).OnShow();
+                BridgeConnector.Off("NotificationEventShow");
+                BridgeConnector.On<string>("NotificationEventShow", (id) => {
+                    _notificationOptions.Single(x => x.ShowID == id).OnShow();
                 });
             }
 
@@ -71,9 +71,9 @@ namespace ElectronNET.API
                 notificationOptions.ClickID = Guid.NewGuid().ToString();
                 isActionDefined = true;
 
-                BridgeConnector.Socket.Off("NotificationEventClick");
-                BridgeConnector.Socket.On("NotificationEventClick", (id) => {
-                    _notificationOptions.Single(x => x.ClickID == id.ToString()).OnClick();
+                BridgeConnector.Off("NotificationEventClick");
+                BridgeConnector.On<string>("NotificationEventClick", (id) => {
+                    _notificationOptions.Single(x => x.ClickID == id).OnClick();
                 });
             }
 
@@ -82,8 +82,8 @@ namespace ElectronNET.API
                 notificationOptions.CloseID = Guid.NewGuid().ToString();
                 isActionDefined = true;
 
-                BridgeConnector.Socket.Off("NotificationEventClose");
-                BridgeConnector.Socket.On("NotificationEventClose", (id) => {
+                BridgeConnector.Off("NotificationEventClose");
+                BridgeConnector.On<string>("NotificationEventClose", (id) => {
                     _notificationOptions.Single(x => x.CloseID == id.ToString()).OnClose();
                 });
             }
@@ -93,10 +93,9 @@ namespace ElectronNET.API
                 notificationOptions.ReplyID = Guid.NewGuid().ToString();
                 isActionDefined = true;
 
-                BridgeConnector.Socket.Off("NotificationEventReply");
-                BridgeConnector.Socket.On("NotificationEventReply", (args) => {
-                    var arguments = ((JArray)args).ToObject<string[]>();
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnReply(arguments[1].ToString());
+                BridgeConnector.Off("NotificationEventReply");
+                BridgeConnector.On<string[]>("NotificationEventReply", (args) => {
+                    _notificationOptions.Single(x => x.ReplyID == args[0].ToString()).OnReply(args[1].ToString());
                 });
             }
 
@@ -105,10 +104,9 @@ namespace ElectronNET.API
                 notificationOptions.ActionID = Guid.NewGuid().ToString();
                 isActionDefined = true;
 
-                BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On("NotificationEventAction", (args) => {
-                    var arguments = ((JArray)args).ToObject<string[]>();
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnAction(arguments[1].ToString());
+                BridgeConnector.Off("NotificationEventAction");
+                BridgeConnector.On<string[]>("NotificationEventAction", (args) => {
+                    _notificationOptions.Single(x => x.ReplyID == args[0].ToString()).OnAction(args[1].ToString());
                 });
             }
 
@@ -126,13 +124,13 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("notificationIsSupportedComplete", (isSupported) =>
+            BridgeConnector.On<bool>("notificationIsSupportedComplete", (isSupported) =>
             {
-                BridgeConnector.Socket.Off("notificationIsSupportedComplete");
+                BridgeConnector.Off("notificationIsSupportedComplete");
                 taskCompletionSource.SetResult((bool)isSupported);
             });
 
-            BridgeConnector.Socket.Emit("notificationIsSupported");
+            BridgeConnector.Emit("notificationIsSupported");
 
             return taskCompletionSource.Task;
         }

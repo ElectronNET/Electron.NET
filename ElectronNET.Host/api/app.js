@@ -151,7 +151,7 @@ module.exports = (socket, app) => {
         const success = app.requestSingleInstanceLock();
         electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
         app.on('second-instance', (event, args = [], workingDirectory = '') => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
+            electronSocket.emit('secondInstance', new { args: args, workingDirectory: workingDirectory });
         });
     });
     socket.on('appHasSingleInstanceLock', () => {

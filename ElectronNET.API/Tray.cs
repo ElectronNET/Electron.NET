@@ -23,15 +23,12 @@ namespace ElectronNET.API
             {
                 if (_click == null)
                 {
-                    BridgeConnector.Socket.On("tray-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _click(trayClickEventArgs, bounds);
+                        _click(result.eventArgs, result.bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
+                    BridgeConnector.Emit("register-tray-click", GetHashCode());
                 }
                 _click += value;
             }
@@ -40,7 +37,7 @@ namespace ElectronNET.API
                 _click -= value;
 
                 if (_click == null)
-                    BridgeConnector.Socket.Off("tray-click-event" + GetHashCode());
+                    BridgeConnector.Off("tray-click-event" + GetHashCode());
             }
         }
 
@@ -55,15 +52,12 @@ namespace ElectronNET.API
             {
                 if (_rightClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-right-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-right-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _rightClick(trayClickEventArgs, bounds);
+                        _rightClick(result.eventArgs, result.bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
+                    BridgeConnector.Emit("register-tray-right-click", GetHashCode());
                 }
                 _rightClick += value;
             }
@@ -72,7 +66,7 @@ namespace ElectronNET.API
                 _rightClick -= value;
 
                 if (_rightClick == null)
-                    BridgeConnector.Socket.Off("tray-right-click-event" + GetHashCode());
+                    BridgeConnector.Off("tray-right-click-event" + GetHashCode());
             }
         }
 
@@ -87,15 +81,12 @@ namespace ElectronNET.API
             {
                 if (_doubleClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-double-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.On<TrayClickEventResponse>("tray-double-click-event" + GetHashCode(), (result) =>
                     {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _doubleClick(trayClickEventArgs, bounds);
+                        _doubleClick(result.eventArgs, result.bounds);
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
+                    BridgeConnector.Emit("register-tray-double-click", GetHashCode());
                 }
                 _doubleClick += value;
             }
@@ -104,7 +95,7 @@ namespace ElectronNET.API
                 _doubleClick -= value;
 
                 if (_doubleClick == null)
-                    BridgeConnector.Socket.Off("tray-double-click-event" + GetHashCode());
+                    BridgeConnector.Off("tray-double-click-event" + GetHashCode());
             }
         }
 
@@ -119,12 +110,12 @@ namespace ElectronNET.API
             {
                 if (_balloonShow == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-show-event" + GetHashCode(), () =>
+                    BridgeConnector.On("tray-balloon-show-event" + GetHashCode(), () =>
                     {
                         _balloonShow();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-show", GetHashCode());
+                    BridgeConnector.Emit("register-tray-balloon-show", GetHashCode());
                 }
                 _balloonShow += value;
             }
@@ -133,7 +124,7 @@ namespace ElectronNET.API
                 _balloonShow -= value;
 
                 if (_balloonShow == null)
-                    BridgeConnector.Socket.Off("tray-balloon-show-event" + GetHashCode());
+                    BridgeConnector.Off("tray-balloon-show-event" + GetHashCode());
             }
         }
 
@@ -148,12 +139,12 @@ namespace ElectronNET.API
             {
                 if (_balloonClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-click-event" + GetHashCode(), () =>
+                    BridgeConnector.On("tray-balloon-click-event" + GetHashCode(), () =>
                     {
                         _balloonClick();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-click", GetHashCode());
+                    BridgeConnector.Emit("register-tray-balloon-click", GetHashCode());
                 }
                 _balloonClick += value;
             }
@@ -162,7 +153,7 @@ namespace ElectronNET.API
                 _balloonClick -= value;
 
                 if (_balloonClick == null)
-                    BridgeConnector.Socket.Off("tray-balloon-click-event" + GetHashCode());
+                    BridgeConnector.Off("tray-balloon-click-event" + GetHashCode());
             }
         }
 
@@ -178,12 +169,12 @@ namespace ElectronNET.API
             {
                 if (_balloonClosed == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-closed-event" + GetHashCode(), () =>
+                    BridgeConnector.On("tray-balloon-closed-event" + GetHashCode(), () =>
                     {
                         _balloonClosed();
                     });
 
-                    BridgeConnector.Socket.Emit("register-tray-balloon-closed", GetHashCode());
+                    BridgeConnector.Emit("register-tray-balloon-closed", GetHashCode());
                 }
                 _balloonClosed += value;
             }
@@ -192,7 +183,7 @@ namespace ElectronNET.API
                 _balloonClosed -= value;
 
                 if (_balloonClosed == null)
-                    BridgeConnector.Socket.Off("tray-balloon-closed-event" + GetHashCode());
+                    BridgeConnector.Off("tray-balloon-closed-event" + GetHashCode());
             }
         }
 
@@ -251,12 +242,12 @@ namespace ElectronNET.API
         public void Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
             _items.Clear();
             _items.AddRange(menuItems);
 
-            BridgeConnector.Socket.Off("trayMenuItemClicked");
-            BridgeConnector.Socket.On("trayMenuItemClicked", (id) =>
+            BridgeConnector.Off("trayMenuItemClicked");
+            BridgeConnector.On<string>("trayMenuItemClicked", (id) =>
             {
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
@@ -269,7 +260,7 @@ namespace ElectronNET.API
         /// <param name="image">The image.</param>
         public void Show(string image)
         {
-            BridgeConnector.Socket.Emit("create-tray", image);
+            BridgeConnector.Emit("create-tray", image);
         }
 
         /// <summary>
@@ -277,7 +268,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Destroy()
         {
-            BridgeConnector.Socket.Emit("tray-destroy");
+            BridgeConnector.Emit("tray-destroy");
             _items.Clear();
         }
 
@@ -287,7 +278,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public void SetImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setImage", image);
+            BridgeConnector.Emit("tray-setImage", image);
         }
 
         /// <summary>
@@ -296,7 +287,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public void SetPressedImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setPressedImage", image);
+            BridgeConnector.Emit("tray-setPressedImage", image);
         }
 
         /// <summary>
@@ -305,7 +296,7 @@ namespace ElectronNET.API
         /// <param name="toolTip"></param>
         public void SetToolTip(string toolTip)
         {
-            BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
+            BridgeConnector.Emit("tray-setToolTip", toolTip);
         }
 
         /// <summary>
@@ -314,7 +305,7 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         public void SetTitle(string title)
         {
-            BridgeConnector.Socket.Emit("tray-setTitle", title);
+            BridgeConnector.Emit("tray-setTitle", title);
         }
 
         /// <summary>
@@ -323,7 +314,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void DisplayBalloon(DisplayBalloonOptions options)
         {
-            BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -334,14 +325,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("tray-isDestroyedCompleted", (isDestroyed) =>
+            BridgeConnector.On<bool>("tray-isDestroyedCompleted", (isDestroyed) =>
             {
-                BridgeConnector.Socket.Off("tray-isDestroyedCompleted");
+                BridgeConnector.Off("tray-isDestroyedCompleted");
 
                 taskCompletionSource.SetResult((bool)isDestroyed);
             });
 
-            BridgeConnector.Socket.Emit("tray-isDestroyed");
+            BridgeConnector.Emit("tray-isDestroyed");
 
             return taskCompletionSource.Task;
         }

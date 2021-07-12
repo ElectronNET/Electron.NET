@@ -7,12 +7,12 @@ module.exports = (socket) => {
         if ('id' in browserWindow) {
             const window = electron_1.BrowserWindow.fromId(browserWindow.id);
             const messageBoxReturnValue = await electron_1.dialog.showMessageBox(window, options);
-            electronSocket.emit('showMessageBoxComplete' + guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
+            electronSocket.emit('showMessageBoxComplete' + guid, new { response: messageBoxReturnValue.response, checked: messageBoxReturnValue.checkboxChecked });
         }
         else {
             const id = guid || options;
             const messageBoxReturnValue = await electron_1.dialog.showMessageBox(browserWindow);
-            electronSocket.emit('showMessageBoxComplete' + id, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
+            electronSocket.emit('showMessageBoxComplete' + id, new { response: messageBoxReturnValue.response, checked: messageBoxReturnValue.checkboxChecked });
         }
     });
     socket.on('showOpenDialog', async (browserWindow, options, guid) => {
