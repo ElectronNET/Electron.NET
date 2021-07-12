@@ -34,19 +34,19 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
-        private string _paramTarget = "target";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramElectronArch = "electron-arch";
-        private string _paramElectronParams = "electron-params";
-        private string _paramElectronVersion = "electron-version";
-        private string _paramOutputDirectory = "relative-path";
-        private string _paramAbsoluteOutput = "absolute-path";
-        private string _paramPackageJson = "package-json";
-        private string _paramForceNodeInstall = "install-modules";
-        private string _manifest = "manifest";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramVersion = "Version";
+        private const string _paramTarget = "target";
+        private const string _paramDotNetConfig = "dotnet-configuration";
+        private const string _paramElectronArch = "electron-arch";
+        private const string _paramElectronParams = "electron-params";
+        private const string _paramElectronVersion = "electron-version";
+        private const string _paramOutputDirectory = "relative-path";
+        private const string _paramAbsoluteOutput = "absolute-path";
+        private const string _paramPackageJson = "package-json";
+        private const string _paramForceNodeInstall = "install-modules";
+        private const string _manifest = "manifest";
+        private const string _paramPublishReadyToRun = "PublishReadyToRun";
+        private const string _paramPublishSingleFile = "PublishSingleFile";
+        private const string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
         {
@@ -105,7 +105,7 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
                 
-                var dotNetPublishFlags = GetDotNetPublishFlags(parser);
+                var dotNetPublishFlags = GetDotNetPublishFlags(parser, "false", "false");
 
                 var command =
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
@@ -214,12 +214,12 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
+        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
-                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
-                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "true"},
+                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : defaultReadyToRun},
+                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : defaultSingleFile},
             };
 
             if (parser.Arguments.ContainsKey(_paramVersion))

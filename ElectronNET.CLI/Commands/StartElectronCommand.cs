@@ -22,14 +22,12 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
-        private string _aspCoreProjectPath = "project-path";
-        private string _arguments = "args";
-        private string _manifest = "manifest";
-        private string _clearCache = "clear-cache";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramTarget = "target";
+        private const string _aspCoreProjectPath = "project-path";
+        private const string _arguments = "args";
+        private const string _manifest = "manifest";
+        private const string _clearCache = "clear-cache";
+        private const string _paramDotNetConfig = "dotnet-configuration";
+        private const string _paramTarget = "target";
 
         public Task<bool> ExecuteAsync()
         {
@@ -62,27 +60,11 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
+
+                var dotNetPublishFlags = BuildCommand.GetDotNetPublishFlags(parser, "false", "false");
+
                 var resultCode = 0;
 
-                string publishReadyToRun = "/p:PublishReadyToRun=";
-                if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
-                {
-                    publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
-                }
-                else
-                {
-                    publishReadyToRun += "true";
-                }
-
-                string publishSingleFile = "/p:PublishSingleFile=";
-                if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
-                {
-                    publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
-                }
-                else
-                {
-                    publishSingleFile += "true";
-                }
 
                 // If target is specified as a command line argument, use it.
                 // Format is the same as the build command.
@@ -107,7 +89,7 @@ namespace ElectronNET.CLI.Commands
 
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)
