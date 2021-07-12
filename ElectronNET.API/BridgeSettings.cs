@@ -20,5 +20,11 @@
         /// The web port.
         /// </value>
         public static string WebPort { get; internal set; }
+
+        public static void InitializePorts(int socketPort, int webPort)
+        {
+            SocketPort = socketPort.ToString();
+            WebPort    = webPort.ToString();
+        }
     }
 }

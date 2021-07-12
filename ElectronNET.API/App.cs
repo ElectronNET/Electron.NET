@@ -396,6 +396,7 @@ namespace ElectronNET.API
                 }
             }
         }
+
         private bool _isReady = false;
 
         /// <summary>
@@ -535,6 +536,11 @@ namespace ElectronNET.API
 
                 return _app;
             }
+        }
+
+        public static void ManuallySetIsReady()
+        {
+            Instance.IsReady = true;
         }
 
         private static App _app;
