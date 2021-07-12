@@ -233,7 +233,7 @@ namespace ElectronNET.API
             BridgeConnector.On<int>("webContents-session-getCacheSize-completed" + guid, (size) =>
             {
                 BridgeConnector.Off("webContents-session-getCacheSize-completed" + guid);
-                taskCompletionSource.SetResult((int)size);
+                taskCompletionSource.SetResult(size);
             });
 
             BridgeConnector.Emit("webContents-session-getCacheSize", Id, guid);

@@ -76,7 +76,7 @@ namespace ElectronNET.API
                 BridgeConnector.On<bool>("appCommandLineHasSwitchCompleted", (result) =>
                 {
                     BridgeConnector.Off("appCommandLineHasSwitchCompleted");
-                    taskCompletionSource.SetResult((bool)result);
+                    taskCompletionSource.SetResult(result);
                 });
 
                 BridgeConnector.Emit("appCommandLineHasSwitch", switchName);

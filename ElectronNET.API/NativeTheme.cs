@@ -131,7 +131,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
                 BridgeConnector.Off("nativeTheme-shouldUseDarkColors-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseDarkColors);
+                taskCompletionSource.SetResult(shouldUseDarkColors);
             });
 
             BridgeConnector.Emit("nativeTheme-shouldUseDarkColors");
@@ -150,7 +150,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
                 BridgeConnector.Off("nativeTheme-shouldUseHighContrastColors-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
+                taskCompletionSource.SetResult(shouldUseHighContrastColors);
             });
 
             BridgeConnector.Emit("nativeTheme-shouldUseHighContrastColors");
@@ -169,7 +169,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
                 BridgeConnector.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
+                taskCompletionSource.SetResult(shouldUseInvertedColorScheme);
             });
 
             BridgeConnector.Emit("nativeTheme-shouldUseInvertedColorScheme");

@@ -127,7 +127,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("notificationIsSupportedComplete", (isSupported) =>
             {
                 BridgeConnector.Off("notificationIsSupportedComplete");
-                taskCompletionSource.SetResult((bool)isSupported);
+                taskCompletionSource.SetResult(isSupported);
             });
 
             BridgeConnector.Emit("notificationIsSupported");

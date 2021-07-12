@@ -329,7 +329,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("tray-isDestroyedCompleted");
 
-                taskCompletionSource.SetResult((bool)isDestroyed);
+                taskCompletionSource.SetResult(isDestroyed);
             });
 
             BridgeConnector.Emit("tray-isDestroyed");

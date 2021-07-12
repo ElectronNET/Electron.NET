@@ -23,7 +23,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("autoUpdater-autoDownload-get-reply", (result) =>
             {
                 BridgeConnector.Off("autoUpdater-autoDownload-get-reply");
-                taskCompletionSource.SetResult((bool)result);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Emit("autoUpdater-autoDownload-get");
@@ -43,7 +43,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("autoUpdater-autoInstallOnAppQuit-get-reply", (result) =>
             {
                 BridgeConnector.Off("autoUpdater-autoInstallOnAppQuit-get-reply");
-                taskCompletionSource.SetResult((bool)result);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Emit("autoUpdater-autoInstallOnAppQuit-get");
@@ -64,7 +64,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("autoUpdater-allowPrerelease-get-reply", (result) =>
             {
                 BridgeConnector.Off("autoUpdater-allowPrerelease-get-reply");
-                taskCompletionSource.SetResult((bool)result);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Emit("autoUpdater-allowPrerelease-get");
@@ -83,7 +83,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("autoUpdater-fullChangelog-get-reply", (result) =>
             {
                 BridgeConnector.Off("autoUpdater-fullChangelog-get-reply");
-                taskCompletionSource.SetResult((bool)result);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Emit("autoUpdater-fullChangelog-get");
@@ -98,7 +98,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("autoUpdater-allowDowngrade-get-reply", (result) =>
             {
                 BridgeConnector.Off("autoUpdater-allowDowngrade-get-reply");
-                taskCompletionSource.SetResult((bool)result);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Emit("autoUpdater-allowDowngrade-get");

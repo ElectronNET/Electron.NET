@@ -1,15 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace ElectronNET.API.Entities {
-
-    public class CookieRemovedResponse
-    {
-        public Cookie cookie {get;set;}
-
-        public CookieChangedCause cause { get; set; }
-        public bool removed { get; set; }
-    }
+namespace ElectronNET.API.Entities
+{
 
     /// <summary>
     /// The cause of the change 

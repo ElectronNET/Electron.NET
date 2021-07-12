@@ -154,7 +154,7 @@ namespace ElectronNET.API
                 BridgeConnector.On<bool>("dock-isVisible-completed", (isVisible) =>
                 {
                     BridgeConnector.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult((bool) isVisible);
+                    taskCompletionSource.SetResult(isVisible);
                 });
 
                 BridgeConnector.Emit("dock-isVisible");

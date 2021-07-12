@@ -340,7 +340,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.On<bool>("app-accessibility-support-changed" + GetHashCode(), (state) =>
                     {
-                        _accessibilitySupportChanged((bool)state);
+                        _accessibilitySupportChanged(state);
                     });
 
                     BridgeConnector.Emit("register-app-accessibility-support-changed-event", GetHashCode());

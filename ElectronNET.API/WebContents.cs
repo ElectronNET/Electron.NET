@@ -36,7 +36,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.On<bool>("webContents-crashed" + Id, (killed) =>
                     {
-                        _crashed((bool)killed);
+                        _crashed(killed);
                     });
 
                     BridgeConnector.Emit("register-webContents-crashed", Id);
@@ -139,7 +139,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("webContents-print-completed", (success) =>
             {
                 BridgeConnector.Off("webContents-print-completed");
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult(success);
             });
 
             if(options == null)
@@ -170,7 +170,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("webContents-printToPDF-completed", (success) =>
             {
                 BridgeConnector.Off("webContents-printToPDF-completed");
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult(success);
             });
 
             if(options == null)
@@ -198,7 +198,7 @@ namespace ElectronNET.API
             BridgeConnector.On<string>(eventString, (url) =>
             {
                 BridgeConnector.Off(eventString);
-                taskCompletionSource.SetResult((string)url);
+                taskCompletionSource.SetResult(url);
             });
 
             BridgeConnector.Emit("webContents-getUrl", Id);

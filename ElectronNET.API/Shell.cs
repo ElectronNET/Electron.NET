@@ -67,7 +67,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("shell-openPathCompleted");
 
-                taskCompletionSource.SetResult((string) errorMessage);
+                taskCompletionSource.SetResult(errorMessage);
             });
 
             BridgeConnector.Emit("shell-openPath", path);
@@ -101,7 +101,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("shell-openExternalCompleted");
 
-                taskCompletionSource.SetResult((string) error);
+                taskCompletionSource.SetResult(error);
             });
 
             if (options == null)
@@ -129,7 +129,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("shell-trashItem-completed");
 
-                taskCompletionSource.SetResult((bool) success);
+                taskCompletionSource.SetResult(success);
             });
 
             BridgeConnector.Emit("shell-trashItem", fullPath);
@@ -160,7 +160,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("shell-writeShortcutLinkCompleted");
 
-                taskCompletionSource.SetResult((bool) success);
+                taskCompletionSource.SetResult(success);
             });
 
             BridgeConnector.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));

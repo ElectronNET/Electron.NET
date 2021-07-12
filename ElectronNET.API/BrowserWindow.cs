@@ -956,7 +956,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isFocused-completed", (isFocused) => {
                 BridgeConnector.Off("browserWindow-isFocused-completed");
 
-                taskCompletionSource.SetResult((bool)isFocused);
+                taskCompletionSource.SetResult(isFocused);
             });
 
             BridgeConnector.Emit("browserWindowIsFocused", Id);
@@ -975,7 +975,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isDestroyed-completed", (isDestroyed) => {
                 BridgeConnector.Off("browserWindow-isDestroyed-completed");
 
-                taskCompletionSource.SetResult((bool)isDestroyed);
+                taskCompletionSource.SetResult(isDestroyed);
             });
 
             BridgeConnector.Emit("browserWindowIsDestroyed", Id);
@@ -1018,7 +1018,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isVisible-completed", (isVisible) => {
                 BridgeConnector.Off("browserWindow-isVisible-completed");
 
-                taskCompletionSource.SetResult((bool)isVisible);
+                taskCompletionSource.SetResult(isVisible);
             });
 
             BridgeConnector.Emit("browserWindowIsVisible", Id);
@@ -1037,7 +1037,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isModal-completed", (isModal) => {
                 BridgeConnector.Off("browserWindow-isModal-completed");
 
-                taskCompletionSource.SetResult((bool)isModal);
+                taskCompletionSource.SetResult(isModal);
             });
 
             BridgeConnector.Emit("browserWindowIsModal", Id);
@@ -1072,7 +1072,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMaximized-completed", (isMaximized) => {
                 BridgeConnector.Off("browserWindow-isMaximized-completed");
 
-                taskCompletionSource.SetResult((bool)isMaximized);
+                taskCompletionSource.SetResult(isMaximized);
             });
 
             BridgeConnector.Emit("browserWindowIsMaximized", Id);
@@ -1107,7 +1107,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMinimized-completed", (isMinimized) => {
                 BridgeConnector.Off("browserWindow-isMinimized-completed");
 
-                taskCompletionSource.SetResult((bool)isMinimized);
+                taskCompletionSource.SetResult(isMinimized);
             });
 
             BridgeConnector.Emit("browserWindowIsMinimized", Id);
@@ -1134,7 +1134,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isFullScreen-completed", (isFullScreen) => {
                 BridgeConnector.Off("browserWindow-isFullScreen-completed");
 
-                taskCompletionSource.SetResult((bool)isFullScreen);
+                taskCompletionSource.SetResult(isFullScreen);
             });
 
             BridgeConnector.Emit("browserWindowIsFullScreen", Id);
@@ -1427,7 +1427,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isResizable-completed", (resizable) => {
                 BridgeConnector.Off("browserWindow-isResizable-completed");
 
-                taskCompletionSource.SetResult((bool)resizable);
+                taskCompletionSource.SetResult(resizable);
             });
 
             BridgeConnector.Emit("browserWindowIsResizable", Id);
@@ -1457,7 +1457,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMovable-completed", (movable) => {
                 BridgeConnector.Off("browserWindow-isMovable-completed");
 
-                taskCompletionSource.SetResult((bool)movable);
+                taskCompletionSource.SetResult(movable);
             });
 
             BridgeConnector.Emit("browserWindowIsMovable", Id);
@@ -1487,7 +1487,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMinimizable-completed", (minimizable) => {
                 BridgeConnector.Off("browserWindow-isMinimizable-completed");
 
-                taskCompletionSource.SetResult((bool)minimizable);
+                taskCompletionSource.SetResult(minimizable);
             });
 
             BridgeConnector.Emit("browserWindowIsMinimizable", Id);
@@ -1517,7 +1517,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMaximizable-completed", (maximizable) => {
                 BridgeConnector.Off("browserWindow-isMaximizable-completed");
 
-                taskCompletionSource.SetResult((bool)maximizable);
+                taskCompletionSource.SetResult(maximizable);
             });
 
             BridgeConnector.Emit("browserWindowIsMaximizable", Id);
@@ -1545,7 +1545,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isFullScreenable-completed", (fullscreenable) => {
                 BridgeConnector.Off("browserWindow-isFullScreenable-completed");
 
-                taskCompletionSource.SetResult((bool)fullscreenable);
+                taskCompletionSource.SetResult(fullscreenable);
             });
 
             BridgeConnector.Emit("browserWindowIsFullScreenable", Id);
@@ -1575,7 +1575,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isClosable-completed", (closable) => {
                 BridgeConnector.Off("browserWindow-isClosable-completed");
 
-                taskCompletionSource.SetResult((bool)closable);
+                taskCompletionSource.SetResult(closable);
             });
 
             BridgeConnector.Emit("browserWindowIsClosable", Id);
@@ -1635,7 +1635,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isAlwaysOnTop-completed", (isAlwaysOnTop) => {
                 BridgeConnector.Off("browserWindow-isAlwaysOnTop-completed");
 
-                taskCompletionSource.SetResult((bool)isAlwaysOnTop);
+                taskCompletionSource.SetResult(isAlwaysOnTop);
             });
 
             BridgeConnector.Emit("browserWindowIsAlwaysOnTop", Id);
@@ -1801,7 +1801,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isKiosk-completed", (isKiosk) => {
                 BridgeConnector.Off("browserWindow-isKiosk-completed");
 
-                taskCompletionSource.SetResult((bool)isKiosk);
+                taskCompletionSource.SetResult(isKiosk);
             });
 
             BridgeConnector.Emit("browserWindowIsKiosk", Id);
@@ -1878,7 +1878,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isDocumentEdited-completed", (edited) => {
                 BridgeConnector.Off("browserWindow-isDocumentEdited-completed");
 
-                taskCompletionSource.SetResult((bool)edited);
+                taskCompletionSource.SetResult(edited);
             });
 
             BridgeConnector.Emit("browserWindowIsDocumentEdited", Id);
@@ -2021,7 +2021,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-hasShadow-completed", (hasShadow) => {
                 BridgeConnector.Off("browserWindow-hasShadow-completed");
 
-                taskCompletionSource.SetResult((bool)hasShadow);
+                taskCompletionSource.SetResult(hasShadow);
             });
 
             BridgeConnector.Emit("browserWindowHasShadow", Id);
@@ -2057,7 +2057,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindowSetThumbarButtons-completed", (success) => {
                 BridgeConnector.Off("browserWindowSetThumbarButtons-completed");
 
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult(success);
             });
 
             thumbarButtons.AddThumbarButtonsId();
@@ -2137,7 +2137,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMenuBarAutoHide-completed", (isMenuBarAutoHide) => {
                 BridgeConnector.Off("browserWindow-isMenuBarAutoHide-completed");
 
-                taskCompletionSource.SetResult((bool)isMenuBarAutoHide);
+                taskCompletionSource.SetResult(isMenuBarAutoHide);
             });
 
             BridgeConnector.Emit("browserWindowIsMenuBarAutoHide", Id);
@@ -2166,7 +2166,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isMenuBarVisible-completed", (isMenuBarVisible) => {
                 BridgeConnector.Off("browserWindow-isMenuBarVisible-completed");
 
-                taskCompletionSource.SetResult((bool)isMenuBarVisible);
+                taskCompletionSource.SetResult(isMenuBarVisible);
             });
 
             BridgeConnector.Emit("browserWindowIsMenuBarVisible", Id);
@@ -2198,7 +2198,7 @@ namespace ElectronNET.API
             BridgeConnector.On<bool>("browserWindow-isVisibleOnAllWorkspaces-completed", (isVisibleOnAllWorkspaces) => {
                 BridgeConnector.Off("browserWindow-isVisibleOnAllWorkspaces-completed");
 
-                taskCompletionSource.SetResult((bool)isVisibleOnAllWorkspaces);
+                taskCompletionSource.SetResult(isVisibleOnAllWorkspaces);
             });
 
             BridgeConnector.Emit("browserWindowIsVisibleOnAllWorkspaces", Id);
