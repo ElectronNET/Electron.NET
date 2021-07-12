@@ -17,12 +17,12 @@ namespace ElectronNET.API
             {
                 if (_lockScreen == null)
                 {
-                    BridgeConnector.Socket.On("pm-lock-screen" , () =>
+                    BridgeConnector.On("pm-lock-screen" , () =>
                     {
                         _lockScreen();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-lock-screen");
+                    BridgeConnector.Emit("register-pm-lock-screen");
                 }
                 _lockScreen += value;
             }
@@ -31,7 +31,7 @@ namespace ElectronNET.API
                 _lockScreen -= value;
 
                 if (_lockScreen == null)
-                    BridgeConnector.Socket.Off("pm-lock-screen");
+                    BridgeConnector.Off("pm-lock-screen");
             }
         }
 
@@ -46,12 +46,12 @@ namespace ElectronNET.API
             {
                 if (_unlockScreen == null)
                 {
-                    BridgeConnector.Socket.On("pm-unlock-screen", () =>
+                    BridgeConnector.On("pm-unlock-screen", () =>
                     {
                         _unlockScreen();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-unlock-screen");
+                    BridgeConnector.Emit("register-pm-unlock-screen");
                 }
                 _unlockScreen += value;
             }
@@ -60,7 +60,7 @@ namespace ElectronNET.API
                 _unlockScreen -= value;
 
                 if (_unlockScreen == null)
-                    BridgeConnector.Socket.Off("pm-unlock-screen");
+                    BridgeConnector.Off("pm-unlock-screen");
             }
         }
 
@@ -75,12 +75,12 @@ namespace ElectronNET.API
             {
                 if (_suspend == null)
                 {
-                    BridgeConnector.Socket.On("pm-suspend", () =>
+                    BridgeConnector.On("pm-suspend", () =>
                     {
                         _suspend();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-suspend");
+                    BridgeConnector.Emit("register-pm-suspend");
                 }
                 _suspend += value;
             }
@@ -89,7 +89,7 @@ namespace ElectronNET.API
                 _suspend -= value;
 
                 if (_suspend == null)
-                    BridgeConnector.Socket.Off("pm-suspend");
+                    BridgeConnector.Off("pm-suspend");
             }
         }
 
@@ -104,12 +104,12 @@ namespace ElectronNET.API
             {
                 if (_resume == null)
                 {
-                    BridgeConnector.Socket.On("pm-resume", () =>
+                    BridgeConnector.On("pm-resume", () =>
                     {
                         _resume();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-resume");
+                    BridgeConnector.Emit("register-pm-resume");
                 }
                 _resume += value;
             }
@@ -118,7 +118,7 @@ namespace ElectronNET.API
                 _resume -= value;
 
                 if (_resume == null)
-                    BridgeConnector.Socket.Off("pm-resume");
+                    BridgeConnector.Off("pm-resume");
             }
         }
 
@@ -133,12 +133,12 @@ namespace ElectronNET.API
             {
                 if (_onAC == null)
                 {
-                    BridgeConnector.Socket.On("pm-on-ac", () =>
+                    BridgeConnector.On("pm-on-ac", () =>
                     {
                         _onAC();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-on-ac");
+                    BridgeConnector.Emit("register-pm-on-ac");
                 }
                 _onAC += value;
             }
@@ -147,7 +147,7 @@ namespace ElectronNET.API
                 _onAC -= value;
 
                 if (_onAC == null)
-                    BridgeConnector.Socket.Off("pm-on-ac");
+                    BridgeConnector.Off("pm-on-ac");
             }
         }
 
@@ -162,12 +162,12 @@ namespace ElectronNET.API
             {
                 if (_onBattery == null)
                 {
-                    BridgeConnector.Socket.On("pm-on-battery", () =>
+                    BridgeConnector.On("pm-on-battery", () =>
                     {
                         _onBattery();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-on-battery");
+                    BridgeConnector.Emit("register-pm-on-battery");
                 }
                 _onBattery += value;
             }
@@ -176,7 +176,7 @@ namespace ElectronNET.API
                 _onBattery -= value;
 
                 if (_onBattery == null)
-                    BridgeConnector.Socket.Off("pm-on-battery");
+                    BridgeConnector.Off("pm-on-battery");
             }
         }
 
@@ -195,12 +195,12 @@ namespace ElectronNET.API
             {
                 if (_shutdown == null)
                 {
-                    BridgeConnector.Socket.On("pm-shutdown", () =>
+                    BridgeConnector.On("pm-shutdown", () =>
                     {
                         _shutdown();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-shutdown");
+                    BridgeConnector.Emit("register-pm-shutdown");
                 }
                 _shutdown += value;
             }
@@ -209,7 +209,7 @@ namespace ElectronNET.API
                 _shutdown -= value;
 
                 if (_shutdown == null)
-                    BridgeConnector.Socket.Off("pm-on-shutdown");
+                    BridgeConnector.Off("pm-on-shutdown");
             }
         }
 

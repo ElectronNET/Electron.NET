@@ -44,12 +44,12 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () =>
+            BridgeConnector.On("shell-showItemInFolderCompleted", () =>
             {
-                BridgeConnector.Socket.Off("shell-showItemInFolderCompleted");
+                BridgeConnector.Off("shell-showItemInFolderCompleted");
             });
 
-            BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
+            BridgeConnector.Emit("shell-showItemInFolder", fullPath);
 
             return taskCompletionSource.Task;
         }
@@ -63,14 +63,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("shell-openPathCompleted", (errorMessage) =>
+            BridgeConnector.On("shell-openPathCompleted", (errorMessage) =>
             {
-                BridgeConnector.Socket.Off("shell-openPathCompleted");
+                BridgeConnector.Off("shell-openPathCompleted");
 
                 taskCompletionSource.SetResult((string) errorMessage);
             });
 
-            BridgeConnector.Socket.Emit("shell-openPath", path);
+            BridgeConnector.Emit("shell-openPath", path);
 
             return taskCompletionSource.Task;
         }
@@ -97,20 +97,20 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("shell-openExternalCompleted", (error) =>
+            BridgeConnector.On("shell-openExternalCompleted", (error) =>
             {
-                BridgeConnector.Socket.Off("shell-openExternalCompleted");
+                BridgeConnector.Off("shell-openExternalCompleted");
 
                 taskCompletionSource.SetResult((string) error);
             });
 
             if (options == null)
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url);
+                BridgeConnector.Emit("shell-openExternal", url);
             }
             else
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
+                BridgeConnector.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
             }
 
             return taskCompletionSource.Task;
@@ -125,14 +125,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-trashItem-completed", (success) =>
+            BridgeConnector.On("shell-trashItem-completed", (success) =>
             {
-                BridgeConnector.Socket.Off("shell-trashItem-completed");
+                BridgeConnector.Off("shell-trashItem-completed");
 
                 taskCompletionSource.SetResult((bool) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
+            BridgeConnector.Emit("shell-trashItem", fullPath);
 
             return taskCompletionSource.Task;
         }
@@ -142,7 +142,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Beep()
         {
-            BridgeConnector.Socket.Emit("shell-beep");
+            BridgeConnector.Emit("shell-beep");
         }
 
         /// <summary>
@@ -156,14 +156,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-writeShortcutLinkCompleted", (success) =>
+            BridgeConnector.On("shell-writeShortcutLinkCompleted", (success) =>
             {
-                BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
+                BridgeConnector.Off("shell-writeShortcutLinkCompleted");
 
                 taskCompletionSource.SetResult((bool) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
 
             return taskCompletionSource.Task;
         }
@@ -178,9 +178,9 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
 
-            BridgeConnector.Socket.On("shell-readShortcutLinkCompleted", (shortcutDetails) =>
+            BridgeConnector.On("shell-readShortcutLinkCompleted", (shortcutDetails) =>
             {
-                BridgeConnector.Socket.Off("shell-readShortcutLinkCompleted");
+                BridgeConnector.Off("shell-readShortcutLinkCompleted");
 
                 var shortcutObject = shortcutDetails as JObject;
                 var details = shortcutObject?.ToObject<ShortcutDetails>();
@@ -188,7 +188,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(details);
             });
 
-            BridgeConnector.Socket.Emit("shell-readShortcutLink", shortcutPath);
+            BridgeConnector.Emit("shell-readShortcutLink", shortcutPath);
 
             return taskCompletionSource.Task;
         }

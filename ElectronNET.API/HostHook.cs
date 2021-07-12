@@ -47,13 +47,13 @@ namespace ElectronNET.API
         /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.On(socketEventName + "Error" + oneCallguid, (result) =>
+            BridgeConnector.On<string>(socketEventName + "Error" + oneCallguid, (result) =>
             {
-                BridgeConnector.Socket.Off(socketEventName + "Error" + oneCallguid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+                BridgeConnector.Off(socketEventName + "Error" + oneCallguid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
             });
 
-            BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
+            BridgeConnector.Emit(socketEventName, arguments, oneCallguid);
         }
 
         /// <summary>
@@ -68,52 +68,21 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
+            BridgeConnector.On<string>(socketEventName + "Error" + guid, (result) =>
             {
-                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+                BridgeConnector.Off(socketEventName + "Error" + guid);
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
                 taskCompletionSource.SetException(new Exception($"Host Hook Exception {result}"));
             });
 
-            BridgeConnector.Socket.On(socketEventName + "Complete" + guid, (result) =>
+            BridgeConnector.On<T>(socketEventName + "Complete" + guid, (result) =>
             {
-                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
-                BridgeConnector.Socket.Off(socketEventName + "Complete" + guid);
-                T data = default;
-
-                try
-                {
-                    if (result.GetType().IsValueType || result is string)
-                    {
-                        data = (T)result;
-                    }
-                    else
-                    {
-                        var token = JToken.Parse(result.ToString());
-                        if (token is JArray)
-                        {
-                            data = token.ToObject<T>();
-                        }
-                        else if (token is JObject)
-                        {
-                            data = token.ToObject<T>();
-                        }
-                        else
-                        {
-                            data = (T)result;
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    taskCompletionSource.SetException(exception);
-                    //throw new InvalidCastException("Return value does not match with the generic type.", exception);
-                }
-
-                taskCompletionSource.SetResult(data);
+                BridgeConnector.Off(socketEventName + "Error" + guid);
+                BridgeConnector.Off(socketEventName + "Complete" + guid);
+                taskCompletionSource.SetResult(result);
             });
 
-            BridgeConnector.Socket.Emit(socketEventName, arguments, guid);
+            BridgeConnector.Emit(socketEventName, arguments, guid);
 
             return taskCompletionSource.Task;
         }

@@ -35,20 +35,20 @@ namespace ElectronNET.API
         {
                 var taskCompletionSource = new TaskCompletionSource<Rectangle>();
 
-                BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
+                BridgeConnector.On<Rectangle>("browserView-getBounds-reply", (result) =>
                 {
-                    BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                    taskCompletionSource.SetResult((Rectangle)result);
+                    BridgeConnector.Off("browserView-getBounds-reply");
+                    taskCompletionSource.SetResult(result);
                 });
 
-                BridgeConnector.Socket.Emit("browserView-getBounds", Id);
+                BridgeConnector.Emit("browserView-getBounds", Id);
 
             return taskCompletionSource.Task;
         }
 
         public void SetBounds(Rectangle value)
         {
-            BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
+            BridgeConnector.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace ElectronNET.API
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
         public void SetBackgroundColor(string color)
         {
-            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
+            BridgeConnector.Emit("browserView-setBackgroundColor", Id, color);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

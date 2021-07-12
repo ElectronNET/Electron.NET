@@ -34,15 +34,12 @@ namespace ElectronNET.API
             {
                 if (_changed == null)
                 {
-                    BridgeConnector.Socket.On("webContents-session-cookies-changed" + Id, (args) =>
+                    BridgeConnector.On<CookieRemovedResponse>("webContents-session-cookies-changed" + Id, (args) =>
                     {
-                        Cookie cookie = ((JArray)args)[0].ToObject<Cookie>();
-                        CookieChangedCause cause = ((JArray)args)[1].ToObject<CookieChangedCause>();
-                        bool removed = ((JArray)args)[2].ToObject<bool>();
-                        _changed(cookie, cause, removed);
+                        _changed(args.cookie, args.cause, args.removed);
                     });
 
-                    BridgeConnector.Socket.Emit("register-webContents-session-cookies-changed", Id);
+                    BridgeConnector.Emit("register-webContents-session-cookies-changed", Id);
                 }
                 _changed += value;
             }
@@ -51,7 +48,7 @@ namespace ElectronNET.API
                 _changed -= value;
 
                 if (_changed == null)
-                    BridgeConnector.Socket.Off("webContents-session-cookies-changed" + Id);
+                    BridgeConnector.Off("webContents-session-cookies-changed" + Id);
             }
         }
 
@@ -68,15 +65,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<Cookie[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-cookies-get-completed" + guid, (cookies) =>
+            BridgeConnector.On<Cookie[]>("webContents-session-cookies-get-completed" + guid, (cookies) =>
             {
-                Cookie[] result = ((JArray)cookies).ToObject<Cookie[]>();
-
-                BridgeConnector.Socket.Off("webContents-session-cookies-get-completed" + guid);
-                taskCompletionSource.SetResult(result);
+                BridgeConnector.Off("webContents-session-cookies-get-completed" + guid);
+                taskCompletionSource.SetResult(cookies);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-cookies-get", Id, JObject.FromObject(filter, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-cookies-get", Id, JObject.FromObject(filter, _jsonSerializer), guid);
 
             return taskCompletionSource.Task;
         }
@@ -91,13 +86,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<object>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-cookies-set-completed" + guid, () =>
+            BridgeConnector.On("webContents-session-cookies-set-completed" + guid, () =>
             {
-                BridgeConnector.Socket.Off("webContents-session-cookies-set-completed" + guid);
+                BridgeConnector.Off("webContents-session-cookies-set-completed" + guid);
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-cookies-set", Id, JObject.FromObject(details, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-cookies-set", Id, JObject.FromObject(details, _jsonSerializer), guid);
 
             return taskCompletionSource.Task;
         }
@@ -113,13 +108,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<object>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-cookies-remove-completed" + guid, () =>
+            BridgeConnector.On("webContents-session-cookies-remove-completed" + guid, () =>
             {
-                BridgeConnector.Socket.Off("webContents-session-cookies-remove-completed" + guid);
+                BridgeConnector.Off("webContents-session-cookies-remove-completed" + guid);
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-cookies-remove", Id, url, name, guid);
+            BridgeConnector.Emit("webContents-session-cookies-remove", Id, url, name, guid);
 
             return taskCompletionSource.Task;
         }
@@ -133,13 +128,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<object>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-cookies-flushStore-completed" + guid, () =>
+            BridgeConnector.On("webContents-session-cookies-flushStore-completed" + guid, () =>
             {
-                BridgeConnector.Socket.Off("webContents-session-cookies-flushStore-completed" + guid);
+                BridgeConnector.Off("webContents-session-cookies-flushStore-completed" + guid);
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-cookies-flushStore", Id, guid);
+            BridgeConnector.Emit("webContents-session-cookies-flushStore", Id, guid);
 
             return taskCompletionSource.Task;
         }

@@ -94,7 +94,7 @@ namespace ElectronNET.API
         {
             var themeSource = themeSourceMode.GetDescription();
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
+            BridgeConnector.Emit("nativeTheme-themeSource", themeSource);
         }
 
         /// <summary>
@@ -105,16 +105,16 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
 
-            BridgeConnector.Socket.On("nativeTheme-themeSource-getCompleted", (themeSource) =>
+            BridgeConnector.On<string>("nativeTheme-themeSource-getCompleted", (themeSource) =>
             {
-                BridgeConnector.Socket.Off("nativeTheme-themeSource-getCompleted");
+                BridgeConnector.Off("nativeTheme-themeSource-getCompleted");
 
-                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)themeSource, true);
+                var themeSourceValue = Enum.Parse<ThemeSourceMode>(themeSource, true);
 
                 taskCompletionSource.SetResult(themeSourceValue);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
+            BridgeConnector.Emit("nativeTheme-themeSource-get");
 
             return taskCompletionSource.Task;
         }
@@ -128,13 +128,13 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseDarkColors-completed");
+            BridgeConnector.On<bool>("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
+                BridgeConnector.Off("nativeTheme-shouldUseDarkColors-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseDarkColors);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
+            BridgeConnector.Emit("nativeTheme-shouldUseDarkColors");
 
             return taskCompletionSource.Task;
         }
@@ -147,13 +147,13 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseHighContrastColors-completed");
+            BridgeConnector.On<bool>("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
+                BridgeConnector.Off("nativeTheme-shouldUseHighContrastColors-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
+            BridgeConnector.Emit("nativeTheme-shouldUseHighContrastColors");
 
             return taskCompletionSource.Task;
         }
@@ -166,13 +166,13 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
+            BridgeConnector.On<bool>("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
+                BridgeConnector.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");
+            BridgeConnector.Emit("nativeTheme-shouldUseInvertedColorScheme");
 
             return taskCompletionSource.Task;
         }
@@ -187,12 +187,12 @@ namespace ElectronNET.API
             {
                 if (_updated == null)
                 {
-                    BridgeConnector.Socket.On("nativeTheme-updated" + GetHashCode(), () =>
+                    BridgeConnector.On("nativeTheme-updated" + GetHashCode(), () =>
                     {
                         _updated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode());
+                    BridgeConnector.Emit("register-nativeTheme-updated-event", GetHashCode());
                 }
                 _updated += value;
             }
@@ -202,7 +202,7 @@ namespace ElectronNET.API
 
                 if (_updated == null)
                 {
-                    BridgeConnector.Socket.Off("nativeTheme-updated" + GetHashCode());
+                    BridgeConnector.Off("nativeTheme-updated" + GetHashCode());
                 }
             }
         }

@@ -57,13 +57,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("dock-bounce-completed", (id) =>
+                BridgeConnector.On<int>("dock-bounce-completed", (id) =>
                 {
-                    BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult((int) id);
+                    BridgeConnector.Off("dock-bounce-completed");
+                    taskCompletionSource.SetResult(id);
                 });
 
-                BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
+                BridgeConnector.Emit("dock-bounce", type.GetDescription());
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -76,7 +76,7 @@ namespace ElectronNET.API
         /// <param name="id">Id of the request.</param>
         public void CancelBounce(int id)
         {
-            BridgeConnector.Socket.Emit("dock-cancelBounce", id);
+            BridgeConnector.Emit("dock-cancelBounce", id);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace ElectronNET.API
         /// <param name="filePath"></param>
         public void DownloadFinished(string filePath)
         {
-            BridgeConnector.Socket.Emit("dock-downloadFinished", filePath);
+            BridgeConnector.Emit("dock-downloadFinished", filePath);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ElectronNET.API
         /// <param name="text"></param>
         public void SetBadge(string text)
         {
-            BridgeConnector.Socket.Emit("dock-setBadge", text);
+            BridgeConnector.Emit("dock-setBadge", text);
         }
 
         /// <summary>
@@ -109,13 +109,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("dock-getBadge-completed", (text) =>
+                BridgeConnector.On<string>("dock-getBadge-completed", (text) =>
                 {
-                    BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult((string) text);
+                    BridgeConnector.Off("dock-getBadge-completed");
+                    taskCompletionSource.SetResult(text);
                 });
 
-                BridgeConnector.Socket.Emit("dock-getBadge");
+                BridgeConnector.Emit("dock-getBadge");
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -127,7 +127,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Hide()
         {
-            BridgeConnector.Socket.Emit("dock-hide");
+            BridgeConnector.Emit("dock-hide");
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Show()
         {
-            BridgeConnector.Socket.Emit("dock-show");
+            BridgeConnector.Emit("dock-show");
         }
 
         /// <summary>
@@ -151,13 +151,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("dock-isVisible-completed", (isVisible) =>
+                BridgeConnector.On<bool>("dock-isVisible-completed", (isVisible) =>
                 {
-                    BridgeConnector.Socket.Off("dock-isVisible-completed");
+                    BridgeConnector.Off("dock-isVisible-completed");
                     taskCompletionSource.SetResult((bool) isVisible);
                 });
 
-                BridgeConnector.Socket.Emit("dock-isVisible");
+                BridgeConnector.Emit("dock-isVisible");
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -179,12 +179,12 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
-            BridgeConnector.Socket.Off("dockMenuItemClicked");
-            BridgeConnector.Socket.On("dockMenuItemClicked", (id) => {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
+            BridgeConnector.Off("dockMenuItemClicked");
+            BridgeConnector.On<string>("dockMenuItemClicked", (id) => {
+                MenuItem menuItem = _items.GetMenuItem(id);
                 menuItem?.Click();
             });
            
@@ -201,13 +201,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<Menu>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("dock-getMenu-completed", (menu) =>
+                BridgeConnector.On<Menu>("dock-getMenu-completed", (menu) =>
                 {
-                    BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(((JObject)menu).ToObject<Menu>());
+                    BridgeConnector.Off("dock-getMenu-completed");
+                    taskCompletionSource.SetResult(menu);
                 });
 
-                BridgeConnector.Socket.Emit("dock-getMenu");
+                BridgeConnector.Emit("dock-getMenu");
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -220,7 +220,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public void SetIcon(string image)
         {
-            BridgeConnector.Socket.Emit("dock-setIcon", image);
+            BridgeConnector.Emit("dock-setIcon", image);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

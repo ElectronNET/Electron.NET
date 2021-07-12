@@ -1,8 +1,5 @@
 ﻿namespace ElectronNET.API.Entities
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class JumpListSettings
     {
         /// <summary>

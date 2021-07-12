@@ -43,7 +43,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendSwitch(string the_switch, string value = "")
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", the_switch, value);
+            BridgeConnector.Emit("appCommandLineAppendSwitch", the_switch, value);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendArgument(string value)
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
+            BridgeConnector.Emit("appCommandLineAppendArgument", value);
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("appCommandLineHasSwitchCompleted", (result) =>
+                BridgeConnector.On<bool>("appCommandLineHasSwitchCompleted", (result) =>
                 {
-                    BridgeConnector.Socket.Off("appCommandLineHasSwitchCompleted");
+                    BridgeConnector.Off("appCommandLineHasSwitchCompleted");
                     taskCompletionSource.SetResult((bool)result);
                 });
 
-                BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName);
+                BridgeConnector.Emit("appCommandLineHasSwitch", switchName);
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
@@ -101,13 +101,13 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("appCommandLineGetSwitchValueCompleted", (result) =>
+                BridgeConnector.On<string>("appCommandLineGetSwitchValueCompleted", (result) =>
                 {
-                    BridgeConnector.Socket.Off("appCommandLineGetSwitchValueCompleted");
-                    taskCompletionSource.SetResult((string)result);
+                    BridgeConnector.Off("appCommandLineGetSwitchValueCompleted");
+                    taskCompletionSource.SetResult(result);
                 });
 
-                BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName);
+                BridgeConnector.Emit("appCommandLineGetSwitchValue", switchName);
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
