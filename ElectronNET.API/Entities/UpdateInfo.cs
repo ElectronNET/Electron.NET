@@ -23,7 +23,7 @@
         /// <summary>
         /// The release notes.
         /// </summary>
-        public ReleaseNoteInfo[] ReleaseNotes { get; set; } = new ReleaseNoteInfo[0];
+        public string ReleaseNotes { get; set; }
 
         /// <summary>
         /// 
