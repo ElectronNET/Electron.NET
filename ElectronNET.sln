@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp", "ElectronNET.WebApp\ElectronNET.WebApp.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE} = {CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.API", "ElectronNET.API\ElectronNET.API.csproj", "{A78157BA-B754-45F1-969F-D6A513CA0E72}"
 EndProject
