@@ -71,10 +71,10 @@ namespace ElectronNET.API
         public Task<bool> IsRegisteredAsync(string accelerator)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.On<bool>("globalShortcut-isRegisteredCompleted", (isRegistered) =>
+            
+            BridgeConnector.On<bool>("globalShortcut-isRegisteredCompleted" + accelerator.GetHashCode(), (isRegistered) =>
             {
-                BridgeConnector.Off("globalShortcut-isRegisteredCompleted");
+                BridgeConnector.Off("globalShortcut-isRegisteredCompleted" + accelerator.GetHashCode());
 
                 taskCompletionSource.SetResult(isRegistered);
             });

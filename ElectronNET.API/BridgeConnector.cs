@@ -10,12 +10,24 @@ namespace ElectronNET.API
         private static SocketIO _socket;
         private static object _syncRoot = new object();
 
-
         public static void Emit(string eventString, params object[] args)
         {
             //We don't care about waiting for the event to be emitted, so this doesn't need to be async 
 
-            Task.Run(() => Socket.EmitAsync(eventString, args));
+            Task.Run(async () =>
+            {
+                await Task.Yield();
+                if (App.SocketDebug)
+                {
+                    Console.WriteLine($"Sending event {eventString}");
+                }
+                await Socket.EmitAsync(eventString, args);
+
+                if (App.SocketDebug)
+                {
+                    Console.WriteLine($"Sent event {eventString}");
+                }
+            });
         }
 
         public static void Off(string eventString)                        => Socket.Off(eventString);

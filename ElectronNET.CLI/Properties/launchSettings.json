@@ -2,7 +2,7 @@
   "profiles": {
     "ElectronNET.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\" /watch"
+      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\""
     },
     "test": {
       "commandName": "Project",

@@ -11,7 +11,7 @@
     "Electron.NET App": {
       "commandName": "Executable",
       "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\net5.0\\dotnet-electronize-h5.exe",
-      "commandLineArgs": "start",
+      "commandLineArgs": "start /from-build-output $(SolutionDir)ElectronNET.WebApp\\bin\\$(Configuration)\\net5.0",
       "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
     },
     "IIS Express": {

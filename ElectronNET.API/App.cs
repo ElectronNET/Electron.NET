@@ -16,6 +16,11 @@ namespace ElectronNET.API
     public sealed class App
     {
         /// <summary>
+        /// Print every message sent to the socket
+        /// </summary>
+        public static bool SocketDebug { get; set; }
+
+        /// <summary>
         /// Emitted when all windows have been closed.
         /// <para/>
         /// If you do not subscribe to this event and all windows are closed, the default behavior is to quit
