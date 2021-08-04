@@ -296,6 +296,9 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
         });
+        apiProcess.stderr.on('data', (data) => {
+            console.log(`stderr: ${data.toString()}`);
+        });
     }
 }
 
@@ -322,6 +325,9 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         apiProcess.stdout.on('data', (data) => {
             console.log(`stdout: ${data.toString()}`);
+        });
+        apiProcess.stderr.on('data', (data) => {
+            console.log(`stderr: ${data.toString()}`);
         });
     }
 }
