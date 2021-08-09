@@ -28,7 +28,7 @@ namespace ElectronNET.CLI.Commands
         private const string _clearCache = "clear-cache";
         private const string _paramDotNetConfig = "dotnet-configuration";
         private const string _paramTarget = "target";
-        private const string _copyFromBuildDir = "from-build-output";
+        private const string _buildInsteadOfPublish = "simple-build";
 
         public Task<bool> ExecuteAsync()
         {
@@ -55,15 +55,11 @@ namespace ElectronNET.CLI.Commands
                 }
 
 
-                string fromOutDir = "";
+                bool buildInsteadOfPublish = false;
 
-                if (parser.Arguments.ContainsKey(_copyFromBuildDir))
+                if (parser.Arguments.ContainsKey(_buildInsteadOfPublish))
                 {
-                    string outDirPath = parser.Arguments[_copyFromBuildDir].First();
-                    if (Directory.Exists(outDirPath))
-                    {
-                        fromOutDir = Path.GetFullPath(outDirPath);
-                    }
+                    buildInsteadOfPublish = bool.Parse(parser.Arguments[_buildInsteadOfPublish].First());
                 }
 
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
@@ -100,32 +96,26 @@ namespace ElectronNET.CLI.Commands
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
-                if (string.IsNullOrEmpty(fromOutDir))
+                if (!buildInsteadOfPublish)
                 {
                     if (parser != null && !parser.Arguments.ContainsKey("watch"))
                     {
-                        resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --no-self-contained", aspCoreProjectPath);
-                    }
-                    
-                    if (resultCode != 0)
-                    {
-                        Console.WriteLine("Error occurred during dotnet publish: " + resultCode);
-                        return false;
+                        resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --no-self-contained /p:DisabledWarnings=true", aspCoreProjectPath);
                     }
                 }
                 else
                 {
-                    Directory.Delete(tempBinPath, true);
-                    Directory.CreateDirectory(tempBinPath);
-                    foreach(var file in Directory.EnumerateFiles(fromOutDir, "*", SearchOption.AllDirectories))
+                    if (parser != null && !parser.Arguments.ContainsKey("watch"))
                     {
-                        var targetFile   = file.Replace(fromOutDir, tempBinPath);
-                        var targetFolder = Path.GetDirectoryName(targetFile);
-                        if (!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
-                        File.Copy(file, targetFile);
+                        resultCode = ProcessHelper.CmdExecute($"dotnet build -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} /p:DisabledWarnings=true", aspCoreProjectPath);
                     }
                 }
 
+                if (resultCode != 0)
+                {
+                    Console.WriteLine("Error occurred during dotnet publish: " + resultCode);
+                    return false;
+                }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
