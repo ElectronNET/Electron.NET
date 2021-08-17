@@ -131,7 +131,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Point> GetCursorScreenPointAsync() 
         {
-            var taskCompletionSource = new TaskCompletionSource<Point>();
+            var taskCompletionSource = new TaskCompletionSource<Point>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Point>("screen-getCursorScreenPointCompleted", (point) =>
             {
@@ -151,7 +151,7 @@ namespace ElectronNET.API
         /// <returns>The height of the menu bar in pixels.</returns>
         public Task<int> GetMenuBarHeightAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int>();
+            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int>("screen-getMenuBarHeightCompleted", (height) =>
             {
@@ -171,7 +171,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Display> GetPrimaryDisplayAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Display>("screen-getPrimaryDisplayCompleted", (display) =>
             {
@@ -191,7 +191,7 @@ namespace ElectronNET.API
         /// <returns>An array of displays that are currently available.</returns>
         public Task<Display[]> GetAllDisplaysAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Display[]>();
+            var taskCompletionSource = new TaskCompletionSource<Display[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Display[]>("screen-getAllDisplaysCompleted", (displays) =>
             {
@@ -211,7 +211,7 @@ namespace ElectronNET.API
         /// <returns>The display nearest the specified point.</returns>
         public Task<Display> GetDisplayNearestPointAsync(Point point)
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Display>("screen-getDisplayNearestPointCompleted", (display) =>
             {
@@ -232,7 +232,7 @@ namespace ElectronNET.API
         /// <returns>The display that most closely intersects the provided bounds.</returns>
         public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle)
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Display>("screen-getDisplayMatching", (display) =>
             {

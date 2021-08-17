@@ -48,7 +48,7 @@ namespace ElectronNET.API
         /// <returns>An array of file paths chosen by the user</returns>
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
+            var taskCompletionSource = new TaskCompletionSource<string[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<string[]>("showOpenDialogComplete" + guid, (filePaths) =>
@@ -79,7 +79,7 @@ namespace ElectronNET.API
         /// <returns>Returns String, the path of the file chosen by the user, if a callback is provided it returns an empty string.</returns>
         public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<string>("showSaveDialogComplete" + guid, (filename) =>
@@ -148,7 +148,7 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, MessageBoxOptions messageBoxOptions)
         {
-            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
+            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<MessageBoxResponse>("showMessageBoxComplete" + guid, (args) =>
@@ -214,7 +214,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On("showCertificateTrustDialogComplete" + guid, () =>

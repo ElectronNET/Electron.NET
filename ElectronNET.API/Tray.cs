@@ -323,7 +323,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsDestroyedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("tray-isDestroyedCompleted", (isDestroyed) =>
             {

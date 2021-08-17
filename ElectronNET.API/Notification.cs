@@ -122,7 +122,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsSupportedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("notificationIsSupportedComplete", (isSupported) =>
             {

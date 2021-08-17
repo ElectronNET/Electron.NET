@@ -103,7 +103,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<ThemeSourceMode> GetThemeSourceAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
+            var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("nativeTheme-themeSource-getCompleted", (themeSource) =>
             {
@@ -126,7 +126,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseDarkColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
                 BridgeConnector.Off("nativeTheme-shouldUseDarkColors-completed");
@@ -145,7 +145,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseHighContrastColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
                 BridgeConnector.Off("nativeTheme-shouldUseHighContrastColors-completed");
@@ -164,7 +164,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseInvertedColorSchemeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
                 BridgeConnector.Off("nativeTheme-shouldUseInvertedColorScheme-completed");

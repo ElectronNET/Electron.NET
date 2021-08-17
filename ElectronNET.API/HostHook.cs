@@ -65,7 +65,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<T> CallAsync<T>(string socketEventName, params dynamic[] arguments)
         {
-            var taskCompletionSource = new TaskCompletionSource<T>();
+            var taskCompletionSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<string>(socketEventName + "Error" + guid, (result) =>

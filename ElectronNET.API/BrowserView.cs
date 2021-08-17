@@ -33,7 +33,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<Rectangle> GetBoundsAsync()
         {
-                var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+                var taskCompletionSource = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
 
                 BridgeConnector.On<Rectangle>("browserView-getBounds-reply", (result) =>
                 {

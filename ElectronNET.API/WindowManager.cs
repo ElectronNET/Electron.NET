@@ -92,7 +92,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
+            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int>("BrowserWindowCreated", (id) =>
             {
@@ -181,7 +181,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserView>();
+            var taskCompletionSource = new TaskCompletionSource<BrowserView>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int>("BrowserViewCreated", (id) =>
             {

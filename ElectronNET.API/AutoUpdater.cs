@@ -18,7 +18,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> IsAutoDownloadEnabledAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("autoUpdater-autoDownload-get-reply", (result) =>
             {
@@ -38,7 +38,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> IsAutoInstallOnAppQuitEnabledAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("autoUpdater-autoInstallOnAppQuit-get-reply", (result) =>
             {
@@ -59,7 +59,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> IsAllowPrereleaseEnabledAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("autoUpdater-allowPrerelease-get-reply", (result) =>
             {
@@ -78,7 +78,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> IsFullChangeLogEnabledAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("autoUpdater-fullChangelog-get-reply", (result) =>
             {
@@ -93,7 +93,7 @@ namespace ElectronNET.API
 
         public Task<bool> IsAllowDowngradeEnabledAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("autoUpdater-allowDowngrade-get-reply", (result) =>
             {
@@ -174,7 +174,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetUpdateConfigPathAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("autoUpdater-updateConfigPath-get-reply", (result) =>
             {
@@ -192,7 +192,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<SemVer> GetCurrentVersionAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<SemVer>();
+            var taskCompletionSource = new TaskCompletionSource<SemVer>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<SemVer>("autoUpdater-currentVersion-get-reply", (version) =>
             {
@@ -210,7 +210,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetChannelAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("autoUpdater-channel-get-reply", (result) =>
             {
@@ -229,7 +229,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<Dictionary<string, string>> GetRequestHeadersAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>();
+            var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>(TaskCreationOptions.RunContinuationsAsynchronously);
             BridgeConnector.On<Dictionary<string, string>>("autoUpdater-requestHeaders-get-reply", (headers) =>
             {
                 BridgeConnector.Off("autoUpdater-requestHeaders-get-reply");
@@ -455,7 +455,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<UpdateCheckResult> CheckForUpdatesAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>();
+            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<UpdateCheckResult>("autoUpdaterCheckForUpdatesComplete" + guid, (updateCheckResult) =>
@@ -494,7 +494,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<UpdateCheckResult> CheckForUpdatesAndNotifyAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>();
+            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<UpdateCheckResult>("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid, (updateCheckResult) =>
@@ -548,7 +548,7 @@ namespace ElectronNET.API
         /// <returns>Path to downloaded file.</returns>
         public Task<string> DownloadUpdateAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<string>("autoUpdaterDownloadUpdateComplete" + guid, (downloadedPath) =>
@@ -568,7 +568,7 @@ namespace ElectronNET.API
         /// <returns>Feed URL.</returns>
         public Task<string> GetFeedURLAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<string>("autoUpdaterGetFeedURLComplete" + guid, (downloadedPath) =>

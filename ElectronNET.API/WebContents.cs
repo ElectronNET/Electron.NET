@@ -113,7 +113,7 @@ namespace ElectronNET.API
         /// <returns>printers</returns>
         public Task<PrinterInfo[]> GetPrintersAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
+            var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<PrinterInfo[]>("webContents-getPrinters-completed", (printers) =>
             {
@@ -134,7 +134,7 @@ namespace ElectronNET.API
         /// <returns>success</returns>
         public Task<bool> PrintAsync(PrintOptions options = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("webContents-print-completed", (success) =>
             {
@@ -165,7 +165,7 @@ namespace ElectronNET.API
         /// <returns>success</returns>
         public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("webContents-printToPDF-completed", (success) =>
             {
@@ -192,7 +192,7 @@ namespace ElectronNET.API
         /// <returns>URL of the loaded page</returns>
         public Task<string> GetUrl()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             var eventString = "webContents-getUrl" + Id;
             BridgeConnector.On<string>(eventString, (url) =>
@@ -238,7 +238,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public Task LoadURLAsync(string url, LoadURLOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On("webContents-loadURL-complete" + Id, () =>
             {

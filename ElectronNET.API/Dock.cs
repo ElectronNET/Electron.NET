@@ -54,7 +54,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>();
+            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<int>("dock-bounce-completed", (id) =>
@@ -106,7 +106,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("dock-getBadge-completed", (text) =>
@@ -148,7 +148,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("dock-isVisible-completed", (isVisible) =>
@@ -198,7 +198,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<Menu>();
+            var taskCompletionSource = new TaskCompletionSource<Menu>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<Menu>("dock-getMenu-completed", (menu) =>

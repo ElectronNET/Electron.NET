@@ -494,7 +494,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetNameAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("appGetNameCompleted", (result) =>
             {
@@ -645,7 +645,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("appGetAppPathCompleted", (path) =>
@@ -686,7 +686,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("appGetPathCompleted", (path) =>
@@ -729,7 +729,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("appGetVersionCompleted", (version) =>
@@ -757,7 +757,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("appGetLocaleCompleted", (local) =>
@@ -883,7 +883,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appSetAsDefaultProtocolClientCompleted", (success) =>
@@ -937,7 +937,7 @@ namespace ElectronNET.API
         {           
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appRemoveAsDefaultProtocolClientCompleted", (success) =>
@@ -1009,7 +1009,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appIsDefaultProtocolClientCompleted", (success) =>
@@ -1037,7 +1037,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appSetUserTasksCompleted", (success) =>
@@ -1062,7 +1062,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<JumpListSettings>();
+            var taskCompletionSource = new TaskCompletionSource<JumpListSettings>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<JumpListSettings>("appGetJumpListSettingsCompleted", (jumpListSettings) =>
@@ -1124,7 +1124,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appRequestSingleInstanceLockCompleted", (success) =>
@@ -1165,7 +1165,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appHasSingleInstanceLockCompleted", (hasLock) =>
@@ -1217,7 +1217,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<string>("appGetCurrentActivityTypeCompleted", (activityType) =>
@@ -1270,7 +1270,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>();
+            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<int>("appImportCertificateCompleted", (result) =>
@@ -1298,7 +1298,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<ProcessMetric[]>();
+            var taskCompletionSource = new TaskCompletionSource<ProcessMetric[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<ProcessMetric[]>("appGetAppMetricsCompleted", (result) =>
@@ -1324,7 +1324,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<GPUFeatureStatus>();
+            var taskCompletionSource = new TaskCompletionSource<GPUFeatureStatus>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<GPUFeatureStatus>("appGetGpuFeatureStatusCompleted", (result) =>
@@ -1354,7 +1354,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appSetBadgeCountCompleted", (success) =>
@@ -1378,7 +1378,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>();
+            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<int>("appGetBadgeCountCompleted", (count) =>
@@ -1407,7 +1407,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appIsUnityRunningCompleted", (isUnityRunning) =>
@@ -1442,7 +1442,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>();
+            var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<LoginItemSettings>("appGetLoginItemSettingsCompleted", (result) =>
@@ -1486,7 +1486,7 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.On<bool>("appIsAccessibilitySupportEnabledCompleted", (isAccessibilitySupportEnabled) =>
@@ -1568,7 +1568,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetUserAgentFallbackAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("appGetUserAgentFallbackCompleted", (result) =>
             {

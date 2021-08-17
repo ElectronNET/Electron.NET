@@ -951,7 +951,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsFocusedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isFocused-completed", (isFocused) => {
                 BridgeConnector.Off("browserWindow-isFocused-completed");
@@ -970,7 +970,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsDestroyedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isDestroyed-completed", (isDestroyed) => {
                 BridgeConnector.Off("browserWindow-isDestroyed-completed");
@@ -1013,7 +1013,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsVisibleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isVisible-completed", (isVisible) => {
                 BridgeConnector.Off("browserWindow-isVisible-completed");
@@ -1032,7 +1032,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsModalAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isModal-completed", (isModal) => {
                 BridgeConnector.Off("browserWindow-isModal-completed");
@@ -1067,7 +1067,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMaximizedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMaximized-completed", (isMaximized) => {
                 BridgeConnector.Off("browserWindow-isMaximized-completed");
@@ -1102,7 +1102,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMinimizedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMinimized-completed", (isMinimized) => {
                 BridgeConnector.Off("browserWindow-isMinimized-completed");
@@ -1129,7 +1129,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsFullScreenAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isFullScreen-completed", (isFullScreen) => {
                 BridgeConnector.Off("browserWindow-isFullScreen-completed");
@@ -1218,7 +1218,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Rectangle> GetBoundsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+            var taskCompletionSource = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Rectangle>("browserWindow-getBounds-completed", (getBounds) => {
                 BridgeConnector.Off("browserWindow-getBounds-completed");
@@ -1256,7 +1256,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Rectangle> GetContentBoundsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+            var taskCompletionSource = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<Rectangle>("browserWindow-getContentBounds-completed", (getContentBounds) => {
                 BridgeConnector.Off("browserWindow-getContentBounds-completed");
@@ -1296,7 +1296,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
+            var taskCompletionSource = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getSize-completed", (size) => {
                 BridgeConnector.Off("browserWindow-getSize-completed");
@@ -1336,7 +1336,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetContentSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
+            var taskCompletionSource = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getContentSize-completed", (size) => {
                 BridgeConnector.Off("browserWindow-getContentSize-completed");
@@ -1365,7 +1365,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetMinimumSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
+            var taskCompletionSource = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getMinimumSize-completed", (size) => {
                 BridgeConnector.Off("browserWindow-getMinimumSize-completed");
@@ -1394,7 +1394,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetMaximumSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
+            var taskCompletionSource = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getMaximumSize-completed", (size) => {
                 BridgeConnector.Off("browserWindow-getMaximumSize-completed");
@@ -1422,7 +1422,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsResizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isResizable-completed", (resizable) => {
                 BridgeConnector.Off("browserWindow-isResizable-completed");
@@ -1452,7 +1452,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMovableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMovable-completed", (movable) => {
                 BridgeConnector.Off("browserWindow-isMovable-completed");
@@ -1482,7 +1482,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMinimizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMinimizable-completed", (minimizable) => {
                 BridgeConnector.Off("browserWindow-isMinimizable-completed");
@@ -1512,7 +1512,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMaximizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMaximizable-completed", (maximizable) => {
                 BridgeConnector.Off("browserWindow-isMaximizable-completed");
@@ -1540,7 +1540,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsFullScreenableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isFullScreenable-completed", (fullscreenable) => {
                 BridgeConnector.Off("browserWindow-isFullScreenable-completed");
@@ -1570,7 +1570,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsClosableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isClosable-completed", (closable) => {
                 BridgeConnector.Off("browserWindow-isClosable-completed");
@@ -1630,7 +1630,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsAlwaysOnTopAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isAlwaysOnTop-completed", (isAlwaysOnTop) => {
                 BridgeConnector.Off("browserWindow-isAlwaysOnTop-completed");
@@ -1697,7 +1697,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetPositionAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
+            var taskCompletionSource = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getPosition-completed", (position) => {
                 BridgeConnector.Off("browserWindow-getPosition-completed");
@@ -1727,7 +1727,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> GetTitleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("browserWindow-getTitle-completed", (title) => {
                 BridgeConnector.Off("browserWindow-getTitle-completed");
@@ -1796,7 +1796,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsKioskAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isKiosk-completed", (isKiosk) => {
                 BridgeConnector.Off("browserWindow-isKiosk-completed");
@@ -1815,7 +1815,7 @@ namespace ElectronNET.API
         /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
         public Task<string> GetNativeWindowHandle()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("browserWindow-getNativeWindowHandle-completed", (nativeWindowHandle) =>
             {
@@ -1844,7 +1844,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> GetRepresentedFilenameAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("browserWindow-getRepresentedFilename-completed", (pathname) => {
                 BridgeConnector.Off("browserWindow-getRepresentedFilename-completed");
@@ -1873,7 +1873,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsDocumentEditedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isDocumentEdited-completed", (edited) => {
                 BridgeConnector.Off("browserWindow-isDocumentEdited-completed");
@@ -2016,7 +2016,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> HasShadowAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-hasShadow-completed", (hasShadow) => {
                 BridgeConnector.Off("browserWindow-hasShadow-completed");
@@ -2052,7 +2052,7 @@ namespace ElectronNET.API
         /// <returns>Whether the buttons were added successfully.</returns>
         public Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindowSetThumbarButtons-completed", (success) => {
                 BridgeConnector.Off("browserWindowSetThumbarButtons-completed");
@@ -2132,7 +2132,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMenuBarAutoHideAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMenuBarAutoHide-completed", (isMenuBarAutoHide) => {
                 BridgeConnector.Off("browserWindow-isMenuBarAutoHide-completed");
@@ -2161,7 +2161,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMenuBarVisibleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isMenuBarVisible-completed", (isMenuBarVisible) => {
                 BridgeConnector.Off("browserWindow-isMenuBarVisible-completed");
@@ -2193,7 +2193,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsVisibleOnAllWorkspacesAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("browserWindow-isVisibleOnAllWorkspaces-completed", (isVisibleOnAllWorkspaces) => {
                 BridgeConnector.Off("browserWindow-isVisibleOnAllWorkspaces-completed");
@@ -2255,7 +2255,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<BrowserWindow> GetParentWindowAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
+            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int>("browserWindow-getParentWindow-completed", (id) => {
                 BridgeConnector.Off("browserWindow-getParentWindow-completed");
@@ -2274,7 +2274,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<List<BrowserWindow>> GetChildWindowsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<List<BrowserWindow>>();
+            var taskCompletionSource = new TaskCompletionSource<List<BrowserWindow>>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<int[]>("browserWindow-getChildWindows-completed", (ids) => {
                 BridgeConnector.Off("browserWindow-getChildWindows-completed");

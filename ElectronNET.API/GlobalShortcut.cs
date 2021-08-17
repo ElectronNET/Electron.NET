@@ -70,7 +70,7 @@ namespace ElectronNET.API
         /// <returns>Whether this application has registered accelerator.</returns>
         public Task<bool> IsRegisteredAsync(string accelerator)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             
             BridgeConnector.On<bool>("globalShortcut-isRegisteredCompleted" + accelerator.GetHashCode(), (isRegistered) =>
             {

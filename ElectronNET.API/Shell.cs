@@ -42,7 +42,7 @@ namespace ElectronNET.API
         /// <param name="fullPath">The full path to the directory / file.</param>
         public Task ShowItemInFolderAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On("shell-showItemInFolderCompleted", () =>
             {
@@ -61,7 +61,7 @@ namespace ElectronNET.API
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
         public Task<string> OpenPathAsync(string path)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("shell-openPathCompleted", (errorMessage) =>
             {
@@ -95,7 +95,7 @@ namespace ElectronNET.API
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
         public Task<string> OpenExternalAsync(string url, OpenExternalOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("shell-openExternalCompleted", (error) =>
             {
@@ -123,7 +123,7 @@ namespace ElectronNET.API
         /// <returns> Whether the item was successfully moved to the trash.</returns>
         public Task<bool> TrashItemAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("shell-trashItem-completed", (success) =>
             {
@@ -154,7 +154,7 @@ namespace ElectronNET.API
         /// <returns>Whether the shortcut was created successfully.</returns>
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<bool>("shell-writeShortcutLinkCompleted", (success) =>
             {
@@ -176,7 +176,7 @@ namespace ElectronNET.API
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
         public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
+            var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<ShortcutDetails>("shell-readShortcutLinkCompleted", (shortcutDetails) =>
             {

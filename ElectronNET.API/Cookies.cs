@@ -62,7 +62,7 @@ namespace ElectronNET.API
         /// <returns>A task which resolves an array of cookie objects.</returns>
         public Task<Cookie[]> GetAsync(CookieFilter filter)
         {
-            var taskCompletionSource = new TaskCompletionSource<Cookie[]>();
+            var taskCompletionSource = new TaskCompletionSource<Cookie[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On<Cookie[]>("webContents-session-cookies-get-completed" + guid, (cookies) =>
@@ -83,7 +83,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task SetAsync(CookieDetails details)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On("webContents-session-cookies-set-completed" + guid, () =>
@@ -105,7 +105,7 @@ namespace ElectronNET.API
         /// <returns>A task which resolves when the cookie has been removed</returns>
         public Task RemoveAsync(string url, string name)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On("webContents-session-cookies-remove-completed" + guid, () =>
@@ -125,7 +125,7 @@ namespace ElectronNET.API
         /// <returns>A task which resolves when the cookie store has been flushed</returns>
         public Task FlushStoreAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
             BridgeConnector.On("webContents-session-cookies-flushStore-completed" + guid, () =>

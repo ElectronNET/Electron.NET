@@ -42,7 +42,7 @@ namespace ElectronNET.API
         /// <returns>The content in the clipboard as plain text.</returns>
         public Task<string> ReadTextAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("clipboard-readText-Completed", (text) =>
             {
@@ -73,7 +73,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadHTMLAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("clipboard-readHTML-Completed", (text) =>
             {
@@ -104,7 +104,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadRTFAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("clipboard-readRTF-Completed", (text) =>
             {
@@ -136,7 +136,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<ReadBookmark> ReadBookmarkAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<ReadBookmark>();
+            var taskCompletionSource = new TaskCompletionSource<ReadBookmark>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<ReadBookmark>("clipboard-readBookmark-Completed", (bookmark) =>
             {
@@ -173,7 +173,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadFindTextAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string>("clipboard-readFindText-Completed", (text) =>
             {
@@ -213,7 +213,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string[]> AvailableFormatsAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
+            var taskCompletionSource = new TaskCompletionSource<string[]>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<string[]>("clipboard-availableFormats-Completed", (formats) =>
             {
@@ -244,7 +244,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<NativeImage> ReadImageAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<NativeImage>();
+            var taskCompletionSource = new TaskCompletionSource<NativeImage>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             BridgeConnector.On<NativeImage>("clipboard-readImage-Completed", (image) =>
             {
