@@ -126,17 +126,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseDarkColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
-                BridgeConnector.Off("nativeTheme-shouldUseDarkColors-completed");
-
-                taskCompletionSource.SetResult(shouldUseDarkColors);
-            });
-
-            BridgeConnector.Emit("nativeTheme-shouldUseDarkColors");
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<bool>("nativeTheme-shouldUseDarkColors", "nativeTheme-shouldUseDarkColors-completed");
         }
 
         /// <summary>
@@ -145,17 +135,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseHighContrastColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
-                BridgeConnector.Off("nativeTheme-shouldUseHighContrastColors-completed");
-
-                taskCompletionSource.SetResult(shouldUseHighContrastColors);
-            });
-
-            BridgeConnector.Emit("nativeTheme-shouldUseHighContrastColors");
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<bool>("nativeTheme-shouldUseHighContrastColors", "nativeTheme-shouldUseHighContrastColors-completed");
         }
 
         /// <summary>
@@ -164,17 +144,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<bool> ShouldUseInvertedColorSchemeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
-                BridgeConnector.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
-
-                taskCompletionSource.SetResult(shouldUseInvertedColorScheme);
-            });
-
-            BridgeConnector.Emit("nativeTheme-shouldUseInvertedColorScheme");
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<bool>("nativeTheme-shouldUseInvertedColorScheme", "nativeTheme-shouldUseInvertedColorScheme-completed");
         }
 
         /// <summary>

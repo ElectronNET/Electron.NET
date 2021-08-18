@@ -50,24 +50,11 @@ namespace ElectronNET.API
         /// <param name="type">Can be critical or informational. The default is informational.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Return an ID representing the request.</returns>
-        public async Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
+        public Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<int>("dock-bounce-completed", (id) =>
-                {
-                    BridgeConnector.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult(id);
-                });
-
-                BridgeConnector.Emit("dock-bounce", type.GetDescription());
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<int>("dock-bounce", "dock-bounce-completed", cancellationToken, type.GetDescription());
         }
 
         /// <summary>
@@ -102,24 +89,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The badge string of the dock.</returns>
-        public async Task<string> GetBadgeAsync(CancellationToken cancellationToken = default)
+        public Task<string> GetBadgeAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<string>("dock-getBadge-completed", (text) =>
-                {
-                    BridgeConnector.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult(text);
-                });
-
-                BridgeConnector.Emit("dock-getBadge");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<string>("dock-getBadge", "dock-getBadge-completed", cancellationToken);
         }
 
         /// <summary>
@@ -144,24 +117,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the dock icon is visible.</returns>
-        public async Task<bool> IsVisibleAsync(CancellationToken cancellationToken = default)
+        public Task<bool> IsVisibleAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<bool>("dock-isVisible-completed", (isVisible) =>
-                {
-                    BridgeConnector.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult(isVisible);
-                });
-
-                BridgeConnector.Emit("dock-isVisible");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<bool>("dock-isVisible", "dock-isVisible-completed", cancellationToken);
         }
 
         /// <summary>
@@ -223,7 +182,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("dock-setIcon", image);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

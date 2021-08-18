@@ -123,18 +123,7 @@ namespace ElectronNET.API
         /// <returns> Whether the item was successfully moved to the trash.</returns>
         public Task<bool> TrashItemAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("shell-trashItem-completed", (success) =>
-            {
-                BridgeConnector.Off("shell-trashItem-completed");
-
-                taskCompletionSource.SetResult(success);
-            });
-
-            BridgeConnector.Emit("shell-trashItem", fullPath);
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<bool>("shell-trashItem", "shell-trashItem-completed", fullPath);
         }
 
         /// <summary>
@@ -154,18 +143,7 @@ namespace ElectronNET.API
         /// <returns>Whether the shortcut was created successfully.</returns>
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("shell-writeShortcutLinkCompleted", (success) =>
-            {
-                BridgeConnector.Off("shell-writeShortcutLinkCompleted");
-
-                taskCompletionSource.SetResult(success);
-            });
-
-            BridgeConnector.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<bool>("shell-writeShortcutLink", "shell-writeShortcutLinkCompleted", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -176,17 +154,7 @@ namespace ElectronNET.API
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
         public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<ShortcutDetails>("shell-readShortcutLinkCompleted", (shortcutDetails) =>
-            {
-                BridgeConnector.Off("shell-readShortcutLinkCompleted");
-                taskCompletionSource.SetResult(shortcutDetails);
-            });
-
-            BridgeConnector.Emit("shell-readShortcutLink", shortcutPath);
-
-            return taskCompletionSource.Task;
+            return BridgeConnector.OnResult<ShortcutDetails>("shell-readShortcutLink", "shell-readShortcutLinkCompleted", shortcutPath);
         }
 
         private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
