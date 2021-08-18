@@ -1,32 +1,10 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:50394/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
     "Electron.NET App": {
       "commandName": "Executable",
-      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\net5.0\\dotnet-electronize-h5.exe",
-      "commandLineArgs": "start /from-build-output $(SolutionDir)ElectronNET.WebApp\\bin\\$(Configuration)\\net5.0",
+      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\net5.0\\dotnet-electronize.exe",
+      "commandLineArgs": "start",
       "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "ElectronNET.WebApp": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:50395/"
     }
   }
 }

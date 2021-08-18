@@ -2,12 +2,7 @@
   "profiles": {
     "ElectronNET.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\""
-    },
-    "test": {
-      "commandName": "Project",
-      "commandLineArgs": "build /target win",
-      "workingDirectory": "C:\\work\\curiosity\\mosaik\\Desktop\\Curiosity.Desktop.Electron"
+      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\" /watch"
     }
   }
 }

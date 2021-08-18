@@ -4,15 +4,15 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
-    <PackageId>h5.ElectronNET.API</PackageId>
+    <PackageId>ElectronNET.API</PackageId>
     <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/theolivenbaum/Electron.NET/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ElectronNet/Electron.NET/</PackageProjectUrl>
     <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
 This package contains the API to access the "native" electron API.</Description>
-    <RepositoryUrl>https://github.com/theolivenbaum/Electron.NET/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ElectronNet/Electron.NET/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>

@@ -8,7 +8,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-click', (id) => {
         if (tray.value) {
             tray.value.on('click', (event, bounds) => {
-                electronSocket.emit('tray-click-event' + id, [(<any>event).__proto__, bounds]);
+                electronSocket.emit('tray-click-event' + id, {eventArgs: (<any>event).__proto__, bounds: bounds });
             });
         }
     });
@@ -16,7 +16,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-right-click', (id) => {
         if (tray.value) {
             tray.value.on('right-click', (event, bounds) => {
-                electronSocket.emit('tray-right-click-event' + id, [(<any>event).__proto__, bounds]);
+                electronSocket.emit('tray-right-click-event' + id, { eventArgs: (<any>event).__proto__, bounds: bounds });
             });
         }
     });
@@ -24,7 +24,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-double-click', (id) => {
         if (tray.value) {
             tray.value.on('double-click', (event, bounds) => {
-                electronSocket.emit('tray-double-click-event' + id, [(<any>event).__proto__, bounds]);
+                electronSocket.emit('tray-double-click-event' + id, { eventArgs: (<any>event).__proto__, bounds: bounds });
             });
         }
     });
