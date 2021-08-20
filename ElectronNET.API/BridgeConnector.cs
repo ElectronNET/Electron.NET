@@ -89,7 +89,6 @@ namespace ElectronNET.API
 
             Task.Run(async () =>
             {
-                await Task.Yield();
                 if (App.SocketDebug)
                 {
                     Console.WriteLine($"Sending event {eventString}");
