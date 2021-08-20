@@ -305,7 +305,7 @@ function startAspCoreBackend(electronPort) {
             console.log(`ASP.NET Process exited with code ${code}`);
             if (code != 0) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
-                app.quit();
+                app.exit(code);
             }
         });
     }
@@ -344,7 +344,7 @@ function startAspCoreBackendWithWatch(electronPort) {
             console.log(`ASP.NET Process exited with code ${code}`);
             if (code != 0) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
-                app.quit();
+                app.exit(code);
             }
         });
     }
