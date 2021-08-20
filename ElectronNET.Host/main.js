@@ -300,6 +300,14 @@ function startAspCoreBackend(electronPort) {
         apiProcess.stderr.on('data', (data) => {
             console.log(`stderr: ${data.toString()}`);
         });
+
+        apiProcess.on('close', (code) => {
+            console.log(`ASP.NET Process exited with code ${code}`);
+            if (code != 0) {
+                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                app.quit();
+            }
+        });
     }
 }
 
@@ -330,6 +338,14 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         apiProcess.stderr.on('data', (data) => {
             console.log(`stderr: ${data.toString()}`);
+        });
+
+        apiProcess.on('close', (code) => {
+            console.log(`ASP.NET Process exited with code ${code}`);
+            if (code != 0) {
+                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                app.quit();
+            }
         });
     }
 }
