@@ -104,6 +104,26 @@ namespace ElectronNET.API
             });
         }
 
+        /// <summary>
+        /// This method is only used on places where we need to be sure the event was sent on the socket, such as Quit, Exit, Relaunch and QuitAndInstall methods
+        /// </summary>
+        /// <param name="eventString"></param>
+        /// <param name="args"></param>
+        internal static void EmitSync(string eventString, params object[] args)
+        {
+            if (App.SocketDebug)
+            {
+                Console.WriteLine($"Sending event {eventString}");
+            }
+
+            Socket.EmitAsync(eventString, args).Wait();
+
+            if (App.SocketDebug)
+            {
+                Console.WriteLine($"Sent event {eventString}");
+            }
+        }
+
         public static void Off(string eventString)
         {
             Socket.Off(eventString);
