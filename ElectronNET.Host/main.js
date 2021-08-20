@@ -118,7 +118,7 @@ function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
+            console.log('load splashscreen error:');
             console.error(error);
 
             throw new Error(error.message);
