@@ -556,7 +556,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Quit()
         {
-            BridgeConnector.Emit("appQuit");
+            BridgeConnector.EmitSync("appQuit");
         }
 
         /// <summary>
@@ -566,7 +566,7 @@ namespace ElectronNET.API
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
         public void Exit(int exitCode = 0)
         {
-            BridgeConnector.Emit("appExit", exitCode);
+            BridgeConnector.EmitSync("appExit", exitCode);
         }
 
         /// <summary>
@@ -581,7 +581,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Relaunch()
         {
-            BridgeConnector.Emit("appRelaunch");
+            BridgeConnector.EmitSync("appRelaunch");
         }
 
         /// <summary>
@@ -599,7 +599,7 @@ namespace ElectronNET.API
         /// <param name="relaunchOptions">Options for the relaunch.</param>
         public void Relaunch(RelaunchOptions relaunchOptions)
         {
-            BridgeConnector.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
+            BridgeConnector.EmitSync("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -698,8 +698,7 @@ namespace ElectronNET.API
 
                 BridgeConnector.Emit("appGetPath", pathName.GetDescription());
 
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
+                return await taskCompletionSource.Task.ConfigureAwait(false);
             }  
         }
 

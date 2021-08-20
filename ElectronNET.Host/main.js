@@ -118,7 +118,7 @@ function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
+            console.log('load splashscreen error:');
             console.error(error);
 
             throw new Error(error.message);
@@ -136,13 +136,29 @@ function startSplashScreen() {
             alwaysOnTop: true,
             show: true
         });
+
+        if (manifestJsonFile.hasOwnProperty('splashscreen')) {
+            if (manifestJsonFile.splashscreen.hasOwnProperty('timeout')) {
+                var timeout = manifestJsonFile.splashscreen.timeout;
+                window.setTimeout((t) => {
+                    if (splashScreen != null ) {
+                        splashScreen.destroy();
+                        splashScreen = null;
+                    }
+                }, timeout);
+            }
+        }
+
+
         splashScreen.setIgnoreMouseEvents(true);
 
         app.once('browser-window-created', () => {
             splashScreen.destroy();
+            splashScreen = null;
         });
 
         const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
+
         splashScreen.loadURL('file://' + loadSplashscreenUrl);
 
         splashScreen.once('closed', () => {
