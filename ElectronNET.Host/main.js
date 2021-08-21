@@ -142,8 +142,7 @@ function startSplashScreen() {
                 var timeout = manifestJsonFile.splashscreen.timeout;
                 setTimeout((t) => {
                     if (splashScreen != null ) {
-                        splashScreen.destroy();
-                        splashScreen = null;
+                        splashScreen.hide();
                     }
                 }, timeout);
             }
