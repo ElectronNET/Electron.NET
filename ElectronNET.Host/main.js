@@ -140,10 +140,9 @@ function startSplashScreen() {
         if (manifestJsonFile.hasOwnProperty('splashscreen')) {
             if (manifestJsonFile.splashscreen.hasOwnProperty('timeout')) {
                 var timeout = manifestJsonFile.splashscreen.timeout;
-                window.setTimeout((t) => {
+                setTimeout((t) => {
                     if (splashScreen != null ) {
-                        splashScreen.destroy();
-                        splashScreen = null;
+                        splashScreen.hide();
                     }
                 }, timeout);
             }
