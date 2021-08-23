@@ -315,9 +315,13 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowIsDestroyed', (id) => {
-        const isDestroyed = getWindowById(id).isDestroyed();
-
-        electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
+        const w = getWindowById(id);
+        if (w) {
+            const isDestroyed = w.isDestroyed();
+            electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
+        } else {
+            electronSocket.emit('browserWindow-isDestroyed-completed', true);
+        }
     });
 
     socket.on('browserWindowShow', (id) => {
