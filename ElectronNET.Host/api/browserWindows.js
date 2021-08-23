@@ -202,6 +202,15 @@ module.exports = (socket, app) => {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
         window.on('ready-to-show', () => {
+            try {
+                window.id;
+            }
+            catch (error) {
+                if (error.message === 'Object has been destroyed') {
+                    return;
+                }
+            }
+
             if (readyToShowWindowsIds.includes(window.id)) {
                 readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
             }
