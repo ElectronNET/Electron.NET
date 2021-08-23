@@ -619,6 +619,7 @@ module.exports = (socket, app) => {
                 return element;
             }
         }
+        return null;
     }
 };
 //# sourceMappingURL=browserWindows.js.map

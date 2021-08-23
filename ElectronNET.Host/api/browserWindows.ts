@@ -785,5 +785,6 @@ export = (socket: Socket, app: Electron.App) => {
                 return element;
             }
         }
+        return null;
     }
 };
