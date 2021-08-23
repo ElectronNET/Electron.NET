@@ -161,6 +161,6 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => BridgeConnector.OnResult<Display>("screen-getDisplayMatching", "screen-getDisplayMatching", rectangle);
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => BridgeConnector.OnResult<Display>("screen-getDisplayMatching", "screen-getDisplayMatchingCompleted", rectangle);
     }
 }
