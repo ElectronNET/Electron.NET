@@ -242,7 +242,7 @@ namespace ElectronNET.API
         public void Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("create-tray", image, menuItems);
             _items.Clear();
             _items.AddRange(menuItems);
 
@@ -314,34 +314,14 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void DisplayBalloon(DisplayBalloonOptions options)
         {
-            BridgeConnector.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("tray-displayBalloon", options);
         }
 
         /// <summary>
         /// Whether the tray icon is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("tray-isDestroyedCompleted", (isDestroyed) =>
-            {
-                BridgeConnector.Off("tray-isDestroyedCompleted");
-
-                taskCompletionSource.SetResult(isDestroyed);
-            });
-
-            BridgeConnector.Emit("tray-isDestroyed");
-
-            return taskCompletionSource.Task;
-        }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
+        public Task<bool> IsDestroyedAsync() => BridgeConnector.OnResult<bool>("tray-isDestroyed", "tray-isDestroyedCompleted");
 
         private const string ModuleName = "tray";
         /// <summary>

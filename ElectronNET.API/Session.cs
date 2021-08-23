@@ -56,7 +56,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Emit("webContents-session-clearAuthCache", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-clearAuthCache", Id, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -156,7 +156,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Emit("webContents-session-clearStorageData-options", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-clearStorageData-options", Id, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -171,7 +171,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void CreateInterruptedDownload(CreateInterruptedDownloadOptions options)
         {
-            BridgeConnector.Emit("webContents-session-createInterruptedDownload", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("webContents-session-createInterruptedDownload", Id, options);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void EnableNetworkEmulation(EnableNetworkEmulationOptions options)
         {
-            BridgeConnector.Emit("webContents-session-enableNetworkEmulation", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("webContents-session-enableNetworkEmulation", Id, options);
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Emit("webContents-session-setProxy", Id, JObject.FromObject(config, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-setProxy", Id, config, guid);
 
             return taskCompletionSource.Task;
         }
@@ -444,12 +444,5 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

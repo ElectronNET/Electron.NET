@@ -48,7 +48,7 @@ namespace ElectronNET.API
         {
             GenerateIDsForDefinedActions(notificationOptions);
 
-            BridgeConnector.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
+            BridgeConnector.Emit("createNotification", notificationOptions);
         }
 
         private static void GenerateIDsForDefinedActions(NotificationOptions notificationOptions)
@@ -134,12 +134,5 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

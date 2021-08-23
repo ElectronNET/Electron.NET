@@ -58,7 +58,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("menu-setApplicationMenu", menuItems);
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Off("menuItemClicked");
@@ -87,7 +87,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("menu-setContextMenu", browserWindow.Id, menuItems);
 
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
             {
@@ -112,11 +112,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("menu-contextMenuPopup", browserWindow.Id);
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }

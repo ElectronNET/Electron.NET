@@ -31,24 +31,11 @@ namespace ElectronNET.API
         /// 
         /// (experimental)
         /// </summary>
-        public Task<Rectangle> GetBoundsAsync()
-        {
-                var taskCompletionSource = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-                BridgeConnector.On<Rectangle>("browserView-getBounds-reply", (result) =>
-                {
-                    BridgeConnector.Off("browserView-getBounds-reply");
-                    taskCompletionSource.SetResult(result);
-                });
-
-                BridgeConnector.Emit("browserView-getBounds", Id);
-
-            return taskCompletionSource.Task;
-        }
+        public Task<Rectangle> GetBoundsAsync() => BridgeConnector.OnResult<Rectangle>("browserView-getBounds", "browserView-getBounds-reply", Id);
 
         public void SetBounds(Rectangle value)
         {
-            BridgeConnector.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
+            BridgeConnector.Emit("browserView-setBounds", Id, value);
         }
 
         /// <summary>
@@ -69,7 +56,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("browserView-setAutoResize", Id, options);
         }
 
         /// <summary>
@@ -82,11 +69,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("browserView-setBackgroundColor", Id, color);
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }

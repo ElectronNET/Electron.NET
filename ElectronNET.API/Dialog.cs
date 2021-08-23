@@ -56,6 +56,7 @@ namespace ElectronNET.API
                 BridgeConnector.Off("showOpenDialogComplete" + guid);
 
                 var list = new List<string>();
+
                 foreach (var item in filePaths)
                 {
                     list.Add(HttpUtility.UrlDecode(item));
@@ -63,10 +64,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(list.ToArray());
             });
 
-
-            BridgeConnector.Emit("showOpenDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Emit("showOpenDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -89,10 +87,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(filename);
             });
 
-            BridgeConnector.Emit("showSaveDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
+            BridgeConnector.Emit("showSaveDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -165,13 +160,10 @@ namespace ElectronNET.API
 
             if (browserWindow == null)
             {
-                BridgeConnector.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
+                BridgeConnector.Emit("showMessageBox", messageBoxOptions, guid);
             } else
             {
-                BridgeConnector.Emit("showMessageBox", 
-                    JObject.FromObject(browserWindow, _jsonSerializer),
-                    JObject.FromObject(messageBoxOptions, _jsonSerializer),
-                    guid);
+                BridgeConnector.Emit("showMessageBox", browserWindow , messageBoxOptions, guid);
             }
 
             return taskCompletionSource.Task;
@@ -223,19 +215,9 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Emit("showCertificateTrustDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
-                guid);
+            BridgeConnector.Emit("showCertificateTrustDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

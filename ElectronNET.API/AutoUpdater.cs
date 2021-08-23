@@ -133,7 +133,7 @@ namespace ElectronNET.API
         {
             set
             {
-                BridgeConnector.Emit("autoUpdater-requestHeaders-set", JObject.FromObject(value, _jsonSerializer));
+                BridgeConnector.Emit("autoUpdater-requestHeaders-set", value);
             }
         }
 
@@ -468,10 +468,5 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
     }
 }

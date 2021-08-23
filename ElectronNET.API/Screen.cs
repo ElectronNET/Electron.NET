@@ -154,21 +154,13 @@ namespace ElectronNET.API
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
-        public Task<Display> GetDisplayNearestPointAsync(Point point) => BridgeConnector.OnResult<Display>("screen-getDisplayNearestPoint", "screen-getDisplayNearestPointCompleted", JObject.FromObject(point, _jsonSerializer));
+        public Task<Display> GetDisplayNearestPointAsync(Point point) => BridgeConnector.OnResult<Display>("screen-getDisplayNearestPoint", "screen-getDisplayNearestPointCompleted", point);
 
         /// <summary>
         /// The display that most closely intersects the provided bounds.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => BridgeConnector.OnResult<Display>("screen-getDisplayMatching", "screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer));
-
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => BridgeConnector.OnResult<Display>("screen-getDisplayMatching", "screen-getDisplayMatching", rectangle);
     }
 }

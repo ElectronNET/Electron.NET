@@ -104,7 +104,7 @@ namespace ElectronNET.API
         /// <param name="openDevToolsOptions"></param>
         public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
         {
-            BridgeConnector.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
+            BridgeConnector.Emit("webContentsOpenDevTools", Id, openDevToolsOptions);
         }
 
         /// <summary>
@@ -121,10 +121,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns>success</returns>
-        public Task<bool> PrintAsync(PrintOptions options = null)
-        {
-            return BridgeConnector.OnResult<bool>("webContents-print", "webContents-print-completed", Id, options is null ? (object)"" : JObject.FromObject(options, _jsonSerializer));
-        }
+        public Task<bool> PrintAsync(PrintOptions options = null) => options is null ? BridgeConnector.OnResult<bool>("webContents-print", "webContents-print-completed", Id, "")
+                                                                                     : BridgeConnector.OnResult<bool>("webContents-print", "webContents-print-completed", Id, options);
 
         /// <summary>
         /// Prints window's web page as PDF with Chromium's preview printing custom
@@ -135,10 +133,8 @@ namespace ElectronNET.API
         /// <param name="path"></param>
         /// <param name="options"></param>
         /// <returns>success</returns>
-        public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
-        {
-            return BridgeConnector.OnResult<bool>("webContents-printToPDF", "webContents-printToPDF-completed", Id, options is null ? (object)"" : JObject.FromObject(options, _jsonSerializer), path);
-        }
+        public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null) => options is null ? BridgeConnector.OnResult<bool>("webContents-printToPDF", "webContents-printToPDF-completed", Id, "", path)
+                                                                                                            : BridgeConnector.OnResult<bool>("webContents-printToPDF", "webContents-printToPDF-completed", Id, options, path);
 
         /// <summary>
         /// Is used to get the Url of the loaded page.
@@ -198,7 +194,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));
             });
 
-            BridgeConnector.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("webContents-loadURL", Id, url, options);
 
             return taskCompletionSource.Task;
         }
@@ -214,12 +210,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
         }
-
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

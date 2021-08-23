@@ -949,19 +949,13 @@ namespace ElectronNET.API
         /// Whether the window is focused.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsFocusedAsync()
-        {
-            return BridgeConnector.OnResult<bool>("browserWindowIsFocused", "browserWindow-isFocused-completed", Id);
-        }
+        public Task<bool> IsFocusedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsFocused", "browserWindow-isFocused-completed", Id);
 
         /// <summary>
         /// Whether the window is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync()
-        {
-            return BridgeConnector.OnResult<bool>("browserWindowIsDestroyed", "browserWindow-isDestroyed-completed", Id);
-        }
+        public Task<bool> IsDestroyedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsDestroyed", "browserWindow-isDestroyed-completed", Id);
 
         /// <summary>
         /// Shows and gives focus to the window.
@@ -1088,7 +1082,7 @@ namespace ElectronNET.API
         /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
         public void SetAspectRatio(int aspectRatio, Size extraSize)
         {
-            BridgeConnector.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetAspectRatio", Id, aspectRatio, extraSize);
         }
 
         /// <summary>
@@ -1129,7 +1123,7 @@ namespace ElectronNET.API
         /// <param name="bounds"></param>
         public void SetBounds(Rectangle bounds)
         {
-            BridgeConnector.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetBounds", Id, bounds);
         }
 
         /// <summary>
@@ -1139,7 +1133,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            BridgeConnector.Emit("browserWindowSetBounds", Id, bounds, animate);
         }
 
         /// <summary>
@@ -1157,7 +1151,7 @@ namespace ElectronNET.API
         /// <param name="bounds"></param>
         public void SetContentBounds(Rectangle bounds)
         {
-            BridgeConnector.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetContentBounds", Id, bounds);
         }
 
         /// <summary>
@@ -1167,7 +1161,7 @@ namespace ElectronNET.API
         /// <param name="animate"></param>
         public void SetContentBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            BridgeConnector.Emit("browserWindowSetContentBounds", Id, bounds, animate);
         }
 
         /// <summary>
@@ -1660,7 +1654,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void LoadURL(string url, LoadURLOptions options)
         {
-            BridgeConnector.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowLoadURL", Id, url, options);
         }
 
         /// <summary>
@@ -1688,7 +1682,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetMenu", Id, menuItems);
             _items.AddRange(menuItems);
 
             BridgeConnector.Off("windowMenuItemClicked");
@@ -1737,7 +1731,7 @@ namespace ElectronNET.API
         /// <param name="progressBarOptions"></param>
         public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
         {
-            BridgeConnector.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetProgressBar", Id, progress, progressBarOptions);
         }
 
         /// <summary>
@@ -1794,7 +1788,7 @@ namespace ElectronNET.API
             });
 
             thumbarButtons.AddThumbarButtonsId();
-            BridgeConnector.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetThumbarButtons", Id, thumbarButtons);
             _thumbarButtons.Clear();
             _thumbarButtons.AddRange(thumbarButtons);
 
@@ -1837,7 +1831,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAppDetails(AppDetailsOptions options)
         {
-            BridgeConnector.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetAppDetails", Id, options);
         }
 
         /// <summary>
@@ -1950,7 +1944,7 @@ namespace ElectronNET.API
         /// <param name="parent"></param>
         public void SetParentWindow(BrowserWindow parent)
         {
-            BridgeConnector.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+            BridgeConnector.Emit("browserWindowSetParentWindow", Id, parent);
         }
 
         /// <summary>
@@ -2009,11 +2003,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("browserWindow-setBrowserView", Id, browserView.Id);
         }
-
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }
