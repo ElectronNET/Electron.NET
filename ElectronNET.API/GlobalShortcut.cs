@@ -68,21 +68,8 @@ namespace ElectronNET.API
         /// since they don’t want applications to fight for global shortcuts.
         /// </summary>
         /// <returns>Whether this application has registered accelerator.</returns>
-        public Task<bool> IsRegisteredAsync(string accelerator)
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            
-            BridgeConnector.On<bool>("globalShortcut-isRegisteredCompleted" + accelerator.GetHashCode(), (isRegistered) =>
-            {
-                BridgeConnector.Off("globalShortcut-isRegisteredCompleted" + accelerator.GetHashCode());
+        public Task<bool> IsRegisteredAsync(string accelerator) => BridgeConnector.OnResult<bool>("globalShortcut-isRegistered", "globalShortcut-isRegisteredCompleted", accelerator);
 
-                taskCompletionSource.SetResult(isRegistered);
-            });
-
-            BridgeConnector.Emit("globalShortcut-isRegistered", accelerator);
-
-            return taskCompletionSource.Task;
-        }
 
         /// <summary>
         /// Unregisters the global shortcut of accelerator.

@@ -66,24 +66,7 @@ namespace ElectronNET.API
         /// <param name="switchName">A command-line switch</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Whether the command-line switch is present.</returns>
-        public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken)) 
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<bool>("appCommandLineHasSwitchCompleted", (result) =>
-                {
-                    BridgeConnector.Off("appCommandLineHasSwitchCompleted");
-                    taskCompletionSource.SetResult(result);
-                });
-
-                BridgeConnector.Emit("appCommandLineHasSwitch", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        public Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appCommandLineHasSwitch", "appCommandLineHasSwitchCompleted", cancellationToken, switchName);
 
         /// <summary>
         /// The command-line switch value.
@@ -94,23 +77,6 @@ namespace ElectronNET.API
         /// <remarks>
         /// Note: When the switch is not present or has no value, it returns empty string.
         /// </remarks>
-        public async Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<string>("appCommandLineGetSwitchValueCompleted", (result) =>
-                {
-                    BridgeConnector.Off("appCommandLineGetSwitchValueCompleted");
-                    taskCompletionSource.SetResult(result);
-                });
-
-                BridgeConnector.Emit("appCommandLineGetSwitchValue", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        public Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appCommandLineGetSwitchValue", "appCommandLineGetSwitchValueCompleted", cancellationToken, switchName);
     }
 }

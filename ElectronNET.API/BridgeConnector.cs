@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SocketIOClient;
+using SocketIOClient.JsonSerializer;
 using SocketIOClient.Newtonsoft.Json;
 
 namespace ElectronNET.API
@@ -235,7 +239,7 @@ namespace ElectronNET.API
                                     EIO = 3
                                 });
 
-                                socket.JsonSerializer = new NewtonsoftJsonSerializer(socket.Options.EIO);
+                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
 
 
                                 socket.OnConnected += (_, __) =>
@@ -256,6 +260,21 @@ namespace ElectronNET.API
                 }
 
                 return _socket;
+            }
+        }
+
+        private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
+        {
+            public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
+            {
+            }
+
+            public override JsonSerializerSettings CreateOptions()
+            {
+                return new JsonSerializerSettings()
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
             }
         }
     }

@@ -153,25 +153,7 @@ namespace ElectronNET.API
         /// TODO: Menu (macOS) still to be implemented
         /// Gets the application's dock menu.
         /// </summary>
-        public async Task<Menu> GetMenu(CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<Menu>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<Menu>("dock-getMenu-completed", (menu) =>
-                {
-                    BridgeConnector.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(menu);
-                });
-
-                BridgeConnector.Emit("dock-getMenu");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
-        }
+        public Task<Menu> GetMenu(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<Menu>("dock-getMenu", "dock-getMenu-completed", cancellationToken);
 
         /// <summary>
         /// Sets the image associated with this dock icon.

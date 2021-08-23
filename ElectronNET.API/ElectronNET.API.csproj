@@ -41,7 +41,7 @@ This package contains the API to access the "native" electron API.</Description>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SocketIOClient" Version="2.2.4" />
+    <PackageReference Include="SocketIOClient" Version="2.3.1" />
     <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="2.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>

@@ -129,122 +129,40 @@ namespace ElectronNET.API
         /// The current absolute position of the mouse pointer.
         /// </summary>
         /// <returns></returns>
-        public Task<Point> GetCursorScreenPointAsync() 
-        {
-            var taskCompletionSource = new TaskCompletionSource<Point>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<Point>("screen-getCursorScreenPointCompleted", (point) =>
-            {
-                BridgeConnector.Off("screen-getCursorScreenPointCompleted");
-
-                taskCompletionSource.SetResult(point);
-            });
-
-            BridgeConnector.Emit("screen-getCursorScreenPoint");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<Point> GetCursorScreenPointAsync() => BridgeConnector.OnResult<Point>("screen-getCursorScreenPoint", "screen-getCursorScreenPointCompleted");
 
         /// <summary>
         /// macOS: The height of the menu bar in pixels.
         /// </summary>
         /// <returns>The height of the menu bar in pixels.</returns>
-        public Task<int> GetMenuBarHeightAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<int>("screen-getMenuBarHeightCompleted", (height) =>
-            {
-                BridgeConnector.Off("screen-getMenuBarHeightCompleted");
-
-                taskCompletionSource.SetResult(height);
-            });
-
-            BridgeConnector.Emit("screen-getMenuBarHeight");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<int> GetMenuBarHeightAsync() => BridgeConnector.OnResult<int>("screen-getMenuBarHeight", "screen-getMenuBarHeightCompleted");
 
         /// <summary>
         /// The primary display.
         /// </summary>
         /// <returns></returns>
-        public Task<Display> GetPrimaryDisplayAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<Display> GetPrimaryDisplayAsync() => BridgeConnector.OnResult<Display>("screen-getPrimaryDisplay", "screen-getPrimaryDisplayCompleted");
 
-            BridgeConnector.On<Display>("screen-getPrimaryDisplayCompleted", (display) =>
-            {
-                BridgeConnector.Off("screen-getPrimaryDisplayCompleted");
-
-                taskCompletionSource.SetResult(display);
-            });
-
-            BridgeConnector.Emit("screen-getPrimaryDisplay");
-
-            return taskCompletionSource.Task;
-        }
 
         /// <summary>
         /// An array of displays that are currently available.
         /// </summary>
         /// <returns>An array of displays that are currently available.</returns>
-        public Task<Display[]> GetAllDisplaysAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<Display[]>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<Display[]>("screen-getAllDisplaysCompleted", (displays) =>
-            {
-                BridgeConnector.Off("screen-getAllDisplaysCompleted");
-
-                taskCompletionSource.SetResult(displays);
-            });
-
-            BridgeConnector.Emit("screen-getAllDisplays");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<Display[]> GetAllDisplaysAsync() => BridgeConnector.OnResult<Display[]>("screen-getAllDisplays", "screen-getAllDisplaysCompleted");
 
         /// <summary>
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
-        public Task<Display> GetDisplayNearestPointAsync(Point point)
-        {
-            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<Display>("screen-getDisplayNearestPointCompleted", (display) =>
-            {
-                BridgeConnector.Off("screen-getDisplayNearestPointCompleted");
-
-                taskCompletionSource.SetResult(display);
-            });
-
-            BridgeConnector.Emit("screen-getDisplayNearestPoint", JObject.FromObject(point, _jsonSerializer));
-
-            return taskCompletionSource.Task;
-        }
+        public Task<Display> GetDisplayNearestPointAsync(Point point) => BridgeConnector.OnResult<Display>("screen-getDisplayNearestPoint", "screen-getDisplayNearestPointCompleted", JObject.FromObject(point, _jsonSerializer));
 
         /// <summary>
         /// The display that most closely intersects the provided bounds.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle)
-        {
-            var taskCompletionSource = new TaskCompletionSource<Display>(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => BridgeConnector.OnResult<Display>("screen-getDisplayMatching", "screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer));
 
-            BridgeConnector.On<Display>("screen-getDisplayMatching", (display) =>
-            {
-                BridgeConnector.Off("screen-getDisplayMatching");
-
-                taskCompletionSource.SetResult(display);
-            });
-
-            BridgeConnector.Emit("screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer));
-
-            return taskCompletionSource.Task;
-        }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
