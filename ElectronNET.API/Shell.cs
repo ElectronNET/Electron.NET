@@ -110,7 +110,7 @@ namespace ElectronNET.API
             }
             else
             {
-                BridgeConnector.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
+                BridgeConnector.Emit("shell-openExternal", url, options);
             }
 
             return taskCompletionSource.Task;
@@ -143,7 +143,7 @@ namespace ElectronNET.API
         /// <returns>Whether the shortcut was created successfully.</returns>
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
-            return BridgeConnector.OnResult<bool>("shell-writeShortcutLink", "shell-writeShortcutLinkCompleted", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
+            return BridgeConnector.OnResult<bool>("shell-writeShortcutLink", "shell-writeShortcutLinkCompleted", shortcutPath, operation.GetDescription(), options);
         }
 
         /// <summary>
@@ -156,12 +156,5 @@ namespace ElectronNET.API
         {
             return BridgeConnector.OnResult<ShortcutDetails>("shell-readShortcutLink", "shell-readShortcutLinkCompleted", shortcutPath);
         }
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

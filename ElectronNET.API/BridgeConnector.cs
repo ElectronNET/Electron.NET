@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SocketIOClient;
+using SocketIOClient.JsonSerializer;
 using SocketIOClient.Newtonsoft.Json;
 
 namespace ElectronNET.API
@@ -149,7 +153,7 @@ namespace ElectronNET.API
 
         public static async Task<T> OnResult<T>(string triggerEvent, string completedEvent, params object[] args)
         {
-            string eventKey = triggerEvent;
+            string eventKey = completedEvent;
 
             if (args is object && args.Length > 0) // If there are arguments passed, we generate a unique event key with the arguments
                                                    // this allow us to wait for previous events first before registering new ones
@@ -162,7 +166,7 @@ namespace ElectronNET.API
                 eventKey = $"{eventKey}-{(uint)hash.ToHashCode()}";
             }
 
-            if (EventTasks<T>.TryGetOrAdd(triggerEvent, eventKey, out var taskCompletionSource, out var waitThisFirstAndThenTryAgain))
+            if (EventTasks<T>.TryGetOrAdd(completedEvent, eventKey, out var taskCompletionSource, out var waitThisFirstAndThenTryAgain))
             {
                 if (waitThisFirstAndThenTryAgain is object)
                 {
@@ -188,7 +192,7 @@ namespace ElectronNET.API
                     {
                         Off(completedEvent);
                         taskCompletionSource.SetResult(result);
-                        EventTasks<T>.DoneWith(triggerEvent, eventKey, taskCompletionSource);
+                        EventTasks<T>.DoneWith(completedEvent, eventKey, taskCompletionSource);
                     });
 
                     Emit(triggerEvent, args);
@@ -201,21 +205,56 @@ namespace ElectronNET.API
 
         public static async Task<T> OnResult<T>(string triggerEvent, string completedEvent, CancellationToken cancellationToken, params object[] args)
         {
-            var taskCompletionSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            string eventKey = completedEvent;
 
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            if (args is object && args.Length > 0) // If there are arguments passed, we generate a unique event key with the arguments
+                                                   // this allow us to wait for previous events first before registering new ones
             {
-
-                On<T>(completedEvent, (result) =>
+                var hash = new HashCode();
+                foreach (var obj in args)
                 {
-                    Off(completedEvent);
-                    taskCompletionSource.SetResult(result);
-                });
-
-                Emit(triggerEvent, args);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
+                    hash.Add(obj);
+                }
+                eventKey = $"{eventKey}-{(uint)hash.ToHashCode()}";
             }
+
+            if (EventTasks<T>.TryGetOrAdd(completedEvent, eventKey, out var taskCompletionSource, out var waitThisFirstAndThenTryAgain))
+            {
+                if (waitThisFirstAndThenTryAgain is object)
+                {
+                    //There was a pending call with different parameters, so we need to wait that first and then call here again
+                    try
+                    {
+                        await Task.Run(() => waitThisFirstAndThenTryAgain, cancellationToken);
+                    }
+                    catch
+                    {
+                        //Ignore any exceptions here so we can set a new event below
+                        //The exception will also be visible to the original first caller due to taskCompletionSource.Task
+                    }
+
+                    //Try again to set the event
+                    return await OnResult<T>(triggerEvent, completedEvent, cancellationToken, args);
+                }
+                else
+                {
+                    using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+                    {
+                        //A new TaskCompletionSource was added, so we need to register the completed event here
+
+                        On<T>(completedEvent, (result) =>
+                        {
+                            Off(completedEvent);
+                            taskCompletionSource.SetResult(result);
+                            EventTasks<T>.DoneWith(completedEvent, eventKey, taskCompletionSource);
+                        });
+
+                        Emit(triggerEvent, args);
+                    }
+                }
+            }
+
+            return await taskCompletionSource.Task;
         }
         private static SocketIO Socket
         {
@@ -235,7 +274,7 @@ namespace ElectronNET.API
                                     EIO = 3
                                 });
 
-                                socket.JsonSerializer = new NewtonsoftJsonSerializer(socket.Options.EIO);
+                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
 
 
                                 socket.OnConnected += (_, __) =>
@@ -256,6 +295,23 @@ namespace ElectronNET.API
                 }
 
                 return _socket;
+            }
+        }
+
+        private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
+        {
+            public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
+            {
+            }
+
+            public override JsonSerializerSettings CreateOptions()
+            {
+                return new JsonSerializerSettings()
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore
+                };
             }
         }
     }

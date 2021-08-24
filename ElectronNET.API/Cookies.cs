@@ -71,7 +71,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(cookies);
             });
 
-            BridgeConnector.Emit("webContents-session-cookies-get", Id, JObject.FromObject(filter, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-cookies-get", Id, filter, guid);
 
             return taskCompletionSource.Task;
         }
@@ -92,7 +92,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Emit("webContents-session-cookies-set", Id, JObject.FromObject(details, _jsonSerializer), guid);
+            BridgeConnector.Emit("webContents-session-cookies-set", Id, details, guid);
 
             return taskCompletionSource.Task;
         }
@@ -138,12 +138,5 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

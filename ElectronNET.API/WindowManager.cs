@@ -134,7 +134,7 @@ namespace ElectronNET.API
                 options.X = 0;
                 options.Y = 0;
 
-                BridgeConnector.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+                BridgeConnector.Emit("createBrowserWindow", options, loadUrl);
             }
             else
             {
@@ -194,21 +194,15 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(browserView);
             });
 
-            var ownjsonSerializer = new JsonSerializer()
+            var keepDefaultValuesSerializer = new JsonSerializer()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Include
             };
-            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, keepDefaultValuesSerializer));
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

@@ -16,40 +16,14 @@ namespace ElectronNET.API
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
-        public Task<bool> IsAutoDownloadEnabledAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("autoUpdater-autoDownload-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-autoDownload-get-reply");
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Emit("autoUpdater-autoDownload-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<bool> IsAutoDownloadEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoDownload-get", "autoUpdater-autoDownload-get-reply");
 
         /// <summary>
         /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
         /// 
         /// Applicable only on Windows and Linux.
         /// </summary>
-        public Task<bool> IsAutoInstallOnAppQuitEnabledAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("autoUpdater-autoInstallOnAppQuit-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-autoInstallOnAppQuit-get-reply");
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Emit("autoUpdater-autoInstallOnAppQuit-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<bool> IsAutoInstallOnAppQuitEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoInstallOnAppQuit-get", "autoUpdater-autoInstallOnAppQuit-get-reply");
 
         /// <summary>
         /// *GitHub provider only.* Whether to allow update to pre-release versions. 
@@ -57,54 +31,16 @@ namespace ElectronNET.API
         /// 
         /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
         /// </summary>
-        public Task<bool> IsAllowPrereleaseEnabledAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("autoUpdater-allowPrerelease-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-allowPrerelease-get-reply");
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Emit("autoUpdater-allowPrerelease-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<bool> IsAllowPrereleaseEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowPrerelease-get", "autoUpdater-allowPrerelease-get-reply");
 
         /// <summary>
         /// *GitHub provider only.* 
         /// Get all release notes (from current version to latest), not just the latest (Default is false).
         /// </summary>
-        public Task<bool> IsFullChangeLogEnabledAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task<bool> IsFullChangeLogEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-fullChangelog-get", "autoUpdater-fullChangelog-get-reply");
 
-            BridgeConnector.On<bool>("autoUpdater-fullChangelog-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-fullChangelog-get-reply");
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Emit("autoUpdater-fullChangelog-get");
-
-            return taskCompletionSource.Task;
-        }
-
-        public Task<bool> IsAllowDowngradeEnabledAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<bool>("autoUpdater-allowDowngrade-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-allowDowngrade-get-reply");
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Emit("autoUpdater-allowDowngrade-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<bool> IsAllowDowngradeEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowDowngrade-get", "autoUpdater-allowDowngrade-get-reply");
+        
 
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
@@ -172,72 +108,23 @@ namespace ElectronNET.API
         /// <summary>
         /// For test only.
         /// </summary>
-        public Task<string> GetUpdateConfigPathAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<string>("autoUpdater-updateConfigPath-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-updateConfigPath-get-reply");
-                taskCompletionSource.SetResult(result.ToString());
-            });
-
-            BridgeConnector.Emit("autoUpdater-updateConfigPath-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<string> GetUpdateConfigPathAsync() => BridgeConnector.OnResult<string>("autoUpdater-updateConfigPath-get", "autoUpdater-updateConfigPath-get-reply");
 
         /// <summary>
         /// The current application version
         /// </summary>
-        public Task<SemVer> GetCurrentVersionAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<SemVer>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<SemVer>("autoUpdater-currentVersion-get-reply", (version) =>
-            {
-                BridgeConnector.Off("autoUpdater-currentVersion-get-reply");
-                taskCompletionSource.SetResult(version);
-            });
-            BridgeConnector.Emit("autoUpdater-currentVersion-get");
-
-            return taskCompletionSource.Task;
-        }
+        public Task<SemVer> GetCurrentVersionAsync() => BridgeConnector.OnResult<SemVer>("autoUpdater-updateConcurrentVersionfigPath-get", "autoUpdater-currentVersion-get-reply");
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
-        public Task<string> GetChannelAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            BridgeConnector.On<string>("autoUpdater-channel-get-reply", (result) =>
-            {
-                BridgeConnector.Off("autoUpdater-channel-get-reply");
-                taskCompletionSource.SetResult(result.ToString());
-            });
-            BridgeConnector.Emit("autoUpdater-channel-get");
-
-            return taskCompletionSource.Task;
-        }
-
-
+        public Task<string> GetChannelAsync() => BridgeConnector.OnResult<string>("autoUpdater-channel-get", "autoUpdater-channel-get-reply");
 
         /// <summary>
         /// The request headers.
         /// </summary>
-        public Task<Dictionary<string, string>> GetRequestHeadersAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>(TaskCreationOptions.RunContinuationsAsynchronously);
-            BridgeConnector.On<Dictionary<string, string>>("autoUpdater-requestHeaders-get-reply", (headers) =>
-            {
-                BridgeConnector.Off("autoUpdater-requestHeaders-get-reply");
-                taskCompletionSource.SetResult(headers);
-            });
-            BridgeConnector.Emit("autoUpdater-requestHeaders-get");
-            return taskCompletionSource.Task;
-        }
+        public Task<Dictionary<string, string>> GetRequestHeadersAsync() => BridgeConnector.OnResult<Dictionary<string, string>>("autoUpdater-requestHeaders-get", "autoUpdater-requestHeaders-get-reply");
 
         /// <summary>
         /// The request headers.
@@ -246,7 +133,7 @@ namespace ElectronNET.API
         {
             set
             {
-                BridgeConnector.Emit("autoUpdater-requestHeaders-set", JObject.FromObject(value, _jsonSerializer));
+                BridgeConnector.Emit("autoUpdater-requestHeaders-set", value);
             }
         }
 
@@ -581,10 +468,5 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
     }
 }

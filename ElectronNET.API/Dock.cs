@@ -138,7 +138,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("dock-setMenu", menuItems);
             _items.AddRange(menuItems);
 
             BridgeConnector.Off("dockMenuItemClicked");
@@ -153,25 +153,7 @@ namespace ElectronNET.API
         /// TODO: Menu (macOS) still to be implemented
         /// Gets the application's dock menu.
         /// </summary>
-        public async Task<Menu> GetMenu(CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<Menu>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<Menu>("dock-getMenu-completed", (menu) =>
-                {
-                    BridgeConnector.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(menu);
-                });
-
-                BridgeConnector.Emit("dock-getMenu");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
-        }
+        public Task<Menu> GetMenu(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<Menu>("dock-getMenu", "dock-getMenu-completed", cancellationToken);
 
         /// <summary>
         /// Sets the image associated with this dock icon.
@@ -181,11 +163,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("dock-setIcon", image);
         }
-
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }
