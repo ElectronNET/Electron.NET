@@ -34,12 +34,12 @@ export = (socket: Socket) => {
 
     socket.on('webContents-getPrinters', async (id) => {
         const printers = await getWindowById(id).webContents.getPrinters();
-        electronSocket.emit('webContents-getPrinters-completed', printers);
+        electronSocket.emit('webContents-getPrinters-completed' + Id, printers);
     });
 
     socket.on('webContents-print', async (id, options = {}) => {
         await getWindowById(id).webContents.print(options);
-        electronSocket.emit('webContents-print-completed', true);
+        electronSocket.emit('webContents-print-completed' + Id, true);
     });
 
     socket.on('webContents-printToPDF', async (id, options = {}, path) => {
@@ -47,9 +47,9 @@ export = (socket: Socket) => {
 
         fs.writeFile(path, buffer, (error) => {
             if (error) {
-                electronSocket.emit('webContents-printToPDF-completed', false);
+                electronSocket.emit('webContents-printToPDF-completed' + Id, false);
             } else {
-                electronSocket.emit('webContents-printToPDF-completed', true);
+                electronSocket.emit('webContents-printToPDF-completed' + Id, true);
             }
         });
     });
@@ -253,7 +253,7 @@ export = (socket: Socket) => {
             chromeExtensionInfo.push(extensionsList[key]);
         });
 
-        electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);
+        electronSocket.emit('webContents-session-getAllExtensions-completed' + Id, chromeExtensionInfo);
     });
 
     socket.on('webContents-session-removeExtension', (id, name) => {
@@ -265,7 +265,7 @@ export = (socket: Socket) => {
         const browserWindow = getWindowById(id);
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
 
-        electronSocket.emit('webContents-session-loadExtension-completed', extension);
+        electronSocket.emit('webContents-session-loadExtension-completed' + Id, extension);
     });
 
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {
