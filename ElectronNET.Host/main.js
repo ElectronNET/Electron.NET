@@ -330,13 +330,15 @@ function startAspCoreBackend(electronPort) {
 
         apiProcess = cProcess(binFilePath, parameters, options);
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
-        });
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
 
-        apiProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data.toString()}`);
-        });
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
 
         apiProcess.on('close', (code) => {
             console.log(`ASP.NET Process exited with code ${code}`);
@@ -382,13 +384,15 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         apiProcess = cProcess('dotnet', parameters, options);
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
-        });
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
 
-        apiProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data.toString()}`);
-        });
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
 
         apiProcess.on('close', (code) => {
             console.log(`ASP.NET Process exited with code ${code}`);
