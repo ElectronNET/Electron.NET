@@ -101,7 +101,16 @@ app.on('ready', () => {
 
 app.on('quit', async (event, exitCode) => {
     await server.close();
-    apiProcess.kill();
+
+    var shouldKill = true;
+
+    if (manifestJsonFile.hasOwnProperty('killOnQuit')) {
+        shouldKill = manifestJsonFile.killOnQuit;        
+    }
+
+    if (shouldKill) {
+        apiProcess.kill();
+    }
 });
 
 function isSplashScreenEnabled() {
@@ -141,7 +150,7 @@ function startSplashScreen() {
             if (manifestJsonFile.splashscreen.hasOwnProperty('timeout')) {
                 var timeout = manifestJsonFile.splashscreen.timeout;
                 setTimeout((t) => {
-                    if (splashScreen != null ) {
+                    if (splashScreen) {
                         splashScreen.hide();
                     }
                 }, timeout);
