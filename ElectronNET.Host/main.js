@@ -103,13 +103,13 @@ app.on('ready', () => {
 app.on('quit', async (event, exitCode) => {
     await server.close();
 
-    var shouldKill = true;
+    var detachedProcess = false;
 
-    if (manifestJsonFile.hasOwnProperty('killOnQuit')) {
-        shouldKill = manifestJsonFile.killOnQuit;        
+    if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+        detachedProcess = manifestJsonFile.detachedProcess;
     }
 
-    if (shouldKill) {
+    if (!detachedProcess) {
         apiProcess.kill();
     }
 });
@@ -305,8 +305,8 @@ function startAspCoreBackend(electronPort) {
 
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
-        loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
+        loadURL = 'http://localhost:${aspCoreBackendPort}';
+        const parameters = [getEnvironmentParameter(), '/electronPort=${electronPort}', '/electronWebPort=${aspCoreBackendPort}', '/electronPID=${process.pid}'];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -314,25 +314,38 @@ function startAspCoreBackend(electronPort) {
             binaryFile = binaryFile + '.exe';
         }
 
+        var detachedProcess = false;
+
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+        }
+
         let binFilePath = path.join(currentBinPath, binaryFile);
-        var options = { cwd: currentBinPath };
+
+        var options = { cwd: currentBinPath, detached: detachedProcess };
+
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+            console.log('stdout: ${data.toString()}');
         });
 
         apiProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data.toString()}`);
+            console.log('stderr: ${data.toString()}');
         });
 
         apiProcess.on('close', (code) => {
-            console.log(`ASP.NET Process exited with code ${code}`);
+            console.log('ASP.NET Process exited with code ${code}');
             if (code != 0) {
-                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                console.log('Will quit Electron, as exit code != 0 (got ${code})');
                 app.exit(code);
             }
         });
+
+        if (detachedProcess) {
+            console.log('Detached from ASP.NET process');
+            apiProcess.unref();
+        }
     }
 }
 
@@ -348,30 +361,39 @@ function startAspCoreBackendWithWatch(electronPort) {
 
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
-        loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
+        loadURL = 'http://localhost:${aspCoreBackendPort}';
+        const parameters = ['watch', 'run', getEnvironmentParameter(), '/electronPort=${electronPort}', '/electronWebPort=${aspCoreBackendPort}', '/electronPID=${process.pid}'];
 
-        var options = {
-            cwd: currentBinPath,
-            env: process.env,
-        };
+        var detachedProcess = false;
+
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+        }
+
+        var options = { cwd: currentBinPath, env: process.env, detached: detachedProcess };
+
         apiProcess = cProcess('dotnet', parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+            console.log('stdout: ${data.toString()}');
         });
 
         apiProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data.toString()}`);
+            console.log('stderr: ${data.toString()}');
         });
 
         apiProcess.on('close', (code) => {
-            console.log(`ASP.NET Process exited with code ${code}`);
+            console.log('ASP.NET Process exited with code ${code}');
             if (code != 0) {
-                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                console.log('Will quit Electron, as exit code != 0 (got ${code})');
                 app.exit(code);
             }
         });
+
+        if (detachedProcess) {
+            console.log('Detached from ASP.NET process');
+            apiProcess.unref();
+        }
     }
 }
 
