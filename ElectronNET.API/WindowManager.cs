@@ -150,6 +150,7 @@ namespace ElectronNET.API
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
+
                 BridgeConnector.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
             }
 

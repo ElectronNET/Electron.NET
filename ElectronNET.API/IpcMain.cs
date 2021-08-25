@@ -207,6 +207,27 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Log a message to the console output pipe. This is used when running with "detachedProcess" : true on the electron.manifest.json,
+        /// as in that case we can't open pipes to read the console output from the child process anymore
+        /// </summary>
+        /// <param name="text">Message to log</param>
+        public static void ConsoleLog(string text)
+        {
+            BridgeConnector.Emit("console-stdout", text);
+        }
+
+        /// <summary>
+        /// Log a message to the console error pipe. This is used when running with "detachedProcess" : true on the electron.manifest.json,
+        /// as in that case we can't open pipes to read the console output from the child process anymore
+        /// </summary>
+        /// <param name="text">Message to log</param>
+
+        public static void ConsoleError(string text)
+        {
+            BridgeConnector.Emit("console-stderr", text);
+        }
+
         private JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

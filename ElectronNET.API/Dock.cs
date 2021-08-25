@@ -138,7 +138,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("dock-setMenu", menuItems);
+            BridgeConnector.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Off("dockMenuItemClicked");
@@ -146,7 +146,6 @@ namespace ElectronNET.API
                 MenuItem menuItem = _items.GetMenuItem(id);
                 menuItem?.Click();
             });
-           
         }
 
         /// <summary>
@@ -163,5 +162,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("dock-setIcon", image);
         }
+
+        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
     }
 }
