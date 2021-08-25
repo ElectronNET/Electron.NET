@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -6,6 +7,33 @@ namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
+        private static ConcurrentDictionary<Process, bool> _activeProcess = new();
+
+        public static void KillActive()
+        {
+            foreach(var kv in _activeProcess)
+            {
+                if (!kv.Key.HasExited)
+                {
+                    try
+                    {
+                        kv.Key.CloseMainWindow();
+                    }
+                    catch
+                    {
+
+                    }
+                    try
+                    {
+                        kv.Key.Kill(false);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
         public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
         {
             using (Process cmd = new Process())
@@ -43,7 +71,11 @@ namespace ElectronNET.CLI
 
                 if (waitForExit)
                 {
+                    _activeProcess[cmd] = true;
+
                     cmd.WaitForExit();
+
+                    _activeProcess.TryRemove(cmd, out _);
                 }
 
                 return cmd.ExitCode;

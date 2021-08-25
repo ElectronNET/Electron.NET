@@ -19,6 +19,12 @@ namespace ElectronNET.CLI
                 Environment.Exit(-1);
             }
 
+            Console.CancelKeyPress += (s,e) =>
+            {
+                ProcessHelper.KillActive();
+                Environment.Exit(-1);
+            };
+
             ICommand command = null;
 
             switch (args[0])
