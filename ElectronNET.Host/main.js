@@ -271,6 +271,14 @@ function startSocketApiBridge(port) {
             }
         });
 
+        socket.on('console-stdout', (data) => {
+            console.log(`stdout: ${data.toString()}`);
+        });
+
+        socket.on('console-stderr', (data) => {
+            console.log(`stderr: ${data.toString()}`);
+        });
+
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
 
@@ -320,7 +328,7 @@ function startAspCoreBackend(electronPort) {
         if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
             detachedProcess = manifestJsonFile.detachedProcess;
             if (detachedProcess) {
-                stdioopt = ['ignore', 'pipe', 'pipe'];
+                stdioopt = 'ignore';
             }
         }
 
@@ -376,7 +384,7 @@ function startAspCoreBackendWithWatch(electronPort) {
         if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
             detachedProcess = manifestJsonFile.detachedProcess;
             if (detachedProcess) {
-                stdioopt = ['ignore', 'pipe', 'pipe'];
+                stdioopt = 'ignore';
             }
         }
 
