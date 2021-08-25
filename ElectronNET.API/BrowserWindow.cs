@@ -949,13 +949,13 @@ namespace ElectronNET.API
         /// Whether the window is focused.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsFocusedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsFocused", "browserWindow-isFocused-completed", Id);
+        public Task<bool> IsFocusedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsFocused", "browserWindow-isFocused-completed" + Id, Id);
 
         /// <summary>
         /// Whether the window is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsDestroyed", "browserWindow-isDestroyed-completed", Id);
+        public Task<bool> IsDestroyedAsync() => BridgeConnector.OnResult<bool>("browserWindowIsDestroyed", "browserWindow-isDestroyed-completed" + Id, Id);
 
         /// <summary>
         /// Shows and gives focus to the window.
@@ -987,7 +987,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsVisibleAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsVisible", "browserWindow-isVisible-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsVisible", "browserWindow-isVisible-completed" + Id, Id);
         }
 
         /// <summary>
@@ -996,7 +996,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsModalAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsModal", "browserWindow-isModal-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsModal", "browserWindow-isModal-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1021,7 +1021,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMaximizedAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMaximized", "browserWindow-isMaximized-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMaximized", "browserWindow-isMaximized-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1046,7 +1046,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMinimizedAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMinimized", "browserWindow-isMinimized-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMinimized", "browserWindow-isMinimized-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1063,7 +1063,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsFullScreenAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsFullScreen", "browserWindow-isFullScreen-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsFullScreen", "browserWindow-isFullScreen-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1142,7 +1142,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Rectangle> GetBoundsAsync()
         {
-            return BridgeConnector.OnResult<Rectangle>("browserWindowGetBounds", "browserWindow-getBounds-completed", Id);
+            return BridgeConnector.OnResult<Rectangle>("browserWindowGetBounds", "browserWindow-getBounds-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1170,7 +1170,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Rectangle> GetContentBoundsAsync()
         {
-            return BridgeConnector.OnResult<Rectangle>("browserWindowGetContentBounds", "browserWindow-getContentBounds-completed", Id);
+            return BridgeConnector.OnResult<Rectangle>("browserWindowGetContentBounds", "browserWindow-getContentBounds-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1200,7 +1200,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetSizeAsync()
         {
-            return BridgeConnector.OnResult<int[]>("browserWindowGetSize", "browserWindow-getSize-completed", Id);
+            return BridgeConnector.OnResult<int[]>("browserWindowGetSize", "browserWindow-getSize-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1230,7 +1230,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetContentSizeAsync()
         {
-            return BridgeConnector.OnResult<int[]>("browserWindowGetContentSize", "browserWindow-getContentSize-completed", Id);
+            return BridgeConnector.OnResult<int[]>("browserWindowGetContentSize", "browserWindow-getContentSize-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1249,7 +1249,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetMinimumSizeAsync()
         {
-            return BridgeConnector.OnResult<int[]>("browserWindowGetMinimumSize", "browserWindow-getMinimumSize-completed", Id);
+            return BridgeConnector.OnResult<int[]>("browserWindowGetMinimumSize", "browserWindow-getMinimumSize-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1268,7 +1268,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetMaximumSizeAsync()
         {
-            return BridgeConnector.OnResult<int[]>("browserWindowGetMaximumSize", "browserWindow-getMaximumSize-completed", Id);
+            return BridgeConnector.OnResult<int[]>("browserWindowGetMaximumSize", "browserWindow-getMaximumSize-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1286,7 +1286,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsResizableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsResizable", "browserWindow-isResizable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsResizable", "browserWindow-isResizable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1306,7 +1306,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMovableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMovable", "browserWindow-isMovable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMovable", "browserWindow-isMovable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1326,7 +1326,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMinimizableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMinimizable", "browserWindow-isMinimizable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMinimizable", "browserWindow-isMinimizable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1346,7 +1346,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsMaximizableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMaximizable", "browserWindow-isMaximizable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMaximizable", "browserWindow-isMaximizable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1364,7 +1364,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsFullScreenableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsFullScreenable", "browserWindow-isFullScreenable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsFullScreenable", "browserWindow-isFullScreenable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1384,7 +1384,7 @@ namespace ElectronNET.API
         /// <returns>On Linux always returns true.</returns>
         public Task<bool> IsClosableAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsClosable", "browserWindow-isClosable-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsClosable", "browserWindow-isClosable-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1434,7 +1434,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsAlwaysOnTopAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsAlwaysOnTop", "browserWindow-isAlwaysOnTop-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsAlwaysOnTop", "browserWindow-isAlwaysOnTop-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1491,7 +1491,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<int[]> GetPositionAsync()
         {
-            return BridgeConnector.OnResult<int[]>("browserWindowGetPosition", "browserWindow-getPosition-completed", Id);
+            return BridgeConnector.OnResult<int[]>("browserWindowGetPosition", "browserWindow-getPosition-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1511,7 +1511,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> GetTitleAsync()
         {
-            return BridgeConnector.OnResult<string>("browserWindowGetTitle", "browserWindow-getTitle-completed", Id);
+            return BridgeConnector.OnResult<string>("browserWindowGetTitle", "browserWindow-getTitle-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1570,7 +1570,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsKioskAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsKiosk", "browserWindow-isKiosk-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsKiosk", "browserWindow-isKiosk-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1579,7 +1579,7 @@ namespace ElectronNET.API
         /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
         public Task<string> GetNativeWindowHandle()
         {
-            return BridgeConnector.OnResult<string>("browserWindowGetNativeWindowHandle", "browserWindow-getNativeWindowHandle-completed", Id);
+            return BridgeConnector.OnResult<string>("browserWindowGetNativeWindowHandle", "browserWindow-getNativeWindowHandle-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1598,7 +1598,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> GetRepresentedFilenameAsync()
         {
-            return BridgeConnector.OnResult<string>("browserWindowGetRepresentedFilename", "browserWindow-getRepresentedFilename-completed", Id);
+            return BridgeConnector.OnResult<string>("browserWindowGetRepresentedFilename", "browserWindow-getRepresentedFilename-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1617,7 +1617,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsDocumentEditedAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsDocumentEdited", "browserWindow-isDocumentEdited-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsDocumentEdited", "browserWindow-isDocumentEdited-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1751,7 +1751,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> HasShadowAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowHasShadow", "browserWindow-hasShadow-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowHasShadow", "browserWindow-hasShadow-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1780,9 +1780,9 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            BridgeConnector.On<bool>("browserWindowSetThumbarButtons-completed", (success) => 
+            BridgeConnector.On<bool>("browserWindowSetThumbarButtons-completed" + Id, (success) => 
             {
-                BridgeConnector.Off("browserWindowSetThumbarButtons-completed");
+                BridgeConnector.Off("browserWindowSetThumbarButtons-completed" + Id);
 
                 taskCompletionSource.SetResult(success);
             });
@@ -1860,7 +1860,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMenuBarAutoHideAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMenuBarAutoHide", "browserWindow-isMenuBarAutoHide-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMenuBarAutoHide", "browserWindow-isMenuBarAutoHide-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1879,7 +1879,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsMenuBarVisibleAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsMenuBarVisible", "browserWindow-isMenuBarVisible-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsMenuBarVisible", "browserWindow-isMenuBarVisible-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1901,7 +1901,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsVisibleOnAllWorkspacesAsync()
         {
-            return BridgeConnector.OnResult<bool>("browserWindowIsVisibleOnAllWorkspaces", "browserWindow-isVisibleOnAllWorkspaces-completed", Id);
+            return BridgeConnector.OnResult<bool>("browserWindowIsVisibleOnAllWorkspaces", "browserWindow-isVisibleOnAllWorkspaces-completed" + Id, Id);
         }
 
         /// <summary>
@@ -1953,7 +1953,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<BrowserWindow> GetParentWindowAsync()
         {
-            var windowID = await BridgeConnector.OnResult<int>("browserWindowGetParentWindow", "browserWindow-getParentWindow-completed", Id);
+            var windowID = await BridgeConnector.OnResult<int>("browserWindowGetParentWindow", "browserWindow-getParentWindow-completed" + Id, Id);
             return Electron.WindowManager.BrowserWindows.Where(w => w.Id == windowID).Single();
         }
 
@@ -1963,7 +1963,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<List<BrowserWindow>> GetChildWindowsAsync()
         {
-            var windowIDs = new HashSet<int>(await BridgeConnector.OnResult<int[]>("browserWindowGetChildWindows", "browserWindow-getChildWindows-completed", Id));
+            var windowIDs = new HashSet<int>(await BridgeConnector.OnResult<int[]>("browserWindowGetChildWindows", "browserWindow-getChildWindows-completed" + Id, Id));
             return Electron.WindowManager.BrowserWindows.Where(w => windowIDs.Contains(w.Id)).ToList();
         }
 
