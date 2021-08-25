@@ -242,7 +242,7 @@ namespace ElectronNET.API
         public void Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("create-tray", image, menuItems);
+            BridgeConnector.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
             _items.Clear();
             _items.AddRange(menuItems);
 
@@ -324,33 +324,39 @@ namespace ElectronNET.API
         public Task<bool> IsDestroyedAsync() => BridgeConnector.OnResult<bool>("tray-isDestroyed", "tray-isDestroyedCompleted");
 
         private const string ModuleName = "tray";
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        public void On(string eventName, Action fn) => Events.Instance.On(ModuleName, eventName, fn);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        public void On(string eventName, Action<object> fn) => Events.Instance.On(ModuleName, eventName, fn);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        public void Once(string eventName, Action fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
     }
 }

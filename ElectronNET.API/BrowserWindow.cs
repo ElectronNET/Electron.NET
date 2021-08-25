@@ -1682,7 +1682,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Emit("browserWindowSetMenu", Id, menuItems);
+            BridgeConnector.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Off("windowMenuItemClicked");
@@ -1788,7 +1788,7 @@ namespace ElectronNET.API
             });
 
             thumbarButtons.AddThumbarButtonsId();
-            BridgeConnector.Emit("browserWindowSetThumbarButtons", Id, thumbarButtons);
+            BridgeConnector.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
             _thumbarButtons.Clear();
             _thumbarButtons.AddRange(thumbarButtons);
 
@@ -2003,5 +2003,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("browserWindow-setBrowserView", Id, browserView.Id);
         }
+
+        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
     }
 }

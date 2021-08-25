@@ -581,7 +581,7 @@ namespace ElectronNET.API
         /// <param name="relaunchOptions">Options for the relaunch.</param>
         public void Relaunch(RelaunchOptions relaunchOptions)
         {
-            BridgeConnector.EmitSync("appRelaunch", relaunchOptions);
+            BridgeConnector.EmitSync("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -601,7 +601,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus(FocusOptions focusOptions)
         {
-            BridgeConnector.Emit("appFocus", focusOptions);
+            BridgeConnector.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -891,7 +891,7 @@ namespace ElectronNET.API
         /// <param name="userTasks">Array of <see cref="UserTask"/> objects.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetUserTasks", "appSetUserTasksCompleted", cancellationToken, userTasks);
+        public Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetUserTasks", "appSetUserTasksCompleted", cancellationToken, JArray.FromObject(userTasks, _jsonSerializer));
 
         /// <summary>
         /// Jump List settings for the application.
@@ -918,7 +918,7 @@ namespace ElectronNET.API
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
         public void SetJumpList(JumpListCategory[] categories)
         {
-            BridgeConnector.Emit("appSetJumpList", categories);
+            BridgeConnector.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
         }
 
         /// <summary>
@@ -1054,7 +1054,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Result of import. Value of 0 indicates success.</returns>
-        public Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appImportCertificate", "appImportCertificateCompleted", cancellationToken, options);
+        public Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appImportCertificate", "appImportCertificateCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
 
         /// <summary>
         /// Memory and cpu usage statistics of all the processes associated with the app.
@@ -1120,7 +1120,7 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default) =>
             options is null ? BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken)
-                            : BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken, options);
+                            : BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
 
         /// <summary>
         /// Set the app's login item settings.
@@ -1130,7 +1130,7 @@ namespace ElectronNET.API
         /// <param name="loginSettings"></param>
         public void SetLoginItemSettings(LoginSettings loginSettings)
         {
-            BridgeConnector.Emit("appSetLoginItemSettings", loginSettings);
+            BridgeConnector.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
         }
 
         /// <summary>
@@ -1179,7 +1179,7 @@ namespace ElectronNET.API
         /// <param name="options">About panel options.</param>
         public void SetAboutPanelOptions(AboutPanelOptions options)
         {
-            BridgeConnector.Emit("appSetAboutPanelOptions", options);
+            BridgeConnector.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -1243,5 +1243,10 @@ namespace ElectronNET.API
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
         public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
     }
 }
