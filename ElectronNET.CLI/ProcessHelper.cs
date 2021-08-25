@@ -25,7 +25,7 @@ namespace ElectronNET.CLI
                     }
                     try
                     {
-                        kv.Key.Kill(false);
+                        kv.Key.Kill(true);
                     }
                     catch
                     {
