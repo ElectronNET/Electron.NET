@@ -320,7 +320,7 @@ function startAspCoreBackend(electronPort) {
         if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
             detachedProcess = manifestJsonFile.detachedProcess;
             if (detachedProcess) {
-                stdioopt = 'ignore';
+                stdioopt = ['ignore', 'pipe', 'pipe'];
             }
         }
 
@@ -376,7 +376,7 @@ function startAspCoreBackendWithWatch(electronPort) {
         if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
             detachedProcess = manifestJsonFile.detachedProcess;
             if (detachedProcess) {
-                stdioopt = 'ignore';
+                stdioopt = ['ignore', 'pipe', 'pipe'];
             }
         }
 
