@@ -377,18 +377,27 @@ namespace ElectronNET.API
                                     Log("ElectronNET socket disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort);
 
                                     int i = 0;
+                                    
+                                    double miliseconds = 500;
+
                                     while (true)
                                     {
-                                        var seconds = Math.Pow(2, i);
-                                        await Task.Delay(TimeSpan.FromSeconds(seconds));
                                         try
                                         {
-                                            await socket.ConnectAsync();
+                                            if (!socket.Connected)
+                                            {
+                                                await socket.ConnectAsync();
+                                            }
+                                            return;
                                         }
                                         catch (Exception e)
                                         {
-                                            LogError(e, "Failed to reconnect, will try again. Attempt {0}", i);
+                                            LogError(e, "Failed to reconnect, will try again in {0} ms.", miliseconds * 2);
                                         }
+
+                                        await Task.Delay(TimeSpan.FromMilliseconds(miliseconds));
+
+                                        miliseconds = Math.Min(60_000, Math.Pow(2, i) + 500);
                                         i++;
                                     }
                                 };
