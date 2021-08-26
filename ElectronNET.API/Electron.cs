@@ -1,10 +1,25 @@
-﻿namespace ElectronNET.API
+﻿using Microsoft.Extensions.Logging;
+
+namespace ElectronNET.API
 {
     /// <summary>
     /// The Electron.NET API
     /// </summary>
     public static class Electron
     {
+        private static ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Sets the logger factory to be used by Electron, if any
+        /// </summary>
+        public static ILoggerFactory LoggerFactory
+        {
+            private get => loggerFactory; set
+            {
+                loggerFactory = value;
+                BridgeConnector.Logger = value.CreateLogger<App>();
+            }
+        }
         /// <summary>
         /// Communicate asynchronously from the main process to renderer processes.
         /// </summary>

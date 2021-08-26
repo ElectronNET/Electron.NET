@@ -434,7 +434,7 @@ namespace ElectronNET.API.Entities
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                BridgeConnector.LogError(ex, "Error getting scaled images");
             }
             
             return dict;

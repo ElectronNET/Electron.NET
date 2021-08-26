@@ -16,7 +16,7 @@ namespace ElectronNET.API
             {
                 App.Instance.IsReady = true;
 
-                Console.WriteLine("ASP.NET Core host has fully started.");
+                BridgeConnector.Log("ASP.NET Core host has fully started.");
             });
         }
 

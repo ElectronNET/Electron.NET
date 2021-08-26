@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using SocketIOClient;
@@ -97,7 +98,7 @@ namespace ElectronNET.API
             {
                 if (App.SocketDebug)
                 {
-                    Console.WriteLine($"Sending event {eventString}");
+                    Log("Sending event {0}", eventString);
                 }
 
                 await _socketSemaphore.WaitAsync();
@@ -112,9 +113,21 @@ namespace ElectronNET.API
 
                 if (App.SocketDebug)
                 {
-                    Console.WriteLine($"Sent event {eventString}");
+                    Log($"Sent event {eventString}");
                 }
             });
+        }
+
+        internal static void Log(string formatString, params object[] args)
+        {
+            if (Logger is object)
+            {
+                Logger.LogInformation(formatString, args);
+            }
+            else
+            {
+                Console.WriteLine(formatString, args);
+            }
         }
 
         /// <summary>
@@ -126,7 +139,7 @@ namespace ElectronNET.API
         {
             if (App.SocketDebug)
             {
-                Console.WriteLine($"Sending event {eventString}");
+                Log("Sending event {0}", eventString);
             }
 
             _socketSemaphore.Wait();
@@ -143,7 +156,7 @@ namespace ElectronNET.API
 
             if (App.SocketDebug)
             {
-                Console.WriteLine($"Sent event {eventString}");
+                Log("Sent event {0}", eventString);
             }
         }
 
@@ -328,28 +341,28 @@ namespace ElectronNET.API
 
                                 socket.OnConnected += (_, __) =>
                                 {
-                                    Console.WriteLine("ElectronNET socket connected!");
+                                    Log("ElectronNET socket connected on port {0}!", BridgeSettings.SocketPort);
                                 };
 
                                 socket.OnReconnectAttempt += (_, __) =>
                                 {
-                                    Console.WriteLine("ElectronNET socket is trying to reconnect...");
+                                    Log("ElectronNET socket is trying to reconnect on port {0}...", BridgeSettings.SocketPort);
                                 };
 
                                 socket.OnReconnectError += (_, ex) =>
                                 {
-                                    Console.WriteLine("ElectronNET socket failed to connect {0}", ex.ToString());
+                                    Log("ElectronNET socket failed to connect {0}", ex);
                                 };
 
                                 socket.OnReconnected += (_, __) =>
                                 {
-                                    Console.WriteLine("ElectronNET socket reconnected...");
+                                    Log("ElectronNET socket reconnected on port {0}...", BridgeSettings.SocketPort);
                                 };
 
 
                                 socket.OnDisconnected += (_, __) =>
                                 {
-                                    Console.WriteLine("ElectronNET socket disconnected, trying to reconnect!");
+                                    Log("ElectronNET socket disconnected, trying to reconnect on port {0}!", on port { 0});
                                     socket.ConnectAsync().Wait();
                                 };
 
@@ -368,6 +381,8 @@ namespace ElectronNET.API
                 return _socket;
             }
         }
+
+        internal static ILogger<App> Logger { private get; set; }
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {

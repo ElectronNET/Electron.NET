@@ -36,6 +36,7 @@ This package contains the API to access the "native" electron API.</Description>
    <FrameworkReference Include="Microsoft.AspNetCore.App" />
 </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
