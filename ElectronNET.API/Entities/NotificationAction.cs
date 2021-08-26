@@ -3,6 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
+    [SupportedOSPlatform("macos")]
     public class NotificationAction
     {
         /// <summary>

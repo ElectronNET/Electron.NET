@@ -7,6 +7,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
+using System.Runtime.Versioning;
+
+//TODO: Implement app.showEmojiPanel and app.isEmojiPanelSupported:  https://www.electronjs.org/docs/api/app#appshowemojipanel-macos-windows
+//TODO: Implement app.moveToApplicationsFolder: https://www.electronjs.org/docs/api/app#appmovetoapplicationsfolderoptions-macos
+//TODO: Implement apprunningUnderRosettaTranslation: https://www.electronjs.org/docs/api/app#apprunningunderrosettatranslation-macos-readonly
 
 namespace ElectronNET.API
 {
@@ -337,6 +342,8 @@ namespace ElectronNET.API
         /// screen readers, are enabled or disabled. See https://www.chromium.org/developers/design-documents/accessibility for more details.
         /// </summary>
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public event Action<bool> AccessibilitySupportChanged
         {
             add
@@ -411,6 +418,7 @@ namespace ElectronNET.API
         /// <para/>
         /// On Windows, you have to parse the arguments using App.CommandLine to get the filepath.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action<string> OpenFile
         {
             add
@@ -442,6 +450,7 @@ namespace ElectronNET.API
         /// Emitted when a MacOS user wants to open a URL with the application. Your application's Info.plist file must
         /// define the URL scheme within the CFBundleURLTypes key, and set NSPrincipalClass to AtomApplication.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action<string> OpenUrl
         {
             add
@@ -599,6 +608,7 @@ namespace ElectronNET.API
         /// <para/>
         /// You should seek to use the <see cref="FocusOptions.Steal"/> option as sparingly as possible.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public void Focus(FocusOptions focusOptions)
         {
             BridgeConnector.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
@@ -607,6 +617,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Hides all application windows without minimizing them.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public void Hide()
         {
             BridgeConnector.Emit("appHide");
@@ -615,6 +626,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Shows application windows after they were hidden. Does not automatically focus them.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public void Show()
         {
             BridgeConnector.Emit("appShow");
@@ -688,6 +700,8 @@ namespace ElectronNET.API
         /// list from the task bar, and on macOS you can visit it from dock menu.
         /// </summary>
         /// <param name="path">Path to add.</param>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public void AddRecentDocument(string path)
         {
             BridgeConnector.Emit("appAddRecentDocument", path);
@@ -696,6 +710,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Clears the recent documents list.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public void ClearRecentDocuments()
         {
             BridgeConnector.Emit("appClearRecentDocuments");
@@ -726,6 +742,8 @@ namespace ElectronNET.API
         /// call this method with electron as the parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
             return await SetAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
@@ -757,6 +775,8 @@ namespace ElectronNET.API
         /// <param name="path">The path to the Electron executable. Defaults to process.execPath</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
             return await SetAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
@@ -789,6 +809,8 @@ namespace ElectronNET.API
         /// <param name="args">Arguments passed to the executable. Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetAsDefaultProtocolClient", "appSetAsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
 
         /// <summary>
@@ -798,6 +820,8 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
             return await RemoveAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
@@ -811,6 +835,8 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
             return await RemoveAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
@@ -825,6 +851,8 @@ namespace ElectronNET.API
         /// <param name="args">Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appRemoveAsDefaultProtocolClient", "appRemoveAsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
 
 
@@ -841,6 +869,8 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> IsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
             return await IsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
@@ -860,6 +890,8 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
             return await IsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
@@ -880,6 +912,8 @@ namespace ElectronNET.API
         /// <param name="args">Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsDefaultProtocolClient", "appIsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
 
 
@@ -891,6 +925,7 @@ namespace ElectronNET.API
         /// <param name="userTasks">Array of <see cref="UserTask"/> objects.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("windows")]
         public Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetUserTasks", "appSetUserTasksCompleted", cancellationToken, JArray.FromObject(userTasks, _jsonSerializer));
 
         /// <summary>
@@ -898,6 +933,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Jump List settings.</returns>
+        [SupportedOSPlatform("windows")]
         public Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<JumpListSettings>("appGetJumpListSettings", "appGetJumpListSettingsCompleted", cancellationToken);
 
         /// <summary>
@@ -916,6 +952,7 @@ namespace ElectronNET.API
         /// omitted from the Jump List. The list of removed items can be obtained using <see cref="GetJumpListSettingsAsync"/>.
         /// </summary>
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
+        [SupportedOSPlatform("windows")]
         public void SetJumpList(JumpListCategory[] categories)
         {
             BridgeConnector.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
@@ -991,6 +1028,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type">Uniquely identifies the activity. Maps to <see href="https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSUserActivity_Class/index.html#//apple_ref/occ/instp/NSUserActivity/activityType">NSUserActivity.activityType</see>.</param>
         /// <param name="userInfo">App-specific state to store for use by another device.</param>
+        [SupportedOSPlatform("macos")]
         public void SetUserActivity(string type, object userInfo)
         {
             SetUserActivity(type, userInfo, null);
@@ -1008,6 +1046,7 @@ namespace ElectronNET.API
         /// <param name="webpageUrl">
         /// The webpage to load in a browser if no suitable app is installed on the resuming device. The scheme must be http or https.
         /// </param>
+        [SupportedOSPlatform("macos")]
         public void SetUserActivity(string type, object userInfo, string webpageUrl)
         {
             BridgeConnector.Emit("appSetUserActivity", type, userInfo, webpageUrl);
@@ -1017,12 +1056,14 @@ namespace ElectronNET.API
         /// The type of the currently running activity.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("macos")] 
         public Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetCurrentActivityType", "appGetCurrentActivityTypeCompleted", cancellationToken);
 
 
         /// <summary>
         /// Invalidates the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public void InvalidateCurrentActivity()
         {
             BridgeConnector.Emit("appInvalidateCurrentActivity");
@@ -1031,6 +1072,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Marks the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity as inactive without invalidating it.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public void ResignCurrentActivity()
         {
             BridgeConnector.Emit("appResignCurrentActivity");
@@ -1040,6 +1082,7 @@ namespace ElectronNET.API
         /// Changes the <see href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx">Application User Model ID</see> to id.
         /// </summary>
         /// <param name="id">Model Id.</param>
+        [SupportedOSPlatform("windows")]
         public void SetAppUserModelId(string id)
         {
             BridgeConnector.Emit("appSetAppUserModelId", id);
@@ -1054,6 +1097,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Result of import. Value of 0 indicates success.</returns>
+        [SupportedOSPlatform("linux")]
         public Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appImportCertificate", "appImportCertificateCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
 
         /// <summary>
@@ -1084,12 +1128,16 @@ namespace ElectronNET.API
         /// <param name="count">Counter badge.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
         public Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetBadgeCount", "appSetBadgeCountCompleted", cancellationToken, count);
 
         /// <summary>
         /// The current value displayed in the counter badge.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
         public Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appGetBadgeCount", "appGetBadgeCountCompleted", cancellationToken);
 
         /// <summary>
@@ -1101,12 +1149,15 @@ namespace ElectronNET.API
         /// Whether the current desktop environment is Unity launcher.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("linux")]
         public Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsUnityRunning", "appIsUnityRunningCompleted", cancellationToken);
 
         /// <summary>
         /// If you provided path and args options to <see cref="SetLoginItemSettings"/> then you need to pass the same
         /// arguments here for <see cref="LoginItemSettings.OpenAtLogin"/> to be set correctly.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task<LoginItemSettings> GetLoginItemSettingsAsync(CancellationToken cancellationToken = default)
         {
             return await GetLoginItemSettingsAsync(null, cancellationToken);
@@ -1118,6 +1169,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default) =>
             options is null ? BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken)
                             : BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
@@ -1128,6 +1181,8 @@ namespace ElectronNET.API
         /// you'll want to set the launch path to Update.exe, and pass arguments that specify your application name.
         /// </summary>
         /// <param name="loginSettings"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public void SetLoginItemSettings(LoginSettings loginSettings)
         {
             BridgeConnector.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
@@ -1139,6 +1194,8 @@ namespace ElectronNET.API
         /// See <see href="chromium.org/developers/design-documents/accessibility">Chromium's accessibility docs</see> for more details.
         /// </summary>
         /// <returns><see langword="true"/> if Chrome’s accessibility support is enabled, <see langword="false"/> otherwise.</returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsAccessibilitySupportEnabled", "appIsAccessibilitySupportEnabledCompleted", cancellationToken);
 
 
@@ -1152,6 +1209,8 @@ namespace ElectronNET.API
         /// Note: Rendering accessibility tree can significantly affect the performance of your app. It should not be enabled by default.
         /// </summary>
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public void SetAccessibilitySupportEnabled(bool enabled)
         {
             BridgeConnector.Emit("appSetAboutPanelOptions", enabled);

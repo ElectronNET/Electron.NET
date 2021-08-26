@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
@@ -12,6 +13,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Control your app in the macOS dock.
     /// </summary>
+    [SupportedOSPlatform("macos")]
     public sealed class Dock
     {
         private static Dock _dock;

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -17,6 +18,8 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// A subtitle for the notification, which will be displayed below the title.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+
         public string SubTitle { get; set; }
 
         /// <summary>
@@ -38,38 +41,46 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Whether or not to add an inline reply option to the notification.
         /// </summary>
+        [SupportedOSPlatform("macos")] 
         public bool HasReply { get; set; }
 
         /// <summary>
         /// The timeout duration of the notification. Can be 'default' or 'never'.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")] 
         public string TimeoutType { get; set; }
 
         /// <summary>
         /// The placeholder to write in the inline reply input field.
         /// </summary>
+        [SupportedOSPlatform("macos")] 
         public string ReplyPlaceholder { get; set; }
 
         /// <summary>
         /// The name of the sound file to play when the notification is shown.
         /// </summary>
+        [SupportedOSPlatform("macos")] 
         public string Sound { get; set; }
 
         /// <summary>
         /// The urgency level of the notification. Can be 'normal', 'critical', or 'low'.
         /// </summary>
+        [SupportedOSPlatform("linux")] 
         public string Urgency { get; set; }
 
         /// <summary>
         /// Actions to add to the notification. Please read the available actions and
         /// limitations in the NotificationAction documentation.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public NotificationAction Actions { get; set; }
 
         /// <summary>
         /// A custom title for the close button of an alert. An empty string will cause the
         /// default localized text to be used.
         /// </summary>
+        [SupportedOSPlatform("macos")] 
         public string CloseButtonText { get; set; }
 
         /// <summary>
@@ -127,6 +138,7 @@ namespace ElectronNET.API.Entities
         /// The string the user entered into the inline reply field
         /// </summary>
         [JsonIgnore]
+        [SupportedOSPlatform("macos")]
         public Action<string> OnReply { get; set; }
 
         /// <summary>
@@ -142,6 +154,7 @@ namespace ElectronNET.API.Entities
         /// macOS only - The index of the action that was activated
         /// </summary>
         [JsonIgnore]
+        [SupportedOSPlatform("macos")]
         public Action<string> OnAction { get; set; }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -93,6 +94,8 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")] 
         public Task<ReadBookmark> ReadBookmarkAsync() => BridgeConnector.OnResult<ReadBookmark>("clipboard-readBookmark", "clipboard-readBookmark-Completed");
 
         /// <summary>
@@ -105,6 +108,8 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         /// <param name="url"></param>
         /// <param name="type"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public void WriteBookmark(string title, string url, string type = "")
         {
             BridgeConnector.Emit("clipboard-writeBookmark", title, url, type);
@@ -116,6 +121,7 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("macos")] 
         public Task<string> ReadFindTextAsync() => BridgeConnector.OnResult<string>("clipboard-readFindText", "clipboard-readFindText-Completed");
 
         /// <summary>
@@ -123,6 +129,7 @@ namespace ElectronNET.API
         /// synchronous IPC when called from the renderer process.
         /// </summary>
         /// <param name="text"></param>
+        [SupportedOSPlatform("macos")]
         public void WriteFindText(string text)
         {
             BridgeConnector.Emit("clipboard-writeFindText", text);

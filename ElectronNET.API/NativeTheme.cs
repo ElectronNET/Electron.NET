@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
@@ -114,12 +115,16 @@ namespace ElectronNET.API
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task<bool> ShouldUseHighContrastColorsAsync() => BridgeConnector.OnResult<bool>("nativeTheme-shouldUseHighContrastColors", "nativeTheme-shouldUseHighContrastColors-completed");
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task<bool> ShouldUseInvertedColorSchemeAsync() => BridgeConnector.OnResult<bool>("nativeTheme-shouldUseInvertedColorScheme", "nativeTheme-shouldUseInvertedColorScheme-completed");
 
         /// <summary>

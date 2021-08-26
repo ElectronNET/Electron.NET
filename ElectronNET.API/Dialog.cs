@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -191,6 +192,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task ShowCertificateTrustDialogAsync(CertificateTrustDialogOptions options)
         {
             return ShowCertificateTrustDialogAsync(null, options);
@@ -204,6 +207,8 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);

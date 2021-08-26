@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API
 {
@@ -102,6 +103,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Control your app in the macOS dock.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public static Dock Dock { get { return Dock.Instance; } }
     }
 }
