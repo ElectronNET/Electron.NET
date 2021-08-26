@@ -87,6 +87,8 @@ namespace ElectronNET.API
 
         private static object _syncRoot = new object();
 
+        private static SemaphoreSlim _socketSemaphore = new SemaphoreSlim(1, 1);
+
         public static void Emit(string eventString, params object[] args)
         {
             //We don't care about waiting for the event to be emitted, so this doesn't need to be async 
@@ -98,7 +100,15 @@ namespace ElectronNET.API
                     Console.WriteLine($"Sending event {eventString}");
                 }
 
-                await Socket.EmitAsync(eventString, args);
+                await _socketSemaphore.WaitAsync();
+                try
+                {
+                    await Socket.EmitAsync(eventString, args);
+                }
+                finally
+                {
+                    _socketSemaphore.Release();
+                }
 
                 if (App.SocketDebug)
                 {
@@ -119,7 +129,17 @@ namespace ElectronNET.API
                 Console.WriteLine($"Sending event {eventString}");
             }
 
-            Socket.EmitAsync(eventString, args).Wait();
+            _socketSemaphore.Wait();
+
+            try
+            {
+                Socket.EmitAsync(eventString, args).Wait();
+            }
+            finally
+            {
+                _socketSemaphore.Release();
+            }
+
 
             if (App.SocketDebug)
             {
@@ -129,17 +149,41 @@ namespace ElectronNET.API
 
         public static void Off(string eventString)
         {
-            Socket.Off(eventString);
+            _socketSemaphore.Wait();
+            try
+            {
+                Socket.Off(eventString);
+            }
+            finally
+            {
+                _socketSemaphore.Release();
+            }
         }
 
         public static void On(string eventString, Action fn)
         {
-            Socket.On(eventString, _ => fn());
+            _socketSemaphore.Wait();
+            try
+            {
+                Socket.On(eventString, _ => fn());
+            }
+            finally
+            {
+                _socketSemaphore.Release();
+            }
         }
 
         public static void On<T>(string eventString, Action<T> fn)
         {
-            Socket.On(eventString, (o) => fn(o.GetValue<T>(0)));
+            _socketSemaphore.Wait();
+            try
+            {
+                Socket.On(eventString, (o) => fn(o.GetValue<T>(0)));
+            }
+            finally
+            {
+                _socketSemaphore.Release();
+            }
         }
 
         public static void Once<T>(string eventString, Action<T> fn)
@@ -264,14 +308,19 @@ namespace ElectronNET.API
                 {
                     if (HybridSupport.IsElectronActive)
                     {
-
                         lock (_syncRoot)
                         {
                             if (_socket is null && HybridSupport.IsElectronActive)
                             {
                                 var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
                                 {
-                                    EIO = 3
+                                    EIO = 3,
+                                    Reconnection = true,
+                                    ReconnectionAttempts = int.MaxValue,
+                                    ReconnectionDelay = 1000,
+                                    ReconnectionDelayMax = 5000,
+                                    RandomizationFactor = 0.1,
+                                    ConnectionTimeout = TimeSpan.FromSeconds(10)
                                 });
 
                                 socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
@@ -279,7 +328,29 @@ namespace ElectronNET.API
 
                                 socket.OnConnected += (_, __) =>
                                 {
-                                    Console.WriteLine("BridgeConnector connected!");
+                                    Console.WriteLine("ElectronNET socket connected!");
+                                };
+
+                                socket.OnReconnectAttempt += (_, __) =>
+                                {
+                                    Console.WriteLine("ElectronNET socket is trying to reconnect...");
+                                };
+
+                                socket.OnReconnectError += (_, ex) =>
+                                {
+                                    Console.WriteLine("ElectronNET socket failed to connect {0}", ex.ToString());
+                                };
+
+                                socket.OnReconnected += (_, __) =>
+                                {
+                                    Console.WriteLine("ElectronNET socket reconnected...");
+                                };
+
+
+                                socket.OnDisconnected += (_, __) =>
+                                {
+                                    Console.WriteLine("ElectronNET socket disconnected, trying to reconnect!");
+                                    socket.ConnectAsync().Wait();
                                 };
 
                                 socket.ConnectAsync().Wait();
