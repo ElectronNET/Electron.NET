@@ -158,7 +158,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void Write(Data data, string type = "")
         {
-            BridgeConnector.Emit("clipboard-write", data, type);
+            BridgeConnector.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
         }
 
         /// <summary>
@@ -177,5 +177,12 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
         }
+
+        private static JsonSerializer _jsonSerializer = new JsonSerializer()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
     }
 }
