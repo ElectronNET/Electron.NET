@@ -88,34 +88,46 @@ namespace ElectronNET.API
 
         private static object _syncRoot = new object();
 
-        private static SemaphoreSlim _socketSemaphore = new SemaphoreSlim(1, 1);
+        private static SemaphoreSlim _socketSemaphoreEmit = new SemaphoreSlim(1, 1);
+        private static SemaphoreSlim _socketSemaphoreHandlers = new SemaphoreSlim(1, 1);
+
+        private static TaskCompletionSource _waitForBeingConnected = new TaskCompletionSource();
+        
+        private static Task _waitForConnection => _waitForBeingConnected.Task;
 
         public static void Emit(string eventString, params object[] args)
         {
             //We don't care about waiting for the event to be emitted, so this doesn't need to be async 
-
+            
             Task.Run(async () =>
             {
-                if (App.SocketDebug)
-                {
-                    Log("Sending event {0}", eventString);
-                }
-
-                await _socketSemaphore.WaitAsync();
-                try
-                {
-                    await Socket.EmitAsync(eventString, args);
-                }
-                finally
-                {
-                    _socketSemaphore.Release();
-                }
-
-                if (App.SocketDebug)
-                {
-                    Log($"Sent event {eventString}");
-                }
+                await EmitAsync(eventString, args);
             });
+        }
+
+        private static async Task EmitAsync(string eventString, object[] args)
+        {
+            await _waitForConnection;
+
+            if (App.SocketDebug)
+            {
+                Log("Sending event {0}", eventString);
+            }
+
+            await _socketSemaphoreEmit.WaitAsync();
+            try
+            {
+                await Socket.EmitAsync(eventString, args);
+            }
+            finally
+            {
+                _socketSemaphoreEmit.Release();
+            }
+
+            if (App.SocketDebug)
+            {
+                Log($"Sent event {eventString}");
+            }
         }
 
         internal static void Log(string formatString, params object[] args)
@@ -154,7 +166,9 @@ namespace ElectronNET.API
                 Log("Sending event {0}", eventString);
             }
 
-            _socketSemaphore.Wait();
+            _waitForConnection.Wait();
+
+            _socketSemaphoreEmit.Wait();
 
             try
             {
@@ -162,7 +176,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                _socketSemaphore.Release();
+                _socketSemaphoreEmit.Release();
             }
 
 
@@ -174,40 +188,40 @@ namespace ElectronNET.API
 
         public static void Off(string eventString)
         {
-            _socketSemaphore.Wait();
+            _socketSemaphoreHandlers.Wait();
             try
             {
                 Socket.Off(eventString);
             }
             finally
             {
-                _socketSemaphore.Release();
+                _socketSemaphoreHandlers.Release();
             }
         }
 
         public static void On(string eventString, Action fn)
         {
-            _socketSemaphore.Wait();
+            _socketSemaphoreHandlers.Wait();
             try
             {
                 Socket.On(eventString, _ => fn());
             }
             finally
             {
-                _socketSemaphore.Release();
+                _socketSemaphoreHandlers.Release();
             }
         }
 
         public static void On<T>(string eventString, Action<T> fn)
         {
-            _socketSemaphore.Wait();
+            _socketSemaphoreHandlers.Wait();
             try
             {
                 Socket.On(eventString, (o) => fn(o.GetValue<T>(0)));
             }
             finally
             {
-                _socketSemaphore.Release();
+                _socketSemaphoreHandlers.Release();
             }
         }
 
@@ -264,7 +278,7 @@ namespace ElectronNET.API
                         EventTasks<T>.DoneWith(completedEvent, eventKey, taskCompletionSource);
                     });
 
-                    Emit(triggerEvent, args);
+                    await EmitAsync(triggerEvent, args);
                 }
             }
 
@@ -350,15 +364,16 @@ namespace ElectronNET.API
 
                                 socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
 
-
                                 socket.OnConnected += (_, __) =>
                                 {
                                     Log("ElectronNET socket connected on port {0}!", BridgeSettings.SocketPort);
+                                    _waitForBeingConnected.TrySetResult();
                                 };
 
                                 socket.OnReconnectAttempt += (_, __) =>
                                 {
                                     Log("ElectronNET socket is trying to reconnect on port {0}...", BridgeSettings.SocketPort);
+                                    _waitForBeingConnected = new();
                                 };
 
                                 socket.OnReconnectError += (_, ex) =>
@@ -369,12 +384,15 @@ namespace ElectronNET.API
                                 socket.OnReconnected += (_, __) =>
                                 {
                                     Log("ElectronNET socket reconnected on port {0}...", BridgeSettings.SocketPort);
+                                    _waitForBeingConnected.TrySetResult();
                                 };
 
 
                                 socket.OnDisconnected += async (_, reason) =>
                                 {
                                     Log("ElectronNET socket disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort);
+                                    
+                                    _waitForBeingConnected = new();
 
                                     int i = 0;
                                     
@@ -387,6 +405,7 @@ namespace ElectronNET.API
                                             if (!socket.Connected)
                                             {
                                                 await socket.ConnectAsync();
+                                                _waitForBeingConnected.TrySetResult(); //Probably was already on the OnConnected call
                                             }
                                             return;
                                         }
