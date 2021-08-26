@@ -16,6 +16,7 @@ let mainWindowId, nativeTheme;
 let dock;
 let launchFile;
 let launchUrl;
+let ignoreApiProcessClosed = false;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -46,6 +47,10 @@ app.on('will-finish-launching', () => {
         evt.preventDefault();
         launchUrl = url;
     })
+});
+
+app.on('before-quit-for-update', () => {
+    ignoreApiProcessClosed = true;
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
@@ -350,7 +355,7 @@ function startAspCoreBackend(electronPort) {
 
         apiProcess.on('close', (code) => {
             console.log(`ASP.NET Process exited with code ${code}`);
-            if (code != 0) {
+            if (code != 0 && !ignoreApiProcessClosed) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 app.exit(code);
             }
@@ -404,7 +409,7 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         apiProcess.on('close', (code) => {
             console.log(`ASP.NET Process exited with code ${code}`);
-            if (code != 0) {
+            if (code != 0 && !ignoreApiProcessClosed) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 app.exit(code);
             }
