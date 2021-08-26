@@ -130,6 +130,18 @@ namespace ElectronNET.API
             }
         }
 
+        internal static void LogError(Exception E, string formatString, params object[] args)
+        {
+            if (Logger is object)
+            {
+                Logger.LogError(E, formatString, args);
+            }
+            else
+            {
+                Console.WriteLine(formatString, args);
+            }
+        }
+
         /// <summary>
         /// This method is only used on places where we need to be sure the event was sent on the socket, such as Quit, Exit, Relaunch and QuitAndInstall methods
         /// </summary>
