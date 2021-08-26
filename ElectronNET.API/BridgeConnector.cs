@@ -372,10 +372,25 @@ namespace ElectronNET.API
                                 };
 
 
-                                socket.OnDisconnected += (_, __) =>
+                                socket.OnDisconnected += async (_, reason) =>
                                 {
-                                    Log("ElectronNET socket disconnected, trying to reconnect on port {0}!", on port { 0});
-                                    socket.ConnectAsync().Wait();
+                                    Log("ElectronNET socket disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort);
+
+                                    int i = 0;
+                                    while (true)
+                                    {
+                                        var seconds = Math.Pow(2, i);
+                                        await Task.Delay(TimeSpan.FromSeconds(seconds));
+                                        try
+                                        {
+                                            await socket.ConnectAsync();
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            LogError(e, "Failed to reconnect, will try again. Attempt {0}", i);
+                                        }
+                                        i++;
+                                    }
                                 };
 
                                 socket.ConnectAsync().Wait();
