@@ -4,7 +4,7 @@ import { browserViewMediateService } from './browserView';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
 let readyToShowWindowsIds: number[] = [];
-let window, lastOptions, electronSocket;
+let window, electronSocket;
 let mainWindowURL;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
@@ -245,8 +245,6 @@ export = (socket: Socket, app: Electron.App) => {
             }
         });
 
-        lastOptions = options;
-
         window.on('closed', (sender) => {
             for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
@@ -261,14 +259,6 @@ export = (socket: Socket, app: Electron.App) => {
                         electronSocket.emit('BrowserWindowClosed', ids);
                     }
                 }
-            }
-        });
-
-        app.on('activate', () => {
-            // On macOS it's common to re-create a window in the app when the
-            // dock icon is clicked and there are no other windows open.
-            if (window === null && lastOptions) {
-                window = new BrowserWindow(lastOptions);
             }
         });
 

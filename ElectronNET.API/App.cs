@@ -25,6 +25,41 @@ namespace ElectronNET.API
         /// </summary>
         public static bool SocketDebug { get; set; }
 
+
+        /// <summary>
+        /// Emitted when the user clicks on the dock on Mac
+        /// <para/>
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public event Action Activate
+        {
+            add
+            {
+                if (_appActivate == null)
+                {
+                    BridgeConnector.On("app-activate", () =>
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        {
+                            _appActivate();
+                        }
+                    });
+                }
+                _appActivate += value;
+            }
+            remove
+            {
+                _appActivate -= value;
+
+                if (_appActivate == null)
+                {
+                    BridgeConnector.Off("app-activate");
+                }
+            }
+        }
+
+        private event Action _appActivate;
+
         /// <summary>
         /// Emitted when all windows have been closed.
         /// <para/>

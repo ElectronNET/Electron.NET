@@ -116,14 +116,14 @@ namespace ElectronNET.API
                 }
             });
 
-            if (loadUrl.ToUpper() == "HTTP://LOCALHOST")
+            if (string.Equals(loadUrl, "HTTP://LOCALHOST", StringComparison.InvariantCultureIgnoreCase))
             {
                 loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
             }
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
-            if (isWindows10())
+            if (IsWindows10())
             {
                 options.Width = options.Width + 14;
                 options.Height = options.Height + 7;
@@ -140,12 +140,10 @@ namespace ElectronNET.API
             {
                 // Workaround Windows 10 / Electron Bug
                 // https://github.com/electron/electron/issues/4045
-                if (isWindows10())
+                if (IsWindows10())
                 {
                     options.X = options.X - 7;
                 }
-
-
 
                 BridgeConnector.Emit("createBrowserWindow", JObject.FromObject(options, _keepDefaultValuesSerializer), loadUrl);
             }
@@ -153,9 +151,9 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private bool isWindows10()
+        private bool IsWindows10()
         {
-            return RuntimeInformation.OSDescription.Contains("Windows 10");
+            return OperatingSystem.IsWindowsVersionAtLeast(10);
         }
 
         /// <summary>
