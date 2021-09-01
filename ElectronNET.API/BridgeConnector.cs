@@ -212,7 +212,7 @@ namespace ElectronNET.API
                     }
                     catch (Exception E)
                     {
-                        Logger.LogError(E, "Error running handler for event {0}", eventString);
+                        LogError(E, "Error running handler for event {0}", eventString);
                     }
                 });
             }
@@ -235,7 +235,7 @@ namespace ElectronNET.API
                     }
                     catch(Exception E)
                     {
-                        Logger.LogError(E, "Error running handler for event {0}", eventString);
+                        LogError(E, "Error running handler for event {0}", eventString);
                     }
                 });
             }
