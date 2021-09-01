@@ -246,20 +246,22 @@ export = (socket: Socket, app: Electron.App) => {
         });
 
         window.on('closed', (sender) => {
+            again:
             for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
                 try {
                     windowItem.id;
-                } catch (error) {
+                }
+                catch (error) {
                     if (error.message === 'Object has been destroyed') {
                         windows.splice(index, 1);
-
-                        const ids = [];
-                        windows.forEach(x => ids.push(x.id));
-                        electronSocket.emit('BrowserWindowClosed', ids);
+                        break again;
                     }
                 }
             }
+            const ids = [];
+            windows.forEach(x => ids.push(x.id));
+            electronSocket.emit('BrowserWindowClosed', ids);
         });
 
         if (loadUrl) {
@@ -776,8 +778,14 @@ export = (socket: Socket, app: Electron.App) => {
     function getWindowById(id: number): Electron.BrowserWindow {
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];
-            if (element.id === id) {
-                return element;
+            try {
+                if (element.id === id) {
+                    return element;
+                }
+            }
+            catch {
+                //Accessing .id might throw 'Object has been destroyed', so we ignore it here
+                //The "closed" event should clean this up
             }
         }
         return null;

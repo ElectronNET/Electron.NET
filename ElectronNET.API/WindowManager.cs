@@ -114,11 +114,18 @@ namespace ElectronNET.API
                 });
 
                 BridgeConnector.Off("BrowserWindowClosed");
-                BridgeConnector.On<int[]>("BrowserWindowClosed", (browserWindowIds) =>
+                BridgeConnector.On<int[]>("BrowserWindowClosed", (browserWindowIdsStillOpen) =>
                 {
-                    foreach (var id in browserWindowIds)
+                    if (browserWindowIdsStillOpen.Any())
                     {
-                        _browserWindows.TryRemove(id, out _);
+                        foreach (var id in _browserWindows.Keys.ToArray())
+                        {
+                            if (!browserWindowIdsStillOpen.Contains(id)) _browserWindows.TryRemove(id, out _);
+                        }
+                    }
+                    else
+                    {
+                        _browserWindows.Clear();
                     }
                 });
 
