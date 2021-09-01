@@ -229,8 +229,6 @@ export = (socket: Socket, app: Electron.App) => {
             window = new BrowserWindow(options);
         }
 
-        let window_id = window.id; //save here for future use
-
         if (options.proxy) {
             window.webContents.session.setProxy({proxyRules: options.proxy});
         }
@@ -248,11 +246,19 @@ export = (socket: Socket, app: Electron.App) => {
         });
 
         window.on('closed', (sender) => {
-            electronSocket.emit('BrowserWindowClosed', [window_id]);
-            const toRemove = windows.findIndex(w => w === window);
+            for (let index = 0; index < windows.length; index++) {
+                const windowItem = windows[index];
+                try {
+                    windowItem.id;
+                } catch (error) {
+                    if (error.message === 'Object has been destroyed') {
+                        windows.splice(index, 1);
 
-            if (toRemove >= 0) {
-                windows.splice(toRemove, 1);
+                        const ids = [];
+                        windows.forEach(x => ids.push(x.id));
+                        electronSocket.emit('BrowserWindowClosed', ids);
+                    }
+                }
             }
         });
 
