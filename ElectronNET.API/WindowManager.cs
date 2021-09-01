@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -62,8 +63,9 @@ namespace ElectronNET.API
         /// <value>
         /// The browser windows.
         /// </value>
-        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.AsReadOnly(); } }
-        private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
+        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.Values.ToList().AsReadOnly(); } }
+
+        private ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
 
         /// <summary>
         /// Gets the browser views.
@@ -71,8 +73,8 @@ namespace ElectronNET.API
         /// <value>
         /// The browser view.
         /// </value>
-        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.AsReadOnly(); } }
-        private List<BrowserView> _browserViews = new List<BrowserView>();
+        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.Values.ToList().AsReadOnly(); } }
+        private ConcurrentDictionary<int, BrowserView> _browserViews = new ();
 
         /// <summary>
         /// Creates the window asynchronous.
@@ -98,8 +100,9 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("BrowserWindowCreated");
 
-                BrowserWindow browserWindow = new BrowserWindow(id);
-                _browserWindows.Add(browserWindow);
+                var browserWindow = new BrowserWindow(id);
+                
+                _browserWindows[id] = browserWindow;
 
                 taskCompletionSource.SetResult(browserWindow);
             });
@@ -107,12 +110,9 @@ namespace ElectronNET.API
             BridgeConnector.Off("BrowserWindowClosed");
             BridgeConnector.On<int[]>("BrowserWindowClosed", (browserWindowIds) =>
             {
-                for (int index = 0; index < _browserWindows.Count; index++)
+                foreach(var id in browserWindowIds)
                 {
-                    if (!browserWindowIds.Contains(_browserWindows[index].Id))
-                    {
-                        _browserWindows.RemoveAt(index);
-                    }
+                    _browserWindows.TryRemove(id, out _);
                 }
             });
 
@@ -184,18 +184,12 @@ namespace ElectronNET.API
 
                 BrowserView browserView = new BrowserView(id);
 
-                _browserViews.Add(browserView);
+                _browserViews[id] = browserView;
 
                 taskCompletionSource.SetResult(browserView);
             });
 
-            var keepDefaultValuesSerializer = new JsonSerializer()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Include
-            };
-            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, keepDefaultValuesSerializer));
+            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, _keepDefaultValuesSerializer));
 
             return taskCompletionSource.Task;
         }
