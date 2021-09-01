@@ -5,7 +5,15 @@ module.exports = (socket) => {
     electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            electronSocket.emit(channel, [...args]);
+        });
+    });
+    socket.on('registerIpcMainChannelWithId', (channel) => {
+        electron_1.ipcMain.on(channel, (event, args) => {
+            event.preventDefault();
+            let id = event.sender.senderId;
+            electronSocket.emit(channel, { id: id, args: [...args] });
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
@@ -15,12 +23,14 @@ module.exports = (socket) => {
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            electronSocket.emit(channel, [...args]);
         });
     });
     socket.on('registerOnceIpcMainChannel', (channel) => {
         electron_1.ipcMain.once(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            electronSocket.emit(channel, [...args]);
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {

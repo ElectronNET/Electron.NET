@@ -47,11 +47,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("registerIpcMainChannel", channel);
             BridgeConnector.Off(channel);
-            BridgeConnector.On<object[]>(channel, (args) => 
+            BridgeConnector.On<object[]>(channel, (args) =>
             {
                 var objectArray = FormatArguments(args);
 
-                if(objectArray.Count == 1)
+                if (objectArray.Count == 1)
                 {
                     listener(objectArray.First());
                 }
@@ -60,6 +60,38 @@ namespace ElectronNET.API
                     listener(objectArray);
                 }
             });
+        }
+
+
+        /// <summary>
+        ///  Listens to channel, when a new message arrives listener would be called with 
+        ///  listener(event, args...). This listner will keep the window event sender id
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void OnWithId(string channel, Action<int, object> listener)
+        {
+            BridgeConnector.Emit("registerIpcMainChannelWithId", channel);
+            BridgeConnector.Off(channel);
+            BridgeConnector.On<ArgsAndId>(channel, (data) =>
+            {
+                var objectArray = FormatArguments(data.args);
+
+                if (objectArray.Count == 1)
+                {
+                    listener(data.id, objectArray.First());
+                }
+                else
+                {
+                    listener(data.id, objectArray);
+                }
+            });
+        }
+
+        private class ArgsAndId
+        {
+            public int  id { get; set; }
+            public object[] args { get; set; }
         }
 
         private List<object> FormatArguments(object[] objectArray)
