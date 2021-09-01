@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -270,5 +271,14 @@ namespace ElectronNET.API.Entities
         /// These will only be used if the Proxy field is also set.
         /// </summary>
         public string ProxyCredentials { get; set; }
+
+
+        /// <summary>
+        ///  Set a custom position for the traffic light buttons in frameless windows.
+        /// </summary>
+
+        [DefaultValue(null)]
+        [SupportedOSPlatform("macos")]
+        public Point TrafficLightPosition { get; set; }
     }
 }

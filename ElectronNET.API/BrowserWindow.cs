@@ -1810,6 +1810,8 @@ namespace ElectronNET.API
         /// Sets whether the window should have a shadow. On Windows and Linux does nothing.
         /// </summary>
         /// <param name="hasShadow"></param>
+
+        [SupportedOSPlatform("macos")]
         public void SetHasShadow(bool hasShadow)
         {
             BridgeConnector.Emit("browserWindowSetHasShadow", Id, hasShadow);
@@ -2073,6 +2075,19 @@ namespace ElectronNET.API
         public void SetVibrancy(Vibrancy type)
         {
             BridgeConnector.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
+        }
+
+        /// <summary>
+        /// Adds a vibrancy effect to the browser window. 
+        /// Passing null or an empty string will remove the vibrancy effect on the window.
+        /// </summary>
+        /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
+        /// menu, popover, sidebar, medium-light or ultra-dark. 
+        /// See the macOS documentation for more details.</param>
+        [SupportedOSPlatform("macos")]
+        public void ExcludeFromShownWindowsMenu()
+        {
+            BridgeConnector.Emit("browserWindowSetExcludedFromShownWindowsMenu", Id);
         }
 
         /// <summary>

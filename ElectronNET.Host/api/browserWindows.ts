@@ -764,6 +764,10 @@ export = (socket: Socket, app: Electron.App) => {
         getWindowById(id)?.setVibrancy(type);
     });
 
+    socket.on('browserWindowSetExcludedFromShownWindowsMenu', (id) => {
+        getWindowById(id)?.excludedFromShownWindowsMenu = true;
+    });
+
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
         getWindowById(id)?.setBrowserView(browserViewMediateService(browserViewId));
     });

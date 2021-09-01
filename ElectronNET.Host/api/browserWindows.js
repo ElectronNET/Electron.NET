@@ -601,6 +601,10 @@ module.exports = (socket, app) => {
     socket.on('browserWindowSetVibrancy', (id, type) => {
         getWindowById(id)?.setVibrancy(type);
     });
+    socket.on('browserWindowSetExcludedFromShownWindowsMenu', (id) => {
+        getWindowById(id)?.excludedFromShownWindowsMenu = true;
+    });
+
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
         getWindowById(id)?.setBrowserView(browserView_1.browserViewMediateService(browserViewId));
     });
