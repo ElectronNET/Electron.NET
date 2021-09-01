@@ -765,7 +765,8 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowSetExcludedFromShownWindowsMenu', (id) => {
-        getWindowById(id)?.excludedFromShownWindowsMenu = true;
+        const w = getWindowById(id);
+        if(w) w.excludedFromShownWindowsMenu = true;
     });
 
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
