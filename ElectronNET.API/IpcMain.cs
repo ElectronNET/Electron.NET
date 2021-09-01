@@ -69,28 +69,29 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void OnWithId(string channel, Action<int, object> listener)
+        public void OnWithId(string channel, Action<(int browserId, int webContentId, object arguments)> listener)
         {
             BridgeConnector.Emit("registerIpcMainChannelWithId", channel);
             BridgeConnector.Off(channel);
-            BridgeConnector.On<ArgsAndId>(channel, (data) =>
+            BridgeConnector.On<ArgsAndIds>(channel, (data) =>
             {
                 var objectArray = FormatArguments(data.args);
 
                 if (objectArray.Count == 1)
                 {
-                    listener(data.id, objectArray.First());
+                    listener((data.id, data.wcId, objectArray.First()));
                 }
                 else
                 {
-                    listener(data.id, objectArray);
+                    listener((data.id, data.wcId, objectArray));
                 }
             });
         }
 
-        private class ArgsAndId
+        private class ArgsAndIds
         {
             public int  id { get; set; }
+            public int wcId { get; set; }
             public object[] args { get; set; }
         }
 

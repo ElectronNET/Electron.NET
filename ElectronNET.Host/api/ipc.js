@@ -12,8 +12,10 @@ module.exports = (socket) => {
     socket.on('registerIpcMainChannelWithId', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
             event.preventDefault();
-            let id = event.sender.id;
-            electronSocket.emit(channel, { id: id, args: [args] });
+            let wcId = event.sender.id;
+            let wc = electron_1.webContents.fromId(wcId)
+            let bw = electron_1.BrowserWindow.fromWebContents(wc);
+            electronSocket.emit(channel, { id: bw.id, wcId: wcId, args: [args] });
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
