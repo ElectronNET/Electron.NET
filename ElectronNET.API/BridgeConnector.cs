@@ -204,7 +204,17 @@ namespace ElectronNET.API
             _socketSemaphoreHandlers.Wait();
             try
             {
-                Socket.On(eventString, _ => fn());
+                Socket.On(eventString, _ =>
+                {
+                    try
+                    {
+                        fn();
+                    }
+                    catch (Exception E)
+                    {
+                        Logger.LogError(E, "Error running handler for event {0}", eventString);
+                    }
+                });
             }
             finally
             {
@@ -217,7 +227,17 @@ namespace ElectronNET.API
             _socketSemaphoreHandlers.Wait();
             try
             {
-                Socket.On(eventString, (o) => fn(o.GetValue<T>(0)));
+                Socket.On(eventString, (o) =>
+                {
+                    try
+                    {
+                        fn(o.GetValue<T>(0));
+                    }
+                    catch(Exception E)
+                    {
+                        Logger.LogError(E, "Error running handler for event {0}", eventString);
+                    }
+                });
             }
             finally
             {
