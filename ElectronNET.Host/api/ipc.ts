@@ -7,15 +7,15 @@ export = (socket: Socket) => {
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
             event.preventDefault();
-            electronSocket.emit(channel, [...args]);
+            electronSocket.emit(channel, [args]);
         });
     });
 
     socket.on('registerIpcMainChannelWithId', (channel) => {
         ipcMain.on(channel, (event, args) => {
             event.preventDefault();
-            let id = event.sender.senderId;
-            electronSocket.emit(channel, { id: id, args: [...args] });
+            let id = event.sender.id;
+            electronSocket.emit(channel, { id: id, args: [args] });
         });
     });
 
@@ -27,14 +27,14 @@ export = (socket: Socket) => {
                 event.returnValue = result;
             });
             event.preventDefault();
-            electronSocket.emit(channel, [...args]);
+            electronSocket.emit(channel, [args]);
         });
     });
 
     socket.on('registerOnceIpcMainChannel', (channel) => {
         ipcMain.once(channel, (event, args) => {
             event.preventDefault();
-            electronSocket.emit(channel, [...args]);
+            electronSocket.emit(channel, [args]);
         });
     });
 
