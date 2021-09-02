@@ -93,7 +93,17 @@ namespace ElectronNET.API
 
         private static TaskCompletionSource _waitForBeingConnected = new TaskCompletionSource();
         
-        private static Task _waitForConnection => _waitForBeingConnected.Task;
+        private static Task _waitForConnection
+        {
+            get
+            {
+                if(_socket is null)
+                {
+                    var _ = Socket; //Ensure we trigger the first connection before anything else
+                }
+                return _waitForBeingConnected.Task;
+            }
+        }
 
         public static bool IsConnected => _waitForConnection is Task task && task.IsCompletedSuccessfully;
 
@@ -414,7 +424,7 @@ namespace ElectronNET.API
                                 socket.OnDisconnected += async (_, reason) =>
                                 {
                                     Log("ElectronNET socket disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort);
-                                    
+
                                     _waitForBeingConnected = new();
 
                                     int i = 0;
