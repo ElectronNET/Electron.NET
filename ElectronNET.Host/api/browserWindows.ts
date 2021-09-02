@@ -209,7 +209,7 @@ export = (socket: Socket, app: Electron.App) => {
         });
     });
 
-    socket.on('createBrowserWindow', (options, loadUrl) => {
+    socket.on('createBrowserWindow', (guid, options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
             options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
         } else if (!options.webPreferences) {
@@ -222,7 +222,7 @@ export = (socket: Socket, app: Electron.App) => {
             if (window) {
                 window.reload();
                 windows.push(window);
-                electronSocket.emit('BrowserWindowCreated', window.id);
+                electronSocket.emit('BrowserWindowCreated' + guid, window.id);
                 return;
             }
         } else {
@@ -261,7 +261,7 @@ export = (socket: Socket, app: Electron.App) => {
             }
             const ids = [];
             windows.forEach(x => ids.push(x.id));
-            electronSocket.emit('BrowserWindowClosed', ids);
+            electronSocket.emit('BrowserWindowUpdateOpenIDs', ids);
         });
 
         if (loadUrl) {
@@ -281,7 +281,7 @@ export = (socket: Socket, app: Electron.App) => {
         }
 
         windows.push(window);
-        electronSocket.emit('BrowserWindowCreated', window.id);
+        electronSocket.emit('BrowserWindowCreated' + guid, window.id);
     });
 
     socket.on('browserWindowDestroy', (id) => {
