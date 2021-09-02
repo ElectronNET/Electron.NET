@@ -95,6 +95,8 @@ namespace ElectronNET.API
         
         private static Task _waitForConnection => _waitForBeingConnected.Task;
 
+        public static bool IsConnected => _waitForConnection is Task task && task.IsCompletedSuccessfully;
+
         public static void Emit(string eventString, params object[] args)
         {
             //We don't care about waiting for the event to be emitted, so this doesn't need to be async 
@@ -387,14 +389,14 @@ namespace ElectronNET.API
 
                                 socket.OnConnected += (_, __) =>
                                 {
-                                    Log("ElectronNET socket connected on port {0}!", BridgeSettings.SocketPort);
                                     _waitForBeingConnected.TrySetResult();
+                                    Log("ElectronNET socket connected on port {0}!", BridgeSettings.SocketPort);
                                 };
 
                                 socket.OnReconnectAttempt += (_, __) =>
                                 {
-                                    Log("ElectronNET socket is trying to reconnect on port {0}...", BridgeSettings.SocketPort);
                                     _waitForBeingConnected = new();
+                                    Log("ElectronNET socket is trying to reconnect on port {0}...", BridgeSettings.SocketPort);
                                 };
 
                                 socket.OnReconnectError += (_, ex) =>
@@ -404,8 +406,8 @@ namespace ElectronNET.API
 
                                 socket.OnReconnected += (_, __) =>
                                 {
-                                    Log("ElectronNET socket reconnected on port {0}...", BridgeSettings.SocketPort);
                                     _waitForBeingConnected.TrySetResult();
+                                    Log("ElectronNET socket reconnected on port {0}...", BridgeSettings.SocketPort);
                                 };
 
 

@@ -37,6 +37,8 @@ namespace ElectronNET.API
             }
         }
 
+        public bool IsConnected => BridgeConnector.IsConnected;
+
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
         ///  listener(event, args...).
@@ -61,7 +63,6 @@ namespace ElectronNET.API
                 }
             });
         }
-
 
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
