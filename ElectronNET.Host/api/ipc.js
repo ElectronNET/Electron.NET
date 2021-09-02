@@ -40,6 +40,7 @@ module.exports = (socket) => {
     });
     socket.on('sendToIpcRenderer', (browserWindowId, channel, ...data) => {
         const window = electron_1.BrowserWindow.fromId(browserWindowId);
+        console.log(data);
         if (window) {
             window.webContents.send(channel, ...data);
         }
