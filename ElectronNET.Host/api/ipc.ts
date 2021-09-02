@@ -44,8 +44,8 @@ export = (socket: Socket) => {
         ipcMain.removeAllListeners(channel);
     });
 
-    socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
-        const window = BrowserWindow.fromId(browserWindow.id);
+    socket.on('sendToIpcRenderer', (browserWindowId, channel, ...data) => {
+        const window = BrowserWindow.fromId(browserWindowId);
 
         if (window) {
             window.webContents.send(channel, ...data);

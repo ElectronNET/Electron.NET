@@ -151,6 +151,7 @@ namespace ElectronNET.API
             else
             {
                 Console.WriteLine(formatString, args);
+                Console.WriteLine(E.ToString());
             }
         }
 

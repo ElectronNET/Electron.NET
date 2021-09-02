@@ -182,10 +182,12 @@ namespace ElectronNET.API
                 if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
                     jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                } 
+                else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
                     jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                } 
+                else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
                     objects.Add(parameterObject);
                 }
@@ -193,11 +195,11 @@ namespace ElectronNET.API
 
             if(jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                BridgeConnector.Emit("sendToIpcRenderer", browserWindow.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
             else
             {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+                BridgeConnector.Emit("sendToIpcRenderer", browserWindow.Id, channel, data);
             }
         }
 
