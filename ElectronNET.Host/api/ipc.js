@@ -38,8 +38,8 @@ module.exports = (socket) => {
     socket.on('removeAllListenersIpcMainChannel', (channel) => {
         electron_1.ipcMain.removeAllListeners(channel);
     });
-    socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
-        const window = electron_1.BrowserWindow.fromId(browserWindow.id);
+    socket.on('sendToIpcRenderer', (browserWindowId, channel, ...data) => {
+        const window = electron_1.BrowserWindow.fromId(browserWindowId);
         if (window) {
             window.webContents.send(channel, ...data);
         }

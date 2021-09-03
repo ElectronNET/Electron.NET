@@ -175,7 +175,7 @@ module.exports = (socket, app) => {
             electronSocket.emit('browserWindow-new-window-for-tab' + id);
         });
     });
-    socket.on('createBrowserWindow', (options, loadUrl) => {
+    socket.on('createBrowserWindow', (guid, options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
             options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
         }
@@ -188,7 +188,7 @@ module.exports = (socket, app) => {
             if (window) {
                 window.reload();
                 windows.push(window);
-                electronSocket.emit('BrowserWindowCreated', window.id);
+                electronSocket.emit('BrowserWindowCreated' + guid, window.id);
                 return;
             }
         }
@@ -218,6 +218,7 @@ module.exports = (socket, app) => {
                 readyToShowWindowsIds.push(window.id);
             }
         });
+
         window.on('closed', (sender) => {
             again:
             for (let index = 0; index < windows.length; index++) {
@@ -234,7 +235,7 @@ module.exports = (socket, app) => {
             }
             const ids = [];
             windows.forEach(x => ids.push(x.id));
-            electronSocket.emit('BrowserWindowClosed', ids);
+            electronSocket.emit('BrowserWindowUpdateOpenIDs', ids);
         });
         if (loadUrl) {
             window.loadURL(loadUrl);
@@ -250,7 +251,7 @@ module.exports = (socket, app) => {
             app['mainWindow'] = window;
         }
         windows.push(window);
-        electronSocket.emit('BrowserWindowCreated', window.id);
+        electronSocket.emit('BrowserWindowCreated' + guid, window.id);
     });
     socket.on('browserWindowDestroy', (id) => {
         getWindowById(id)?.destroy();

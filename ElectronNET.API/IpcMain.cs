@@ -37,6 +37,8 @@ namespace ElectronNET.API
             }
         }
 
+        public static bool IsConnected => BridgeConnector.IsConnected;
+
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
         ///  listener(event, args...).
@@ -61,7 +63,6 @@ namespace ElectronNET.API
                 }
             });
         }
-
 
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
@@ -173,32 +174,28 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            var objectsWithCorrectSerialization = new List<object>();
+
+            objectsWithCorrectSerialization.Add(browserWindow.Id);
+            objectsWithCorrectSerialization.Add(channel);
 
             foreach (var parameterObject in data)
             {
                 if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
-                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                    objectsWithCorrectSerialization.Add(JArray.FromObject(parameterObject, _jsonSerializer));
+                } 
+                else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
-                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                    objectsWithCorrectSerialization.Add(JObject.FromObject(parameterObject, _jsonSerializer));
+                } 
+                else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
-                    objects.Add(parameterObject);
+                    objectsWithCorrectSerialization.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
-            {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
-            }
-            else
-            {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
-            }
+            BridgeConnector.Emit("sendToIpcRenderer", objectsWithCorrectSerialization.ToArray());
         }
 
         /// <summary>
