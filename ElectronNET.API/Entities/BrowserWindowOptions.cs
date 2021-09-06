@@ -223,6 +223,12 @@ namespace ElectronNET.API.Entities
         public bool FullscreenWindowTitle { get; set; }
 
         /// <summary>
+        ///  Activate the Window Controls Overlay on Windows, when combined with <see cref="TitleBarStyle"/> = <see cref="TitleBarStyle.Hidden"/>
+        /// </summary>
+        [SupportedOSPlatform("win")]
+        public bool TitleBarOverlay { get; set; }
+
+        /// <summary>
         /// Use WS_THICKFRAME style for frameless windows on Windows, which adds standard
         /// window frame.Setting it to false will remove window shadow and window
         /// animations. Default is true.
