@@ -126,10 +126,10 @@ namespace ElectronNET.API
 
             if (options.X == -1 && options.Y == -1)
             {
-                options.X = 0;
+                options.X = 0; //This is manually removed by the browserWindows.js code before creating the window
                 options.Y = 0;
 
-                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _jsonSerializer), loadUrl);
+                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _keepDefaultValuesSerializer), loadUrl);
             }
             else
             {

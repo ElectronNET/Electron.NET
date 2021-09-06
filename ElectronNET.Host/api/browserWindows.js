@@ -182,6 +182,12 @@ module.exports = (socket, app) => {
         else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
+
+        if (options.x && options.y && options.x == 0 && options.y == 0) {
+            delete options.x;
+            delete options.y;
+        }
+
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
             window = app['mainWindow'];
