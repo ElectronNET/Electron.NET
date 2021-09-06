@@ -226,7 +226,8 @@ namespace ElectronNET.API.Entities
         ///  Activate the Window Controls Overlay on Windows, when combined with <see cref="TitleBarStyle"/> = <see cref="TitleBarStyle.Hidden"/>
         /// </summary>
         [SupportedOSPlatform("win")]
-        public bool TitleBarOverlay { get; set; }
+        [DefaultValue(null)]
+        public TitleBarOverlayConfig TitleBarOverlay { get; set; }
 
         /// <summary>
         /// Use WS_THICKFRAME style for frameless windows on Windows, which adds standard
