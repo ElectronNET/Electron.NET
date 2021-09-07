@@ -1338,6 +1338,13 @@ namespace ElectronNET.API
         /// <param name="fn">The handler</param>
         public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
 
+
+        /// <summary>
+        /// If you're using a splashscreen in the electron.manifest.json, the window will ony be fully destroyed once you call this method once.
+        /// You should only do this after creating another window, to avoid a bug where the Electron renderer process frezees till any window interaction.
+        /// </summary>
+        public void DestroySplashScreen() =>  BridgeConnector.Emit("splashscreen-destroy");
+
         private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
