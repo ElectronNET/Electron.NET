@@ -83,7 +83,7 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
 }
 
 //Some flags need to be set before app is ready
-if (manifestJsonFile.hasOwnProperty('cliFlags') && manifesJsonFile.cliFlags.length > 0) {
+if (manifestJsonFile.hasOwnProperty('cliFlags') && manifestJsonFile.cliFlags.length > 0) {
     manifestJsonFile.cliFlags.forEach(flag => {
         app.commandLine.appendSwitch(flag);
     });
