@@ -54,6 +54,7 @@ app.on('before-quit-for-update', () => {
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
+
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', (events, args = []) => {
@@ -80,6 +81,14 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
         app.quit();
     }
 }
+
+//Some flags need to be set before app is ready
+if (manifestJsonFile.hasOwnProperty('cliFlags') && manifesJsonFile.cliFlags.length > 0) {
+    manifestJsonFile.cliFlags.forEach(flag => {
+        app.commandLine.appendSwitch(flag);
+    });
+}
+
 
 app.on('ready', () => {
 

@@ -172,6 +172,12 @@ namespace ElectronNET.API.Entities
         public bool Offscreen { get; set; }
 
         /// <summary>
+        /// Whether to enable built-in spellcheck
+        /// </summary>
+        [DefaultValue(true)]
+        public bool Spellcheck { get; set; } = true;
+
+        /// <summary>
         /// Whether to run Electron APIs and the specified preload script in a separate
         /// JavaScript context. Defaults to false. The context that the preload script runs
         /// in will still have full access to the document and window globals but it will

@@ -8,7 +8,7 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class CommandLine
     {
-        internal CommandLine() { }
+        private CommandLine() { }
 
         internal static CommandLine Instance
         {

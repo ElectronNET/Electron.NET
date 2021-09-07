@@ -539,9 +539,9 @@ namespace ElectronNET.API
         public Task<string> GetNameAsync() => BridgeConnector.OnResult<string>("appGetName", "appGetNameCompleted");
 
 
-        internal App() 
+        private App() 
         {
-            CommandLine = new CommandLine();
+            CommandLine = CommandLine.Instance;
         }
 
         internal static App Instance
