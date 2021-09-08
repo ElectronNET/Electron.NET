@@ -262,6 +262,25 @@ module.exports = (socket, app) => {
     socket.on('browserWindowDestroy', (id) => {
         getWindowById(id)?.destroy();
     });
+
+    socket.on('browserWindowDestroyAll', () => {
+        const windows = electron_1.BrowserWindow.getAllWindows();
+        let count = 0;
+        if (windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.hide();
+                    w.destroy();
+                    count++;
+                }
+                catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
+        electronSocket.emit('browserWindowDestroyAll-completed', count);
+    });
+
     socket.on('browserWindowClose', (id) => {
         getWindowById(id)?.close();
     });

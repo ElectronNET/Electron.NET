@@ -218,6 +218,19 @@ namespace ElectronNET.API
             return await taskCompletionSource.Task;
         }
 
+
+        /// <summary>
+        /// Destroy all windows.
+        /// </summary>
+        /// <returns>Number of windows destroyed</returns>
+        public async Task<int> DestroyAllWindows()
+        {
+            var destroyed = await BridgeConnector.OnResult<int>("browserWindowDestroyAll", "browserWindowDestroyAll-completed");
+            _browserViews.Clear();
+            _browserWindows.Clear();
+            return destroyed;
+        }
+
         private static JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),

@@ -64,7 +64,6 @@ app.on('before-quit-for-update', () => {
             }
         });
     }
-
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
