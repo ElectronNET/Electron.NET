@@ -51,6 +51,20 @@ app.on('will-finish-launching', () => {
 
 app.on('before-quit-for-update', () => {
     ignoreApiProcessClosed = true;
+
+    const windows = BrowserWindow.getAllWindows();
+    if (windows.length) {
+        windows.forEach(w => {
+            try {
+                w.hide();
+                w.destroy();
+            }
+            catch {
+                //ignore, probably already destroyed
+            }
+        });
+    }
+
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
