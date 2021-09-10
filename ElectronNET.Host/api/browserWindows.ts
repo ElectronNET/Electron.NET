@@ -389,7 +389,11 @@ export = (socket: Socket, app: Electron.App) => {
     socket.on('browserWindowSetFullScreen', (id, fullscreen) => {
         getWindowById(id)?.setFullScreen(fullscreen);
     });
-
+    
+    socket.on('browserWindowSetBackgroundColor', (id, color) => {
+        getWindowById(id)?.setBackgroundColor(color);
+    });
+    
     socket.on('browserWindowIsFullScreen', (id) => {
         const isFullScreen = getWindowById(id)?.isFullScreen() ?? null;
 
