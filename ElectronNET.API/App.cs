@@ -61,6 +61,37 @@ namespace ElectronNET.API
         private event Action _appActivate;
 
         /// <summary>
+        /// Emitted on the first instance when the user opens a second instance of the app, and the app is single instance
+        /// <para/>
+        /// </summary>
+        public event Action<string[]> ActivateFromSecondInstance
+        {
+            add
+            {
+                if (_appActivateFromSecondInstance == null)
+                {
+                    BridgeConnector.On<string[]>("app-activate-from-second-instance", (args) =>
+                    {
+                        _appActivateFromSecondInstance(args);
+                    });
+                }
+                _appActivateFromSecondInstance += value;
+            }
+            remove
+            {
+                _appActivateFromSecondInstance -= value;
+
+                if (_appActivateFromSecondInstance == null)
+                {
+                    BridgeConnector.Off("app-activate-from-second-instance");
+                }
+            }
+        }
+
+        private event Action<string[]> _appActivateFromSecondInstance;
+
+
+        /// <summary>
         /// Emitted when all windows have been closed.
         /// <para/>
         /// If you do not subscribe to this event and all windows are closed, the default behavior is to quit

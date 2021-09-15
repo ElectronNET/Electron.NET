@@ -57,23 +57,30 @@ const manifestJsonFile = require(manifestJsonFilePath);
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', (events, args = []) => {
-        args.forEach(parameter => {
-            const words = parameter.split('=');
 
-            if(words.length > 1) {
-                app.commandLine.appendSwitch(words[0].replace('--', ''), words[1]);
-            } else {
-                app.commandLine.appendSwitch(words[0].replace('--', ''));
-            }
-        });
+        let socket = global['electronsocket'];
 
-        const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
-            if (windows[0].isMinimized()) {
-                windows[0].restore();
-            }
-            windows[0].focus();
+        if (socket) {
+            socket.emit('app-activate-from-second-instance', args);
         }
+
+        //args.forEach(parameter => {
+        //    const words = parameter.split('=');
+
+        //    if(words.length > 1) {
+        //        app.commandLine.appendSwitch(words[0].replace('--', ''), words[1]);
+        //    } else {
+        //        app.commandLine.appendSwitch(words[0].replace('--', ''));
+        //    }
+        //});
+
+        //const windows = BrowserWindow.getAllWindows();
+        //if (windows.length) {
+        //    if (windows[0].isMinimized()) {
+        //        windows[0].restore();
+        //    }
+        //    windows[0].focus();
+        //}
     });
 
     if (!mainInstance) {
