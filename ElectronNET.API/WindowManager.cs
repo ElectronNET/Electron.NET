@@ -66,6 +66,15 @@ namespace ElectronNET.API
         /// </value>
         public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.Values.ToList().AsReadOnly(); } }
 
+        /// <summary>
+        /// Get a browser window using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser window</param>
+        /// <param name="window">The window, if any</param>
+        /// <returns>True if it found the window</returns>
+        public bool TryGetBrowserWindows(int id, out BrowserWindow window) => _browserWindows.TryGetValue(id, out window);
+
+
         private ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
 
         /// <summary>
@@ -76,6 +85,14 @@ namespace ElectronNET.API
         /// </value>
         public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.Values.ToList().AsReadOnly(); } }
         private ConcurrentDictionary<int, BrowserView> _browserViews = new ();
+
+        /// <summary>
+        /// Get a browser view using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser view</param>
+        /// <param name="view">The view, if any</param>
+        /// <returns>True if it found the view</returns>
+        public bool TryGetBrowserViews(int id, out BrowserView view) => _browserViews.TryGetValue(id, out view);
 
         /// <summary>
         /// Creates the window asynchronous.

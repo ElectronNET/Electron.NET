@@ -11,7 +11,7 @@ namespace ElectronNET.WebApp.Controllers
         {
             if(HybridSupport.IsElectronActive)
             {
-                Electron.IpcMain.OnWithId("app-info", async (id, args) =>
+                Electron.IpcMain.OnWithId("app-info", async (info) =>
                 {
                     string appPath = await Electron.App.GetAppPathAsync();
 
@@ -19,7 +19,7 @@ namespace ElectronNET.WebApp.Controllers
                     Electron.IpcMain.Send(mainWindow, "got-app-path", appPath);
                 });
 
-                Electron.IpcMain.OnWithId("sys-info", async (id, args) =>
+                Electron.IpcMain.OnWithId("sys-info", async (info) =>
                 {
                     string homePath = await Electron.App.GetPathAsync(PathName.Home);
 
@@ -27,7 +27,7 @@ namespace ElectronNET.WebApp.Controllers
                     Electron.IpcMain.Send(mainWindow, "got-sys-info", homePath);
                 });
 
-                Electron.IpcMain.OnWithId("screen-info", async (id, args) =>
+                Electron.IpcMain.OnWithId("screen-info", async (info) =>
                 {
                     var display = await Electron.Screen.GetPrimaryDisplayAsync();
 
