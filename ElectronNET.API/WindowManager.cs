@@ -126,10 +126,10 @@ namespace ElectronNET.API
 
             if (options.X == -1 && options.Y == -1)
             {
-                options.X = 0;
+                options.X = 0; //This is manually removed by the browserWindows.js code before creating the window
                 options.Y = 0;
 
-                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _jsonSerializer), loadUrl);
+                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _keepDefaultValuesSerializer), loadUrl);
             }
             else
             {
@@ -216,6 +216,19 @@ namespace ElectronNET.API
             BridgeConnector.Emit("createBrowserView", guid, JObject.FromObject(options, _keepDefaultValuesSerializer));
 
             return await taskCompletionSource.Task;
+        }
+
+
+        /// <summary>
+        /// Destroy all windows.
+        /// </summary>
+        /// <returns>Number of windows destroyed</returns>
+        public async Task<int> DestroyAllWindows()
+        {
+            var destroyed = await BridgeConnector.OnResult<int>("browserWindowDestroyAll", "browserWindowDestroyAll-completed");
+            _browserViews.Clear();
+            _browserWindows.Clear();
+            return destroyed;
         }
 
         private static JsonSerializer _jsonSerializer = new JsonSerializer()

@@ -51,9 +51,23 @@ app.on('will-finish-launching', () => {
 
 app.on('before-quit-for-update', () => {
     ignoreApiProcessClosed = true;
+
+    const windows = BrowserWindow.getAllWindows();
+    if (windows.length) {
+        windows.forEach(w => {
+            try {
+                w.hide();
+                w.destroy();
+            }
+            catch {
+                //ignore, probably already destroyed
+            }
+        });
+    }
 });
 
 const manifestJsonFile = require(manifestJsonFilePath);
+
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', (events, args = []) => {
@@ -87,6 +101,14 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
         app.quit();
     }
 }
+
+//Some flags need to be set before app is ready
+if (manifestJsonFile.hasOwnProperty('cliFlags') && manifestJsonFile.cliFlags.length > 0) {
+    manifestJsonFile.cliFlags.forEach(flag => {
+        app.commandLine.appendSwitch(flag);
+    });
+}
+
 
 app.on('ready', () => {
 
@@ -170,12 +192,13 @@ function startSplashScreen() {
             }
         }
 
-
-        splashScreen.setIgnoreMouseEvents(true);
+        //Removed as we want to be able to drag the splash screen: splashScreen.setIgnoreMouseEvents(true);
 
         app.once('browser-window-created', () => {
-            splashScreen.destroy();
-            splashScreen = null;
+            if (splashScreen) {
+                splashScreen.hide();
+            }
+            //We cannot destroy the window here as this triggers an electron freeze bug (https://github.com/electron/electron/issues/29050)
         });
 
         const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
@@ -266,6 +289,13 @@ function startSocketApiBridge(port) {
 
             if (launchFile) {
                 global['electronsocket'].emit('app-open-file' + id, launchFile);
+            }
+        });
+
+        socket.on('splashscreen-destroy', () => {
+            if(splashScreen) {
+                splashScreen.destroy();
+                splashScreen = null;
             }
         });
 

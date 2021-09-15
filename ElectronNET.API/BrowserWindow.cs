@@ -1075,6 +1075,14 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("browserWindowSetFullScreen", Id, flag);
         }
+        
+        /// <summary>
+        /// Sets whether the background color of the window
+        /// </summary>
+        public void SetBackgroundColor(string color)
+        {
+            BridgeConnector.Emit("browserWindowSetBackgroundColor", Id, color);
+        }
 
         /// <summary>
         /// Whether the window is in fullscreen mode.

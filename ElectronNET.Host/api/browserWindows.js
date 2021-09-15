@@ -182,6 +182,12 @@ module.exports = (socket, app) => {
         else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
+
+        if (options.x && options.y && options.x == 0 && options.y == 0) {
+            delete options.x;
+            delete options.y;
+        }
+
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
             window = app['mainWindow'];
@@ -256,6 +262,25 @@ module.exports = (socket, app) => {
     socket.on('browserWindowDestroy', (id) => {
         getWindowById(id)?.destroy();
     });
+
+    socket.on('browserWindowDestroyAll', () => {
+        const windows = electron_1.BrowserWindow.getAllWindows();
+        let count = 0;
+        if (windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.hide();
+                    w.destroy();
+                    count++;
+                }
+                catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
+        electronSocket.emit('browserWindowDestroyAll-completed', count);
+    });
+
     socket.on('browserWindowClose', (id) => {
         getWindowById(id)?.close();
     });
@@ -317,6 +342,9 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowSetFullScreen', (id, fullscreen) => {
         getWindowById(id)?.setFullScreen(fullscreen);
+    });
+    socket.on('browserWindowSetBackgroundColor', (id, color) => {
+        getWindowById(id)?.setBackgroundColor(color);
     });
     socket.on('browserWindowIsFullScreen', (id) => {
         const isFullScreen = getWindowById(id)?.isFullScreen() ?? null;
