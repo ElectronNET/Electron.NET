@@ -16,7 +16,7 @@ namespace ElectronNET.API
     public sealed class Dialog
     {
         private static Dialog _dialog;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Dialog() { }
 
@@ -225,7 +225,7 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private static JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

@@ -15,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Menu
     {
         private static Menu _menu;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Menu() { }
 
@@ -45,7 +45,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _menuItems.AsReadOnly(); } }
-        private List<MenuItem> _menuItems = new List<MenuItem>();
+        private readonly List<MenuItem> _menuItems = new();
 
         /// <summary>
         /// Sets the application menu.
@@ -75,7 +75,7 @@ namespace ElectronNET.API
         /// The context menu items.
         /// </value>
         public IReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>> ContextMenuItems { get; internal set; }
-        private Dictionary<int, List<MenuItem>> _contextMenuItems = new Dictionary<int, List<MenuItem>>();
+        private readonly Dictionary<int, List<MenuItem>> _contextMenuItems = new();
 
         /// <summary>
         /// Sets the context menu.
@@ -113,7 +113,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("menu-contextMenuPopup", browserWindow.Id);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

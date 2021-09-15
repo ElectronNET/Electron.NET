@@ -1106,7 +1106,6 @@ namespace ElectronNET.API
         /// sum any extra width and height areas you have within the overall content view.
         /// </summary>
         /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
-        /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
         public void SetAspectRatio(int aspectRatio)
         {
             BridgeConnector.Emit("browserWindowSetAspectRatio", Id, aspectRatio, new Size() { Height = 0, Width = 0 });
@@ -1524,7 +1523,7 @@ namespace ElectronNET.API
             // https://github.com/electron/electron/issues/4045
             if (isWindows10())
             {
-                x = x - 7;
+                x -= 7;
             }
 
             BridgeConnector.Emit("browserWindowSetPosition", Id, x, y);
@@ -1543,7 +1542,7 @@ namespace ElectronNET.API
             // https://github.com/electron/electron/issues/4045
             if (isWindows10())
             {
-                x = x - 7;
+                x -= 7;
             }
 
             BridgeConnector.Emit("browserWindowSetPosition", Id, x, y, animate);
@@ -1747,7 +1746,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Sets the menu as the window’s menu bar, 
@@ -1844,7 +1843,7 @@ namespace ElectronNET.API
         /// </value>
         public IReadOnlyCollection<ThumbarButton> ThumbarButtons { get { return _thumbarButtons.AsReadOnly(); } }
 
-        private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
+        private readonly List<ThumbarButton> _thumbarButtons = new();
 
         /// <summary>
         /// Add a thumbnail toolbar with a specified set of buttons to the thumbnail 
@@ -2114,7 +2113,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("browserWindow-setBrowserView", Id, browserView.Id);
         }
 
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

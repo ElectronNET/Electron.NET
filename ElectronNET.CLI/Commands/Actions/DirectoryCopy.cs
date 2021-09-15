@@ -8,16 +8,14 @@ namespace ElectronNET.CLI.Commands.Actions
         public static void Do(string sourceDirName, string destDirName, bool copySubDirs, List<string> ignoredSubDirs)
         {
             // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+            var dir = new DirectoryInfo(sourceDirName);
 
             if (!dir.Exists)
             {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirName);
+                throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
             }
 
-            DirectoryInfo[] dirs = dir.GetDirectories();
+            var dirs = dir.GetDirectories();
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(destDirName))
             {
@@ -25,13 +23,14 @@ namespace ElectronNET.CLI.Commands.Actions
             }
             else
             {
-                DirectoryInfo targetDir = new DirectoryInfo(destDirName);
+                var targetDir = new DirectoryInfo(destDirName);
                 
-                foreach (FileInfo fileDel in targetDir.EnumerateFiles())
+                foreach (var fileDel in targetDir.EnumerateFiles())
                 {
                     fileDel.Delete();
                 }
-                foreach (DirectoryInfo dirDel in targetDir.EnumerateDirectories())
+
+                foreach (var dirDel in targetDir.EnumerateDirectories())
                 {
                     dirDel.Delete(true);
                 }
@@ -41,8 +40,8 @@ namespace ElectronNET.CLI.Commands.Actions
 
 
             // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            var files = dir.GetFiles();
+            foreach (var file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
                 file.CopyTo(temppath, false);
@@ -51,7 +50,7 @@ namespace ElectronNET.CLI.Commands.Actions
             // If copying subdirectories, copy them and their contents to new location.
             if (copySubDirs)
             {
-                foreach (DirectoryInfo subdir in dirs)
+                foreach (var subdir in dirs)
                 {
                     if (ignoredSubDirs.Contains(subdir.Name))
                     {

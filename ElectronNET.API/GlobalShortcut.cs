@@ -10,7 +10,7 @@ namespace ElectronNET.API
     public sealed class GlobalShortcut
     {
         private static GlobalShortcut _globalShortcut;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal GlobalShortcut() { }
 
@@ -33,7 +33,7 @@ namespace ElectronNET.API
             }
         }
 
-        private Dictionary<string, Action> _shortcuts = new Dictionary<string, Action>();
+        private readonly Dictionary<string, Action> _shortcuts = new();
 
         /// <summary>
         /// Registers a global shortcut of accelerator. 

@@ -313,7 +313,7 @@ namespace ElectronNET.API
         private event Action<UpdateInfo> _updateDownloaded;
 
         private static AutoUpdater _autoUpdater;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal AutoUpdater() { }
 

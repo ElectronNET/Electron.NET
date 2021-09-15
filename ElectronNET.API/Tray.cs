@@ -204,7 +204,7 @@ namespace ElectronNET.API
         // TODO: Implement macOS Events
 
         private static Tray _tray;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Tray() { }
 
@@ -234,7 +234,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Shows the Traybar.
@@ -368,7 +368,7 @@ namespace ElectronNET.API
         /// <param name="fn">The handler</param>
         public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

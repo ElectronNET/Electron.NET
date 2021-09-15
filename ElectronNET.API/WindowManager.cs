@@ -18,7 +18,7 @@ namespace ElectronNET.API
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal WindowManager() { }
 
@@ -75,7 +75,7 @@ namespace ElectronNET.API
         public bool TryGetBrowserWindows(int id, out BrowserWindow window) => _browserWindows.TryGetValue(id, out window);
 
 
-        private ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
+        private readonly ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
 
         /// <summary>
         /// Gets the browser views.
@@ -84,7 +84,7 @@ namespace ElectronNET.API
         /// The browser view.
         /// </value>
         public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.Values.ToList().AsReadOnly(); } }
-        private ConcurrentDictionary<int, BrowserView> _browserViews = new ();
+        private readonly ConcurrentDictionary<int, BrowserView> _browserViews = new ();
 
         /// <summary>
         /// Get a browser view using the ID
@@ -248,14 +248,7 @@ namespace ElectronNET.API
             return destroyed;
         }
 
-        private static JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
-
-        private static JsonSerializer _keepDefaultValuesSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _keepDefaultValuesSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

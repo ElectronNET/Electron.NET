@@ -11,19 +11,20 @@ namespace ElectronNET.CLI.Commands
     {
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
-        public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
-                                                 " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
-                                                 " e.g. '/target win' or '/target custom \"win7-x86;win\"'" + Environment.NewLine +
-                                                 "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
-                                                 "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
-                                                 "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
-                                                 "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
-                                                 "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
-                                                 "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
-                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
-                                                 "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
-                                                 "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
-                                                 "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
+        public const string COMMAND_ARGUMENTS = 
+@"Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config
+for custom target, check .NET Core RID Catalog and Electron build target/
+e.g. '/target win' or '/target custom ""win7-x86;win""'
+Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release
+Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!
+Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager.
+Optional: '/relative-path' to specify output a subdirectory for output.
+Optional: '/absolute-path to specify and absolute path for output.
+Optional: '/package-json' to specify a custom package.json file.
+Optional: '/install-modules' to force node module install. Implied by '/package-json'
+Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'
+Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion
+Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params ""--prune=true """;
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 

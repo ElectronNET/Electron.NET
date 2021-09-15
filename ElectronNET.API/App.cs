@@ -603,7 +603,7 @@ namespace ElectronNET.API
         }
 
         private static App _app;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         /// <summary>
         /// Try to close all windows. The <see cref="BeforeQuit"/> event will be emitted first. If all windows are successfully
@@ -1376,7 +1376,7 @@ namespace ElectronNET.API
         /// </summary>
         public void DestroySplashScreen() =>  BridgeConnector.Emit("splashscreen-destroy");
 
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };

@@ -15,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Notification
     {
         private static Notification _notification;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Notification() { }
 
@@ -38,7 +38,7 @@ namespace ElectronNET.API
             }
         }
 
-        private static List<NotificationOptions> _notificationOptions = new List<NotificationOptions>();
+        private static readonly List<NotificationOptions> _notificationOptions = new();
 
         /// <summary>
         /// Create OS desktop notifications
@@ -135,7 +135,7 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private static JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

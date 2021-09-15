@@ -223,7 +223,7 @@ namespace ElectronNET.API.Entities
         public bool? FullscreenWindowTitle { get; set; }
 
         /// <summary>
-        ///  Activate the Window Controls Overlay on Windows, when combined with <see cref="TitleBarStyle"/> = <see cref="TitleBarStyle.Hidden"/>
+        ///  Activate the Window Controls Overlay on Windows, when combined with <see cref="TitleBarStyle"/> = <see cref="TitleBarStyle.hidden"/>
         /// </summary>
         [SupportedOSPlatform("win")]
         [DefaultValue(null)]

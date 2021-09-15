@@ -232,7 +232,7 @@ namespace ElectronNET.API
         private event Action _shutdown;
 
         private static PowerMonitor _powerMonitor;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal PowerMonitor() { }
 

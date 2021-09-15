@@ -14,7 +14,7 @@ namespace ElectronNET.API
     public sealed class IpcMain
     {
         private static IpcMain _ipcMain;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal IpcMain() { }
 
@@ -174,10 +174,11 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            var objectsWithCorrectSerialization = new List<object>();
-
-            objectsWithCorrectSerialization.Add(browserWindow.Id);
-            objectsWithCorrectSerialization.Add(channel);
+            var objectsWithCorrectSerialization = new List<object>
+            {
+                browserWindow.Id,
+                channel
+            };
 
             foreach (var parameterObject in data)
             {
@@ -209,9 +210,9 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserView browserView, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            List<JObject> jobjects = new();
+            List<JArray> jarrays = new();
+            List<object> objects = new();
 
             foreach (var parameterObject in data)
             {
@@ -258,7 +259,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("console-stderr", text);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

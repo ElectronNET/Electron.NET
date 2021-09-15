@@ -13,7 +13,7 @@ namespace ElectronNET.API
     public sealed class Clipboard
     {
         private static Clipboard _clipboard;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Clipboard() { }
 
@@ -178,7 +178,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
         }
 
-        private static JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

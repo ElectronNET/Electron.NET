@@ -86,12 +86,12 @@ namespace ElectronNET.API
 
         private static SocketIO _socket;
 
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
-        private static SemaphoreSlim _socketSemaphoreEmit = new SemaphoreSlim(1, 1);
-        private static SemaphoreSlim _socketSemaphoreHandlers = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim _socketSemaphoreEmit = new(1, 1);
+        private static readonly SemaphoreSlim _socketSemaphoreHandlers = new(1, 1);
         
-        private static TaskCompletionSource<SocketIO> _connectedSocketTask = new TaskCompletionSource<SocketIO>();
+        private static TaskCompletionSource<SocketIO> _connectedSocketTask = new();
         
         private static Task<SocketIO> _waitForConnection
         {
