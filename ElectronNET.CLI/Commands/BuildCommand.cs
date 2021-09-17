@@ -28,7 +28,7 @@ Full example for a 32bit debug build with electron prune: build /target custom w
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private string[] _args;
+        private readonly string[] _args;
 
         public BuildCommand(string[] args)
         {

@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
@@ -13,7 +15,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public UpdateFileInfo[] Files { get; set; } = new UpdateFileInfo[0];
+        public UpdateFileInfo[] Files { get; set; } = Array.Empty<UpdateFileInfo>();
 
         /// <summary>
         /// The release name.
