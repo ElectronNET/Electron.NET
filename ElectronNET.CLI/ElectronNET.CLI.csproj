@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
 
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>dotnet-electronize-h5</AssemblyName>
     <ToolCommandName>electronize-h5</ToolCommandName>
 
