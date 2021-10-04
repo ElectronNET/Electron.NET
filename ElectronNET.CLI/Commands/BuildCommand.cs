@@ -211,7 +211,7 @@ namespace ElectronNET.CLI.Commands
             var dotNetPublishFlags = new Dictionary<string, string>
             {
                 {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
-                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "true"},
+                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "false"},
             };
 
             if (parser.Arguments.ContainsKey(_paramVersion))
