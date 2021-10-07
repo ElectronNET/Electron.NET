@@ -8,6 +8,7 @@ export = (socket: Socket) => {
         ipcMain.on(channel, (event, args) => {
             event.preventDefault();
             electronSocket.emit(channel, [args]);
+            event.returnValue = null;
         });
     });
 
@@ -18,6 +19,7 @@ export = (socket: Socket) => {
             let wc = webContents.fromId(wcId)
             let bw = BrowserWindow.fromWebContents(wc);
             electronSocket.emit(channel, { id: bw.id, args: [args] });
+            event.returnValue = null;
         });
     });
 
@@ -37,6 +39,7 @@ export = (socket: Socket) => {
         ipcMain.once(channel, (event, args) => {
             event.preventDefault();
             electronSocket.emit(channel, [args]);
+            event.returnValue = null;
         });
     });
 

@@ -7,6 +7,7 @@ module.exports = (socket) => {
         electron_1.ipcMain.on(channel, (event, args) => {
             event.preventDefault();
             electronSocket.emit(channel, [args]);
+            event.returnValue = null;
         });
     });
     socket.on('registerIpcMainChannelWithId', (channel) => {
@@ -16,6 +17,7 @@ module.exports = (socket) => {
             let wc = electron_1.webContents.fromId(wcId);
             let bw = electron_1.BrowserWindow.fromWebContents(wc);
             electronSocket.emit(channel, { id: bw.id, wcId: wcId, args: [args] });
+            event.returnValue = null;
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
@@ -33,6 +35,7 @@ module.exports = (socket) => {
         electron_1.ipcMain.once(channel, (event, args) => {
             event.preventDefault();
             electronSocket.emit(channel, [args]);
+            event.returnValue = null;
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {
