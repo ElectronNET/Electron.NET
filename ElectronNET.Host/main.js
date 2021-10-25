@@ -6,6 +6,8 @@ const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
 
+const fixPath = require("fix-path");
+
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
@@ -20,6 +22,10 @@ let ignoreApiProcessClosed = false;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
+
+//macOS and linux might have issues running GUI apps that spawn processes due to missing path. We use the fixPath library to fix it
+fixPath();
+
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
@@ -360,6 +366,7 @@ function startAspCoreBackend(electronPort) {
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
+        
         if (os.platform() === 'win32') {
             binaryFile = binaryFile + '.exe';
         }
