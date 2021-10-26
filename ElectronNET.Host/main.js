@@ -6,7 +6,7 @@ const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
 
-const fixPath = require("fix-path");
+import fixPath from 'fix-path';
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
