@@ -506,19 +506,6 @@ function shellEnvSync() {
         shell = process.env.SHELL ||'/bin/zsh';
     }
 
-    const parseEnv = env => {
-        env = env.split('_SHELL_ENV_DELIMITER_')[1];
-        const returnValue = {};
-
-        for (const line of stripAnsi(env).split('\n').filter(line => Boolean(line))) {
-            const [key, ...values] = line.split('=');
-            returnValue[key] = values.join('=');
-        }
-
-        return returnValue;
-    };
-
-
     try {
         const stdout = cProcess.execSync(shell, args, { env })
         return parseEnv(stdout);
@@ -529,6 +516,18 @@ function shellEnvSync() {
             return process.env;
         }
     }
+}
+
+function parseEnv(envString) {
+    envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
+    const returnValue = {};
+
+    for (const line of stripAnsi(envString).split('\n').filter(line => Boolean(line))) {
+        const [key, ...values] = line.split('=');
+        returnValue[key] = values.join('=');
+    }
+
+    return returnValue;
 }
 
 function stripAnsi(string) {
