@@ -507,7 +507,7 @@ function shellEnvSync() {
     }
 
     try {
-        const stdout = cProcess.execSync(shell, args, { env })
+        const { stdout } = cProcess.spawnSync(shell, args, { env })
         return parseEnv(stdout);
     } catch (error) {
         if (shell) {
@@ -519,14 +519,16 @@ function shellEnvSync() {
 }
 
 function parseEnv(envString) {
-    envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
     const returnValue = {};
 
-    for (const line of stripAnsi(envString).split('\n').filter(line => Boolean(line))) {
-        const [key, ...values] = line.split('=');
-        returnValue[key] = values.join('=');
+    if(envString) {
+        envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
+        for (const line of stripAnsi(envString).split('\n').filter(line => Boolean(line))) {
+            const [key, ...values] = line.split('=');
+            returnValue[key] = values.join('=');
+        }
     }
-
+    
     return returnValue;
 }
 
