@@ -2,7 +2,7 @@
 const { BrowserWindow } = require('electron');
 const { protocol } = require('electron');
 const path = require('path');
-const cProcess = require('child_process').spawn;
+const cProcess = require('child_process');
 const process = require('process');
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
@@ -384,7 +384,7 @@ function startAspCoreBackend(electronPort) {
 
         var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt  };
 
-        apiProcess = cProcess(binFilePath, parameters, options);
+        apiProcess = cProcess.spawn(binFilePath, parameters, options);
 
         if (!detachedProcess) {
             apiProcess.stdout.on('data', (data) => {
@@ -438,7 +438,7 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         var options = { cwd: currentBinPath, env: process.env, detached: detachedProcess, stdio: stdioopt };
 
-        apiProcess = cProcess('dotnet', parameters, options);
+        apiProcess = cProcess.spawn('dotnet', parameters, options);
 
         if (!detachedProcess) {
             apiProcess.stdout.on('data', (data) => {
