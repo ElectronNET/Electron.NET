@@ -55,10 +55,13 @@ app.on('will-finish-launching', () => {
 app.on('before-quit-for-update', () => {
     ignoreApiProcessClosed = true;
 
+    app.removeAllListeners("window-all-closed");
+
     const windows = BrowserWindow.getAllWindows();
     if (windows.length) {
         windows.forEach(w => {
             try {
+                w.removeAllListeners("close");
                 w.hide();
                 w.destroy();
             }
