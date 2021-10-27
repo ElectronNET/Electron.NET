@@ -58,6 +58,7 @@ app.on('before-quit-for-update', () => {
     app.removeAllListeners("window-all-closed");
 
     const windows = BrowserWindow.getAllWindows();
+
     if (windows.length) {
         windows.forEach(w => {
             try {
@@ -263,12 +264,12 @@ function startSocketApiBridge(port) {
             global['electronsocket'].setMaxListeners(0);
         }
 
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+        console.log('.NET Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
         if (appApi === undefined) appApi = require('./api/app')(socket, app);
         if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
         if (commandLine === undefined) commandLine = require('./api/commandLine')(socket, app);
-        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket);
+        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket, app);
         if (ipc === undefined) ipc = require('./api/ipc')(socket);
         if (menu === undefined) menu = require('./api/menu')(socket);
         if (dialogApi === undefined) dialogApi = require('./api/dialog')(socket);
@@ -360,7 +361,7 @@ function startAspCoreBackend(electronPort) {
     }
 
     function startBackend(aspCoreBackendPort) {
-        console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
+        console.log('.NET Core Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
         const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
         let binaryFile = manifestJsonFile.executable;
@@ -397,7 +398,7 @@ function startAspCoreBackend(electronPort) {
         }
 
         apiProcess.on('close', (code) => {
-            console.log(`ASP.NET Process exited with code ${code}`);
+            console.log(`.NET process exited with code ${code}`);
             if (code != 0 && !ignoreApiProcessClosed) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 app.exit(code);
@@ -405,7 +406,7 @@ function startAspCoreBackend(electronPort) {
         });
 
         if (detachedProcess) {
-            console.log('Detached from ASP.NET process');
+            console.log('Detached from .NET process');
             apiProcess.unref();
         }
     }
@@ -422,7 +423,7 @@ function startAspCoreBackendWithWatch(electronPort) {
     }
 
     function startBackend(aspCoreBackendPort) {
-        console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
+        console.log('.NET watch Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
         const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
 
@@ -451,7 +452,7 @@ function startAspCoreBackendWithWatch(electronPort) {
         }
 
         apiProcess.on('close', (code) => {
-            console.log(`ASP.NET Process exited with code ${code}`);
+            console.log(`.NET process exited with code ${code}`);
             if (code != 0 && !ignoreApiProcessClosed) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 app.exit(code);

@@ -1,7 +1,8 @@
 "use strict";
 const electron_updater_1 = require("electron-updater");
+const electron_1 = require("electron");
 let electronSocket;
-module.exports = (socket) => {
+module.exports = (socket, app) => {
     electronSocket = socket;
     socket.on('register-autoUpdater-error-event', (id) => {
         electron_updater_1.autoUpdater.on('error', (error) => {
@@ -100,6 +101,20 @@ module.exports = (socket) => {
         });
     });
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
+        app.removeAllListeners("window-all-closed");
+        const windows = electron_1.BrowserWindow.getAllWindows();
+        if (windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.removeAllListeners('close');
+                    w.hide();
+                    w.destroy();
+                }
+                catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
         electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
     });
     socket.on('autoUpdaterDownloadUpdate', async (guid) => {

@@ -1,8 +1,9 @@
 import { Socket } from 'net';
+import { BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 let electronSocket;
 
-export = (socket: Socket) => {
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
 
     socket.on('register-autoUpdater-error-event', (id) => {
@@ -128,6 +129,20 @@ export = (socket: Socket) => {
     });
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
+        app.removeAllListeners("window-all-closed");
+        const windows = BrowserWindow.getAllWindows();
+        if (windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.removeAllListeners('close');
+                    w.hide();
+                    w.destroy();
+                }
+                catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
         autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
     });
 

@@ -269,6 +269,7 @@ module.exports = (socket, app) => {
         if (windows.length) {
             windows.forEach(w => {
                 try {
+                    w.removeAllListeners('close');
                     w.hide();
                     w.destroy();
                     count++;
