@@ -66,8 +66,6 @@ namespace ElectronNET.API.Entities
         [Obsolete("Removed in macOS Catalina (10.15).")]
         ultraDark,
         
-        popover, 
-        
         header, 
         
         sheet, 
