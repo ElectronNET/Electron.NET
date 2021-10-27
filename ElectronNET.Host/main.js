@@ -1,4 +1,4 @@
-﻿const { app } = require('electron');
+const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const { protocol } = require('electron');
 const path = require('path');
@@ -6,8 +6,9 @@ const cProcess = require('child_process');
 const process = require('process');
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
+const { connect } = require('http2');
 
-fixPath();
+fixPath(); //For macOS and Linux packaged-apps, the path variable might be missing
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
@@ -507,21 +508,11 @@ function shellEnvSync() {
         shell = process.env.SHELL ||'/bin/zsh';
     }
 
-    const parseEnv = env => {
-        env = env.split('_SHELL_ENV_DELIMITER_')[1];
-        const returnValue = {};
-
-        for (const line of stripAnsi(env).split('\n').filter(line => Boolean(line))) {
-            const [key, ...values] = line.split('=');
-            returnValue[key] = values.join('=');
-        }
-
-        return returnValue;
-    };
-
-
     try {
-        const stdout = cProcess.execSync(shell, args, { env })
+        let { stdout } = cProcess.spawnSync(shell, args, { env });
+        if(Buffer.isBuffer(stdout)){
+            stdout = stdout.toString();
+        }
         return parseEnv(stdout);
     } catch (error) {
         if (shell) {
@@ -530,6 +521,20 @@ function shellEnvSync() {
             return process.env;
         }
     }
+}
+
+function parseEnv(envString) {
+    const returnValue = {};
+
+    if(envString) {
+        envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
+        for (const line of stripAnsi(envString).split('\n').filter(line => Boolean(line))) {
+            const [key, ...values] = line.split('=');
+            returnValue[key] = values.join('=');
+        }
+    }
+    
+    return returnValue;
 }
 
 function stripAnsi(string) {
