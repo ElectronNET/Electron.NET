@@ -1,4 +1,4 @@
-﻿const { app } = require('electron');
+const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const { protocol } = require('electron');
 const path = require('path');
@@ -6,8 +6,9 @@ const cProcess = require('child_process');
 const process = require('process');
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
+const { connect } = require('http2');
 
-fixPath();
+fixPath(); //For macOS and Linux packaged-apps, the path variable might be missing
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
@@ -507,7 +508,10 @@ function shellEnvSync() {
     }
 
     try {
-        const { stdout } = cProcess.spawnSync(shell, args, { env })
+        let { stdout } = cProcess.spawnSync(shell, args, { env });
+        if(Buffer.isBuffer(stdout)){
+            stdout = stdout.toString();
+        }
         return parseEnv(stdout);
     } catch (error) {
         if (shell) {
