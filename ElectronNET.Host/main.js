@@ -477,18 +477,28 @@ function getEnvironmentParameter() {
 
 
 
-//This code is derived from gh/sindresorhus/shell-path/, gh/sindresorhus/shell-env/, gh/sindresorhus/default-shell/, gh/chalk/strip-ansi and gh/chalk/ansi-regex, all under MIT license
+//This code is derived from gh/sindresorhus/shell-path/, gh/sindresorhus/shell-env/, gh/sindresorhus/default-shell/, gh/chalk/ansi-regex, all under MIT license
 function fixPath() {
     if (process.platform === 'win32') {
         return;
     }
+    const shellFromEnv = shellEnvSync();
 
-    process.env.PATH = shellEnvSync() || [
-        './node_modules/.bin',
-        '/.nodebrew/current/bin',
-        '/usr/local/bin',
-        process.env.PATH,
-    ].join(':');
+    if (process.env.PATH) {
+        console.log("Started with PATH = " + process.env.PATH);
+    }
+
+    if (shellFromEnv) {
+        process.env.PATH = shellFromEnv;
+    } else {
+        process.env.PATH = [
+            './node_modules/.bin',
+            '/.nodebrew/current/bin',
+            '/usr/local/bin',
+            process.env.PATH,
+        ].join(':'); //macOS and Linux path separator is ':'
+    }
+    console.log("Using PATH = " + process.env.PATH);
 }
 
 function shellEnvSync() {
@@ -526,30 +536,23 @@ function shellEnvSync() {
 function parseEnv(envString) {
     const returnValue = {};
 
-    if(envString) {
+    if (envString) {
         envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
-        for (const line of stripAnsi(envString).split('\n').filter(line => Boolean(line))) {
+        for (const line of envString.replace(ansiRegex(), '').split('\n').filter(line => Boolean(line))) {
             const [key, ...values] = line.split('=');
-            returnValue[key] = values.join('=');
+            returnValue[key.toUpperCase()] = values.join('=');
         }
     }
-    
-    return returnValue;
-}
 
-function stripAnsi(string) {
-    if (typeof string !== 'string') {
-        throw new TypeError(`Expected a \`string\`, got \`${typeof string}\``);
+    return returnValue["PATH"];
+
+
+    function ansiRegex() {
+        const pattern = [
+            '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+            '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+        ].join('|');
+
+        return new RegExp(pattern, 'g');
     }
-
-    return string.replace(ansiRegex(), '');
-}
-
-function ansiRegex({ onlyFirst = false } = {}) {
-    const pattern = [
-        '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-        '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
-    ].join('|');
-
-    return new RegExp(pattern, onlyFirst ? undefined : 'g');
 }
