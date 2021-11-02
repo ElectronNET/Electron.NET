@@ -246,7 +246,7 @@ function startSocketApiBridge(port) {
     io.on('connection', (socket) => {
 
         socket.on('disconnect', function (reason) {
-            console.log('Got disconnect! Reason: ' + reason);
+            console.log('Socket with .NET disconnect with reason: ' + reason);
             try {
                 if (hostHook) {
                     const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
@@ -403,6 +403,11 @@ function startAspCoreBackend(electronPort) {
             if (code != 0 && !ignoreApiProcessClosed) {
                 console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 app.exit(code);
+            }
+            else if (os.platform() === 'darwin' && ignoreApiProcessClosed) {
+                //There is a bug on the updater on macOS never quiting and starting the update process
+                //We give Squirrel.Mac enough time to access the update file, and then just force-exit here
+                setTimeout(() => app.exit(0), 10_000);
             }
         });
 
