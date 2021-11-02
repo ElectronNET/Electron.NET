@@ -102,20 +102,22 @@ module.exports = (socket, app) => {
     });
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         app.removeAllListeners("window-all-closed");
-        const windows = electron_1.BrowserWindow.getAllWindows();
-        if (windows.length) {
-            windows.forEach(w => {
-                try {
-                    w.removeAllListeners('close');
-                    w.hide();
-                    w.destroy();
-                }
-                catch {
-                    //ignore, probably already destroyed
-                }
-            });
-        }
-        electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        setImmediate(() => {
+            const windows = electron_1.BrowserWindow.getAllWindows();
+            if (windows.length) {
+                windows.forEach(w => {
+                    try {
+                        w.removeAllListeners('close');
+                        w.hide();
+                        w.destroy();
+                    }
+                    catch {
+                        //ignore, probably already destroyed
+                    }
+                });
+            }
+            electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        });
     });
     socket.on('autoUpdaterDownloadUpdate', async (guid) => {
         const downloadedPath = await electron_updater_1.autoUpdater.downloadUpdate();

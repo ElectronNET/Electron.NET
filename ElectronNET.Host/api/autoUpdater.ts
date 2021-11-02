@@ -130,20 +130,22 @@ export = (socket: Socket, app: Electron.App) => {
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
         app.removeAllListeners("window-all-closed");
-        const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
-            windows.forEach(w => {
-                try {
-                    w.removeAllListeners('close');
-                    w.hide();
-                    w.destroy();
-                }
-                catch {
-                    //ignore, probably already destroyed
-                }
-            });
-        }
-        autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        setImmediate(() => {
+            const windows = BrowserWindow.getAllWindows();
+            if (windows.length) {
+                windows.forEach(w => {
+                    try {
+                        w.removeAllListeners('close');
+                        w.hide();
+                        w.destroy();
+                    }
+                    catch {
+                        //ignore, probably already destroyed
+                    }
+                });
+            }
+            autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        });
     });
 
     socket.on('autoUpdaterDownloadUpdate', async (guid) => {
