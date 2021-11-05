@@ -458,8 +458,23 @@ namespace ElectronNET.API
 
                             Task.Run(async () =>
                             {
-                                await socket.ConnectAsync();
-                                _connectedSocketTask.TrySetResult(socket); //Probably was already on the OnConnected call
+                                try
+                                {
+                                    if (!socket.Connected)
+                                    {
+                                        await socket.ConnectAsync();
+                                        _connectedSocketTask.TrySetResult(socket); //Probably was already on the OnConnected call
+                                    }
+                                    return;
+                                }
+                                catch (Exception e)
+                                {
+                                    await Task.Delay(1000);
+                                    if (!socket.Connected)
+                                    {
+                                        LogError(e, "Failed to connect");
+                                    }
+                                }
                             });
 
                             _socket = socket;
