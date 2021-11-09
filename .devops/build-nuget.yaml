@@ -1,5 +1,5 @@
 variables:
-  PackageVersion: 15.3.0.$(Build.BuildId)
+  PackageVersion: 15.3.1.$(Build.BuildId)
   projectAPI:  './ElectronNET.API/ElectronNET.API.csproj'
   projectCLI:  './ElectronNET.CLI/ElectronNET.CLI.csproj'
 
@@ -20,7 +20,7 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 6.0.100-rc.1.21463.6
+    version: 6.0.100
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: DotNetCoreCLI@2
