@@ -32,8 +32,7 @@ if (app.commandLine.hasSwitch('watch')) {
     watchable = true;
 };
 
-let resourcesPath  = __dirname.replace('app.asar', '');
-let currentBinPath = path.join(resourcesPath, '..', 'Helpers', 'bin');
+let currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
 let manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 
 // if watch is enabled lets change the path
