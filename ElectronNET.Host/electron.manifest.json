@@ -17,16 +17,16 @@
       "output": "../../../bin/Desktop"
     },
     "extraResources": [
-      {
-        "from": "./bin",
-        "to": "bin",
-        "filter": [ "**/*" ]
-      }
     ],
     "files": [
       {
         "from": "./ElectronHostHook/node_modules",
         "to": "ElectronHostHook/node_modules",
+        "filter": [ "**/*" ]
+      },
+      {
+        "from": "./bin",
+        "to": "Helpers/bin",
         "filter": [ "**/*" ]
       },
       "**/*"
