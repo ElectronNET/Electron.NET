@@ -213,5 +213,11 @@ namespace ElectronNET.API.Entities
         /// </value>
         [DefaultValue(false)]
         public bool WebviewTag { get; set; } = false;
+
+        /// <summary>
+        /// Make the web view transparent
+        /// </summary>
+        [DefaultValue(false)]
+        public bool Transparent { get; set; } = false;
     }
 }
