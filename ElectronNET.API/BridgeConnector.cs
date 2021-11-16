@@ -396,7 +396,7 @@ namespace ElectronNET.API
                                 ConnectionTimeout = TimeSpan.FromSeconds(10)
                             });
 
-                            socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
+                            socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
 
                             socket.OnConnected += (_, __) =>
                             {
@@ -496,7 +496,7 @@ namespace ElectronNET.API
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {
-            public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
+            public CamelCaseNewtonsoftJsonSerializer() : base()
             {
             }
 

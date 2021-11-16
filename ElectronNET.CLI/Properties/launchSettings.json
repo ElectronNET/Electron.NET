@@ -2,7 +2,7 @@
   "profiles": {
     "Build Test App": {
       "commandName": "Project",
-      "commandLineArgs": "build /target win",
+      "commandLineArgs": "build /target win /PublishSingleFile false /PublishReadyToRun false",
       "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
     },
     "Start Test App": {
