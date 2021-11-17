@@ -1,6 +1,4 @@
-const { app } = require('electron');
-const { BrowserWindow } = require('electron');
-const { protocol } = require('electron');
+const { app, nativeTheme, BrowserWindow, protocol } = require('electron');
 const path = require('path');
 const cProcess = require('child_process');
 const process = require('process');
@@ -16,7 +14,7 @@ let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let powerMonitor;
 let splashScreen, hostHook;
-let mainWindowId, nativeTheme;
+let mainWindowId, nativeThemeApi;
 let dock;
 let launchFile;
 let launchUrl;
@@ -168,6 +166,11 @@ function isSplashScreenEnabled() {
 
 function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
+
+    if (manifestJsonFile.splashscreen.imageFileDark && nativeTheme.shouldUseDarkColors) {
+        imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFileDark);
+    }
+
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
             console.log('load splashscreen error:');
@@ -283,7 +286,7 @@ function startSocketApiBridge(port) {
         if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
         if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
-        if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
+        if (nativeThemeApi === undefined) nativeThemeApi = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
 
         socket.on('register-app-open-file-event', (id) => {
@@ -301,7 +304,7 @@ function startSocketApiBridge(port) {
         });
 
         socket.on('splashscreen-destroy', () => {
-            if(splashScreen) {
+            if (splashScreen) {
                 splashScreen.destroy();
                 splashScreen = null;
             }
@@ -384,7 +387,7 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
 
-        var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt  };
+        var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt };
 
         apiProcess = cProcess.spawn(binFilePath, parameters, options);
 
@@ -522,15 +525,15 @@ function shellEnvSync() {
         DISABLE_AUTO_UPDATE: 'true',
     };
 
-    let shell = process.env.SHELL ||'/bin/sh';
+    let shell = process.env.SHELL || '/bin/sh';
 
     if (process.platform === 'darwin') {
-        shell = process.env.SHELL ||'/bin/zsh';
+        shell = process.env.SHELL || '/bin/zsh';
     }
 
     try {
         let { stdout } = cProcess.spawnSync(shell, args, { env });
-        if(Buffer.isBuffer(stdout)){
+        if (Buffer.isBuffer(stdout)) {
             stdout = stdout.toString();
         }
         return parseEnv(stdout);
