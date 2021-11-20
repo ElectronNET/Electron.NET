@@ -170,7 +170,13 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
+                
                 string electronArch = "x64";
+                //Somewhat janky fix for Apple Silicon:
+                if (platformInfo.NetCorePublishRid == "osx-arm64")
+                {
+                    electronArch = "arm64";
+                }
                 if (parser.Arguments.ContainsKey(_paramElectronArch))
                 {
                     electronArch = parser.Arguments[_paramElectronArch][0];
