@@ -1308,6 +1308,13 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Fetches a path's associated icon.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public Task<NativeImage> GetFileIcon(string path) => BridgeConnector.OnResult<NativeImage>("appGetFileIcon", "appGetFileIconCompleted", path);
+
+        /// <summary>
         /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
         /// <para/>
         /// This is the user agent that will be used when no user agent is set at the webContents or
