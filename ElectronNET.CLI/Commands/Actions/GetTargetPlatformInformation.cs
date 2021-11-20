@@ -27,6 +27,10 @@ namespace ElectronNET.CLI.Commands.Actions
                     netCorePublishRid = "osx-x64";
                     electronPackerPlatform = "mac";
                     break;
+                case "osx-arm64":
+                    netCorePublishRid = "osx-arm64";
+                    electronPackerPlatform = "darwin-arm64";
+                    break;
                 case "linux":
                     netCorePublishRid = "linux-x64";
                     electronPackerPlatform = "linux";
@@ -48,8 +52,17 @@ namespace ElectronNET.CLI.Commands.Actions
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-                        netCorePublishRid = "osx-x64";
-                        electronPackerPlatform = "mac";
+                        if (RuntimeInformation.OSArchitecture.Equals(Architecture.Arm64))
+                        {
+                            //Apple Silicon Mac:
+                            netCorePublishRid = "osx-arm64";
+                            electronPackerPlatform = "darwin-arm64";
+                        }
+                        else{
+                            //Intel Mac:
+                            netCorePublishRid = "osx-x64";
+                            electronPackerPlatform = "mac";
+                        }
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     {
