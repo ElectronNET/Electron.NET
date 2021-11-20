@@ -29,7 +29,7 @@ namespace ElectronNET.CLI.Commands.Actions
                     break;
                 case "osx-arm64":
                     netCorePublishRid = "osx-arm64";
-                    electronPackerPlatform = "darwin-arm64";
+                    electronPackerPlatform = "mac";
                     break;
                 case "linux":
                     netCorePublishRid = "linux-x64";
@@ -56,7 +56,7 @@ namespace ElectronNET.CLI.Commands.Actions
                         {
                             //Apple Silicon Mac:
                             netCorePublishRid = "osx-arm64";
-                            electronPackerPlatform = "darwin-arm64";
+                            electronPackerPlatform = "mac";
                         }
                         else{
                             //Intel Mac:
