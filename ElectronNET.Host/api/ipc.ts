@@ -18,7 +18,9 @@ export = (socket: Socket) => {
             let wcId = event.sender.id;
             let wc = webContents.fromId(wcId)
             let bw = BrowserWindow.fromWebContents(wc);
-            electronSocket.emit(channel, { id: bw.id, args: [args] });
+            if (bw) {
+                electronSocket.emit(channel, { id: bw.id, args: [args] });
+            }
             event.returnValue = null;
         });
     });
