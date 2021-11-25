@@ -179,7 +179,7 @@ Full example for a 32bit debug build with electron prune: build /target custom w
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
-                string electronVersion = "16.0.1";
+                string electronVersion = "16.0.2";
 
                 if (parser.Arguments.ContainsKey(_paramElectronVersion))
                 {
