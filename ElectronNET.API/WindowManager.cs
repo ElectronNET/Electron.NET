@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -79,7 +80,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost")
+        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost:{port}")
         {
             return await CreateWindowAsync(new BrowserWindowOptions(), loadUrl);
         }
@@ -90,10 +91,9 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
+        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost:{port}")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
-
             BridgeConnector.Socket.On("BrowserWindowCreated", (id) =>
             {
                 BridgeConnector.Socket.Off("BrowserWindowCreated");
@@ -119,10 +119,7 @@ namespace ElectronNET.API
                 }
             });
 
-            if (loadUrl.ToUpper() == "HTTP://LOCALHOST")
-            {
-                loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
-            }
+            loadUrl = ParseLoadUrl(loadUrl);
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
@@ -157,6 +154,22 @@ namespace ElectronNET.API
             }
 
             return taskCompletionSource.Task;
+        }
+
+        private string ParseLoadUrl(string loadUrl) 
+        {
+            var match = Regex.Match(loadUrl, @"(ht|f)tp(s?)\:\/\/([a-z]+\.)+[a-z]+");
+            if (!match.Success || match.Index != 0) 
+            {
+                match = Regex.Match(loadUrl, @"([a-z]+\.)+[a-z]+");
+                if (!match.Success || match.Index != 0)
+                    loadUrl = "localhost:{port}" + loadUrl;
+                loadUrl = "http://" + loadUrl;
+            }
+
+            loadUrl = Regex.Replace(loadUrl, @"\{(P|p)(O|o)(R|r)(T|t)\}", BridgeSettings.WebPort);
+
+            return loadUrl;
         }
 
         private bool isWindows10()
