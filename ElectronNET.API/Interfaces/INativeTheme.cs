@@ -1,40 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
-using ElectronNET.API.Extensions;
-using ElectronNET.API.Interfaces;
 
-namespace ElectronNET.API
+namespace ElectronNET.API.Interfaces
 {
     /// <summary>
     /// Read and respond to changes in Chromium's native color theme.
     /// </summary>
-    public sealed class NativeTheme : INativeTheme
+    public interface INativeTheme
     {
-        private static NativeTheme _nativeTheme;
-        private static object _syncRoot = new object();
-
-        internal NativeTheme() { }
-
-        internal static NativeTheme Instance
-        {
-            get
-            {
-                if (_nativeTheme == null)
-                {
-                    lock (_syncRoot)
-                    {
-                        if (_nativeTheme == null)
-                        {
-                            _nativeTheme = new NativeTheme();
-                        }
-                    }
-                }
-
-                return _nativeTheme;
-            }
-        }
-
         /// <summary>
         /// Setting this property to <see cref="ThemeSourceMode.System"/> will remove the override and everything will be reset to the OS default. By default 'ThemeSource' is <see cref="ThemeSourceMode.System"/>.
         /// <para/>
@@ -91,123 +65,37 @@ namespace ElectronNET.API
         /// Your application should then always use <see cref="ShouldUseDarkColorsAsync"/> to determine what CSS to apply.
         /// </summary>
         /// <param name="themeSourceMode">The new ThemeSource.</param>
-        public void SetThemeSource(ThemeSourceMode themeSourceMode)
-        {
-            var themeSource = themeSourceMode.GetDescription();
-
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
-        }
+        void SetThemeSource(ThemeSourceMode themeSourceMode);
 
         /// <summary>
         /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<ThemeSourceMode> GetThemeSourceAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
-
-            BridgeConnector.Socket.On("nativeTheme-themeSource-getCompleted", (themeSource) =>
-            {
-                BridgeConnector.Socket.Off("nativeTheme-themeSource-getCompleted");
-
-                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)themeSource, true);
-
-                taskCompletionSource.SetResult(themeSourceValue);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
-
-            return taskCompletionSource.Task;
-        }
+        Task<ThemeSourceMode> GetThemeSourceAsync();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has a dark mode enabled or is
         /// being instructed to show a dark-style UI. If you want to modify this value you
         /// should use <see cref="SetThemeSource"/>.
         /// </summary>
-        public Task<bool> ShouldUseDarkColorsAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseDarkColors-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseDarkColors);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
-
-            return taskCompletionSource.Task;
-        }
+        Task<bool> ShouldUseDarkColorsAsync();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
-        public Task<bool> ShouldUseHighContrastColorsAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseHighContrastColors-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
-
-            return taskCompletionSource.Task;
-        }
+        Task<bool> ShouldUseHighContrastColorsAsync();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
-        public Task<bool> ShouldUseInvertedColorSchemeAsync()
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");
-
-            return taskCompletionSource.Task;
-        }
+        Task<bool> ShouldUseInvertedColorSchemeAsync();
 
         /// <summary>
         /// Emitted when something in the underlying NativeTheme has changed. This normally means that either the value of <see cref="ShouldUseDarkColorsAsync"/>,
         /// <see cref="ShouldUseHighContrastColorsAsync"/> or <see cref="ShouldUseInvertedColorSchemeAsync"/> has changed. You will have to check them to determine which one has changed.
         /// </summary>
-        public event Action Updated
-        {
-            add
-            {
-                if (_updated == null)
-                {
-                    BridgeConnector.Socket.On("nativeTheme-updated" + GetHashCode(), () =>
-                    {
-                        _updated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode());
-                }
-                _updated += value;
-            }
-            remove
-            {
-                _updated -= value;
-
-                if (_updated == null)
-                {
-                    BridgeConnector.Socket.Off("nativeTheme-updated" + GetHashCode());
-                }
-            }
-        }
-
-        private event Action _updated;
+        event Action Updated;
     }
 }

@@ -3,13 +3,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Perform copy and paste operations on the system clipboard.
     /// </summary>
-    public sealed class Clipboard
+    public sealed class Clipboard : IClipboard
     {
         private static Clipboard _clipboard;
         private static object _syncRoot = new object();

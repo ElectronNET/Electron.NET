@@ -5,13 +5,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
-    public sealed class IpcMain
+    public sealed class IpcMain : IIpcMain
     {
         private static IpcMain _ipcMain;
         private static object _syncRoot = new object();

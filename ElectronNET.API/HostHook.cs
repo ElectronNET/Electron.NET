@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
@@ -13,7 +14,7 @@ namespace ElectronNET.API
     /// ElectronHostHook directory:
     /// <c>electronize add HostHook</c>
     /// </summary>
-    public sealed class HostHook
+    public sealed class HostHook : IHostHook
     {
         private static HostHook _electronHostHook;
         private static object _syncRoot = new object();

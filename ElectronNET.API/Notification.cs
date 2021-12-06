@@ -6,13 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Create OS desktop notifications
     /// </summary>
-    public sealed class Notification
+    public sealed class Notification : INotification
     {
         private static Notification _notification;
         private static object _syncRoot = new object();

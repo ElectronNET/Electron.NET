@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// 
     /// </summary>
-    public sealed class WindowManager
+    public sealed class WindowManager : IWindowManager
     {
         private static WindowManager _windowManager;
         private static object _syncRoot = new object();

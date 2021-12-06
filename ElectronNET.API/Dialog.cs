@@ -6,13 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Display native system dialogs for opening and saving files, alerting, etc.
     /// </summary>
-    public sealed class Dialog
+    public sealed class Dialog : IDialog
     {
         private static Dialog _dialog;
         private static object _syncRoot = new object();

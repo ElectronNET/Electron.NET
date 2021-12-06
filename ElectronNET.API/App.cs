@@ -7,13 +7,14 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Control your application's event lifecycle.
     /// </summary>
-    public sealed class App
+    public sealed class App : IApp
     {
         /// <summary>
         /// Emitted when all windows have been closed.

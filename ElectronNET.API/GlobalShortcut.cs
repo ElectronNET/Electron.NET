@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Detect keyboard events when the application does not have keyboard focus.
     /// </summary>
-    public sealed class GlobalShortcut
+    public sealed class GlobalShortcut : IGlobalShortcut
     {
         private static GlobalShortcut _globalShortcut;
         private static object _syncRoot = new object();

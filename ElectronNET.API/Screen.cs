@@ -4,13 +4,14 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Retrieve information about screen size, displays, cursor position, etc.
     /// </summary>
-    public sealed class Screen
+    public sealed class Screen : IScreen
     {
         /// <summary>
         /// Emitted when an new Display has been added.
