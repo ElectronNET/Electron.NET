@@ -103,6 +103,7 @@ namespace ElectronNET.CLI.Commands.Actions
         private static bool Dotnet6Installed()
         {
             //check for .net 6:
+            //execute dotnet --list-sdks to get versions
             Process process = new Process();
             process.StartInfo.FileName = "dotnet";
             process.StartInfo.Arguments = "--list-sdks";
@@ -113,9 +114,13 @@ namespace ElectronNET.CLI.Commands.Actions
 
             string standard_output;
             bool dotnet6Exists = false;
+
+            //get command output:
             while ((standard_output = process.StandardOutput.ReadLine()) != null)
             {
-                if (standard_output.StartsWith("6."))
+                //get the major version and see if its greater than or equal to 6
+                int majorVer = int.Parse(standard_output.Split(".")[0]);
+                if (majorVer >= 6)
                 {
                     dotnet6Exists = true;
                     break;
