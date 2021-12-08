@@ -80,7 +80,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost:{port}")
+        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "/")
         {
             return await CreateWindowAsync(new BrowserWindowOptions(), loadUrl);
         }
@@ -91,7 +91,7 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost:{port}")
+        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "/")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
             BridgeConnector.Socket.On("BrowserWindowCreated", (id) =>
@@ -119,7 +119,10 @@ namespace ElectronNET.API
                 }
             });
 
-            loadUrl = ParseLoadUrl(loadUrl);
+            if(!TryParseLoadUrl(loadUrl, out loadUrl)) 
+            { 
+                throw new ArgumentException($"Unable to parse {loadUrl}", nameof(loadUrl));
+            }
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
@@ -156,20 +159,18 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private string ParseLoadUrl(string loadUrl) 
+        
+        private bool TryParseLoadUrl(string loadUrl, out string parsedUrl) 
         {
-            var match = Regex.Match(loadUrl, @"(ht|f)tp(s?)\:\/\/([a-z]+\.)+[a-z]+");
-            if (!match.Success || match.Index != 0) 
-            {
-                match = Regex.Match(loadUrl, @"([a-z]+\.)+[a-z]+");
-                if (!match.Success || match.Index != 0)
-                    loadUrl = "localhost:{port}" + loadUrl;
-                loadUrl = "http://" + loadUrl;
+            Uri BaseUri = new Uri($"http://localhost:{BridgeSettings.WebPort}");
+            if (Uri.TryCreate(loadUrl, UriKind.Absolute, out var url) ||
+                Uri.TryCreate(BaseUri, loadUrl, out url)) {
+                var uri = new UriBuilder(url.ToString());
+                parsedUrl = uri.ToString();
+                return true;
             }
-
-            loadUrl = Regex.Replace(loadUrl, @"\{(P|p)(O|o)(R|r)(T|t)\}", BridgeSettings.WebPort);
-
-            return loadUrl;
+            parsedUrl = loadUrl;
+            return false;
         }
 
         private bool isWindows10()
