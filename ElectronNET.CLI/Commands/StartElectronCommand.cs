@@ -23,6 +23,7 @@ namespace ElectronNET.CLI.Commands
         }
 
         private string _aspCoreProjectPath = "project-path";
+        private string _paramDotNetProject = "dotnet-project";
         private string _arguments = "args";
         private string _manifest = "manifest";
         private string _clearCache = "clear-cache";
@@ -105,9 +106,15 @@ namespace ElectronNET.CLI.Commands
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
+                var project = string.Empty;
+                if (parser.Arguments.ContainsKey(_paramDotNetProject))
+                {
+                    project = parser.Arguments[_paramDotNetProject][0];
+                }
+
                 if (parser != null && !parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)

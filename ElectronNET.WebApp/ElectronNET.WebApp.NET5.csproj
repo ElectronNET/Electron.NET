@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" />
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" AdditionalProperties="TargetFramework=net5.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\electron.ico">

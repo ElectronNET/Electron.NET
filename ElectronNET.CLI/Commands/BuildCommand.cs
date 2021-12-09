@@ -14,6 +14,7 @@ namespace ElectronNET.CLI.Commands
         public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
                                                  " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
                                                  " e.g. '/target win' or '/target custom \"win7-x86;win\"'" + Environment.NewLine +
+                                                 "Optional: '/dotnet-project' with the desired project file to build" + Environment.NewLine +
                                                  "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
                                                  "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
                                                  "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
@@ -35,6 +36,7 @@ namespace ElectronNET.CLI.Commands
         }
 
         private string _paramTarget = "target";
+        private string _paramDotNetProject = "dotnet-project";
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramElectronArch = "electron-arch";
         private string _paramElectronParams = "electron-params";
@@ -106,8 +108,14 @@ namespace ElectronNET.CLI.Commands
                 
                 var dotNetPublishFlags = GetDotNetPublishFlags(parser);
 
+                var project = string.Empty;
+                if (parser.Arguments.ContainsKey(_paramDotNetProject))
+                {
+                    project = parser.Arguments[_paramDotNetProject][0];
+                }
+
                 var command =
-                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
+                    $"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
                 
                 // output the command 
                 Console.ForegroundColor = ConsoleColor.Green;

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
@@ -10,8 +9,10 @@
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
-    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
-This package contains the API to access the "native" electron API.</Description>
+    <Description>
+      Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
+      This package contains the API to access the "native" electron API.
+    </Description>
     <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -20,6 +21,7 @@ This package contains the API to access the "native" electron API.</Description>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <Version>99.0.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,15 +35,16 @@ This package contains the API to access the "native" electron API.</Description>
     <Exec Command="$(ProjectDir)devCleanup.sh" IgnoreExitCode="true" />
   </Target>
   <ItemGroup>
-   <FrameworkReference Include="Microsoft.AspNetCore.App" />
-</ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SocketIoClientDotNet" Version="1.0.5" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.*" Condition="'$(TargetFramework)' == 'net5.0'" />
+    <PackageReference Include="System.Drawing.Common" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
   </ItemGroup>
 
 </Project>

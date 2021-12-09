@@ -26,7 +26,7 @@ Well... there are lots of different approaches how to get a X-plat desktop app r
 
 ## 🛠 Requirements to run:
 
-The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET 5, so our minimum base OS is the same as [.NET 5](https://github.com/dotnet/core/blob/master/release-notes/5.0/5.0-supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API multi-targets .NET 5 & .NET6, so our minimum base OS is the same as [.NET 5](https://github.com/dotnet/core/blob/master/release-notes/5.0/5.0-supported-os.md) or [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md).
 
 Also you should have installed:
 
