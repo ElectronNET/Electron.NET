@@ -84,9 +84,7 @@ if (manifestJsonFile.ignoreAllCertificateErrors) {
 // Bypass SSL/TLS certificate errors only for the domain names specified in the electron.manifest.json file.
 if (manifestJsonFile.hasOwnProperty('domainNamesToIgnoreCertificateErrors')) {
     if (manifestJsonFile.domainNamesToIgnoreCertificateErrors.length > 0) {
-        manifestJsonFile.domainNamesToIgnoreCertificateErrors.forEach(function (site) {
-            console.log('SSL/TLS certificate errors will be ignored for ' + site);
-        });
+        console.log(`SSL/TLS certificate errors will be ignored for ${manifestJsonFile.domainNamesToIgnoreCertificateErrors.join(', ')}`);
 
         app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
             if (shouldIgnoreCertificateForUrl(url)) {
