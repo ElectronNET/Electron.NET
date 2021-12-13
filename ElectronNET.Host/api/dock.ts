@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { app, Menu } from 'electron';
+import {Socket} from 'net';
+import {app, Menu} from 'electron';
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -71,7 +72,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

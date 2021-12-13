@@ -1,4 +1,5 @@
-import { Socket } from 'net';
+import {Socket} from 'net';
+
 let electronSocket;
 
 export = (socket: Socket, app: Electron.App) => {

@@ -15,7 +15,10 @@ module.exports = (socket) => {
     });
     socket.on('register-screen-display-metrics-changed', (id) => {
         electron_1.screen.on('display-metrics-changed', (event, display, changedMetrics) => {
-            electronSocket.emit('screen-display-metrics-changed-event' + id, { display: display, changedMetrics: changedMetrics });
+            electronSocket.emit('screen-display-metrics-changed-event' + id, {
+                display: display,
+                changedMetrics: changedMetrics
+            });
         });
     });
     socket.on('screen-getCursorScreenPoint', () => {

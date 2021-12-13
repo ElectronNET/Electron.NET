@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { screen } from 'electron';
+import {Socket} from 'net';
+import {screen} from 'electron';
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -18,7 +19,10 @@ export = (socket: Socket) => {
 
     socket.on('register-screen-display-metrics-changed', (id) => {
         screen.on('display-metrics-changed', (event, display, changedMetrics) => {
-            electronSocket.emit('screen-display-metrics-changed-event' + id, {display: display, changedMetrics: changedMetrics});
+            electronSocket.emit('screen-display-metrics-changed-event' + id, {
+                display: display,
+                changedMetrics: changedMetrics
+            });
         });
     });
 

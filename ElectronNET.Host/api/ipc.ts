@@ -1,5 +1,6 @@
-import { ipcMain, BrowserWindow, BrowserView, webContents } from 'electron';
-import { Socket } from 'net';
+import {BrowserView, BrowserWindow, ipcMain, webContents} from 'electron';
+import {Socket} from 'net';
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -19,7 +20,7 @@ export = (socket: Socket) => {
             let wc = webContents.fromId(wcId)
             let bw = BrowserWindow.fromWebContents(wc);
             if (bw) {
-                electronSocket.emit(channel, { id: bw.id, wcId: wcId, args: [args] });
+                electronSocket.emit(channel, {id: bw.id, wcId: wcId, args: [args]});
             }
             event.returnValue = null;
         });
