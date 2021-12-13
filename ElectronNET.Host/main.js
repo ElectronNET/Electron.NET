@@ -228,7 +228,8 @@ function startSocketApiBridge(port) {
     // otherwise the Windows Firewall will be triggered
     server = require('http').createServer();
     io = require('socket.io')();
-    io.attach(server);
+
+    io.attach(server, { pingTimeout: 5000, pingInterval: 10000 });
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
@@ -249,7 +250,7 @@ function startSocketApiBridge(port) {
     io.on('connection', (socket) => {
 
         socket.on('disconnect', function (reason) {
-            console.log('Socket with .NET disconnect with reason: ' + reason);
+            console.log('Socket ' + socket.id + ' disconnected from .NET with reason: ' + reason);
             try {
                 if (hostHook) {
                     const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
@@ -262,16 +263,18 @@ function startSocketApiBridge(port) {
             }
         });
 
+        let firstTime = (global['electronsocket'] === undefined);
 
-        if (global['electronsocket'] === undefined) {
+        if (firstTime) {
+            console.log("First socket connection");
             global['electronsocket'] = socket;
-            global['electronsocket'].setMaxListeners(0);
+            socket.setMaxListeners(0);
         }
 
-        console.log('.NET Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
+        console.log('.NET connected on socket ' + socket.id + ' on ' + new Date());
 
-        if (appApi === undefined) appApi = require('./api/app')(socket, app);
-        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
+        if (appApi === undefined) appApi = require('./api/app')(socket, app, firstTime);
+        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app, firstTime);
         if (commandLine === undefined) commandLine = require('./api/commandLine')(socket, app);
         if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket, app);
         if (ipc === undefined) ipc = require('./api/ipc')(socket);
@@ -293,9 +296,11 @@ function startSocketApiBridge(port) {
             global['electronsocket'] = socket;
 
             app.on('open-file', (event, file) => {
-                event.preventDefault();
 
-                global['electronsocket'].emit('app-open-file' + id, file);
+                if (global['electronsocket'] === socket) {
+                    event.preventDefault();
+                    global['electronsocket'].emit('app-open-file' + id, file);
+                }
             });
 
             if (launchFile) {
