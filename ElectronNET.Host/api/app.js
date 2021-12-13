@@ -3,7 +3,6 @@ let isQuitWindowAllClosed = true, electronSocket;
 let appWindowAllClosedEventId;
 module.exports = (socket, app, firstTime) => {
     electronSocket = socket;
-
     if (firstTime) {
         // By default, quit when all windows are closed
         app.on('window-all-closed', () => {
@@ -20,14 +19,12 @@ module.exports = (socket, app, firstTime) => {
                 electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
             }
         });
-
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open.
             electronSocket.emit('app-activate');
         });
     }
-
     socket.on('quit-app-window-all-closed-event', (quit) => {
         isQuitWindowAllClosed = quit;
     });

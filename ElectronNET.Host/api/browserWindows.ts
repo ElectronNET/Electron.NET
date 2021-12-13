@@ -1,6 +1,7 @@
-import { Socket } from 'net';
-import { BrowserWindow, Menu, nativeImage } from 'electron';
-import { browserViewMediateService } from './browserView';
+import {Socket} from 'net';
+import {BrowserWindow, Menu, nativeImage} from 'electron';
+import {browserViewMediateService} from './browserView';
+
 const path = require('path');
 const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
 let readyToShowWindowsIds: number[] = [];
@@ -213,9 +214,17 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
 
     socket.on('createBrowserWindow', (guid, options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
-            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
+            options = {
+                ...options,
+                webPreferences: {...options.webPreferences, nodeIntegration: true, contextIsolation: false}
+            };
         } else if (!options.webPreferences) {
-            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
+            options = {...options, webPreferences: {nodeIntegration: true, contextIsolation: false}};
+        }
+
+        if (options.x && options.y && options.x == 0 && options.y == 0) {
+            delete options.x;
+            delete options.y;
         }
 
         // we dont want to recreate the window when watch is ready.
@@ -240,6 +249,14 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
         }
 
         window.on('ready-to-show', () => {
+            try {
+                window.id;
+            } catch (error) {
+                if (error.message === 'Object has been destroyed') {
+                    return;
+                }
+            }
+
             if (readyToShowWindowsIds.includes(window.id)) {
                 readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
             } else {
@@ -249,18 +266,17 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
 
         window.on('closed', (sender) => {
             again:
-            for (let index = 0; index < windows.length; index++) {
-                const windowItem = windows[index];
-                try {
-                    windowItem.id;
-                }
-                catch (error) {
-                    if (error.message === 'Object has been destroyed') {
-                        windows.splice(index, 1);
-                        break again;
+                for (let index = 0; index < windows.length; index++) {
+                    const windowItem = windows[index];
+                    try {
+                        windowItem.id;
+                    } catch (error) {
+                        if (error.message === 'Object has been destroyed') {
+                            windows.splice(index, 1);
+                            break again;
+                        }
                     }
                 }
-            }
             const ids = [];
             windows.forEach(x => ids.push(x.id));
             electronSocket.emit('BrowserWindowUpdateOpenIDs', ids);
@@ -296,11 +312,11 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
         if (windows.length) {
             windows.forEach(w => {
                 try {
+                    w.removeAllListeners('close');
                     w.hide();
                     w.destroy();
                     count++;
-                }
-                catch {
+                } catch {
                     //ignore, probably already destroyed
                 }
             });
@@ -391,11 +407,11 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
     socket.on('browserWindowSetFullScreen', (id, fullscreen) => {
         getWindowById(id)?.setFullScreen(fullscreen);
     });
-    
+
     socket.on('browserWindowSetBackgroundColor', (id, color) => {
         getWindowById(id)?.setBackgroundColor(color);
     });
-    
+
     socket.on('browserWindowIsFullScreen', (id) => {
         const isFullScreen = getWindowById(id)?.isFullScreen() ?? null;
 
@@ -664,7 +680,9 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }
@@ -792,7 +810,9 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
 
     socket.on('browserWindowSetExcludedFromShownWindowsMenu', (id) => {
         const w = getWindowById(id);
-        if(w) w.excludedFromShownWindowsMenu = true;
+        if (w) {
+            w.excludedFromShownWindowsMenu = true;
+        }
     });
 
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
@@ -806,8 +826,7 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
                 if (element.id === id) {
                     return element;
                 }
-            }
-            catch {
+            } catch {
                 //Accessing .id might throw 'Object has been destroyed', so we ignore it here
                 //The "closed" event should clean this up
             }

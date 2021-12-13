@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { Notification } from 'electron';
+import {Socket} from 'net';
+import {Notification} from 'electron';
+
 const notifications: Electron.Notification[] = (global['notifications'] = global['notifications'] || []) as Electron.Notification[];
 let electronSocket;
 

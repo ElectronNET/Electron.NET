@@ -1,5 +1,6 @@
-import { globalShortcut } from 'electron';
-import { Socket } from 'net';
+import {globalShortcut} from 'electron';
+import {Socket} from 'net';
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -23,6 +24,7 @@ export = (socket: Socket) => {
     socket.on('globalShortcut-unregisterAll', () => {
         try {
             globalShortcut.unregisterAll();
-        } catch (error) { }
+        } catch (error) {
+        }
     });
 };
