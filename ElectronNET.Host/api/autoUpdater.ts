@@ -1,6 +1,7 @@
-import { Socket } from 'net';
-import { BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import {Socket} from 'net';
+import {autoUpdater} from 'electron-updater';
+import {BrowserWindow} from 'electron';
+
 let electronSocket;
 
 export = (socket: Socket, app: Electron.App) => {
@@ -137,13 +138,12 @@ export = (socket: Socket, app: Electron.App) => {
                     w.removeAllListeners('close');
                     w.removeAllListeners('closed');
                     w.destroy();
-                }
-                catch {
+                } catch {
                     //ignore, probably already destroyed
                 }
             });
         }
-        
+
         //The call to quitAndInstall needs to happen after the windows 
         //get a chance to close and release resources, so it must be done on a timeout
         setTimeout(() => {

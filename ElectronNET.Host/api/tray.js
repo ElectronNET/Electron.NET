@@ -21,7 +21,10 @@ module.exports = (socket) => {
     socket.on('register-tray-double-click', (id) => {
         if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('double-click', (event, bounds) => {
-                electronSocket.emit('tray-double-click-event' + id, { eventArgs: event.__proto__, bounds: bounds });
+                electronSocket.emit('tray-double-click-event' + id, {
+                    eventArgs: event.__proto__,
+                    bounds: bounds
+                });
             });
         }
     });
@@ -124,7 +127,9 @@ module.exports = (socket) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

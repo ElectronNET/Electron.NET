@@ -9,7 +9,7 @@ export = (socket: Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, windowId) => {
-            electronSocket.emit('contextMenuItemClicked', [id, windowId]);
+            electronSocket.emit('contextMenuItemClicked', { id: id, windowId: windowId });
         });
 
         const index = contextMenuItems.findIndex(contextMenu => contextMenu.browserWindowId === browserWindowId);

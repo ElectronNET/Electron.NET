@@ -181,7 +181,7 @@ export = (socket: Socket) => {
 
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, [cookie, cause, removed]);
+            electronSocket.emit('webContents-session-cookies-changed' + id, { cookie: cookie, cause: cause, removed: removed });
         });
     });
 

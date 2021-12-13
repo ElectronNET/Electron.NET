@@ -29,20 +29,20 @@ module.exports = (socket) => {
     });
     socket.on('webContents-getPrinters', async (id) => {
         const printers = await getWindowById(id).webContents.getPrinters();
-        electronSocket.emit('webContents-getPrinters-completed' + Id, printers);
+        electronSocket.emit('webContents-getPrinters-completed' + id, printers);
     });
     socket.on('webContents-print', async (id, options = {}) => {
         await getWindowById(id).webContents.print(options);
-        electronSocket.emit('webContents-print-completed' + Id, true);
+        electronSocket.emit('webContents-print-completed' + id, true);
     });
     socket.on('webContents-printToPDF', async (id, options = {}, path) => {
         const buffer = await getWindowById(id).webContents.printToPDF(options);
         fs.writeFile(path, buffer, (error) => {
             if (error) {
-                electronSocket.emit('webContents-printToPDF-completed' + Id, false);
+                electronSocket.emit('webContents-printToPDF-completed' + id, false);
             }
             else {
-                electronSocket.emit('webContents-printToPDF-completed' + Id, true);
+                electronSocket.emit('webContents-printToPDF-completed' + id, true);
             }
         });
     });
@@ -201,7 +201,7 @@ module.exports = (socket) => {
         Object.keys(extensionsList).forEach(key => {
             chromeExtensionInfo.push(extensionsList[key]);
         });
-        electronSocket.emit('webContents-session-getAllExtensions-completed' + Id, chromeExtensionInfo);
+        electronSocket.emit('webContents-session-getAllExtensions-completed' + id, chromeExtensionInfo);
     });
     socket.on('webContents-session-removeExtension', (id, name) => {
         const browserWindow = getWindowById(id);
@@ -210,11 +210,11 @@ module.exports = (socket) => {
     socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
         const browserWindow = getWindowById(id);
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
-        electronSocket.emit('webContents-session-loadExtension-completed' + Id, extension);
+        electronSocket.emit('webContents-session-loadExtension-completed' + id, extension);
     });
     function getWindowById(id) {
         if (id >= 1000) {
-            return browserView_1.browserViewMediateService(id - 1000);
+            return (0, browserView_1.browserViewMediateService)(id - 1000);
         }
         return electron_1.BrowserWindow.fromId(id);
     }

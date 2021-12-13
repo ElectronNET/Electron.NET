@@ -9,7 +9,6 @@ let mainWindowURL;
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
 module.exports = (socket, app, firstTime) => {
     electronSocket = socket;
-
     if (firstTime) {
         app.on('login', (event, webContents, request, authInfo, callback) => {
             if (authInfo.isProxy) {
@@ -23,7 +22,6 @@ module.exports = (socket, app, firstTime) => {
             }
         });
     }
-
     socket.on('register-browserWindow-ready-to-show', (id) => {
         if (readyToShowWindowsIds.includes(id)) {
             readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
@@ -181,17 +179,18 @@ module.exports = (socket, app, firstTime) => {
     });
     socket.on('createBrowserWindow', (guid, options, loadUrl) => {
         if (options.webPreferences && !('nodeIntegration' in options.webPreferences)) {
-            options = { ...options, webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false } };
+            options = {
+                ...options,
+                webPreferences: { ...options.webPreferences, nodeIntegration: true, contextIsolation: false }
+            };
         }
         else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
-
         if (options.x && options.y && options.x == 0 && options.y == 0) {
             delete options.x;
             delete options.y;
         }
-
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
             window = app['mainWindow'];
@@ -220,7 +219,6 @@ module.exports = (socket, app, firstTime) => {
                     return;
                 }
             }
-
             if (readyToShowWindowsIds.includes(window.id)) {
                 readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
             }
@@ -228,10 +226,8 @@ module.exports = (socket, app, firstTime) => {
                 readyToShowWindowsIds.push(window.id);
             }
         });
-
         window.on('closed', (sender) => {
-            again:
-            for (let index = 0; index < windows.length; index++) {
+            again: for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
                 try {
                     windowItem.id;
@@ -266,7 +262,6 @@ module.exports = (socket, app, firstTime) => {
     socket.on('browserWindowDestroy', (id) => {
         getWindowById(id)?.destroy();
     });
-
     socket.on('browserWindowDestroyAll', () => {
         const windows = electron_1.BrowserWindow.getAllWindows();
         let count = 0;
@@ -285,7 +280,6 @@ module.exports = (socket, app, firstTime) => {
         }
         electronSocket.emit('browserWindowDestroyAll-completed', count);
     });
-
     socket.on('browserWindowClose', (id) => {
         getWindowById(id)?.close();
     });
@@ -304,7 +298,8 @@ module.exports = (socket, app, firstTime) => {
         if (w) {
             const isDestroyed = w.isDestroyed();
             electronSocket.emit('browserWindow-isDestroyed-completed' + id, isDestroyed);
-        } else {
+        }
+        else {
             electronSocket.emit('browserWindow-isDestroyed-completed' + id, true);
         }
     });
@@ -545,7 +540,9 @@ module.exports = (socket, app, firstTime) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }
@@ -639,11 +636,12 @@ module.exports = (socket, app, firstTime) => {
     });
     socket.on('browserWindowSetExcludedFromShownWindowsMenu', (id) => {
         const w = getWindowById(id);
-        if (w) w.excludedFromShownWindowsMenu = true;
+        if (w) {
+            w.excludedFromShownWindowsMenu = true;
+        }
     });
-
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
-        getWindowById(id)?.setBrowserView(browserView_1.browserViewMediateService(browserViewId));
+        getWindowById(id)?.setBrowserView((0, browserView_1.browserViewMediateService)(browserViewId));
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {
