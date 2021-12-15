@@ -588,8 +588,12 @@ namespace ElectronNET.API
         public Task<string> GetNameAsync() => BridgeConnector.OnResult<string>("appGetName", "appGetNameCompleted");
 
 
-        private App() 
+        private App()
         {
+            if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
+            {
+                AppContext.SetSwitch("System.Drawing.EnableUnixSupport", true);
+            }
             CommandLine = CommandLine.Instance;
         }
 
