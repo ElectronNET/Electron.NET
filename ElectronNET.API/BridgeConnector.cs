@@ -93,7 +93,6 @@ namespace ElectronNET.API
         private static readonly SemaphoreSlim _socketSemaphoreHandlers = new(1, 1);
 
         private static AsyncManualResetEvent _connectedSocketEvent = new AsyncManualResetEvent();
-        private static TaskCompletionSource<SocketIO> _connectedSocketTask = new();
 
         private static Dictionary<string, Action<SocketIOResponse>> _eventHandlers = new ();
 
@@ -109,7 +108,7 @@ namespace ElectronNET.API
         private static async Task<SocketIO> GetSocket()
         {
             await _connectedSocketEvent.WaitAsync();
-            return await _connectedSocketTask.Task;
+            return _socket;
         }
 
         public static bool IsConnected => _waitForConnection is Task task && task.IsCompletedSuccessfully;
@@ -435,84 +434,46 @@ namespace ElectronNET.API
                             var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
                             {
                                 EIO = 3,
-                                Reconnection = false,
+                                Reconnection = true,
                                 ReconnectionAttempts = int.MaxValue,
-                                ReconnectionDelay = 1000,
+                                ReconnectionDelay = 500,
                                 ReconnectionDelayMax = 5000,
                                 RandomizationFactor = 0.5,
                                 ConnectionTimeout = TimeSpan.FromSeconds(10)
                             });
 
                             socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
+                            
+                            _connectedSocketEvent.Reset();
 
                             socket.OnConnected += (_, __) =>
                             {
-                                if (_socket == socket)
-                                {
-                                    _connectedSocketTask.TrySetResult(socket);
-                                    _connectedSocketEvent.Set();
-                                    Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
-                                }
+                                _connectedSocketEvent.Set();
+                                Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
                             };
 
                             socket.OnReconnectAttempt += (_, __) =>
                             {
-                                if (_socket == socket)
-                                {
-                                    _connectedSocketEvent.Reset();
-                                    _connectedSocketTask = new();
-                                    Log("ElectronNET socket {1} is trying to reconnect on port {0}...", BridgeSettings.SocketPort, socket.Id);
-                                }
+                                _connectedSocketEvent.Reset();
+                                Log("ElectronNET socket {1} is trying to reconnect on port {0}...", BridgeSettings.SocketPort, socket.Id);
                             };
 
                             socket.OnReconnectError += (_, ex) =>
                             {
-                                if (_socket == socket)
-                                {
-                                    Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
-                                    _connectedSocketEvent.Reset();
-                                    _connectedSocketTask = new();
-                                    _socket = null;
-                                }
+                                _connectedSocketEvent.Reset();
+                                Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
                             };
 
                             socket.OnReconnected += (_, __) =>
                             {
-                                if (_socket == socket)
-                                {
-                                    _connectedSocketTask.TrySetResult(socket);
-                                    _connectedSocketEvent.Set();
-                                    Log("ElectronNET socket {1} reconnected on port {0}...", BridgeSettings.SocketPort, socket.Id);
-                                }
+                                _connectedSocketEvent.Set();
+                                Log("ElectronNET socket {1} reconnected on port {0}...", BridgeSettings.SocketPort, socket.Id);
                             };
 
                             socket.OnDisconnected += (_, reason) =>
                             {
-                                if (_socket == socket)
-                                {
-                                    _connectedSocketEvent.Reset();
-                                    _connectedSocketTask = new();
-                                    _socket = null;
-
-                                    Task.Run(async () =>
-                                    {
-                                        await Task.Yield();
-                                        EnsureSocketTaskIsCreated();
-                                    });
-
-                                    Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
-                                }
-                                else
-                                {
-                                    try
-                                    {
-                                        socket.Dispose();
-                                    }
-                                    catch
-                                    {
-                                        //Ignore
-                                    }
-                                }
+                                _connectedSocketEvent.Reset();
+                                Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
                             };
 
                             _socket = socket;
@@ -521,23 +482,15 @@ namespace ElectronNET.API
                             {
                                 try
                                 {
-                                    if (!socket.Connected)
-                                    {
-                                        if (_socket == socket)
-                                        {
-                                            await socket.ConnectAsync();
-                                            _connectedSocketTask.TrySetResult(socket);
-                                            _connectedSocketEvent.Set();
-                                        }
-                                    }
-                                    return;
+                                    await socket.ConnectAsync();
                                 }
                                 catch (Exception e)
                                 {
-                                    await Task.Delay(1000);
-                                    if (!socket.Connected)
+                                    Console.WriteLine(e.ToString());
+                                    
+                                    if(!App.TryRaiseOnSocketConnectFail())
                                     {
-                                        LogError(e, "Failed to connect");
+                                        Environment.Exit(0xDEAD);
                                     }
                                 }
                             });
@@ -547,26 +500,6 @@ namespace ElectronNET.API
                         else
                         {
                             throw new Exception("Missing Socket Port");
-                        }
-
-                        if(_backgroundMonitorThread is null)
-                        {
-                            _backgroundMonitorThread = new Thread(() =>
-                            {
-                                while (true)
-                                {
-                                    Thread.Sleep(5_000);
-
-                                    if (HybridSupport.IsElectronActive)
-                                    {
-                                        EnsureSocketTaskIsCreated();
-                                    }
-                                }
-                            });
-                            _backgroundMonitorThread.IsBackground = true;
-                            _backgroundMonitorThread.Name = "Monitor Electron Socket";
-                            _backgroundMonitorThread.Priority = ThreadPriority.Lowest;
-                            _backgroundMonitorThread.Start();
                         }
                     }
                 }

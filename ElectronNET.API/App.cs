@@ -25,6 +25,24 @@ namespace ElectronNET.API
         /// </summary>
         public static bool SocketDebug { get; set; }
 
+        /// <summary>
+        /// Handle hard fails of connecting to the socket. The application must exit when this event is raised.
+        /// The default behavior is to exit with code 0xDEAD
+        /// </summary>
+        public static event Action OnSocketConnectFail;
+
+        internal static bool TryRaiseOnSocketConnectFail()
+        {
+            if (OnSocketConnectFail is object)
+            {
+                OnSocketConnectFail();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Emitted when the user clicks on the dock on Mac

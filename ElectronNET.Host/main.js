@@ -229,7 +229,7 @@ function startSocketApiBridge(port) {
     server = require('http').createServer();
     io = require('socket.io')();
 
-    io.attach(server, { pingTimeout: 5000, pingInterval: 10000 });
+    io.attach(server, { pingTimeout: 10000, pingInterval: 5000 });
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
@@ -263,50 +263,32 @@ function startSocketApiBridge(port) {
             }
         });
 
-        let firstTime = (global['electronsocket'] === undefined);
+        //We only hook to events on app on the first initialization of each component
+        let firstTime = (global['electronsocket'] == undefined); 
 
-        if (firstTime) {
-            console.log("First socket connection");
-            global['electronsocket'] = socket;
-            socket.setMaxListeners(0);
-        }
+        global['electronsocket'] = socket;
+        socket.setMaxListeners(0);
 
         console.log('.NET connected on socket ' + socket.id + ' on ' + new Date());
 
-        if (appApi === undefined) appApi = require('./api/app')(socket, app, firstTime);
-        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app, firstTime);
-        if (commandLine === undefined) commandLine = require('./api/commandLine')(socket, app);
-        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket, app);
-        if (ipc === undefined) ipc = require('./api/ipc')(socket);
-        if (menu === undefined) menu = require('./api/menu')(socket);
-        if (dialogApi === undefined) dialogApi = require('./api/dialog')(socket);
-        if (notification === undefined) notification = require('./api/notification')(socket);
-        if (tray === undefined) tray = require('./api/tray')(socket);
-        if (webContents === undefined) webContents = require('./api/webContents')(socket);
-        if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(socket);
-        if (shellApi === undefined) shellApi = require('./api/shell')(socket);
-        if (screen === undefined) screen = require('./api/screen')(socket);
-        if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
-        if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
-        if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
-        if (nativeThemeApi === undefined) nativeThemeApi = require('./api/nativeTheme')(socket);
-        if (dock === undefined) dock = require('./api/dock')(socket);
-
-        socket.on('register-app-open-file-event', (id) => {
-            global['electronsocket'] = socket;
-
-            app.on('open-file', (event, file) => {
-
-                if (global['electronsocket'] === socket) {
-                    event.preventDefault();
-                    global['electronsocket'].emit('app-open-file' + id, file);
-                }
-            });
-
-            if (launchFile) {
-                global['electronsocket'].emit('app-open-file' + id, launchFile);
-            }
-        });
+        appApi         = require('./api/app')(socket, app, firstTime);
+        browserWindows = require('./api/browserWindows')(socket, app, firstTime);
+        commandLine    = require('./api/commandLine')(socket, app);
+        autoUpdater    = require('./api/autoUpdater')(socket, app);
+        ipc            = require('./api/ipc')(socket);
+        menu           = require('./api/menu')(socket);
+        dialogApi      = require('./api/dialog')(socket);
+        notification   = require('./api/notification')(socket);
+        tray           = require('./api/tray')(socket);
+        webContents    = require('./api/webContents')(socket);
+        globalShortcut = require('./api/globalShortcut')(socket);
+        shellApi       = require('./api/shell')(socket);
+        screen         = require('./api/screen')(socket);
+        clipboard      = require('./api/clipboard')(socket);
+        browserView    = require('./api/browserView').browserViewApi(socket);
+        powerMonitor   = require('./api/powerMonitor')(socket);
+        nativeThemeApi = require('./api/nativeTheme')(socket);
+        dock           = require('./api/dock')(socket);
 
         socket.on('splashscreen-destroy', () => {
             if (splashScreen) {
@@ -315,17 +297,29 @@ function startSocketApiBridge(port) {
             }
         });
 
+        socket.on('register-app-open-file-event', (id) => {
+            global['electronsocket'] = socket;
+
+            app.on('open-file', (event, file) => {
+                event.preventDefault();
+                global['electronsocket'].emit('app-open-file' + id, file);
+            });
+
+            if (launchFile) {
+                socket.emit('app-open-file' + id, launchFile);
+            }
+        });
+
         socket.on('register-app-open-url-event', (id) => {
             global['electronsocket'] = socket;
 
             app.on('open-url', (event, url) => {
                 event.preventDefault();
-
                 global['electronsocket'].emit('app-open-url' + id, url);
             });
 
             if (launchUrl) {
-                global['electronsocket'].emit('app-open-url' + id, launchUrl);
+                socket.emit('app-open-url' + id, launchUrl);
             }
         });
 
@@ -415,7 +409,7 @@ function startAspCoreBackend(electronPort) {
             else if (os.platform() === 'darwin') {
                 //There is a bug on the updater on macOS never quiting and starting the update process
                 //We give Squirrel.Mac enough time to access the update file, and then just force-exit here
-                setTimeout(() => app.exit(0), 10_000);
+                setTimeout(() => app.exit(0), 30_000);
             }
         });
 
