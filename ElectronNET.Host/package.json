@@ -13,15 +13,15 @@
     },
     "dependencies": {
         "dasherize": "^2.0.0",
-        "electron-updater": "^4.6.1",
+        "electron-updater": "^4.6.2",
         "image-size": "^1.0.0",
         "portscanner": "^2.2.0",
         "socket.io": "^2.4.0"
     },
     "devDependencies": {
-        "@types/node": "^16.11.11",
-        "electron": "^16.0.4",
+        "@types/node": "^16.11.14",
+        "electron": "^16.0.5",
         "tslint": "^6.1.3",
-        "typescript": "^4.5.2"
+        "typescript": "^4.5.4"
     }
 }
