@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp.NET5", "ElectronNET.WebApp\ElectronNET.WebApp.NET5.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp.NET6", "\\Mac\Home\Repos\Electron.NET\ElectronNET.WebApp\ElectronNET.WebApp.NET6.csproj", "{76F72AED-31F4-4289-AFB5-D7ECA84072B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp.NET6", "ElectronNET.WebApp\ElectronNET.WebApp.NET6.csproj", "{76F72AED-31F4-4289-AFB5-D7ECA84072B8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.API", "ElectronNET.API\ElectronNET.API.csproj", "{A78157BA-B754-45F1-969F-D6A513CA0E72}"
 EndProject
