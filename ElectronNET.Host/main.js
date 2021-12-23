@@ -390,7 +390,7 @@ function startAspCoreBackend(electronPort) {
         if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
             detachedProcess = manifestJsonFile.detachedProcess;
             if (detachedProcess) {
-                stdioopt = 'ignore';
+                stdioopt = ['pipe', 'ignore', 'ignore'];
             }
         }
 
@@ -423,14 +423,15 @@ function startAspCoreBackend(electronPort) {
             }
         });
 
-        if (detachedProcess) {
-            console.log('Detached from .NET process');
-            apiProcess.unref();
-        }
 
         apiProcess.stdin.setEncoding = 'utf-8';
         apiProcess.stdin.write('Auth=' + auth + '\n');
         apiProcess.stdin.end();
+
+        if (detachedProcess) {
+            console.log('Detached from .NET process');
+            apiProcess.unref();
+        }
     }
 }
 
