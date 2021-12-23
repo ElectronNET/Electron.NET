@@ -425,6 +425,11 @@ namespace ElectronNET.API
         {
             if (_socket is null)
             {
+                if(string.IsNullOrWhiteSpace(AuthKey))
+                {
+                    throw new Exception("You must call Electron.ReadAuth() first thing on your main entry point.");
+                }
+
                 if (HybridSupport.IsElectronActive)
                 {
                     lock (_syncRoot)
@@ -448,8 +453,12 @@ namespace ElectronNET.API
 
                             socket.OnConnected += (_, __) =>
                             {
-                                _connectedSocketEvent.Set();
-                                Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
+                                Task.Run(async () =>
+                                {
+                                    await socket.EmitAsync("auth", AuthKey);
+                                    _connectedSocketEvent.Set();
+                                    Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
+                                });
                             };
 
                             socket.OnReconnectAttempt += (_, __) =>
@@ -511,6 +520,7 @@ namespace ElectronNET.API
         }
 
         internal static ILogger<App> Logger { private get; set; }
+        internal static string AuthKey { private get; set; }
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {

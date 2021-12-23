@@ -11,6 +11,7 @@ namespace ElectronNET.WebApp
         public static void Main(string[] args)
         {
             Debugger.Launch();
+            Electron.ReadAuth();
             CreateWebHostBuilder(args).Build().Run();
         }
 

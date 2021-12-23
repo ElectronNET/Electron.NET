@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Runtime.Versioning;
+using System;
 
 namespace ElectronNET.API
 {
@@ -9,6 +10,23 @@ namespace ElectronNET.API
     public static class Electron
     {
         private static ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Reads the auth key from the command line. This method must be called first thing.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        public static void ReadAuth()
+        {
+            var line = Console.ReadLine();
+            if(line.StartsWith("Auth="))
+            {
+                BridgeConnector.AuthKey = line.Substring("Auth=".Length);
+            }
+            else
+            {
+                throw new Exception("The call to Electron.ReadAuth must be the first thing your app entry point does");
+            }
+        }
 
         /// <summary>
         /// Sets the logger factory to be used by Electron, if any
