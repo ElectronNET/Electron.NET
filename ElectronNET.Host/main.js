@@ -412,8 +412,10 @@ function startAspCoreBackend(electronPort) {
 
         apiProcess.on('close', (code) => {
             console.log(`.NET process exited with code ${code}`);
-            if (code != 0 && !ignoreApiProcessClosed) {
-                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+            if (!ignoreApiProcessClosed) {
+                if (code != 0) {
+                    console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                }
                 app.exit(code);
             }
             else if (os.platform() === 'darwin') {
@@ -476,8 +478,11 @@ function startAspCoreBackendWithWatch(electronPort) {
 
         apiProcess.on('close', (code) => {
             console.log(`.NET process exited with code ${code}`);
-            if (code != 0 && !ignoreApiProcessClosed) {
-                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+            if (!ignoreApiProcessClosed) {
+                if (code != 0) {
+                    console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                }
+
                 app.exit(code);
             }
             else if (os.platform() === 'darwin') {
