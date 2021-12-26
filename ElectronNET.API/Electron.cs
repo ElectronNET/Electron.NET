@@ -95,6 +95,11 @@ namespace ElectronNET.API
         public static Screen Screen { get { return Screen.Instance; } }
 
         /// <summary>
+        /// Access information about media sources that can be used to capture audio and video from the desktop using the navigator.mediaDevices.getUserMedia API.
+        /// </summary>
+        public static DesktopCapturer DesktopCapturer { get { return DesktopCapturer.Instance; } }
+
+        /// <summary>
         /// Perform copy and paste operations on the system clipboard.
         /// </summary>
         public static Clipboard Clipboard { get { return Clipboard.Instance; } }

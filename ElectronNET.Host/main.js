@@ -14,7 +14,7 @@ const auth = crypto.randomBytes(32).toString('hex');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let commandLine, browserView;
+let commandLine, browserView, desktopCapturer;
 let powerMonitor;
 let splashScreen, hostHook;
 let mainWindowId, nativeThemeApi;
@@ -293,6 +293,7 @@ function startSocketApiBridge(port) {
             globalShortcut = require('./api/globalShortcut')(socket);
             shellApi = require('./api/shell')(socket);
             screen = require('./api/screen')(socket);
+            desktopCapturer = require('./api/desktopCapturer')(socket);
             clipboard = require('./api/clipboard')(socket);
             browserView = require('./api/browserView').browserViewApi(socket);
             powerMonitor = require('./api/powerMonitor')(socket);
