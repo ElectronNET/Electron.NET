@@ -15,29 +15,10 @@ let mainWindowId, nativeTheme;
 let dock;
 let launchFile;
 let launchUrl;
+let processApi;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
-
-// handle for opening the app with a file for win and linux
-if (process && process.argv.length > 1) {
-
-    let firstAppArgument = process.argv[1];
-
-    // With invoked via electronize, the first argument is the path to the main.js.
-    // Per issue #337, the /args switch can also be present. If either are present, 
-    // we need to check the subsequent argument.
-    if (firstAppArgument === '..\\..\\main.js' || firstAppArgument === '../../main.js' || firstAppArgument === '/args') {
-        if (process.argv.length > 2) {
-            firstAppArgument = process.argv[2];
-        }
-    }
-
-    // only append the first app arg if it is not already a switch
-    if (!firstAppArgument.startsWith("--")) {
-        app.commandLine.appendSwitch("open-file", firstAppArgument);
-    }
-}
 
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
@@ -238,6 +219,7 @@ function startSocketApiBridge(port) {
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
+        if (processApi === undefined) processApi = require('./api/process')(socket);
 
         socket.on('register-app-open-file-event', (id) => {
             global['electronsocket'] = socket;
