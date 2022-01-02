@@ -28,6 +28,7 @@ namespace ElectronNET.API
                 .AddSingleton(provider => HostHook.Instance)
                 .AddSingleton(provider => PowerMonitor.Instance)
                 .AddSingleton(provider => NativeTheme.Instance)
-                .AddSingleton(provider => Dock.Instance);
+                .AddSingleton(provider => Dock.Instance)
+                .AddSingleton(provider => Process.Instance);
     }
 }
