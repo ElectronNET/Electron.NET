@@ -80,7 +80,8 @@ namespace ElectronNET.API
     
     
         /// <summary>
-        /// 
+        /// The process.versions property returns an object listing the version strings of
+        /// chrome and electron.
         /// </summary> 
         public Task<ProcessVersions> VersionsAsync 
         {
@@ -93,7 +94,8 @@ namespace ElectronNET.API
     
     
         /// <summary>
-        /// 
+        /// A Boolean. When app is started by being passed as parameter to the default app, this
+        /// property is true in the main process, otherwise it is false.
         /// </summary>
         public Task<bool> DefaultAppAsync
         {
@@ -105,7 +107,8 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// 
+        /// A Boolean, true when the current renderer context is the "main" renderer frame. If you
+        /// want the ID of the current frame you should use webFrame.routingId
         /// </summary>
         public Task<bool> IsMainFrameAsync
         {
@@ -117,7 +120,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// 
+        /// A String representing the path to the resources directory.
         /// </summary>
         public Task<string> ResourcesPathAsync
         {
@@ -129,7 +132,8 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// 
+        /// The number of seconds the current Node.js process has been running. The return value
+        /// includes fractions of a second. Use Math.floor() to get whole seconds.
         /// </summary>
         public Task<double> UpTimeAsync
         {
@@ -141,7 +145,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// 
+        /// The PID of the electron process
         /// </summary>
         public Task<int> PidAsync
         {
@@ -154,7 +158,7 @@ namespace ElectronNET.API
 
 
         /// <summary>
-        /// 
+        /// The operating system CPU architecture for which the Node.js binary was compiled
         /// </summary>
         public Task<string> ArchAsync
         {
@@ -166,7 +170,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// 
+        /// A string identifying the operating system platform on which the Node.js process is running
         /// </summary>
         public Task<string> PlatformAsync
         {
