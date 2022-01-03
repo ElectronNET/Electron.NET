@@ -82,11 +82,11 @@ namespace ElectronNET.API
         /// <summary>
         /// 
         /// </summary> 
-        public Task<Versions> VersionsAsync 
+        public Task<ProcessVersions> VersionsAsync 
         {
             get
             {
-                return BridgeConnector.GetValueOverSocketAsync<Versions>(
+                return BridgeConnector.GetObjectOverSocketAsync<ProcessVersions>(
                     "process-versions", "process-versions-Completed");
             }
         }

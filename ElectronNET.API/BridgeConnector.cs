@@ -90,7 +90,22 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On(eventCompletedString, (value) =>
                 {
                     BridgeConnector.Socket.Off(eventCompletedString);
-                    taskCompletionSource.SetResult( ((JObject)value).ToObject<T>() );
+
+                    if (value == null)
+                    {
+                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') returned null. Socket loop hang.");
+                        taskCompletionSource.SetCanceled();
+                        return;
+                    }
+
+                    try
+                    {
+                        taskCompletionSource.SetResult( ((JObject)value).ToObject<T>() );
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') exception: {e.Message}. Socket loop hung.");
+                    }
                 });
 
                 BridgeConnector.Socket.Emit(eventString);
@@ -110,7 +125,21 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On(eventCompletedString, (value) =>
                 {
                     BridgeConnector.Socket.Off(eventCompletedString);
-                    taskCompletionSource.SetResult( ((JArray)value).ToObject<T>() );
+                    if (value == null)
+                    {
+                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') returned null. Socket loop hang.");
+                        taskCompletionSource.SetCanceled();
+                        return;
+                    }
+
+                    try
+                    {
+                        taskCompletionSource.SetResult( ((JArray)value).ToObject<T>() );
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') exception: {e.Message}. Socket loop hung.");
+                    }
                 });
 
                 BridgeConnector.Socket.Emit(eventString);

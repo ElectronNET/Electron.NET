@@ -3,7 +3,7 @@ namespace ElectronNET.API
     /// <summary>
     /// 
     /// </summary>
-    public class Versions
+    public class ProcessVersions
     {
         /// <summary>
         /// Gets or sets a value representing Chrome's version string.
@@ -13,6 +13,6 @@ namespace ElectronNET.API
         /// <summary>
         /// Gets or sets a value representing Electron's version string.
         /// </summary>
-        public bool Electron { get; set; }
+        public string Electron { get; set; }
     }
 }
