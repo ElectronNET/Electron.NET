@@ -83,11 +83,11 @@ namespace ElectronNET.API
         /// The process.versions property returns an object listing the version strings of
         /// chrome and electron.
         /// </summary> 
-        public Task<Versions> VersionsAsync 
+        public Task<ProcessVersions> VersionsAsync 
         {
             get
             {
-                return BridgeConnector.GetValueOverSocketAsync<Versions>(
+                return BridgeConnector.GetValueOverSocketAsync<ProcessVersions>(
                     "process-versions", "process-versions-Completed");
             }
         }
