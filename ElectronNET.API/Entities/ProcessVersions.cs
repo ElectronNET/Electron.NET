@@ -1,18 +1,10 @@
 namespace ElectronNET.API
 {
     /// <summary>
-    /// 
+    /// An object listing the version strings specific to Electron
     /// </summary>
-    public class ProcessVersions
-    {
-        /// <summary>
-        /// Gets or sets a value representing Chrome's version string.
-        /// </summary>
-        public string Chrome { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value representing Electron's version string.
-        /// </summary>
-        public string Electron { get; set; }
-    }
-}
+    /// <param name="Chrome">Value representing Chrome's version string</param>
+    /// <param name="Electron">Value representing Electron's version string</param>
+    /// <returns></returns>
+    public record ProcessVersions(string Chrome, string Electron);
+} 
