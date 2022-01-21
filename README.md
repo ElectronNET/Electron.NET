@@ -148,6 +148,21 @@ For certain NuGet packages or certain scenarios you may want to build a pure x86
 electronize build /target custom "win7-x86;win32" /electron-arch ia32 
 ```
 
+### Additional DotNet Publish Flags
+
+For certain scenarios additional `dotnet publish` arguments may be required. To add additional publish flags use the `--` flag at the end of your command and add any additional publish flags after. For example if you want to skip the default nuget restore you can do that like this:
+
+```
+electronize build /target osx -- --no-restore
+```
+
+#### Self-Contained 
+> `--self-contained` is enabled by default, to disable use `--no-self-contained` or `--self-contained false`
+
+#### Ignored Flags
+> `-r|--runtime`, `-o|--output`, `-c|--configuration`, `--interactive` &amp; `-h|--help` are ignored by design
+
+
 The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note

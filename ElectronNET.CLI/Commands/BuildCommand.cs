@@ -23,6 +23,9 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
                                                  "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
+                                                 "Optional: '-- [-a|--arch <ARCHITECTURE>] [-f | --framework<FRAMEWORK>] [--force] [--no-dependencies] [--no-incremental] [--no-restore] [--nologo]" + Environment.NewLine +
+                                                 "           [--no-self-contained] [--os <OS>] [--self-contained [true|false]] [--source <SOURCE>] [-v|--verbosity <LEVEL>] [--version-suffix <VERSION_SUFFIX>]'" + Environment.NewLine + 
+                                                 "          to add additional dot net publish arguments." + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
@@ -107,8 +110,15 @@ namespace ElectronNET.CLI.Commands
                 var dotNetPublishFlags = GetDotNetPublishFlags(parser);
 
                 var command =
-                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
+                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
                 
+                // add any additional dotnet flags
+                var dotnetFlags = GetDotNetArgs(_args);
+                if (dotnetFlags.Any())
+                {
+                    command += " " + string.Join(" ", dotnetFlags);
+                }
+
                 // output the command 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(command);
@@ -204,6 +214,46 @@ namespace ElectronNET.CLI.Commands
 
                 return true;
             });
+        }
+
+        private static List<string> DotNetFlagsWithValuesReserved = new List<string>
+        {
+            "-o", "--output", "-r", "--runtime", "-c", "--configuration"
+        };
+        private static List<string> DotNetFlagsToIgnore = new List<string>
+        {
+            "--interactive", "-h", "--help"
+        };
+        private List<string> GetDotNetArgs(string[] args)
+        {
+            if (!args.Contains("--")) return new List<string> { "--self-contained" };
+
+            var list = args
+                .SkipWhile(i => "--".Equals(i, StringComparison.OrdinalIgnoreCase))
+                .Skip(1)
+                .Except(DotNetFlagsToIgnore)
+                .ToList();
+            
+            // ensure the args flag is removed
+            list.Remove("--");
+
+            // remove flags that are handled by design
+            foreach (var flag in DotNetFlagsWithValuesReserved)
+            {
+                var f = list.IndexOf(flag);
+                if (f > -1)
+                {
+                    list.RemoveRange(f, 2);
+                }
+            }
+
+            // enforce backwards compatibility
+            if (!list.Contains("--no-self-contained") && !list.Contains("--self-contained"))
+            {
+                list.Add("--self-contained");
+            }
+
+            return list;
         }
 
         private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
