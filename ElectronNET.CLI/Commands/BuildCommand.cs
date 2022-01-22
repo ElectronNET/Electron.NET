@@ -23,7 +23,7 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
                                                  "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
-                                                 "Optional: '-- [-a|--arch <ARCHITECTURE>] [-f | --framework<FRAMEWORK>] [--force] [--no-dependencies] [--no-incremental] [--no-restore] [--nologo]" + Environment.NewLine +
+                                                 "Optional: '/dotnet-publish [-a|--arch <ARCHITECTURE>] [-f | --framework<FRAMEWORK>] [--force] [--no-dependencies] [--no-incremental] [--no-restore] [--nologo]" + Environment.NewLine +
                                                  "           [--no-self-contained] [--os <OS>] [--self-contained [true|false]] [--source <SOURCE>] [-v|--verbosity <LEVEL>] [--version-suffix <VERSION_SUFFIX>]'" + Environment.NewLine + 
                                                  "          to add additional dot net publish arguments." + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
@@ -49,6 +49,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramPublishReadyToRun = "PublishReadyToRun";
         private string _paramPublishSingleFile = "PublishSingleFile";
         private string _paramVersion = "Version";
+        private string _paramDotNetPublish = "dotnet-publish";
 
         public Task<bool> ExecuteAsync()
         {
@@ -113,7 +114,7 @@ namespace ElectronNET.CLI.Commands
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
                 
                 // add any additional dotnet flags
-                var dotnetFlags = GetDotNetArgs(_args);
+                var dotnetFlags = GetDotNetArgs(parser);
                 if (dotnetFlags.Any())
                 {
                     command += " " + string.Join(" ", dotnetFlags);
@@ -224,19 +225,14 @@ namespace ElectronNET.CLI.Commands
         {
             "--interactive", "-h", "--help"
         };
-        private List<string> GetDotNetArgs(string[] args)
+        private List<string> GetDotNetArgs(SimpleCommandLineParser parser)
         {
-            if (!args.Contains("--")) return new List<string> { "--self-contained" };
+            if (!parser.TryGet(_paramDotNetPublish, out var args)) return new List<string> { "--self-contained" };
 
             var list = args
-                .SkipWhile(i => "--".Equals(i, StringComparison.OrdinalIgnoreCase))
-                .Skip(1)
                 .Except(DotNetFlagsToIgnore)
                 .ToList();
             
-            // ensure the args flag is removed
-            list.Remove("--");
-
             // remove flags that are handled by design
             foreach (var flag in DotNetFlagsWithValuesReserved)
             {

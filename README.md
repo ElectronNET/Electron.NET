@@ -150,10 +150,10 @@ electronize build /target custom "win7-x86;win32" /electron-arch ia32
 
 ### Additional DotNet Publish Flags
 
-For certain scenarios additional `dotnet publish` arguments may be required. To add additional publish flags use the `--` flag at the end of your command and add any additional publish flags after. For example if you want to skip the default nuget restore you can do that like this:
+For certain scenarios additional `dotnet publish` arguments may be required. To add additional publish flags use the `/dotnet-publish` flag and add any additional publish flags after. For example if you want to skip the default nuget restore you can do that like this:
 
 ```
-electronize build /target osx -- --no-restore
+electronize build /target osx /dotnet-publish --no-restore
 ```
 
 #### Self-Contained 
