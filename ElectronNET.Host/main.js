@@ -15,9 +15,11 @@ let mainWindowId, nativeTheme;
 let dock;
 let launchFile;
 let launchUrl;
+let processApi;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
+
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
@@ -217,6 +219,7 @@ function startSocketApiBridge(port) {
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
+        if (processApi === undefined) processApi = require('./api/process')(socket);
 
         socket.on('register-app-open-file-event', (id) => {
             global['electronsocket'] = socket;

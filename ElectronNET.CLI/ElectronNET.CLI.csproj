@@ -74,6 +74,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\browserView.js" Link="ElectronHost\api\browserView.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\powerMonitor.js" Link="ElectronHost\api\powerMonitor.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\nativeTheme.js" Link="ElectronHost\api\nativeTheme.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\process.js" Link="ElectronHost\api\process.js" />
   </ItemGroup>
 
   <ItemGroup>
