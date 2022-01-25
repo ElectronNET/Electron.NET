@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +10,7 @@ namespace ElectronNET.API
     /// Electron's process object is extended from the Node.js process object. It adds the
     /// events, properties, and methods.
     /// </summary>
-    public sealed class Process
+    public sealed class Process : IProcess
     {
         internal Process() { }
 
