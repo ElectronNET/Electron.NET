@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
 
 namespace ElectronNET.API.Entities
 {
@@ -24,7 +24,7 @@ namespace ElectronNET.API.Entities
             foreach (var item in dict)
             {
                 var bytes = Convert.FromBase64String(item.Value);
-                newDictionary.Add(item.Key, Image.FromStream(new MemoryStream(bytes)));
+                newDictionary.Add(item.Key, Image.Load(new MemoryStream(bytes)));
             }
             return new NativeImage(newDictionary);
         }
