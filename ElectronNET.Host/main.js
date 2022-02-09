@@ -55,6 +55,8 @@ app.on('will-finish-launching', () => {
 });
 
 function prepareForUpdate() {
+    console.log('closing all windows before update');
+
     ignoreApiProcessClosed = true;
 
     app.removeAllListeners("window-all-closed");
@@ -487,13 +489,18 @@ function startAspCoreBackendWithWatch(electronPort) {
                 if (code != 0) {
                     console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
                 }
+                console.log('Will quit Electron now');
 
                 app.exit(code);
             }
             else if (os.platform() === 'darwin') {
+                console.log('.NET process and Electron has a pending update, will force quit in 10s...');
                 //There is a bug on the updater on macOS never quiting and starting the update process
                 //We give Squirrel.Mac enough time to access the update file, and then just force-exit here
                 setTimeout(() => app.exit(0), 10_000);
+            }
+            else {
+                console.log('.NET process and Electron has a pending update...');
             }
         });
 

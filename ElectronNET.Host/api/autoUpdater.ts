@@ -130,9 +130,11 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
+        console.log('running autoUpdaterQuitAndInstall');
+
         app.removeAllListeners("window-all-closed");
         const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
+        if (windows && windows.length) {
             windows.forEach(w => {
                 try {
                     w.removeAllListeners('close');
@@ -147,6 +149,9 @@ export = (socket: Socket, app: Electron.App) => {
         //The call to quitAndInstall needs to happen after the windows 
         //get a chance to close and release resources, so it must be done on a timeout
         setTimeout(() => {
+            console.log('running autoUpdater.quitAndInstall');
+            console.log('isSilent:' + isSilent);
+            console.log('isForceRunAfter:' + isForceRunAfter);
             autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
         }, 100);
     });

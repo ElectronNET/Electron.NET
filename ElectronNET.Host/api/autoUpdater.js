@@ -101,9 +101,12 @@ module.exports = (socket, app) => {
         });
     });
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
+        console.log('running autoUpdaterQuitAndInstall');
+
         app.removeAllListeners("window-all-closed");
+
         const windows = electron_1.BrowserWindow.getAllWindows();
-        if (windows.length) {
+        if (windows && windows.length) {
             windows.forEach(w => {
                 try {
                     w.removeAllListeners('close');
@@ -118,6 +121,9 @@ module.exports = (socket, app) => {
         //The call to quitAndInstall needs to happen after the windows 
         //get a chance to close and release resources, so it must be done on a timeout
         setTimeout(() => {
+            console.log('running autoUpdater.quitAndInstall');
+            console.log('isSilent:' + isSilent);
+            console.log('isForceRunAfter:' + isForceRunAfter);
             electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
         }, 100);
     });
