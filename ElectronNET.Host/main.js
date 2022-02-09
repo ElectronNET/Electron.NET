@@ -54,7 +54,7 @@ app.on('will-finish-launching', () => {
     })
 });
 
-app.on('before-quit-for-update', () => {
+function prepareForUpdate() {
     ignoreApiProcessClosed = true;
 
     app.removeAllListeners("window-all-closed");
@@ -73,7 +73,9 @@ app.on('before-quit-for-update', () => {
             }
         });
     }
-});
+}
+
+app.on('before-quit-for-update', () => { prepareForUpdate(); });
 
 const manifestJsonFile = require(manifestJsonFilePath);
 
@@ -306,6 +308,8 @@ function startSocketApiBridge(port) {
                     splashScreen = null;
                 }
             });
+
+            socket.on('prepare-for-update', () => { prepareForUpdate(); });
 
             socket.on('register-app-open-file-event', (id) => {
                 global['electronsocket'] = socket;

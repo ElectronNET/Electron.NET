@@ -426,6 +426,7 @@ namespace ElectronNET.API
         /// <param name="isForceRunAfter">Run the app after finish even on silent install. Not applicable for macOS. Ignored if `isSilent` is set to `false`.</param>
         public void QuitAndInstall(bool isSilent = false, bool isForceRunAfter = false)
         {
+            BridgeConnector.EmitSync("prepare-for-update");
             BridgeConnector.EmitSync("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
         }
 
