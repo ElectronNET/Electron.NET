@@ -531,10 +531,8 @@ namespace ElectronNET.API
 
 
         /// <summary>
-        /// Emitted when a MacOS user wants to open a URL with the application. Your application's Info.plist file must
-        /// define the URL scheme within the CFBundleURLTypes key, and set NSPrincipalClass to AtomApplication.
+        /// Emitted when a user wants to open a URL with the application. See https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app for more information.
         /// </summary>
-        [SupportedOSPlatform("macos")]
         public event Action<string> OpenUrl
         {
             add

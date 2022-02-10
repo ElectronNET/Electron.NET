@@ -226,6 +226,7 @@ namespace ElectronNET.API.Entities
         ///  Activate the Window Controls Overlay on Windows, when combined with <see cref="TitleBarStyle"/> = <see cref="TitleBarStyle.hidden"/>
         /// </summary>
         [SupportedOSPlatform("win")]
+        [SupportedOSPlatform("macos")]
         [DefaultValue(null)]
         public TitleBarOverlayConfig TitleBarOverlay { get; set; }
 

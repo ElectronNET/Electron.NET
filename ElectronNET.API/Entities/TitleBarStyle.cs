@@ -31,7 +31,8 @@ namespace ElectronNET.API.Entities
 
     public class TitleBarOverlayConfig
     {
-        public string Color { get; set; }
-        public string SymbolColor { get; set; }
+        public string color { get; set; }
+        public string symbolColor { get; set; }
+        public int height { get; set; }
     }
 }
