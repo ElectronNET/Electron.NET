@@ -62,7 +62,7 @@ namespace ElectronNET.CLI.Commands
                 if (parser.Arguments.ContainsKey(_paramVersion))
                     version = parser.Arguments[_paramVersion][0];
 
-                if (!parser.Arguments.ContainsKey(_paramTarget))
+                if (!parser.Arguments.ContainsKey(_paramTarget) || parser.Arguments[_paramTarget].Length == 0)
                 {
                     Console.WriteLine($"Error: missing '{_paramTarget}' argument.");
                     Console.WriteLine(COMMAND_ARGUMENTS);
