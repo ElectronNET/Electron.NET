@@ -65,6 +65,15 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Get appication menu item
+        /// </summary>
+        /// <param name="id">The items id.</param>
+        public MenuItem GetMenuItem(string id)
+        {
+            return _menuItems.GetMenuItem(id);
+        }
+
+        /// <summary>
         /// Gets the context menu items.
         /// </summary>
         /// <value>

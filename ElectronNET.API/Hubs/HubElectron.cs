@@ -455,7 +455,7 @@ namespace ElectronNET.API.Hubs
         #region Menu
         public void MenuMenuItemClicked(string id)
         {
-            MenuItem menuItem = Menu.Instance.MenuItems.Where(x => x.Id == id).FirstOrDefault();
+            MenuItem menuItem = Menu.Instance.GetMenuItem(id.ToString());
             menuItem.Click?.Invoke();
         }
 

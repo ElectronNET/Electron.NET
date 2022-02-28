@@ -43,7 +43,7 @@ namespace ElectronNET.API
         /// <returns>The content in the clipboard as plain text.</returns>
         public async Task<string> ReadTextAsync(string type = "")
         {
-            return (await SignalrSerializeHelper.GetSignalrResultStringParameter("clipboard-readText", type));
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readText", type));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<string> ReadHTMLAsync(string type = "")
         {
-            return (await SignalrSerializeHelper.GetSignalrResultStringParameter("clipboard-readHTML", type));
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readHTML", type));
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<string> ReadRTFAsync(string type = "")
         {
-            return (await SignalrSerializeHelper.GetSignalrResultStringParameter("clipboard-readRTF", type));
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readRTF", type));
         }
 
         /// <summary>

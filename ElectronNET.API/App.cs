@@ -635,7 +635,7 @@ namespace ElectronNET.API
         /// <returns>A path to a special directory or file associated with name.</returns>
         public async Task<string> GetPathAsync(PathName pathName, CancellationToken cancellationToken = default)
         {
-            return (await SignalrSerializeHelper.GetSignalrResultStringParameter("appGetPath", pathName.GetDescription()));
+            return (await SignalrSerializeHelper.GetSignalrResultString("appGetPath", pathName.GetDescription()));
         }
 
         /// <summary>

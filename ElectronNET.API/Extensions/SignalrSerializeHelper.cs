@@ -264,35 +264,6 @@ namespace ElectronNET.API
             return result;
         }
 
-
-        public static async Task<string> GetSignalrResultStringParameter(string signalrCommand, string parameter1)
-        {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
-            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
-
-            string result;
-            try
-            {
-                var task = taskCompletionSource.Task;
-                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
-                {
-                    result = (string)await task;
-                }
-                else
-                {
-                    throw new ArgumentNullException();
-                }
-            }
-            finally
-            {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
-            }
-
-            return result;
-        }
-
         public static async Task<bool> GetSignalrResultBool(string signalrCommand, string parameter1)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
