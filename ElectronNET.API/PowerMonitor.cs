@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -17,22 +18,19 @@ namespace ElectronNET.API
             {
                 if (_lockScreen == null)
                 {
-                    BridgeConnector.Socket.On("pm-lock-screen" , () =>
-                    {
-                        _lockScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-lock-screen");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-lock-screen");
                 }
                 _lockScreen += value;
             }
             remove
             {
                 _lockScreen -= value;
-
-                if (_lockScreen == null)
-                    BridgeConnector.Socket.Off("pm-lock-screen");
             }
+        }
+
+        public void TriggerOnLockScreen()
+        {
+            _lockScreen();
         }
 
         private event Action _lockScreen;
@@ -46,22 +44,19 @@ namespace ElectronNET.API
             {
                 if (_unlockScreen == null)
                 {
-                    BridgeConnector.Socket.On("pm-unlock-screen", () =>
-                    {
-                        _unlockScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-unlock-screen");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-unlock-screen");
                 }
                 _unlockScreen += value;
             }
             remove
             {
                 _unlockScreen -= value;
-
-                if (_unlockScreen == null)
-                    BridgeConnector.Socket.Off("pm-unlock-screen");
             }
+        }
+
+        public void TriggerOnUnLockScreen()
+        {
+            _unlockScreen();
         }
 
         private event Action _unlockScreen;
@@ -75,22 +70,19 @@ namespace ElectronNET.API
             {
                 if (_suspend == null)
                 {
-                    BridgeConnector.Socket.On("pm-suspend", () =>
-                    {
-                        _suspend();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-suspend");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-suspend");
                 }
                 _suspend += value;
             }
             remove
             {
                 _suspend -= value;
-
-                if (_suspend == null)
-                    BridgeConnector.Socket.Off("pm-suspend");
             }
+        }
+
+        public void TriggerOnSuspend()
+        {
+            _suspend();
         }
 
         private event Action _suspend;
@@ -104,22 +96,19 @@ namespace ElectronNET.API
             {
                 if (_resume == null)
                 {
-                    BridgeConnector.Socket.On("pm-resume", () =>
-                    {
-                        _resume();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-resume");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-resume");
                 }
                 _resume += value;
             }
             remove
             {
                 _resume -= value;
-
-                if (_resume == null)
-                    BridgeConnector.Socket.Off("pm-resume");
             }
+        }
+
+        public void TriggerOnResume()
+        {
+            _resume();
         }
 
         private event Action _resume;
@@ -133,22 +122,19 @@ namespace ElectronNET.API
             {
                 if (_onAC == null)
                 {
-                    BridgeConnector.Socket.On("pm-on-ac", () =>
-                    {
-                        _onAC();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-on-ac");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-on-ac");
                 }
                 _onAC += value;
             }
             remove
             {
                 _onAC -= value;
-
-                if (_onAC == null)
-                    BridgeConnector.Socket.Off("pm-on-ac");
             }
+        }
+
+        public void TriggerOnAC()
+        {
+            _onAC();
         }
 
         private event Action _onAC;
@@ -162,22 +148,19 @@ namespace ElectronNET.API
             {
                 if (_onBattery == null)
                 {
-                    BridgeConnector.Socket.On("pm-on-battery", () =>
-                    {
-                        _onBattery();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-on-battery");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-on-battery");
                 }
                 _onBattery += value;
             }
             remove
             {
                 _onBattery -= value;
-
-                if (_onBattery == null)
-                    BridgeConnector.Socket.Off("pm-on-battery");
             }
+        }
+
+        public void TriggerOnBattery()
+        {
+            _onBattery();
         }
 
         private event Action _onBattery;
@@ -195,22 +178,19 @@ namespace ElectronNET.API
             {
                 if (_shutdown == null)
                 {
-                    BridgeConnector.Socket.On("pm-shutdown", () =>
-                    {
-                        _shutdown();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-shutdown");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-pm-shutdown");
                 }
                 _shutdown += value;
             }
             remove
             {
                 _shutdown -= value;
-
-                if (_shutdown == null)
-                    BridgeConnector.Socket.Off("pm-on-shutdown");
             }
+        }
+
+        public void TriggerOnShutdown()
+        {
+            _shutdown();
         }
 
         private event Action _shutdown;

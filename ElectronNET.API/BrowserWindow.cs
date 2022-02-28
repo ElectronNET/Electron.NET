@@ -1,5 +1,7 @@
 ﻿using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -34,22 +36,19 @@ namespace ElectronNET.API
             {
                 if (_readyToShow == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-ready-to-show" + Id, () =>
-                    {
-                        _readyToShow();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-ready-to-show", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-ready-to-show", Id);
                 }
                 _readyToShow += value;
             }
             remove
             {
                 _readyToShow -= value;
-
-                if (_readyToShow == null)
-                    BridgeConnector.Socket.Off("browserWindow-ready-to-show" + Id);
             }
+        }
+
+        public void TriggerOnReadyToShow()
+        {
+            _readyToShow();
         }
 
         private event Action _readyToShow;
@@ -63,22 +62,19 @@ namespace ElectronNET.API
             {
                 if (_pageTitleUpdated == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-page-title-updated" + Id, (title) =>
-                    {
-                        _pageTitleUpdated(title.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-page-title-updated", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-page-title-updated", Id);
                 }
                 _pageTitleUpdated += value;
             }
             remove
             {
                 _pageTitleUpdated -= value;
-
-                if (_pageTitleUpdated == null)
-                    BridgeConnector.Socket.Off("browserWindow-page-title-updated" + Id);
             }
+        }
+
+        public void TriggerOnPageTitleUpdated(string title)
+        {
+            _pageTitleUpdated(title);
         }
 
         private event Action<string> _pageTitleUpdated;
@@ -92,22 +88,19 @@ namespace ElectronNET.API
             {
                 if (_close == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-close" + Id, () =>
-                    {
-                        _close();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-close", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-close", Id);
                 }
                 _close += value;
             }
             remove
             {
                 _close -= value;
-
-                if (_close == null)
-                    BridgeConnector.Socket.Off("browserWindow-close" + Id);
             }
+        }
+
+        public void TriggerOnClose()
+        {
+            _close();
         }
 
         private event Action _close;
@@ -123,21 +116,22 @@ namespace ElectronNET.API
             {
                 if (_closed == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-closed" + Id, () =>
-                    {
-                        _closed();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-closed", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-closed", Id);
                 }
                 _closed += value;
             }
             remove
             {
                 _closed -= value;
+            }
+        }
 
-                if (_closed == null)
-                    BridgeConnector.Socket.Off("browserWindow-closed" + Id);
+        public void TriggerOnClosed()
+        {
+            // Trigger only if we've a listener
+            if (_closed != null)
+            {
+                _closed();
             }
         }
 
@@ -152,22 +146,19 @@ namespace ElectronNET.API
             {
                 if (_sessionEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-session-end" + Id, () =>
-                    {
-                        _sessionEnd();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-session-end", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-session-end", Id);
                 }
                 _sessionEnd += value;
             }
             remove
             {
                 _sessionEnd -= value;
-
-                if (_sessionEnd == null)
-                    BridgeConnector.Socket.Off("browserWindow-session-end" + Id);
             }
+        }
+
+        public void TriggerOnSessionEnd()
+        {
+            _sessionEnd();
         }
 
         private event Action _sessionEnd;
@@ -181,22 +172,19 @@ namespace ElectronNET.API
             {
                 if (_unresponsive == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-unresponsive" + Id, () =>
-                    {
-                        _unresponsive();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-unresponsive", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-unresponsive", Id);
                 }
                 _unresponsive += value;
             }
             remove
             {
                 _unresponsive -= value;
-
-                if (_unresponsive == null)
-                    BridgeConnector.Socket.Off("browserWindow-unresponsive" + Id);
             }
+        }
+
+        public void TriggerOnUnresponsive()
+        {
+            _unresponsive();
         }
 
         private event Action _unresponsive;
@@ -210,22 +198,19 @@ namespace ElectronNET.API
             {
                 if (_responsive == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-responsive" + Id, () =>
-                    {
-                        _responsive();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-responsive", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-responsive", Id);
                 }
                 _responsive += value;
             }
             remove
             {
                 _responsive -= value;
-
-                if (_responsive == null)
-                    BridgeConnector.Socket.Off("browserWindow-responsive" + Id);
             }
+        }
+
+        public void TriggerOnResponsive()
+        {
+            _responsive();
         }
 
         private event Action _responsive;
@@ -239,25 +224,22 @@ namespace ElectronNET.API
             {
                 if (_blur == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-blur" + Id, () =>
-                    {
-                        _blur();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-blur", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-blur", Id);
                 }
                 _blur += value;
             }
             remove
             {
                 _blur -= value;
-
-                if (_blur == null)
-                    BridgeConnector.Socket.Off("browserWindow-blur" + Id);
             }
         }
 
-        private event Action _blur;
+        public void TriggerOnBlur()
+        {
+            _blur();
+        }
+
+        public event Action _blur;
 
         /// <summary>
         /// Emitted when the window gains focus.
@@ -268,22 +250,19 @@ namespace ElectronNET.API
             {
                 if (_focus == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-focus" + Id, () =>
-                    {
-                        _focus();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-focus", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-focus", Id);
                 }
                 _focus += value;
             }
             remove
             {
                 _focus -= value;
-
-                if (_focus == null)
-                    BridgeConnector.Socket.Off("browserWindow-focus" + Id);
             }
+        }
+
+        public void TriggerOnFocus()
+        {
+            _focus();
         }
 
         private event Action _focus;
@@ -297,22 +276,19 @@ namespace ElectronNET.API
             {
                 if (_show == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-show" + Id, () =>
-                    {
-                        _show();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-show", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-show", Id);
                 }
                 _show += value;
             }
             remove
             {
                 _show -= value;
-
-                if (_show == null)
-                    BridgeConnector.Socket.Off("browserWindow-show" + Id);
             }
+        }
+
+        public void TriggerOnShow()
+        {
+            _show();
         }
 
         private event Action _show;
@@ -326,22 +302,19 @@ namespace ElectronNET.API
             {
                 if (_hide == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-hide" + Id, () =>
-                    {
-                        _hide();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-hide", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-hide", Id);
                 }
                 _hide += value;
             }
             remove
             {
                 _hide -= value;
-
-                if (_hide == null)
-                    BridgeConnector.Socket.Off("browserWindow-hide" + Id);
             }
+        }
+
+        public void TriggerOnHide()
+        {
+            _hide();
         }
 
         private event Action _hide;
@@ -355,22 +328,19 @@ namespace ElectronNET.API
             {
                 if (_maximize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-maximize" + Id, () =>
-                    {
-                        _maximize();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-maximize", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-maximize", Id);
                 }
                 _maximize += value;
             }
             remove
             {
                 _maximize -= value;
-
-                if (_maximize == null)
-                    BridgeConnector.Socket.Off("browserWindow-maximize" + Id);
             }
+        }
+
+        public void TriggerOnMaximize()
+        {
+            _maximize();
         }
 
         private event Action _maximize;
@@ -384,22 +354,19 @@ namespace ElectronNET.API
             {
                 if (_unmaximize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-unmaximize" + Id, () =>
-                    {
-                        _unmaximize();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-unmaximize", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-unmaximize", Id);
                 }
                 _unmaximize += value;
             }
             remove
             {
                 _unmaximize -= value;
-
-                if (_unmaximize == null)
-                    BridgeConnector.Socket.Off("browserWindow-unmaximize" + Id);
             }
+        }
+
+        public void TriggerOnUnmaximize()
+        {
+            _unmaximize();
         }
 
         private event Action _unmaximize;
@@ -413,22 +380,19 @@ namespace ElectronNET.API
             {
                 if (_minimize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-minimize" + Id, () =>
-                    {
-                        _minimize();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-minimize", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-minimize", Id);
                 }
                 _minimize += value;
             }
             remove
             {
                 _minimize -= value;
-
-                if (_minimize == null)
-                    BridgeConnector.Socket.Off("browserWindow-minimize" + Id);
             }
+        }
+
+        public void TriggerOnMinimize()
+        {
+            _minimize();
         }
 
         private event Action _minimize;
@@ -442,22 +406,19 @@ namespace ElectronNET.API
             {
                 if (_restore == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-restore" + Id, () =>
-                    {
-                        _restore();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-restore", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-restore", Id);
                 }
                 _restore += value;
             }
             remove
             {
                 _restore -= value;
-
-                if (_restore == null)
-                    BridgeConnector.Socket.Off("browserWindow-restore" + Id);
             }
+        }
+
+        public void TriggerOnRestore()
+        {
+            _restore();
         }
 
         private event Action _restore;
@@ -471,22 +432,19 @@ namespace ElectronNET.API
             {
                 if (_resize == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-resize" + Id, () =>
-                    {
-                        _resize();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-resize", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-resize", Id);
                 }
                 _resize += value;
             }
             remove
             {
                 _resize -= value;
-
-                if (_resize == null)
-                    BridgeConnector.Socket.Off("browserWindow-resize" + Id);
             }
+        }
+
+        public void TriggerOnResize()
+        {
+            _resize();
         }
 
         private event Action _resize;
@@ -502,22 +460,19 @@ namespace ElectronNET.API
             {
                 if (_move == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-move" + Id, () =>
-                    {
-                        _move();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-move", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-move", Id);
                 }
                 _move += value;
             }
             remove
             {
                 _move -= value;
-
-                if (_move == null)
-                    BridgeConnector.Socket.Off("browserWindow-move" + Id);
             }
+        }
+
+        public void TriggerOnMove()
+        {
+            _move();
         }
 
         private event Action _move;
@@ -531,22 +486,19 @@ namespace ElectronNET.API
             {
                 if (_moved == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-moved" + Id, () =>
-                    {
-                        _moved();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-moved", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-moved", Id);
                 }
                 _moved += value;
             }
             remove
             {
                 _moved -= value;
-
-                if (_moved == null)
-                    BridgeConnector.Socket.Off("browserWindow-moved" + Id);
             }
+        }
+
+        public void TriggerOnMoved()
+        {
+            _moved();
         }
 
         private event Action _moved;
@@ -560,22 +512,19 @@ namespace ElectronNET.API
             {
                 if (_enterFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-enter-full-screen" + Id, () =>
-                    {
-                        _enterFullScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-enter-full-screen", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-enter-full-screen", Id);
                 }
                 _enterFullScreen += value;
             }
             remove
             {
                 _enterFullScreen -= value;
-
-                if (_enterFullScreen == null)
-                    BridgeConnector.Socket.Off("browserWindow-enter-full-screen" + Id);
             }
+        }
+
+        public void TriggerOnEnterFullScreen()
+        {
+            _enterFullScreen();
         }
 
         private event Action _enterFullScreen;
@@ -589,22 +538,19 @@ namespace ElectronNET.API
             {
                 if (_leaveFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-leave-full-screen" + Id, () =>
-                    {
-                        _leaveFullScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-leave-full-screen", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-leave-full-screen", Id);
                 }
                 _leaveFullScreen += value;
             }
             remove
             {
                 _leaveFullScreen -= value;
-
-                if (_leaveFullScreen == null)
-                    BridgeConnector.Socket.Off("browserWindow-leave-full-screen" + Id);
             }
+        }
+
+        public void TriggerOnLeaveFullScreen()
+        {
+            _leaveFullScreen();
         }
 
         private event Action _leaveFullScreen;
@@ -618,22 +564,19 @@ namespace ElectronNET.API
             {
                 if (_enterHtmlFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-enter-html-full-screen" + Id, () =>
-                    {
-                        _enterHtmlFullScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-enter-html-full-screen", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-enter-html-full-screen", Id);
                 }
                 _enterHtmlFullScreen += value;
             }
             remove
             {
                 _enterHtmlFullScreen -= value;
-
-                if (_enterHtmlFullScreen == null)
-                    BridgeConnector.Socket.Off("browserWindow-enter-html-full-screen" + Id);
             }
+        }
+
+        public void TriggerOnEnterHtmlFullScreen()
+        {
+            _enterHtmlFullScreen();
         }
 
         private event Action _enterHtmlFullScreen;
@@ -647,22 +590,19 @@ namespace ElectronNET.API
             {
                 if (_leaveHtmlFullScreen == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-leave-html-full-screen" + Id, () =>
-                    {
-                        _leaveHtmlFullScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-leave-html-full-screen", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-leave-html-full-screen", Id);
                 }
                 _leaveHtmlFullScreen += value;
             }
             remove
             {
                 _leaveHtmlFullScreen -= value;
-
-                if (_leaveHtmlFullScreen == null)
-                    BridgeConnector.Socket.Off("browserWindow-leave-html-full-screen" + Id);
             }
+        }
+
+        public void TriggerOnLeaveHtmlFullScreen()
+        {
+            _leaveHtmlFullScreen();
         }
 
         private event Action _leaveHtmlFullScreen;
@@ -682,22 +622,19 @@ namespace ElectronNET.API
             {
                 if (_appCommand == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-app-command" + Id, (command) =>
-                    {
-                        _appCommand(command.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-app-command", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-app-command", Id);
                 }
                 _appCommand += value;
             }
             remove
             {
                 _appCommand -= value;
-
-                if (_appCommand == null)
-                    BridgeConnector.Socket.Off("browserWindow-app-command" + Id);
             }
+        }
+
+        public void TriggerOnAppCommand(string command)
+        {
+            _appCommand(command);
         }
 
         private event Action<string> _appCommand;
@@ -711,22 +648,19 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchBegin == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-begin" + Id, () =>
-                    {
-                        _scrollTouchBegin();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-begin", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-scroll-touch-begin", Id);
                 }
                 _scrollTouchBegin += value;
             }
             remove
             {
                 _scrollTouchBegin -= value;
-
-                if (_scrollTouchBegin == null)
-                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-begin" + Id);
             }
+        }
+
+        public void TriggerOnScrollTouchBegin()
+        {
+            _scrollTouchBegin();
         }
 
         private event Action _scrollTouchBegin;
@@ -740,22 +674,19 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-end" + Id, () =>
-                    {
-                        _scrollTouchEnd();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-end", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-scroll-touch-end", Id);
                 }
                 _scrollTouchEnd += value;
             }
             remove
             {
                 _scrollTouchEnd -= value;
-
-                if (_scrollTouchEnd == null)
-                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-end" + Id);
             }
+        }
+
+        public void TriggerOnScrollTouchEnd()
+        {
+            _scrollTouchEnd();
         }
 
         private event Action _scrollTouchEnd;
@@ -769,22 +700,19 @@ namespace ElectronNET.API
             {
                 if (_scrollTouchEdge == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-scroll-touch-edge" + Id, () =>
-                    {
-                        _scrollTouchEdge();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-scroll-touch-edge", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-scroll-touch-edge", Id);
                 }
                 _scrollTouchEdge += value;
             }
             remove
             {
                 _scrollTouchEdge -= value;
-
-                if (_scrollTouchEdge == null)
-                    BridgeConnector.Socket.Off("browserWindow-scroll-touch-edge" + Id);
             }
+        }
+
+        public void TriggerOnScrollTouchEdge()
+        {
+            _scrollTouchEdge();
         }
 
         private event Action _scrollTouchEdge;
@@ -798,22 +726,19 @@ namespace ElectronNET.API
             {
                 if (_swipe == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-swipe" + Id, (direction) =>
-                    {
-                        _swipe(direction.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-swipe", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-swipe", Id);
                 }
                 _swipe += value;
             }
             remove
             {
                 _swipe -= value;
-
-                if (_swipe == null)
-                    BridgeConnector.Socket.Off("browserWindow-swipe" + Id);
             }
+        }
+
+        public void TriggerOnSwipe(string direction)
+        {
+            _swipe(direction);
         }
 
         private event Action<string> _swipe;
@@ -827,22 +752,19 @@ namespace ElectronNET.API
             {
                 if (_sheetBegin == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-sheet-begin" + Id, () =>
-                    {
-                        _sheetBegin();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-sheet-begin", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-sheet-begin", Id);
                 }
                 _sheetBegin += value;
             }
             remove
             {
                 _sheetBegin -= value;
-
-                if (_sheetBegin == null)
-                    BridgeConnector.Socket.Off("browserWindow-sheet-begin" + Id);
             }
+        }
+
+        public void TriggerOnSheetBegin()
+        {
+            _sheetBegin();
         }
 
         private event Action _sheetBegin;
@@ -856,22 +778,19 @@ namespace ElectronNET.API
             {
                 if (_sheetEnd == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-sheet-end" + Id, () =>
-                    {
-                        _sheetEnd();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-sheet-end", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-sheet-end", Id);
                 }
                 _sheetEnd += value;
             }
             remove
             {
                 _sheetEnd -= value;
-
-                if (_sheetEnd == null)
-                    BridgeConnector.Socket.Off("browserWindow-sheet-end" + Id);
             }
+        }
+
+        public void TriggerOnSheetEnd()
+        {
+            _sheetEnd();
         }
 
         private event Action _sheetEnd;
@@ -885,22 +804,19 @@ namespace ElectronNET.API
             {
                 if (_newWindowForTab == null)
                 {
-                    BridgeConnector.Socket.On("browserWindow-new-window-for-tab" + Id, () =>
-                    {
-                        _newWindowForTab();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-browserWindow-new-window-for-tab", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-browserWindow-new-window-for-tab", Id);
                 }
                 _newWindowForTab += value;
             }
             remove
             {
                 _newWindowForTab -= value;
-
-                if (_newWindowForTab == null)
-                    BridgeConnector.Socket.Off("browserWindow-new-window-for-tab" + Id);
             }
+        }
+
+        public void TriggerOnNewWindowForTab()
+        {
+            _newWindowForTab();
         }
 
         private event Action _newWindowForTab;
@@ -915,231 +831,161 @@ namespace ElectronNET.API
         /// emitted for the web page, and close event will also not be emitted 
         /// for this window, but it guarantees the closed event will be emitted.
         /// </summary>
-        public void Destroy()
+        public async void Destroy()
         {
-            BridgeConnector.Socket.Emit("browserWindowDestroy", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowDestroy", Id);
         }
 
         /// <summary>
         /// Try to close the window. This has the same effect as a user manually 
         /// clicking the close button of the window. The web page may cancel the close though. 
         /// </summary>
-        public void Close()
+        public async void Close()
         {
-            BridgeConnector.Socket.Emit("browserWindowClose", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowClose", Id);
         }
 
         /// <summary>
         /// Focuses on the window.
         /// </summary>
-        public void Focus()
+        public async void Focus()
         {
-            BridgeConnector.Socket.Emit("browserWindowFocus", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowFocus", Id);
         }
 
         /// <summary>
         /// Removes focus from the window.
         /// </summary>
-        public void Blur()
+        public async void Blur()
         {
-            BridgeConnector.Socket.Emit("browserWindowBlur", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowBlur", Id);
         }
 
         /// <summary>
         /// Whether the window is focused.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsFocusedAsync()
+        public async Task<bool> IsFocusedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isFocused-completed", (isFocused) => {
-                BridgeConnector.Socket.Off("browserWindow-isFocused-completed");
-
-                taskCompletionSource.SetResult((bool)isFocused);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsFocused", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsFocused", Id);
         }
 
         /// <summary>
         /// Whether the window is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync()
+        public async Task<bool> IsDestroyedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isDestroyed-completed", (isDestroyed) => {
-                BridgeConnector.Socket.Off("browserWindow-isDestroyed-completed");
-
-                taskCompletionSource.SetResult((bool)isDestroyed);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsDestroyed", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsDestroyed", Id);
         }
 
         /// <summary>
         /// Shows and gives focus to the window.
         /// </summary>
-        public void Show()
+        public async void Show()
         {
-            BridgeConnector.Socket.Emit("browserWindowShow", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowShow", Id);
         }
 
         /// <summary>
         /// Shows the window but doesn’t focus on it.
         /// </summary>
-        public void ShowInactive()
+        public async void ShowInactive()
         {
-            BridgeConnector.Socket.Emit("browserWindowShowInactive", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowShowInactive", Id);
         }
 
         /// <summary>
         /// Hides the window.
         /// </summary>
-        public void Hide()
+        public async void Hide()
         {
-            BridgeConnector.Socket.Emit("browserWindowHide", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowHide", Id);
         }
 
         /// <summary>
         /// Whether the window is visible to the user.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsVisibleAsync()
+        public async Task<bool> IsVisibleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isVisible-completed", (isVisible) => {
-                BridgeConnector.Socket.Off("browserWindow-isVisible-completed");
-
-                taskCompletionSource.SetResult((bool)isVisible);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsVisible", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsVisible", Id);
         }
 
         /// <summary>
         /// Whether current window is a modal window.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsModalAsync()
+        public async Task<bool> IsModalAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isModal-completed", (isModal) => {
-                BridgeConnector.Socket.Off("browserWindow-isModal-completed");
-
-                taskCompletionSource.SetResult((bool)isModal);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsModal", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsModal", Id);
         }
 
         /// <summary>
         /// Maximizes the window. This will also show (but not focus) the window if it isn’t being displayed already.
         /// </summary>
-        public void Maximize()
+        public async void Maximize()
         {
-            BridgeConnector.Socket.Emit("browserWindowMaximize", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowMaximize", Id);
         }
 
         /// <summary>
         /// Unmaximizes the window.
         /// </summary>
-        public void Unmaximize()
+        public async void Unmaximize()
         {
-            BridgeConnector.Socket.Emit("browserWindowUnmaximize", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowUnmaximize", Id);
         }
 
         /// <summary>
         /// Whether the window is maximized.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsMaximizedAsync()
+        public async Task<bool> IsMaximizedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMaximized-completed", (isMaximized) => {
-                BridgeConnector.Socket.Off("browserWindow-isMaximized-completed");
-
-                taskCompletionSource.SetResult((bool)isMaximized);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMaximized", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMaximized", Id);
         }
 
         /// <summary>
         /// Minimizes the window. On some platforms the minimized window will be shown in the Dock.
         /// </summary>
-        public void Minimize()
+        public async void Minimize()
         {
-            BridgeConnector.Socket.Emit("browserWindowMinimize", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowMinimize", Id);
         }
 
         /// <summary>
         /// Restores the window from minimized state to its previous state.
         /// </summary>
-        public void Restore()
+        public async void Restore()
         {
-            BridgeConnector.Socket.Emit("browserWindowRestore", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowRestore", Id);
         }
 
         /// <summary>
         /// Whether the window is minimized.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsMinimizedAsync()
+        public async Task<bool> IsMinimizedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMinimized-completed", (isMinimized) => {
-                BridgeConnector.Socket.Off("browserWindow-isMinimized-completed");
-
-                taskCompletionSource.SetResult((bool)isMinimized);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMinimized", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMinimized", Id);
         }
 
         /// <summary>
         /// Sets whether the window should be in fullscreen mode.
         /// </summary>
-        public void SetFullScreen(bool flag)
+        public async void SetFullScreen(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetFullScreen", Id, flag);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetFullScreen", Id, flag);
         }
 
         /// <summary>
         /// Whether the window is in fullscreen mode.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsFullScreenAsync()
+        public async Task<bool> IsFullScreenAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isFullScreen-completed", (isFullScreen) => {
-                BridgeConnector.Socket.Off("browserWindow-isFullScreen-completed");
-
-                taskCompletionSource.SetResult((bool)isFullScreen);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsFullScreen", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsFullScreen", Id);
         }
 
         /// <summary>
@@ -1156,9 +1002,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
         /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
-        public void SetAspectRatio(int aspectRatio, Size extraSize)
+        public async void SetAspectRatio(int aspectRatio, Size extraSize)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
         }
 
         /// <summary>
@@ -1167,9 +1013,9 @@ namespace ElectronNET.API
         /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as 
         /// Quick Look uses the file name and file extension on the path to determine the content type of the 
         /// file to open.</param>
-        public void PreviewFile(string path)
+        public async void PreviewFile(string path)
         {
-            BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowPreviewFile", Id, path);
         }
 
         /// <summary>
@@ -1180,26 +1026,26 @@ namespace ElectronNET.API
         /// file to open.</param>
         /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is 
         /// purely visual and does not affect the content type of the file. Defaults to path.</param>
-        public void PreviewFile(string path, string displayname)
+        public async void PreviewFile(string path, string displayname)
         {
-            BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path, displayname);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowPreviewFile", Id, path, displayname);
         }
 
         /// <summary>
         /// Closes the currently open Quick Look panel.
         /// </summary>
-        public void CloseFilePreview()
+        public async void CloseFilePreview()
         {
-            BridgeConnector.Socket.Emit("browserWindowCloseFilePreview", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowCloseFilePreview", Id);
         }
 
         /// <summary>
         /// Resizes and moves the window to the supplied bounds
         /// </summary>
         /// <param name="bounds"></param>
-        public void SetBounds(Rectangle bounds)
+        public async void SetBounds(Rectangle bounds)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
         }
 
         /// <summary>
@@ -1207,37 +1053,28 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="bounds"></param>
         /// <param name="animate"></param>
-        public void SetBounds(Rectangle bounds, bool animate)
+        public async void SetBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
         /// <summary>
         /// Gets the bounds asynchronous.
         /// </summary>
         /// <returns></returns>
-        public Task<Rectangle> GetBoundsAsync()
+        public async Task<Rectangle> GetBoundsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-            BridgeConnector.Socket.On("browserWindow-getBounds-completed", (getBounds) => {
-                BridgeConnector.Socket.Off("browserWindow-getBounds-completed");
-
-                taskCompletionSource.SetResult(((JObject)getBounds).ToObject<Rectangle>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetBounds", Id);
-
-            return taskCompletionSource.Task;
+            var result = await SignalrSerializeHelper.GetSignalrResultJObject("browserWindowGetBounds", Id);
+            return result.ToObject<Rectangle>();
         }
 
         /// <summary>
         /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
         /// </summary>
         /// <param name="bounds"></param>
-        public void SetContentBounds(Rectangle bounds)
+        public async void SetContentBounds(Rectangle bounds)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
         }
 
         /// <summary>
@@ -1245,28 +1082,19 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="bounds"></param>
         /// <param name="animate"></param>
-        public void SetContentBounds(Rectangle bounds, bool animate)
+        public async void SetContentBounds(Rectangle bounds, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
         }
 
         /// <summary>
         /// Gets the content bounds asynchronous.
         /// </summary>
         /// <returns></returns>
-        public Task<Rectangle> GetContentBoundsAsync()
+        public async Task<Rectangle> GetContentBoundsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-            BridgeConnector.Socket.On("browserWindow-getContentBounds-completed", (getContentBounds) => {
-                BridgeConnector.Socket.Off("browserWindow-getContentBounds-completed");
-
-                taskCompletionSource.SetResult(((JObject)getContentBounds).ToObject<Rectangle>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetContentBounds", Id);
-
-            return taskCompletionSource.Task;
+            var result = await SignalrSerializeHelper.GetSignalrResultJObject("browserWindowGetContentBounds", Id);
+            return result.ToObject<Rectangle>();
         }
 
         /// <summary>
@@ -1274,9 +1102,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void SetSize(int width, int height)
+        public async void SetSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSize", Id, width, height);
         }
 
         /// <summary>
@@ -1285,28 +1113,18 @@ namespace ElectronNET.API
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="animate"></param>
-        public void SetSize(int width, int height, bool animate)
+        public async void SetSize(int width, int height, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height, animate);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSize", Id, width, height, animate);
         }
 
         /// <summary>
         /// Contains the window’s width and height.
         /// </summary>
         /// <returns></returns>
-        public Task<int[]> GetSizeAsync()
+        public async Task<int[]> GetSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-            BridgeConnector.Socket.On("browserWindow-getSize-completed", (size) => {
-                BridgeConnector.Socket.Off("browserWindow-getSize-completed");
-
-                taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetSize", Id);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetSize", Id)).ToObject<int[]>();
         }
 
         /// <summary>
@@ -1314,9 +1132,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void SetContentSize(int width, int height)
+        public async void SetContentSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentSize", Id, width, height);
         }
 
         /// <summary>
@@ -1325,28 +1143,18 @@ namespace ElectronNET.API
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="animate"></param>
-        public void SetContentSize(int width, int height, bool animate)
+        public async void SetContentSize(int width, int height, bool animate)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height, animate);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentSize", Id, width, height, animate);
         }
 
         /// <summary>
         /// Contains the window’s client area’s width and height.
         /// </summary>
         /// <returns></returns>
-        public Task<int[]> GetContentSizeAsync()
+        public async Task<int[]> GetContentSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-            BridgeConnector.Socket.On("browserWindow-getContentSize-completed", (size) => {
-                BridgeConnector.Socket.Off("browserWindow-getContentSize-completed");
-
-                taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetContentSize", Id);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetContentSize", Id)).ToObject<int[]>();
         }
 
         /// <summary>
@@ -1354,28 +1162,18 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void SetMinimumSize(int width, int height)
+        public async void SetMinimumSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMinimumSize", Id, width, height);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMinimumSize", Id, width, height);
         }
 
         /// <summary>
         /// Contains the window’s minimum width and height.
         /// </summary>
         /// <returns></returns>
-        public Task<int[]> GetMinimumSizeAsync()
+        public async Task<int[]> GetMinimumSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-            BridgeConnector.Socket.On("browserWindow-getMinimumSize-completed", (size) => {
-                BridgeConnector.Socket.Off("browserWindow-getMinimumSize-completed");
-
-                taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetMinimumSize", Id);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetMinimumSize", Id)).ToObject<int[]>();
         }
 
         /// <summary>
@@ -1383,65 +1181,45 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void SetMaximumSize(int width, int height)
+        public async void SetMaximumSize(int width, int height)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMaximumSize", Id, width, height);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMaximumSize", Id, width, height);
         }
 
         /// <summary>
         /// Contains the window’s maximum width and height.
         /// </summary>
         /// <returns></returns>
-        public Task<int[]> GetMaximumSizeAsync()
+        public async Task<int[]> GetMaximumSizeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-            BridgeConnector.Socket.On("browserWindow-getMaximumSize-completed", (size) => {
-                BridgeConnector.Socket.Off("browserWindow-getMaximumSize-completed");
-
-                taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetMaximumSize", Id);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetMaximumSize", Id)).ToObject<int[]>();
         }
 
         /// <summary>
         /// Sets whether the window can be manually resized by user.
         /// </summary>
         /// <param name="resizable"></param>
-        public void SetResizable(bool resizable)
+        public async void SetResizable(bool resizable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetResizable", Id, resizable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetResizable", Id, resizable);
         }
 
         /// <summary>
         /// Whether the window can be manually resized by user.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsResizableAsync()
+        public async Task<bool> IsResizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isResizable-completed", (resizable) => {
-                BridgeConnector.Socket.Off("browserWindow-isResizable-completed");
-
-                taskCompletionSource.SetResult((bool)resizable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsResizable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsResizable", Id);
         }
 
         /// <summary>
         /// Sets whether the window can be moved by user. On Linux does nothing.
         /// </summary>
         /// <param name="movable"></param>
-        public void SetMovable(bool movable)
+        public async void SetMovable(bool movable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMovable", Id, movable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMovable", Id, movable);
         }
 
         /// <summary>
@@ -1450,28 +1228,18 @@ namespace ElectronNET.API
         /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
-        public Task<bool> IsMovableAsync()
+        public async Task<bool> IsMovableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMovable-completed", (movable) => {
-                BridgeConnector.Socket.Off("browserWindow-isMovable-completed");
-
-                taskCompletionSource.SetResult((bool)movable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMovable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMovable", Id);
         }
 
         /// <summary>
         /// Sets whether the window can be manually minimized by user. On Linux does nothing.
         /// </summary>
         /// <param name="minimizable"></param>
-        public void SetMinimizable(bool minimizable)
+        public async void SetMinimizable(bool minimizable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMinimizable", Id, minimizable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMinimizable", Id, minimizable);
         }
 
         /// <summary>
@@ -1480,28 +1248,18 @@ namespace ElectronNET.API
         /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
-        public Task<bool> IsMinimizableAsync()
+        public async Task<bool> IsMinimizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMinimizable-completed", (minimizable) => {
-                BridgeConnector.Socket.Off("browserWindow-isMinimizable-completed");
-
-                taskCompletionSource.SetResult((bool)minimizable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMinimizable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMinimizable", Id);
         }
 
         /// <summary>
         /// Sets whether the window can be manually maximized by user. On Linux does nothing.
         /// </summary>
         /// <param name="maximizable"></param>
-        public void SetMaximizable(bool maximizable)
+        public async void SetMaximizable(bool maximizable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMaximizable", Id, maximizable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMaximizable", Id, maximizable);
         }
 
         /// <summary>
@@ -1510,56 +1268,36 @@ namespace ElectronNET.API
         /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
-        public Task<bool> IsMaximizableAsync()
+        public async Task<bool> IsMaximizableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMaximizable-completed", (maximizable) => {
-                BridgeConnector.Socket.Off("browserWindow-isMaximizable-completed");
-
-                taskCompletionSource.SetResult((bool)maximizable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMaximizable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMaximizable", Id);
         }
 
         /// <summary>
         /// Sets whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
         /// </summary>
         /// <param name="fullscreenable"></param>
-        public void SetFullScreenable(bool fullscreenable)
+        public async void SetFullScreenable(bool fullscreenable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetFullScreenable", Id, fullscreenable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetFullScreenable", Id, fullscreenable);
         }
 
         /// <summary>
         /// Whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsFullScreenableAsync()
+        public async Task<bool> IsFullScreenableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isFullScreenable-completed", (fullscreenable) => {
-                BridgeConnector.Socket.Off("browserWindow-isFullScreenable-completed");
-
-                taskCompletionSource.SetResult((bool)fullscreenable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsFullScreenable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsFullScreenable", Id);
         }
 
         /// <summary>
         /// Sets whether the window can be manually closed by user. On Linux does nothing.
         /// </summary>
         /// <param name="closable"></param>
-        public void SetClosable(bool closable)
+        public async void SetClosable(bool closable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetClosable", Id, closable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetClosable", Id, closable);
         }
 
         /// <summary>
@@ -1568,19 +1306,9 @@ namespace ElectronNET.API
         /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
-        public Task<bool> IsClosableAsync()
+        public async Task<bool> IsClosableAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isClosable-completed", (closable) => {
-                BridgeConnector.Socket.Off("browserWindow-isClosable-completed");
-
-                taskCompletionSource.SetResult((bool)closable);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsClosable", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsClosable", Id);
         }
 
         /// <summary>
@@ -1589,9 +1317,9 @@ namespace ElectronNET.API
         /// window which can not be focused on.
         /// </summary>
         /// <param name="flag"></param>
-        public void SetAlwaysOnTop(bool flag)
+        public async void SetAlwaysOnTop(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAlwaysOnTop", Id, flag);
         }
 
         /// <summary>
@@ -1603,9 +1331,9 @@ namespace ElectronNET.API
         /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
         /// status, pop-up-menu and screen-saver. The default is floating. 
         /// See the macOS docs</param>
-        public void SetAlwaysOnTop(bool flag, OnTopLevel level)
+        public async void SetAlwaysOnTop(bool flag, OnTopLevel level)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
         }
 
         /// <summary>
@@ -1619,36 +1347,26 @@ namespace ElectronNET.API
         /// See the macOS docs</param>
         /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level. 
         /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
-        public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
+        public async void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
         }
 
         /// <summary>
         /// Whether the window is always on top of other windows.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsAlwaysOnTopAsync()
+        public async Task<bool> IsAlwaysOnTopAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isAlwaysOnTop-completed", (isAlwaysOnTop) => {
-                BridgeConnector.Socket.Off("browserWindow-isAlwaysOnTop-completed");
-
-                taskCompletionSource.SetResult((bool)isAlwaysOnTop);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsAlwaysOnTop", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsAlwaysOnTop", Id);
         }
 
         /// <summary>
         /// Moves window to the center of the screen.
         /// </summary>
-        public void Center()
+        public async void Center()
         {
-            BridgeConnector.Socket.Emit("browserWindowCenter", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowCenter", Id);
         }
 
         /// <summary>
@@ -1665,7 +1383,7 @@ namespace ElectronNET.API
                 x = x - 7;
             }
 
-            BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y);
+            Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetPosition", Id, x, y);
         }
 
         /// <summary>
@@ -1683,7 +1401,7 @@ namespace ElectronNET.API
                 x = x - 7;
             }
 
-            BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate);
+            Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetPosition", Id, x, y, animate);
         }
 
         private bool isWindows10()
@@ -1695,28 +1413,18 @@ namespace ElectronNET.API
         /// Contains the window’s current position.
         /// </summary>
         /// <returns></returns>
-        public Task<int[]> GetPositionAsync()
+        public async Task<int[]> GetPositionAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-            BridgeConnector.Socket.On("browserWindow-getPosition-completed", (position) => {
-                BridgeConnector.Socket.Off("browserWindow-getPosition-completed");
-
-                taskCompletionSource.SetResult(((JArray)position).ToObject<int[]>());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetPosition", Id);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetPosition", Id)).ToObject<int[]>();
         }
 
         /// <summary>
         /// Changes the title of native window to title.
         /// </summary>
         /// <param name="title"></param>
-        public void SetTitle(string title)
+        public async void SetTitle(string title)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetTitle", Id, title);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetTitle", Id, title);
         }
 
         /// <summary>
@@ -1725,19 +1433,9 @@ namespace ElectronNET.API
         /// Note: The title of web page can be different from the title of the native window.
         /// </summary>
         /// <returns></returns>
-        public Task<string> GetTitleAsync()
+        public async Task<string> GetTitleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("browserWindow-getTitle-completed", (title) => {
-                BridgeConnector.Socket.Off("browserWindow-getTitle-completed");
-
-                taskCompletionSource.SetResult(title.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetTitle", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetTitle", Id);
         }
 
         /// <summary>
@@ -1746,9 +1444,9 @@ namespace ElectronNET.API
         /// but you may want to display them beneath a HTML-rendered toolbar.
         /// </summary>
         /// <param name="offsetY"></param>
-        public void SetSheetOffset(float offsetY)
+        public async void SetSheetOffset(float offsetY)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSheetOffset", Id, offsetY);
         }
 
         /// <summary>
@@ -1758,74 +1456,54 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="offsetY"></param>
         /// <param name="offsetX"></param>
-        public void SetSheetOffset(float offsetY, float offsetX)
+        public async void SetSheetOffset(float offsetY, float offsetX)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY, offsetX);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSheetOffset", Id, offsetY, offsetX);
         }
 
         /// <summary>
         /// Starts or stops flashing the window to attract user’s attention.
         /// </summary>
         /// <param name="flag"></param>
-        public void FlashFrame(bool flag)
+        public async void FlashFrame(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindowFlashFrame", Id, flag);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowFlashFrame", Id, flag);
         }
 
         /// <summary>
         /// Makes the window not show in the taskbar.
         /// </summary>
         /// <param name="skip"></param>
-        public void SetSkipTaskbar(bool skip)
+        public async void SetSkipTaskbar(bool skip)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetSkipTaskbar", Id, skip);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSkipTaskbar", Id, skip);
         }
 
         /// <summary>
         /// Enters or leaves the kiosk mode.
         /// </summary>
         /// <param name="flag"></param>
-        public void SetKiosk(bool flag)
+        public async void SetKiosk(bool flag)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetKiosk", Id, flag);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetKiosk", Id, flag);
         }
 
         /// <summary>
         /// Whether the window is in kiosk mode.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsKioskAsync()
+        public async Task<bool> IsKioskAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isKiosk-completed", (isKiosk) => {
-                BridgeConnector.Socket.Off("browserWindow-isKiosk-completed");
-
-                taskCompletionSource.SetResult((bool)isKiosk);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsKiosk", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsKiosk", Id);
         }
 
         /// <summary>
         /// Returns the native type of the handle is HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.
         /// </summary>
         /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
-        public Task<string> GetNativeWindowHandle()
+        public async Task<string> GetNativeWindowHandle()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("browserWindow-getNativeWindowHandle-completed", (nativeWindowHandle) =>
-            {
-                BridgeConnector.Socket.Off("browserWindow-getNativeWindowHandle-completed");
-                taskCompletionSource.SetResult(nativeWindowHandle.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetNativeWindowHandle", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetNativeWindowHandle", Id);
         }
 
         /// <summary>
@@ -1833,28 +1511,18 @@ namespace ElectronNET.API
         /// and the icon of the file will show in window’s title bar.
         /// </summary>
         /// <param name="filename"></param>
-        public void SetRepresentedFilename(string filename)
+        public async void SetRepresentedFilename(string filename)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetRepresentedFilename", Id, filename);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetRepresentedFilename", Id, filename);
         }
 
         /// <summary>
         /// The pathname of the file the window represents.
         /// </summary>
         /// <returns></returns>
-        public Task<string> GetRepresentedFilenameAsync()
+        public async Task<string> GetRepresentedFilenameAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("browserWindow-getRepresentedFilename-completed", (pathname) => {
-                BridgeConnector.Socket.Off("browserWindow-getRepresentedFilename-completed");
-
-                taskCompletionSource.SetResult(pathname.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetRepresentedFilename", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetRepresentedFilename", Id);
         }
 
         /// <summary>
@@ -1862,44 +1530,34 @@ namespace ElectronNET.API
         /// and the icon in title bar will become gray when set to true.
         /// </summary>
         /// <param name="edited"></param>
-        public void SetDocumentEdited(bool edited)
+        public async void SetDocumentEdited(bool edited)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetDocumentEdited", Id, edited);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetDocumentEdited", Id, edited);
         }
 
         /// <summary>
         /// Whether the window’s document has been edited.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDocumentEditedAsync()
+        public async Task<bool> IsDocumentEditedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isDocumentEdited-completed", (edited) => {
-                BridgeConnector.Socket.Off("browserWindow-isDocumentEdited-completed");
-
-                taskCompletionSource.SetResult((bool)edited);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsDocumentEdited", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsDocumentEdited", Id);
         }
 
         /// <summary>
         /// Focuses the on web view.
         /// </summary>
-        public void FocusOnWebView()
+        public async void FocusOnWebView()
         {
-            BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowFocusOnWebView", Id);
         }
 
         /// <summary>
         /// Blurs the web view.
         /// </summary>
-        public void BlurWebView()
+        public async void BlurWebView()
         {
-            BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowBlurWebView", Id);
         }
 
         /// <summary>
@@ -1907,9 +1565,9 @@ namespace ElectronNET.API
         /// a path to a local HTML file using the file:// protocol.
         /// </summary>
         /// <param name="url"></param>
-        public void LoadURL(string url)
+        public async void LoadURL(string url)
         {
-            BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowLoadURL", Id, url);
         }
 
         /// <summary>
@@ -1918,17 +1576,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="url"></param>
         /// <param name="options"></param>
-        public void LoadURL(string url, LoadURLOptions options)
+        public async void LoadURL(string url, LoadURLOptions options)
         {
-            BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
         /// Same as webContents.reload.
         /// </summary>
-        public void Reload()
+        public async void Reload()
         {
-            BridgeConnector.Socket.Emit("browserWindowReload", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowReload", Id);
         }
 
         /// <summary>
@@ -1940,15 +1598,17 @@ namespace ElectronNET.API
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
         private List<MenuItem> _items = new List<MenuItem>();
 
+        // ToDo: Check this -> Possibly wrong
+
         /// <summary>
         /// Sets the menu as the window’s menu bar, 
         /// setting it to null will remove the menu bar.
         /// </summary>
         /// <param name="menuItems"></param>
-        public void SetMenu(MenuItem[] menuItems)
+        /*public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("windowMenuItemClicked");
@@ -1956,14 +1616,27 @@ namespace ElectronNET.API
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
             });
+        }*/
+
+        public void SetMenu(MenuItem[] menuItems)
+        {
+            menuItems.AddMenuItemsId();
+            Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
+            _items.AddRange(menuItems);
+        }
+
+        public void TriggerOnMenuItemClicked(string id)
+        {
+            MenuItem menuItem = _items.GetMenuItem(id.ToString());
+            menuItem?.Click();
         }
 
         /// <summary>
         /// Remove the window's menu bar.
         /// </summary>
-        public void RemoveMenu()
+        public async void RemoveMenu()
         {
-            BridgeConnector.Socket.Emit("browserWindowRemoveMenu", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowRemoveMenu", Id);
         }
 
         /// <summary>
@@ -1977,9 +1650,9 @@ namespace ElectronNET.API
         /// assumed.
         /// </summary>
         /// <param name="progress"></param>
-        public void SetProgressBar(double progress)
+        public async void SetProgressBar(double progress)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetProgressBar", Id, progress);
         }
 
         /// <summary>
@@ -1994,18 +1667,18 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="progress"></param>
         /// <param name="progressBarOptions"></param>
-        public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
+        public async void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
         }
 
         /// <summary>
         /// Sets whether the window should have a shadow. On Windows and Linux does nothing.
         /// </summary>
         /// <param name="hasShadow"></param>
-        public void SetHasShadow(bool hasShadow)
+        public async void SetHasShadow(bool hasShadow)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetHasShadow", Id, hasShadow);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetHasShadow", Id, hasShadow);
         }
 
         /// <summary>
@@ -2014,19 +1687,9 @@ namespace ElectronNET.API
         /// On Windows and Linux always returns true.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> HasShadowAsync()
+        public async Task<bool> HasShadowAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-hasShadow-completed", (hasShadow) => {
-                BridgeConnector.Socket.Off("browserWindow-hasShadow-completed");
-
-                taskCompletionSource.SetResult((bool)hasShadow);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowHasShadow", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowHasShadow", Id);
         }
 
         /// <summary>
@@ -2050,28 +1713,16 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="thumbarButtons"></param>
         /// <returns>Whether the buttons were added successfully.</returns>
-        public Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
+        public async Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindowSetThumbarButtons-completed", (success) => {
-                BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
-
-                taskCompletionSource.SetResult((bool)success);
-            });
-
             thumbarButtons.AddThumbarButtonsId();
-            BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+            bool result = await SignalrSerializeHelper.GetSignalrResultBool("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+            taskCompletionSource.SetResult(result);
             _thumbarButtons.Clear();
             _thumbarButtons.AddRange(thumbarButtons);
 
-            BridgeConnector.Socket.Off("thumbarButtonClicked");
-            BridgeConnector.Socket.On("thumbarButtonClicked", (id) => {
-                ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.ToString());
-                thumbarButton?.Click();
-            });
-
-            return taskCompletionSource.Task;
+            return await taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -2080,18 +1731,18 @@ namespace ElectronNET.API
         /// an empty region: {x: 0, y: 0, width: 0, height: 0}.
         /// </summary>
         /// <param name="rectangle"></param>
-        public void SetThumbnailClip(Rectangle rectangle)
+        public async void SetThumbnailClip(Rectangle rectangle)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetThumbnailClip", Id, rectangle);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetThumbnailClip", Id, rectangle);
         }
 
         /// <summary>
         /// Sets the toolTip that is displayed when hovering over the window thumbnail in the taskbar.
         /// </summary>
         /// <param name="tooltip"></param>
-        public void SetThumbnailToolTip(string tooltip)
+        public async void SetThumbnailToolTip(string tooltip)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetThumbnailToolTip", Id, tooltip);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetThumbnailToolTip", Id, tooltip);
         }
 
         /// <summary>
@@ -2101,17 +1752,17 @@ namespace ElectronNET.API
         /// If one of those properties is not set, then neither will be used.
         /// </summary>
         /// <param name="options"></param>
-        public void SetAppDetails(AppDetailsOptions options)
+        public async void SetAppDetails(AppDetailsOptions options)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
         /// Same as webContents.showDefinitionForSelection().
         /// </summary>
-        public void ShowDefinitionForSelection()
+        public async void ShowDefinitionForSelection()
         {
-            BridgeConnector.Socket.Emit("browserWindowShowDefinitionForSelection", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowShowDefinitionForSelection", Id);
         }
 
         /// <summary>
@@ -2121,28 +1772,18 @@ namespace ElectronNET.API
         /// If the menu bar is already visible, calling setAutoHideMenuBar(true) won’t hide it immediately.
         /// </summary>
         /// <param name="hide"></param>
-        public void SetAutoHideMenuBar(bool hide)
+        public async void SetAutoHideMenuBar(bool hide)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAutoHideMenuBar", Id, hide);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAutoHideMenuBar", Id, hide);
         }
 
         /// <summary>
         /// Whether menu bar automatically hides itself.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsMenuBarAutoHideAsync()
+        public async Task<bool> IsMenuBarAutoHideAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMenuBarAutoHide-completed", (isMenuBarAutoHide) => {
-                BridgeConnector.Socket.Off("browserWindow-isMenuBarAutoHide-completed");
-
-                taskCompletionSource.SetResult((bool)isMenuBarAutoHide);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMenuBarAutoHide", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMenuBarAutoHide", Id);
         }
 
         /// <summary>
@@ -2150,28 +1791,18 @@ namespace ElectronNET.API
         /// users can still bring up the menu bar by pressing the single Alt key.
         /// </summary>
         /// <param name="visible"></param>
-        public void SetMenuBarVisibility(bool visible)
+        public async void SetMenuBarVisibility(bool visible)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetMenuBarVisibility", Id, visible);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMenuBarVisibility", Id, visible);
         }
 
         /// <summary>
         /// Whether the menu bar is visible.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsMenuBarVisibleAsync()
+        public async Task<bool> IsMenuBarVisibleAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isMenuBarVisible-completed", (isMenuBarVisible) => {
-                BridgeConnector.Socket.Off("browserWindow-isMenuBarVisible-completed");
-
-                taskCompletionSource.SetResult((bool)isMenuBarVisible);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsMenuBarVisible", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMenuBarVisible", Id);
         }
 
         /// <summary>
@@ -2180,9 +1811,9 @@ namespace ElectronNET.API
         /// Note: This API does nothing on Windows.
         /// </summary>
         /// <param name="visible"></param>
-        public void SetVisibleOnAllWorkspaces(bool visible)
+        public async void SetVisibleOnAllWorkspaces(bool visible)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetVisibleOnAllWorkspaces", Id, visible);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetVisibleOnAllWorkspaces", Id, visible);
         }
 
         /// <summary>
@@ -2191,19 +1822,9 @@ namespace ElectronNET.API
         /// Note: This API always returns false on Windows.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsVisibleOnAllWorkspacesAsync()
+        public async Task<bool> IsVisibleOnAllWorkspacesAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("browserWindow-isVisibleOnAllWorkspaces-completed", (isVisibleOnAllWorkspaces) => {
-                BridgeConnector.Socket.Off("browserWindow-isVisibleOnAllWorkspaces-completed");
-
-                taskCompletionSource.SetResult((bool)isVisibleOnAllWorkspaces);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowIsVisibleOnAllWorkspaces", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsVisibleOnAllWorkspaces", Id);
         }
 
         /// <summary>
@@ -2213,9 +1834,9 @@ namespace ElectronNET.API
         /// below this window, but if this window has focus, it will still receive keyboard events.
         /// </summary>
         /// <param name="ignore"></param>
-        public void SetIgnoreMouseEvents(bool ignore)
+        public async void SetIgnoreMouseEvents(bool ignore)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetIgnoreMouseEvents", Id, ignore);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetIgnoreMouseEvents", Id, ignore);
         }
 
         /// <summary>
@@ -2225,18 +1846,18 @@ namespace ElectronNET.API
         /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
         /// </summary>
         /// <param name="enable"></param>
-        public void SetContentProtection(bool enable)
+        public async void SetContentProtection(bool enable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentProtection", Id, enable);
         }
 
         /// <summary>
         /// Changes whether the window can be focused.
         /// </summary>
         /// <param name="focusable"></param>
-        public void SetFocusable(bool focusable)
+        public async void SetFocusable(bool focusable)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetFocusable", Id, focusable);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetFocusable", Id, focusable);
         }
 
         /// <summary>
@@ -2244,67 +1865,49 @@ namespace ElectronNET.API
         /// passing null will turn current window into a top-level window.
         /// </summary>
         /// <param name="parent"></param>
-        public void SetParentWindow(BrowserWindow parent)
+        public async void SetParentWindow(BrowserWindow parent)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
         }
 
         /// <summary>
         /// The parent window.
         /// </summary>
         /// <returns></returns>
-        public Task<BrowserWindow> GetParentWindowAsync()
+        public async Task<BrowserWindow> GetParentWindowAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
-
-            BridgeConnector.Socket.On("browserWindow-getParentWindow-completed", (id) => {
-                BridgeConnector.Socket.Off("browserWindow-getParentWindow-completed");
-                var browserWindowId = int.Parse(id.ToString());
-                var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
-
-                taskCompletionSource.SetResult(browserWindow);
-            });
-
-            BridgeConnector.Socket.Emit("browserWindowGetParentWindow", Id);
-
-            return taskCompletionSource.Task;
+            string parentId = await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetParentWindow", Id);
+            var browserWindowId = int.Parse(parentId.ToString());
+            var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
+            return browserWindow;
         }
 
         /// <summary>
         /// All child windows.
         /// </summary>
         /// <returns></returns>
-        public Task<List<BrowserWindow>> GetChildWindowsAsync()
+        public async Task<List<BrowserWindow>> GetChildWindowsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<List<BrowserWindow>>();
+            JArray childWindows = await SignalrSerializeHelper.GetSignalrResultJArray("browserWindowGetChildWindows", Id);
+            var browserWindowIds = (childWindows).ToObject<int[]>();
+            var browserWindows = new List<BrowserWindow>();
 
-            BridgeConnector.Socket.On("browserWindow-getChildWindows-completed", (ids) => {
-                BridgeConnector.Socket.Off("browserWindow-getChildWindows-completed");
-                var browserWindowIds = ((JArray)ids).ToObject<int[]>();
-                var browserWindows = new List<BrowserWindow>();
-
-                browserWindowIds.ToList().ForEach(id =>
-                {
-                    var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == id);
-                    browserWindows.Add(browserWindow);
-                });
-
-
-                taskCompletionSource.SetResult(browserWindows);
+            browserWindowIds.ToList().ForEach(id =>
+            {
+                var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == id);
+                browserWindows.Add(browserWindow);
             });
 
-            BridgeConnector.Socket.Emit("browserWindowGetChildWindows", Id);
-
-            return taskCompletionSource.Task;
+            return browserWindows;
         }
 
         /// <summary>
         /// Controls whether to hide cursor when typing.
         /// </summary>
         /// <param name="autoHide"></param>
-        public void SetAutoHideCursor(bool autoHide)
+        public async void SetAutoHideCursor(bool autoHide)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetAutoHideCursor", Id, autoHide);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAutoHideCursor", Id, autoHide);
         }
 
         /// <summary>
@@ -2314,9 +1917,9 @@ namespace ElectronNET.API
         /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
         /// menu, popover, sidebar, medium-light or ultra-dark. 
         /// See the macOS documentation for more details.</param>
-        public void SetVibrancy(Vibrancy type)
+        public async void SetVibrancy(Vibrancy type)
         {
-            BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetVibrancy", Id, type.GetDescription());
         }
 
         /// <summary>
@@ -2330,9 +1933,9 @@ namespace ElectronNET.API
         /// It is meant to be an alternative to the webview tag.
         /// </summary>
         /// <param name="browserView"></param>
-        public void SetBrowserView(BrowserView browserView)
+        public async void SetBrowserView(BrowserView browserView)
         {
-            BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindow-setBrowserView", Id, browserView.Id);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

@@ -22,9 +22,9 @@ namespace ElectronNET.WebApp.Controllers
                         }
                     };
                     var folderPath = await Electron.Dialog.ShowOpenDialogAsync(mainWindow, options);
-
-                    var resultFromTypeScript = await Electron.HostHook.CallAsync<string>("create-excel-file", folderPath);
-                    Electron.IpcMain.Send(mainWindow, "excel-file-created", resultFromTypeScript);
+                    //ToDo:
+                    //var resultFromTypeScript = await Electron.HostHook.CallAsync<string>("create-excel-file", folderPath);
+                    //Electron.IpcMain.Send(mainWindow, "excel-file-created", resultFromTypeScript);
                 });
             }
 

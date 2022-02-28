@@ -1,10 +1,7 @@
-import { Socket } from 'net';
 import { Notification } from 'electron';
 const notifications: Electron.Notification[] = (global['notifications'] = global['notifications'] || []) as Electron.Notification[];
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
     socket.on('createNotification', (options) => {
         const notification = new Notification(options);
         let haveEvent = false;
@@ -12,35 +9,35 @@ export = (socket: Socket) => {
         if (options.showID) {
             haveEvent = true;
             notification.on('show', () => {
-                electronSocket.emit('NotificationEventShow', options.showID);
+                socket.invoke('NotificationEventOnShow', options.showID);
             });
         }
 
         if (options.clickID) {
             haveEvent = true;
             notification.on('click', () => {
-                electronSocket.emit('NotificationEventClick', options.clickID);
+                socket.invoke('NotificationEventOnClick', options.clickID);
             });
         }
 
         if (options.closeID) {
             haveEvent = true;
             notification.on('close', () => {
-                electronSocket.emit('NotificationEventClose', options.closeID);
+                socket.invoke('NotificationEventOnClose', options.closeID);
             });
         }
 
         if (options.replyID) {
             haveEvent = true;
             notification.on('reply', (event, value) => {
-                electronSocket.emit('NotificationEventReply', [options.replyID, value]);
+                socket.invoke('NotificationEventOnReply', [options.replyID, value]);
             });
         }
 
         if (options.actionID) {
             haveEvent = true;
             notification.on('action', (event, value) => {
-                electronSocket.emit('NotificationEventAction', [options.actionID, value]);
+                socket.invoke('NotificationEventOnAction', [options.actionID, value]);
             });
         }
 
@@ -51,8 +48,8 @@ export = (socket: Socket) => {
         notification.show();
     });
 
-    socket.on('notificationIsSupported', () => {
+    socket.on('notificationIsSupported', (guid) => {
         const isSupported = Notification.isSupported;
-        electronSocket.emit('notificationIsSupportedComplete', isSupported);
+        socket.invoke('SendClientResponseBool', guid, isSupported);
     });
 };

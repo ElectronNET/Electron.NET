@@ -12,6 +12,8 @@
         "start": "tsc -p ."
     },
     "dependencies": {
+        "@microsoft/signalr": "^6.0.2",
+        "@types/signalr": "^2.2.37",
         "dasherize": "^2.0.0",
         "electron-updater": "^4.3.9",
         "image-size": "^1.0.0",

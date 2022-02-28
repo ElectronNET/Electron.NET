@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -38,21 +39,14 @@ namespace ElectronNET.API
                 return Task.Run<Rectangle>(() =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-                    BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult((Rectangle)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
-
+                    var signalrResult = SignalrSerializeHelper.GetSignalrResultJObject("browserView-getBounds", Id).Result;
+                    taskCompletionSource.SetResult(((JObject)signalrResult).ToObject<Rectangle>());
                     return taskCompletionSource.Task;
                 }).Result;
             }
             set
             {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
+                Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
             }
         }
 
@@ -72,9 +66,9 @@ namespace ElectronNET.API
         /// (experimental)
         /// </summary>
         /// <param name="options"></param>
-        public void SetAutoResize(AutoResizeOptions options)
+        public async void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -83,9 +77,9 @@ namespace ElectronNET.API
         /// (experimental)
         /// </summary>
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
-        public void SetBackgroundColor(string color)
+        public async void SetBackgroundColor(string color)
         {
-            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBackgroundColor", Id, color);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

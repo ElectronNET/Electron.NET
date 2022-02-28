@@ -1,30 +1,28 @@
 "use strict";
 const electron_1 = require("electron");
-let electronSocket;
 module.exports = (socket) => {
-    electronSocket = socket;
-    socket.on('nativeTheme-shouldUseDarkColors', () => {
+    socket.on('nativeTheme-shouldUseDarkColors', (guid) => {
         const shouldUseDarkColors = electron_1.nativeTheme.shouldUseDarkColors;
-        electronSocket.emit('nativeTheme-shouldUseDarkColors-completed', shouldUseDarkColors);
+        socket.invoke('SendClientResponseBool', guid, shouldUseDarkColors);
     });
-    socket.on('nativeTheme-shouldUseHighContrastColors', () => {
+    socket.on('nativeTheme-shouldUseHighContrastColors', (guid) => {
         const shouldUseHighContrastColors = electron_1.nativeTheme.shouldUseHighContrastColors;
-        electronSocket.emit('nativeTheme-shouldUseHighContrastColors-completed', shouldUseHighContrastColors);
+        socket.invoke('SendClientResponseBool', guid, shouldUseHighContrastColors);
     });
-    socket.on('nativeTheme-shouldUseInvertedColorScheme', () => {
+    socket.on('nativeTheme-shouldUseInvertedColorScheme', (guid) => {
         const shouldUseInvertedColorScheme = electron_1.nativeTheme.shouldUseInvertedColorScheme;
-        electronSocket.emit('nativeTheme-shouldUseInvertedColorScheme-completed', shouldUseInvertedColorScheme);
+        socket.invoke('SendClientResponseBool', guid, shouldUseInvertedColorScheme);
     });
-    socket.on('nativeTheme-themeSource-get', () => {
+    socket.on('nativeTheme-themeSource-get', (guid) => {
         const themeSource = electron_1.nativeTheme.themeSource;
-        electronSocket.emit('nativeTheme-themeSource-getCompleted', themeSource);
+        socket.invoke('SendClientResponseString', guid, themeSource);
     });
     socket.on('nativeTheme-themeSource', (themeSource) => {
         electron_1.nativeTheme.themeSource = themeSource;
     });
     socket.on('register-nativeTheme-updated-event', (id) => {
         electron_1.nativeTheme.on('updated', () => {
-            electronSocket.emit('nativeTheme-updated' + id);
+            socket.invoke('NativeThemeOnChanged', id);
         });
     });
 };

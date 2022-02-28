@@ -1,4 +1,6 @@
 ﻿using ElectronNET.API.Entities;
+using ElectronNET.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -30,24 +32,21 @@ namespace ElectronNET.API
             {
                 if (_windowAllClosed == null)
                 {
-                    BridgeConnector.Socket.On("app-window-all-closed" + GetHashCode(), () =>
-                    {
-                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        {
-                            _windowAllClosed();
-                        }
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-window-all-closed-event", GetHashCode());
                 }
                 _windowAllClosed += value;
             }
             remove
             {
                 _windowAllClosed -= value;
+            }
+        }
 
-                if(_windowAllClosed == null)
-                    BridgeConnector.Socket.Off("app-window-all-closed" + GetHashCode());
+        public void TriggerOnWindowAllClosed()
+        {
+            if (!Electron.WindowManager.IsQuitOnWindowAllClosed || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                _windowAllClosed();
             }
         }
 
@@ -67,60 +66,58 @@ namespace ElectronNET.API
             {
                 if (_beforeQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), async () =>
-                    {
-                        await _beforeQuit(new QuitEventArgs());
-
-                        if (_preventQuit)
-                        {
-                            _preventQuit = false;
-                        }
-                        else
-                        {
-                            if (_willQuit == null && _quitting == null)
-                            {
-                                Exit();
-                            }
-                            else if (_willQuit != null)
-                            {
-                                await _willQuit(new QuitEventArgs());
-
-                                if (_preventQuit)
-                                {
-                                    _preventQuit = false;
-                                }
-                                else
-                                {
-                                    if (_quitting == null)
-                                    {
-                                        Exit();
-                                    }
-                                    else
-                                    {
-                                        await _quitting();
-                                        Exit();
-                                    }
-                                }
-                            }
-                            else if (_quitting != null)
-                            {
-                                await _quitting();
-                                Exit();
-                            }
-                        }
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-before-quit-event", GetHashCode());
                 }
                 _beforeQuit += value;
             }
             remove
             {
                 _beforeQuit -= value;
-
-                if (_beforeQuit == null)
-                    BridgeConnector.Socket.Off("app-before-quit" + GetHashCode());
             }
+        }
+
+        public async Task TriggerOnBeforeQuit(QuitEventArgs quitEventArgs)
+        {
+            await _beforeQuit(new QuitEventArgs());
+
+            if (_preventQuit)
+            {
+                _preventQuit = false;
+            }
+            else
+            {
+                if (_willQuit == null && _quitting == null)
+                {
+                    Exit();
+                }
+                else if (_willQuit != null)
+                {
+                    await _willQuit(new QuitEventArgs());
+
+                    if (_preventQuit)
+                    {
+                        _preventQuit = false;
+                    }
+                    else
+                    {
+                        if (_quitting == null)
+                        {
+                            Exit();
+                        }
+                        else
+                        {
+                            await _quitting();
+                            Exit();
+                        }
+                    }
+                }
+                else if (_quitting != null)
+                {
+                    await _quitting();
+                    Exit();
+                }
+            }
+            _beforeQuit(quitEventArgs);
         }
 
         private event Func<QuitEventArgs, Task> _beforeQuit;
@@ -139,39 +136,37 @@ namespace ElectronNET.API
             {
                 if (_willQuit == null)
                 {
-                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), async () =>
-                    {
-                        await _willQuit(new QuitEventArgs());
-
-                        if (_preventQuit)
-                        {
-                            _preventQuit = false;
-                        }
-                        else
-                        {
-                            if (_quitting == null)
-                            {
-                                Exit();
-                            }
-                            else
-                            {
-                                await _quitting();
-                                Exit();
-                            }
-                        }
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-will-quit-event", GetHashCode());
                 }
                 _willQuit += value;
             }
             remove
             {
                 _willQuit -= value;
-
-                if (_willQuit == null)
-                    BridgeConnector.Socket.Off("app-will-quit" + GetHashCode());
             }
+        }
+
+        public async Task TriggerOnWillQuit(QuitEventArgs quitEventArgs)
+        {
+            await _willQuit(new QuitEventArgs());
+
+            if (_preventQuit)
+            {
+                _preventQuit = false;
+            }
+            else
+            {
+                if (_quitting == null)
+                {
+                    Exit();
+                }
+                else
+                {
+                    await _quitting();
+                    Exit();
+                }
+            }
+            _willQuit(quitEventArgs);
         }
 
         private event Func<QuitEventArgs, Task> _willQuit;
@@ -187,26 +182,25 @@ namespace ElectronNET.API
             {
                 if (_quitting == null)
                 {
-                    BridgeConnector.Socket.On("app-will-quit" + GetHashCode() + "quitting", async () =>
-                    {
-                        if(_willQuit == null)
-                        {
-                            await _quitting();
-                            Exit();
-                        }
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-will-quit-event", GetHashCode());
                 }
                 _quitting += value;
             }
             remove
             {
                 _quitting -= value;
-
-                if (_quitting == null)
-                    BridgeConnector.Socket.Off("app-will-quit" + GetHashCode() + "quitting");
             }
+        }
+
+        public async Task TriggerOnQuitting()
+        {
+            if (_willQuit == null)
+            {
+                await _quitting();
+                Exit();
+            }
+
+            _quitting();
         }
 
         private event Func<Task> _quitting;
@@ -220,22 +214,19 @@ namespace ElectronNET.API
             {
                 if (_browserWindowBlur == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-blur" + GetHashCode(), () =>
-                    {
-                        _browserWindowBlur();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-browser-window-blur-event", GetHashCode());
                 }
                 _browserWindowBlur += value;
             }
             remove
             {
                 _browserWindowBlur -= value;
-
-                if (_browserWindowBlur == null)
-                    BridgeConnector.Socket.Off("app-browser-window-blur" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBrowserWindowBlur()
+        {
+            _browserWindowBlur();
         }
 
         private event Action _browserWindowBlur;
@@ -249,22 +240,19 @@ namespace ElectronNET.API
             {
                 if (_browserWindowFocus == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-focus" + GetHashCode(), () =>
-                    {
-                        _browserWindowFocus();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-browser-window-focus-event", GetHashCode());
                 }
                 _browserWindowFocus += value;
             }
             remove
             {
                 _browserWindowFocus -= value;
-
-                if (_browserWindowFocus == null)
-                    BridgeConnector.Socket.Off("app-browser-window-focus" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBrowserWindowFocus()
+        {
+            _browserWindowFocus();
         }
 
         private event Action _browserWindowFocus;
@@ -278,22 +266,19 @@ namespace ElectronNET.API
             {
                 if (_browserWindowCreated == null)
                 {
-                    BridgeConnector.Socket.On("app-browser-window-created" + GetHashCode(), () =>
-                    {
-                        _browserWindowCreated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-browser-window-created-event", GetHashCode());
                 }
                 _browserWindowCreated += value;
             }
             remove
             {
                 _browserWindowCreated -= value;
-
-                if (_browserWindowCreated == null)
-                    BridgeConnector.Socket.Off("app-browser-window-created" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBrowserWindowCreated()
+        {
+            _browserWindowCreated();
         }
 
         private event Action _browserWindowCreated;
@@ -307,22 +292,19 @@ namespace ElectronNET.API
             {
                 if (_webContentsCreated == null)
                 {
-                    BridgeConnector.Socket.On("app-web-contents-created" + GetHashCode(), () =>
-                    {
-                        _webContentsCreated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-web-contents-created-event", GetHashCode());
                 }
                 _webContentsCreated += value;
             }
             remove
             {
                 _webContentsCreated -= value;
-
-                if (_webContentsCreated == null)
-                    BridgeConnector.Socket.Off("app-web-contents-created" + GetHashCode());
             }
+        }
+
+        public void TriggerOnWebContentsCreated()
+        {
+            _browserWindowCreated();
         }
 
         private event Action _webContentsCreated;
@@ -338,22 +320,19 @@ namespace ElectronNET.API
             {
                 if (_accessibilitySupportChanged == null)
                 {
-                    BridgeConnector.Socket.On("app-accessibility-support-changed" + GetHashCode(), (state) =>
-                    {
-                        _accessibilitySupportChanged((bool)state);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-accessibility-support-changed-event", GetHashCode());
                 }
                 _accessibilitySupportChanged += value;
             }
             remove
             {
                 _accessibilitySupportChanged -= value;
-
-                if (_accessibilitySupportChanged == null)
-                    BridgeConnector.Socket.Off("app-accessibility-support-changed" + GetHashCode());
             }
+        }
+
+        public void TriggerOnAccessibilitySupportChanged(bool state)
+        {
+            _accessibilitySupportChanged(state);
         }
 
         private event Action<bool> _accessibilitySupportChanged;
@@ -411,22 +390,19 @@ namespace ElectronNET.API
             {
                 if (_openFile == null)
                 {
-                    BridgeConnector.Socket.On("app-open-file" + GetHashCode(), (file) =>
-                    {
-                        _openFile(file.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-open-file-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-open-file-event", GetHashCode());
                 }
                 _openFile += value;
             }
             remove
             {
                 _openFile -= value;
-
-                if (_openFile == null)
-                    BridgeConnector.Socket.Off("app-open-file" + GetHashCode());
             }
+        }
+
+        public void TriggerOnOpenFile(string openFile)
+        {
+            _openFile(openFile);
         }
 
         private event Action<string> _openFile;
@@ -442,23 +418,21 @@ namespace ElectronNET.API
             {
                 if (_openUrl == null)
                 {
-                    BridgeConnector.Socket.On("app-open-url" + GetHashCode(), (url) =>
-                    {
-                        _openUrl(url.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-open-url-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-app-open-url-event", GetHashCode());
                 }
                 _openUrl += value;
             }
             remove
             {
                 _openUrl -= value;
-
-                if (_openUrl == null)
-                    BridgeConnector.Socket.Off("app-open-url" + GetHashCode());
             }
         }
+
+        public void TriggerOnOpenUrl(string openUrl)
+        {
+            _openUrl(openUrl);
+        }
+
 
         private event Action<string> _openUrl;
 
@@ -479,7 +453,7 @@ namespace ElectronNET.API
             }
             set
             {
-                BridgeConnector.Socket.Emit("appSetName", value);
+                Electron.SignalrElectron.Clients.All.SendAsync("appSetName", value);
             }
         }
 
@@ -499,13 +473,8 @@ namespace ElectronNET.API
                 {
                     var taskCompletionSource = new TaskCompletionSource<string>();
 
-                    BridgeConnector.Socket.On("appGetNameCompleted", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("appGetNameCompleted");
-                        taskCompletionSource.SetResult((string)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("appGetName");
+                    var signalrResult = SignalrSerializeHelper.GetSignalrResultString("appGetName");
+                    taskCompletionSource.SetResult(signalrResult.Result);
 
                     return taskCompletionSource.Task;
                 });
@@ -551,9 +520,9 @@ namespace ElectronNET.API
         /// guarantees that all beforeunload and unload event handlers are correctly executed. It is possible
         /// that a window cancels the quitting by returning <see langword="false"/> in the beforeunload event handler.
         /// </summary>
-        public void Quit()
+        public async void Quit()
         {
-            BridgeConnector.Socket.Emit("appQuit");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appQuit");
         }
 
         /// <summary>
@@ -561,9 +530,9 @@ namespace ElectronNET.API
         /// events will not be emitted.
         /// </summary>
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
-        public void Exit(int exitCode = 0)
+        public async void Exit(int exitCode = 0)
         {
-            BridgeConnector.Socket.Emit("appExit", exitCode);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appExit", exitCode);
         }
 
         /// <summary>
@@ -576,9 +545,9 @@ namespace ElectronNET.API
         /// When <see cref="Relaunch()"/> is called for multiple times, multiple instances will be started after current instance
         /// exited.
         /// </summary>
-        public void Relaunch()
+        public async void Relaunch()
         {
-            BridgeConnector.Socket.Emit("appRelaunch");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appRelaunch");
         }
 
         /// <summary>
@@ -594,18 +563,18 @@ namespace ElectronNET.API
         /// exited.
         /// </summary>
         /// <param name="relaunchOptions">Options for the relaunch.</param>
-        public void Relaunch(RelaunchOptions relaunchOptions)
+        public async void Relaunch(RelaunchOptions relaunchOptions)
         {
-            BridgeConnector.Socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
         }
 
         /// <summary>
         /// On Linux, focuses on the first visible window. On macOS, makes the application the active app. On Windows, focuses
         /// on the application's first window.
         /// </summary>
-        public void Focus()
+        public async void Focus()
         {
-            BridgeConnector.Socket.Emit("appFocus");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appFocus");
         }
 
         /// <summary>
@@ -614,25 +583,25 @@ namespace ElectronNET.API
         /// <para/>
         /// You should seek to use the <see cref="FocusOptions.Steal"/> option as sparingly as possible.
         /// </summary>
-        public void Focus(FocusOptions focusOptions)
+        public async void Focus(FocusOptions focusOptions)
         {
-            BridgeConnector.Socket.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
         }
 
         /// <summary>
         /// Hides all application windows without minimizing them.
         /// </summary>
-        public void Hide()
+        public async void Hide()
         {
-            BridgeConnector.Socket.Emit("appHide");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appHide");
         }
 
         /// <summary>
         /// Shows application windows after they were hidden. Does not automatically focus them.
         /// </summary>
-        public void Show()
+        public async void Show()
         {
-            BridgeConnector.Socket.Emit("appShow");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appShow");
         }
 
         /// <summary>
@@ -640,22 +609,7 @@ namespace ElectronNET.API
         /// </summary>
         public async Task<string> GetAppPathAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetAppPathCompleted", (path) =>
-                {
-                    BridgeConnector.Socket.Off("appGetAppPathCompleted");
-                    taskCompletionSource.SetResult(path.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetAppPath");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }            
+            return (await SignalrSerializeHelper.GetSignalrResultString("appGetAppPath"));     
         }
 
         /// <summary>
@@ -666,9 +620,9 @@ namespace ElectronNET.API
         /// ~/Library/Logs/YourAppName on macOS, and inside the userData directory on Linux and Windows.
         /// </summary>
         /// <param name="path">A custom path for your logs. Must be absolute.</param>
-        public void SetAppLogsPath(string path)
+        public async void SetAppLogsPath(string path)
         {
-            BridgeConnector.Socket.Emit("appSetAppLogsPath", path);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetAppLogsPath", path);
         }
 
         /// <summary>
@@ -681,23 +635,7 @@ namespace ElectronNET.API
         /// <returns>A path to a special directory or file associated with name.</returns>
         public async Task<string> GetPathAsync(PathName pathName, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetPathCompleted", (path) =>
-                {
-                    BridgeConnector.Socket.Off("appGetPathCompleted");
-
-                    taskCompletionSource.SetResult(path.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetPath", pathName.GetDescription());
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }  
+            return (await SignalrSerializeHelper.GetSignalrResultStringParameter("appGetPath", pathName.GetDescription()));
         }
 
         /// <summary>
@@ -712,9 +650,9 @@ namespace ElectronNET.API
         /// <param name="name">Special directory.</param>
         /// <param name="path">New path to a special directory.</param>
         /// </summary>
-        public void SetPath(PathName name, string path)
+        public async void SetPath(PathName name, string path)
         {
-            BridgeConnector.Socket.Emit("appSetPath", name.GetDescription(), path);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetPath", name.GetDescription(), path);
         }
 
         /// <summary>
@@ -724,22 +662,7 @@ namespace ElectronNET.API
         /// <returns>The version of the loaded application.</returns>
         public async Task<string> GetVersionAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetVersionCompleted", (version) =>
-                {
-                    BridgeConnector.Socket.Off("appGetVersionCompleted");
-                    taskCompletionSource.SetResult(version.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetVersion");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return (await SignalrSerializeHelper.GetSignalrResultString("appGetVersion"));
         }
 
         /// <summary>
@@ -752,22 +675,7 @@ namespace ElectronNET.API
         /// <returns>The current application locale.</returns>
         public async Task<string> GetLocaleAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetLocaleCompleted", (local) =>
-                {
-                    BridgeConnector.Socket.Off("appGetLocaleCompleted");
-                    taskCompletionSource.SetResult(local.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetLocale");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return (await SignalrSerializeHelper.GetSignalrResultString("appGetLocale"));
         }
 
         /// <summary>
@@ -775,17 +683,17 @@ namespace ElectronNET.API
         /// list from the task bar, and on macOS you can visit it from dock menu.
         /// </summary>
         /// <param name="path">Path to add.</param>
-        public void AddRecentDocument(string path)
+        public async void AddRecentDocument(string path)
         {
-            BridgeConnector.Socket.Emit("appAddRecentDocument", path);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appAddRecentDocument", path);
         }
 
         /// <summary>
         /// Clears the recent documents list.
         /// </summary>
-        public void ClearRecentDocuments()
+        public async void ClearRecentDocuments()
         {
-            BridgeConnector.Socket.Emit("appClearRecentDocuments");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appClearRecentDocuments");
         }
 
         /// <summary>
@@ -878,22 +786,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
-                });
-
-                BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appSetAsDefaultProtocolClient", protocol, path, args);
         }
 
         /// <summary>
@@ -931,23 +824,8 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default)
-        {           
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
-                });
-
-                BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("appRemoveAsDefaultProtocolClient", protocol, path, args);
         }
 
         /// <summary>
@@ -1004,22 +882,7 @@ namespace ElectronNET.API
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
         public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appIsDefaultProtocolClientCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
-                });
-
-                BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appIsDefaultProtocolClient", protocol, path, args);
         }
 
         /// <summary>
@@ -1032,22 +895,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appSetUserTasksCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appSetUserTasksCompleted");
-                    taskCompletionSource.SetResult((bool) success);
-                });
-
-                BridgeConnector.Socket.Emit("appSetUserTasks", JArray.FromObject(userTasks, _jsonSerializer));
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appSetUserTasks", JArray.FromObject(userTasks, _jsonSerializer));
         }
 
         /// <summary>
@@ -1057,22 +905,8 @@ namespace ElectronNET.API
         /// <returns>Jump List settings.</returns>
         public async Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<JumpListSettings>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetJumpListSettingsCompleted", (jumpListSettings) =>
-                {
-                    BridgeConnector.Socket.Off("appGetJumpListSettingsCompleted");
-                    taskCompletionSource.SetResult(JObject.Parse(jumpListSettings.ToString()).ToObject<JumpListSettings>());
-                });
-
-                BridgeConnector.Socket.Emit("appGetJumpListSettings");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("appGetJumpListSettings");
+            return signalrResult.ToObject<JumpListSettings>();
         }
 
         /// <summary>
@@ -1091,11 +925,12 @@ namespace ElectronNET.API
         /// omitted from the Jump List. The list of removed items can be obtained using <see cref="GetJumpListSettingsAsync"/>.
         /// </summary>
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
-        public void SetJumpList(JumpListCategory[] categories)
+        public async void SetJumpList(JumpListCategory[] categories)
         {
-            BridgeConnector.Socket.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
         }
 
+        // ToDo: Need better option
         /// <summary>
         /// The return value of this method indicates whether or not this instance of your application successfully obtained
         /// the lock. If it failed to obtain the lock, you can assume that another instance of your application is already
@@ -1119,41 +954,29 @@ namespace ElectronNET.API
         /// </returns>
         public async Task<bool> RequestSingleInstanceLockAsync(Action<string[], string> newInstanceOpened, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            // ToDo: Check this function - Unsure if it's working as expected
+            // Check if second-instance is getting triggereds
+            var secondInstanceListener = await SignalrSerializeHelper.GetSignalrResultJArray("appRequestSingleInstanceLock");
+            if (secondInstanceListener != null)
             {
-                BridgeConnector.Socket.On("appRequestSingleInstanceLockCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appRequestSingleInstanceLockCompleted");
-                    taskCompletionSource.SetResult((bool)success);
-                });
+                JArray results = secondInstanceListener;
+                string[] args = results.First.ToObject<string[]>();
+                string workingDirectory = results.Last.ToObject<string>();
 
-                BridgeConnector.Socket.Off("secondInstance");
-                BridgeConnector.Socket.On("secondInstance", (result) =>
-                {
-                    JArray results = (JArray)result;
-                    string[] args = results.First.ToObject<string[]>();
-                    string workingDirectory = results.Last.ToObject<string>();
-
-                    newInstanceOpened(args, workingDirectory);
-                });
-
-                BridgeConnector.Socket.Emit("appRequestSingleInstanceLock");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
+                newInstanceOpened(args, workingDirectory);
             }
+
+            return (await SignalrSerializeHelper.GetSignalrResultBool("appRequestSingleInstanceLock"));
         }
+
 
         /// <summary>
         /// Releases all locks that were created by makeSingleInstance. This will allow
         /// multiple instances of the application to once again run side by side.
         /// </summary>
-        public void ReleaseSingleInstanceLock()
+        public async void ReleaseSingleInstanceLock()
         {
-            BridgeConnector.Socket.Emit("appReleaseSingleInstanceLock");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appReleaseSingleInstanceLock");
         }
 
         /// <summary>
@@ -1164,22 +987,7 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<bool> HasSingleInstanceLockAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appHasSingleInstanceLockCompleted", (hasLock) =>
-                {
-                    BridgeConnector.Socket.Off("appHasSingleInstanceLockCompleted");
-                    taskCompletionSource.SetResult((bool) hasLock);
-                });
-
-                BridgeConnector.Socket.Emit("appHasSingleInstanceLock");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appHasSingleInstanceLock");
         }
 
         /// <summary>
@@ -1206,9 +1014,9 @@ namespace ElectronNET.API
         /// <param name="webpageUrl">
         /// The webpage to load in a browser if no suitable app is installed on the resuming device. The scheme must be http or https.
         /// </param>
-        public void SetUserActivity(string type, object userInfo, string webpageUrl)
+        public async void SetUserActivity(string type, object userInfo, string webpageUrl)
         {
-            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo, webpageUrl);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetUserActivity", type, userInfo, webpageUrl);
         }
 
         /// <summary>
@@ -1217,47 +1025,32 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetCurrentActivityTypeCompleted", (activityType) =>
-                {
-                    BridgeConnector.Socket.Off("appGetCurrentActivityTypeCompleted");
-                    taskCompletionSource.SetResult(activityType.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("appGetCurrentActivityType");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultString("appGetCurrentActivityType");
         }
 
         /// <summary>
         /// Invalidates the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity.
         /// </summary>
-        public void InvalidateCurrentActivity()
+        public async void InvalidateCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appInvalidateCurrentActivity");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appInvalidateCurrentActivity");
         }
 
         /// <summary>
         /// Marks the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity as inactive without invalidating it.
         /// </summary>
-        public void ResignCurrentActivity()
+        public async void ResignCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appResignCurrentActivity");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appResignCurrentActivity");
         }
 
         /// <summary>
         /// Changes the <see href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx">Application User Model ID</see> to id.
         /// </summary>
         /// <param name="id">Model Id.</param>
-        public void SetAppUserModelId(string id)
+        public async void SetAppUserModelId(string id)
         {
-            BridgeConnector.Socket.Emit("appSetAppUserModelId", id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetAppUserModelId", id);
         }
 
         /// TODO: Check new parameter which is a function [App.ImportCertificate]
@@ -1271,22 +1064,8 @@ namespace ElectronNET.API
         /// <returns>Result of import. Value of 0 indicates success.</returns>
         public async Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<int>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appImportCertificateCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appImportCertificateCompleted");
-                    taskCompletionSource.SetResult((int) result);
-                });
-
-                BridgeConnector.Socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
+            return int.Parse(signalrResult);
         }
 
         /// <summary>
@@ -1299,24 +1078,8 @@ namespace ElectronNET.API
         /// </returns>
         public async Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<ProcessMetric[]>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetAppMetricsCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appGetAppMetricsCompleted");
-                    var processMetrics = ((JArray)result).ToObject<ProcessMetric[]>();
-
-                    taskCompletionSource.SetResult(processMetrics);
-                });
-
-                BridgeConnector.Socket.Emit("appGetAppMetrics");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJArray("appGetAppMetrics");
+            return signalrResult.ToObject<ProcessMetric[]>();
         }
 
         /// <summary>
@@ -1327,24 +1090,8 @@ namespace ElectronNET.API
         /// </summary>
         public async Task<GPUFeatureStatus> GetGpuFeatureStatusAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<GPUFeatureStatus>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetGpuFeatureStatusCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appGetGpuFeatureStatusCompleted");
-                    var gpuFeatureStatus = ((JObject)result).ToObject<GPUFeatureStatus>();
-
-                    taskCompletionSource.SetResult(gpuFeatureStatus);
-                });
-
-                BridgeConnector.Socket.Emit("appGetGpuFeatureStatus");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("appGetGpuFeatureStatus");
+            return signalrResult.ToObject<GPUFeatureStatus>();
         }
 
         /// <summary>
@@ -1359,22 +1106,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appSetBadgeCountCompleted", (success) =>
-                {
-                    BridgeConnector.Socket.Off("appSetBadgeCountCompleted");
-                    taskCompletionSource.SetResult((bool) success);
-                });
-
-                BridgeConnector.Socket.Emit("appSetBadgeCount", count);
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appSetBadgeCount", count);
         }
 
         /// <summary>
@@ -1383,22 +1115,8 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<int>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appGetBadgeCountCompleted", (count) =>
-                {
-                    BridgeConnector.Socket.Off("appGetBadgeCountCompleted");
-                    taskCompletionSource.SetResult((int)count);
-                });
-
-                BridgeConnector.Socket.Emit("appGetBadgeCount");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("appGetBadgeCount");
+            return int.Parse(signalrResult);
         }
 
         /// <summary>
@@ -1412,22 +1130,7 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appIsUnityRunningCompleted", (isUnityRunning) =>
-                {
-                    BridgeConnector.Socket.Off("appIsUnityRunningCompleted");
-                    taskCompletionSource.SetResult((bool)isUnityRunning);
-                });
-
-                BridgeConnector.Socket.Emit("appIsUnityRunning");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appIsUnityRunning");
         }
 
         /// <summary>
@@ -1447,32 +1150,17 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            JObject appGetLoginItemSettingsCompleted;
+            if (options == null)
             {
-                BridgeConnector.Socket.On("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
-                {
-                    BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
-
-                    var result = ((JObject) loginItemSettings).ToObject<LoginItemSettings>();
-
-                    taskCompletionSource.SetResult(result);
-                });
-
-                if (options == null)
-                {
-                    BridgeConnector.Socket.Emit("appGetLoginItemSettings");
-                }
-                else
-                {
-                    BridgeConnector.Socket.Emit("appGetLoginItemSettings", JObject.FromObject(options, _jsonSerializer));
-                }
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
+                appGetLoginItemSettingsCompleted = await SignalrSerializeHelper.GetSignalrResultJObject("appGetLoginItemSettings");
             }
+            else
+            {
+                appGetLoginItemSettingsCompleted = await SignalrSerializeHelper.GetSignalrResultJObject("appGetLoginItemSettingsWithOptions", JObject.FromObject(options, _jsonSerializer));
+            }
+
+            return appGetLoginItemSettingsCompleted.ToObject<LoginItemSettings>();
         }
 
         /// <summary>
@@ -1481,9 +1169,9 @@ namespace ElectronNET.API
         /// you'll want to set the launch path to Update.exe, and pass arguments that specify your application name.
         /// </summary>
         /// <param name="loginSettings"></param>
-        public void SetLoginItemSettings(LoginSettings loginSettings)
+        public async void SetLoginItemSettings(LoginSettings loginSettings)
         {
-            BridgeConnector.Socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
         }
 
         /// <summary>
@@ -1494,22 +1182,7 @@ namespace ElectronNET.API
         /// <returns><see langword="true"/> if Chrome’s accessibility support is enabled, <see langword="false"/> otherwise.</returns>
         public async Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appIsAccessibilitySupportEnabledCompleted", (isAccessibilitySupportEnabled) =>
-                {
-                    BridgeConnector.Socket.Off("appIsAccessibilitySupportEnabledCompleted");
-                    taskCompletionSource.SetResult((bool)isAccessibilitySupportEnabled);
-                });
-
-                BridgeConnector.Socket.Emit("appIsAccessibilitySupportEnabled");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("appIsAccessibilitySupportEnabled");
         }
 
         /// <summary>
@@ -1522,18 +1195,18 @@ namespace ElectronNET.API
         /// Note: Rendering accessibility tree can significantly affect the performance of your app. It should not be enabled by default.
         /// </summary>
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
-        public void SetAccessibilitySupportEnabled(bool enabled)
+        public async void SetAccessibilitySupportEnabled(bool enabled)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", enabled);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetAboutPanelOptions", enabled);
         }
 
         /// <summary>
         /// Show the app's about panel options. These options can be overridden with
         /// <see cref="SetAboutPanelOptions"/>.
         /// </summary>
-        public void ShowAboutPanel()
+        public async void ShowAboutPanel()
         {
-            BridgeConnector.Socket.Emit("appShowAboutPanel");
+            await Electron.SignalrElectron.Clients.All.SendAsync("appShowAboutPanel");
         }
 
         /// <summary>
@@ -1547,9 +1220,9 @@ namespace ElectronNET.API
         /// <see href="https://developer.apple.com/documentation/appkit/nsaboutpaneloptioncredits?language=objc">documentation</see> for more information.
         /// </summary>
         /// <param name="options">About panel options.</param>
-        public void SetAboutPanelOptions(AboutPanelOptions options)
+        public async void SetAboutPanelOptions(AboutPanelOptions options)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -1569,7 +1242,7 @@ namespace ElectronNET.API
             }
             set
             {
-                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+                Electron.SignalrElectron.Clients.All.SendAsync("appSetUserAgentFallback", value);
             }
         }
 
@@ -1589,13 +1262,8 @@ namespace ElectronNET.API
                 {
                     var taskCompletionSource = new TaskCompletionSource<string>();
 
-                    BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
-                        taskCompletionSource.SetResult((string)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
+                    var signalrResult = SignalrSerializeHelper.GetSignalrResultString("appGetUserAgentFallback");
+                    taskCompletionSource.SetResult(signalrResult.Result);
 
                     return taskCompletionSource.Task;
                 });

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -52,49 +53,35 @@ namespace ElectronNET.API
         /// <returns>Return an ID representing the request.</returns>
         public async Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<int>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-bounce-completed", (id) =>
-                {
-                    BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult((int) id);
-                });
-
-                BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var result = await SignalrSerializeHelper.GetSignalrResultString("dock-bounce", type.GetDescription());
+            return int.Parse(result);
         }
 
         /// <summary>
         /// Cancel the bounce of id.
         /// </summary>
         /// <param name="id">Id of the request.</param>
-        public void CancelBounce(int id)
+        public async void CancelBounce(int id)
         {
-            BridgeConnector.Socket.Emit("dock-cancelBounce", id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-cancelBounce", id);
         }
 
         /// <summary>
         /// Bounces the Downloads stack if the filePath is inside the Downloads folder.
         /// </summary>
         /// <param name="filePath"></param>
-        public void DownloadFinished(string filePath)
+        public async void DownloadFinished(string filePath)
         {
-            BridgeConnector.Socket.Emit("dock-downloadFinished", filePath);
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-downloadFinished", filePath);
         }
 
         /// <summary>
         /// Sets the string to be displayed in the dock’s badging area.
         /// </summary>
         /// <param name="text"></param>
-        public void SetBadge(string text)
+        public async void SetBadge(string text)
         {
-            BridgeConnector.Socket.Emit("dock-setBadge", text);
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-setBadge", text);
         }
 
         /// <summary>
@@ -104,38 +91,23 @@ namespace ElectronNET.API
         /// <returns>The badge string of the dock.</returns>
         public async Task<string> GetBadgeAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-getBadge-completed", (text) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult((string) text);
-                });
-
-                BridgeConnector.Socket.Emit("dock-getBadge");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultString("dock-getBadge");
         }
 
         /// <summary>
         /// Hides the dock icon.
         /// </summary>
-        public void Hide()
+        public async void Hide()
         {
-            BridgeConnector.Socket.Emit("dock-hide");
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-hide");
         }
 
         /// <summary>
         /// Shows the dock icon.
         /// </summary>
-        public void Show()
+        public async void Show()
         {
-            BridgeConnector.Socket.Emit("dock-show");
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-show");
         }
 
         /// <summary>
@@ -146,22 +118,7 @@ namespace ElectronNET.API
         /// <returns>Whether the dock icon is visible.</returns>
         public async Task<bool> IsVisibleAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-isVisible-completed", (isVisible) =>
-                {
-                    BridgeConnector.Socket.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult((bool) isVisible);
-                });
-
-                BridgeConnector.Socket.Emit("dock-isVisible");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return await SignalrSerializeHelper.GetSignalrResultBool("dock-isVisible");
         }
 
         /// <summary>
@@ -176,18 +133,11 @@ namespace ElectronNET.API
         /// <summary>
         /// Sets the application's dock menu.
         /// </summary>
-        public void SetMenu(MenuItem[] menuItems)
+        public async void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
-            _items.AddRange(menuItems);
-
-            BridgeConnector.Socket.Off("dockMenuItemClicked");
-            BridgeConnector.Socket.On("dockMenuItemClicked", (id) => {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
-                menuItem?.Click();
-            });
-           
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            _items.AddRange(menuItems);          
         }
 
         /// <summary>
@@ -196,31 +146,17 @@ namespace ElectronNET.API
         /// </summary>
         public async Task<Menu> GetMenu(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<Menu>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-getMenu-completed", (menu) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(((JObject)menu).ToObject<Menu>());
-                });
-
-                BridgeConnector.Socket.Emit("dock-getMenu");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            var result = await SignalrSerializeHelper.GetSignalrResultJObject("dock-getMenu");
+            return result.ToObject<Menu>();
         }
 
         /// <summary>
         /// Sets the image associated with this dock icon.
         /// </summary>
         /// <param name="image"></param>
-        public void SetIcon(string image)
+        public async void SetIcon(string image)
         {
-            BridgeConnector.Socket.Emit("dock-setIcon", image);
+            await Electron.SignalrElectron.Clients.All.SendAsync("dock-setIcon", image);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

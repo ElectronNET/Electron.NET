@@ -1,22 +1,21 @@
-import { Socket } from "net";
 
-let isQuitWindowAllClosed = true, electronSocket;
+let isQuitWindowAllClosed = true;
 let appWindowAllClosedEventId;
-export = (socket: Socket, app: Electron.App) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
 
     // By default, quit when all windows are closed
     app.on('window-all-closed', () => {
         // On macOS it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
         if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
+            socket.invoke('AppWindowAllClosed', 0);
             app.quit();
         } else if (appWindowAllClosedEventId) {
             // If the user is on macOS
             // - OR -
             // If the user has indicated NOT to quit when all windows are closed,
             // emit the event.
-            electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
+            socket.invoke('AppWindowAllClosed', appWindowAllClosedEventId);
         }
     });
 
@@ -25,14 +24,14 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('register-app-window-all-closed-event', (id) => {
-        appWindowAllClosedEventId = id;
+            socket.invoke('AppWindowAllClosed', id);
     });
 
     socket.on('register-app-before-quit-event', (id) => {
         app.on('before-quit', (event) => {
             event.preventDefault();
 
-            electronSocket.emit('app-before-quit' + id);
+            socket.invoke('AppBeforeQuit', id);
         });
     });
 
@@ -40,37 +39,37 @@ export = (socket: Socket, app: Electron.App) => {
         app.on('will-quit', (event) => {
             event.preventDefault();
 
-            electronSocket.emit('app-will-quit' + id);
+            socket.invoke('AppWillQuit', id);
         });
     });
 
     socket.on('register-app-browser-window-blur-event', (id) => {
         app.on('browser-window-blur', () => {
-            electronSocket.emit('app-browser-window-blur' + id);
+            socket.invoke('AppBrowserWindowBlur', id);
         });
     });
 
     socket.on('register-app-browser-window-focus-event', (id) => {
         app.on('browser-window-focus', () => {
-            electronSocket.emit('app-browser-window-focus' + id);
+            socket.invoke('AppBrowserWindowFocus', id);
         });
     });
 
     socket.on('register-app-browser-window-created-event', (id) => {
         app.on('browser-window-created', () => {
-            electronSocket.emit('app-browser-window-created' + id);
+            socket.invoke('AppBrowserWindowCreated', id);
         });
     });
 
     socket.on('register-app-web-contents-created-event', (id) => {
         app.on('web-contents-created', () => {
-            electronSocket.emit('app-web-contents-created' + id);
+            socket.invoke('AppWebContentsCreated', id);
         });
     });
 
     socket.on('register-app-accessibility-support-changed-event', (id) => {
         app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
-            electronSocket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
+            socket.invoke('AppAccessibilitySupportChanged', id, accessibilitySupportEnabled);
         });
     });
 
@@ -98,18 +97,18 @@ export = (socket: Socket, app: Electron.App) => {
         app.show();
     });
 
-    socket.on('appGetAppPath', () => {
+    socket.on('appGetAppPath', (guid) => {
         const path = app.getAppPath();
-        electronSocket.emit('appGetAppPathCompleted', path);
+        socket.invoke('SendClientResponseString', guid, path);
     });
 
     socket.on('appSetAppLogsPath', (path) => {
         app.setAppLogsPath(path);
     });
 
-    socket.on('appGetPath', (name) => {
+    socket.on('appGetPath', (guid, name) => {
         const path = app.getPath(name);
-        electronSocket.emit('appGetPathCompleted', path);
+        socket.invoke('SendClientResponseString', guid, path);
     });
 
     socket.on('appGetFileIcon', async (path, options) => {
@@ -118,11 +117,11 @@ export = (socket: Socket, app: Electron.App) => {
         if (options) {
             const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) =>  error = errorFileIcon);
 
-            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                socket.invoke('appGetFileIconCompleted', [error, nativeImage]);
         } else {
             const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) =>  error = errorFileIcon);
 
-            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
+                socket.invoke('appGetFileIconCompleted', [error, nativeImage]);
         }
     });
 
@@ -130,22 +129,22 @@ export = (socket: Socket, app: Electron.App) => {
         app.setPath(name, path);
     });
 
-    socket.on('appGetVersion', () => {
+    socket.on('appGetVersion', (guid) => {
         const version = app.getVersion();
-        electronSocket.emit('appGetVersionCompleted', version);
+        socket.invoke('SendClientResponseString', guid, version);
     });
 
-    socket.on('appGetName', () => {
-        electronSocket.emit('appGetNameCompleted', app.name);
+    socket.on('appGetName', (guid) => {
+        socket.invoke('SendClientResponseString', guid, name);
     });
 
     socket.on('appSetName', (name) => {
         app.name = name;
     });
 
-    socket.on('appGetLocale', () => {
+    socket.on('appGetLocale', (guid) => {
         const locale = app.getLocale();
-        electronSocket.emit('appGetLocaleCompleted', locale);
+        socket.invoke('SendClientResponseString', guid, locale);
     });
 
     socket.on('appAddRecentDocument', (path) => {
@@ -156,48 +155,48 @@ export = (socket: Socket, app: Electron.App) => {
         app.clearRecentDocuments();
     });
 
-    socket.on('appSetAsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on('appSetAsDefaultProtocolClient', (guid, protocol, path, args) => {
         const success = app.setAsDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appSetAsDefaultProtocolClientCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
 
-    socket.on('appRemoveAsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on('appRemoveAsDefaultProtocolClient', (guid, protocol, path, args) => {
         const success = app.removeAsDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
 
-    socket.on('appIsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on('appIsDefaultProtocolClient', (guid, protocol, path, args) => {
         const success = app.isDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appIsDefaultProtocolClientCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
 
-    socket.on('appSetUserTasks', (tasks) => {
+    socket.on('appSetUserTasks', (guid, tasks) => {
         const success = app.setUserTasks(tasks);
-        electronSocket.emit('appSetUserTasksCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
 
-    socket.on('appGetJumpListSettings', () => {
+    socket.on('appGetJumpListSettings', (guid) => {
         const jumpListSettings = app.getJumpListSettings();
-        electronSocket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
+        socket.invoke('SendClientResponseJObject', guid, jumpListSettings);
     });
 
     socket.on('appSetJumpList', (categories) => {
         app.setJumpList(categories);
     });
 
-    socket.on('appRequestSingleInstanceLock', () => {
+    socket.on('appRequestSingleInstanceLock', (guid) => {
         const success = app.requestSingleInstanceLock();
-        electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
 
         app.on('second-instance', (event, args = [], workingDirectory = '') => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
+            socket.invoke('SendClientResponseJArray', guid, [args, workingDirectory]);
         });
     });
 
-    socket.on('appHasSingleInstanceLock', () => {
+    socket.on('appHasSingleInstanceLock', (guid) => {
         const hasLock = app.hasSingleInstanceLock();
 
-        electronSocket.emit('appHasSingleInstanceLockCompleted', hasLock);
+        socket.invoke('SendClientResponseBool', guid, hasLock);
     });
 
     socket.on('appReleaseSingleInstanceLock', () => {
@@ -208,9 +207,9 @@ export = (socket: Socket, app: Electron.App) => {
         app.setUserActivity(type, userInfo, webpageUrl);
     });
 
-    socket.on('appGetCurrentActivityType', () => {
+    socket.on('appGetCurrentActivityType', (guid) => {
         const activityType = app.getCurrentActivityType();
-        electronSocket.emit('appGetCurrentActivityTypeCompleted', activityType);
+        socket.invoke('SendClientResponseString', guid, activityType);
     });
 
     socket.on('appInvalidateCurrentActivity', () => {
@@ -225,49 +224,54 @@ export = (socket: Socket, app: Electron.App) => {
         app.setAppUserModelId(id);
     });
 
-    socket.on('appImportCertificate', (options) => {
+    socket.on('appImportCertificate', (guid, options) => {
         app.importCertificate(options, (result) => {
-            electronSocket.emit('appImportCertificateCompleted', result);
+            socket.invoke('SendClientResponseString', guid, result);
         });
     });
 
-    socket.on('appGetAppMetrics', () => {
+    socket.on('appGetAppMetrics', (guid) => {
         const processMetrics = app.getAppMetrics();
-        electronSocket.emit('appGetAppMetricsCompleted', processMetrics);
+        socket.invoke('SendClientResponseJArray', guid, processMetrics);
     });
 
-    socket.on('appGetGpuFeatureStatus', () => {
+    socket.on('appGetGpuFeatureStatus', (guid) => {
         const gpuFeatureStatus = app.getGPUFeatureStatus();
-        electronSocket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
+        socket.invoke('SendClientResponseJObject', guid, gpuFeatureStatus);
     });
 
-    socket.on('appSetBadgeCount', (count) => {
+    socket.on('appSetBadgeCount', (guid, count) => {
         const success = app.setBadgeCount(count);
-        electronSocket.emit('appSetBadgeCountCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
 
-    socket.on('appGetBadgeCount', () => {
+    socket.on('appGetBadgeCount', (guid) => {
         const count = app.getBadgeCount();
-        electronSocket.emit('appGetBadgeCountCompleted', count);
+        socket.invoke('SendClientResponseString', guid, count);
     });
 
-    socket.on('appIsUnityRunning', () => {
+    socket.on('appIsUnityRunning', (guid) => {
         const isUnityRunning = app.isUnityRunning();
-        electronSocket.emit('appIsUnityRunningCompleted', isUnityRunning);
+        socket.invoke('SendClientResponseBool', guid, isUnityRunning);
     });
 
-    socket.on('appGetLoginItemSettings', (options) => {
+    socket.on('appGetLoginItemSettings', (guid) => {
+        const loginItemSettings = app.getLoginItemSettings();
+        socket.invoke('SendClientResponseJObject', guid, loginItemSettings);
+    });
+
+    socket.on('appGetLoginItemSettingsWithOptions', (guid, options) => {
         const loginItemSettings = app.getLoginItemSettings(options);
-        electronSocket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
+        socket.invoke('SendClientResponseJObject', guid, loginItemSettings);
     });
 
     socket.on('appSetLoginItemSettings', (settings) => {
         app.setLoginItemSettings(settings);
     });
 
-    socket.on('appIsAccessibilitySupportEnabled', () => {
+    socket.on('appIsAccessibilitySupportEnabled', (guid) => {
         const isAccessibilitySupportEnabled = app.isAccessibilitySupportEnabled();
-        electronSocket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
+        socket.invoke('SendClientResponseBool', guid, isAccessibilitySupportEnabled);
     });
 
     socket.on('appSetAccessibilitySupportEnabled', (enabled) => {
@@ -282,20 +286,30 @@ export = (socket: Socket, app: Electron.App) => {
         app.setAboutPanelOptions(options);
     });
 
-    socket.on('appGetUserAgentFallback', () => {
-        electronSocket.emit('appGetUserAgentFallbackCompleted', app.userAgentFallback);
+    socket.on('appGetUserAgentFallback', (guid) => {
+        socket.invoke('SendClientResponseString', guid, app.userAgentFallback);
     });
 
     socket.on('appSetUserAgentFallback', (userAgent) => {
         app.userAgentFallback = userAgent;
     });
 
+    // Testing, this is potentially dangerous
+    socket.on('appEval', (evalString) => {
+        console.log("######################");
+        console.log(evalString);
+        console.log("######################");
+        eval(evalString);
+    });    
+
+    //ToDo: We dont know what type we need to return here
     socket.on('register-app-on-event', (eventName, listenerName) => {
         app.on(eventName, (...args) => {
+            console.log(listenerName);
             if (args.length > 1) {
-                electronSocket.emit(listenerName, args[1]);
+                socket.invoke(listenerName, args[1]);
             } else {
-                electronSocket.emit(listenerName);
+                socket.invoke(listenerName);
             }
         });
     });
@@ -303,9 +317,9 @@ export = (socket: Socket, app: Electron.App) => {
     socket.on('register-app-once-event', (eventName, listenerName) => {
         app.once(eventName, (...args) => {
             if (args.length > 1) {
-                electronSocket.emit(listenerName, args[1]);
+                socket.invoke(listenerName, args[1]);
             } else {
-                electronSocket.emit(listenerName);
+                socket.invoke(listenerName);
             }
         });
     });

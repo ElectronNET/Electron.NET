@@ -4,6 +4,8 @@ const { protocol } = require('electron');
 const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
+const signalR = require('@microsoft/signalr');
+const os = require('os');
 const { imageSize } = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
@@ -75,6 +77,22 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     }
 }
 
+// If Backend is already running use default port -> This is for debugging and or restart electron AFTER dotnet app
+var dotnetOtherSide = false;
+
+function dotnetOtherSideCheck(defaultElectronPort) {
+    portscanner.checkPortStatus(defaultElectronPort, '127.0.0.1', function(error, status) {
+        if (status == 'closed')
+        {
+            console.log("Backend Process already running - Skipping dotnet start");
+            dotnetOtherSide = false;
+            return false;
+        }
+    })
+    dotnetOtherSide = true;
+    return true;
+}
+
 app.on('ready', () => {
 
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
@@ -88,15 +106,24 @@ app.on('ready', () => {
         startSplashScreen();
     }
     // Added default port as configurable for port restricted environments.
-    let defaultElectronPort = 8000;
+    let defaultElectronPort = 5000;
     if (manifestJsonFile.electronPort) {
         defaultElectronPort = (manifestJsonFile.electronPort)
     }
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
-        console.log('Electron Socket IO Port: ' + port);
-        startSocketApiBridge(port);
-    });
+
+    dotnetOtherSide = dotnetOtherSideCheck(defaultElectronPort);
+
+    if (!dotnetOtherSide)
+    {
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
+            console.log('Electron Socket IO Port: ' + port);
+            startSocketApiBridge(port, false);
+        });
+    } else {
+        startSocketApiBridge(defaultElectronPort, true);
+    }
+
 });
 
 app.on('quit', async (event, exitCode) => {
@@ -151,113 +178,108 @@ function startSplashScreen() {
     });
 }
 
-function startSocketApiBridge(port) {
 
-    // instead of 'require('socket.io')(port);' we need to use this workaround
-    // otherwise the Windows Firewall will be triggered
-    server = require('http').createServer();
-    io = require('socket.io')();
-    io.attach(server);
+function getStartSignalrConnections(port) {
+    let options = {};
+    let protocol = new signalR.JsonHubProtocol();
+    connectionHubElectron = new signalR.HubConnectionBuilder()
+    .configureLogging(signalR.LogLevel.Trace)
+    .withUrl("http://127.0.0.1:" + port + "/electron", options)
+    .withHubProtocol(protocol)
+    .build();
 
-    server.listen(port, 'localhost');
-    server.on('listening', function () {
-        console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
-        // Now that socket connection is established, we can guarantee port will not be open for portscanner
-        if (watchable) {
-            startAspCoreBackendWithWatch(port);
-        } else {
-            startAspCoreBackend(port);
-        }
-    });
+    getStartSignalrListener(port);
+}
+
+var getStartSignalrListener = function (port) {
+
+    connectionHubElectron.start()
+        .then(function () {
+            isConnected = true;
+            console.log('Electron signalr Connection started on port %s at %s', port, "127.0.0.1" + "/electron");
+            /*connectionHubElectron.send("CreateNewWindows", null).catch(function (err) {
+                return console.error(err.toString());
+            });*/
+        })
+        .catch(function (err) {
+            console.log("HubElectron error: " + err);
+            setTimeout(() => {
+                getStartSignalrConnections(port);
+            }, 5000);
+        });
+
+    if (appApi === undefined) appApi = require('./api/app')(connectionHubElectron, app);
+    if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(connectionHubElectron, app);
+    if (commandLine === undefined) commandLine = require('./api/commandLine')(connectionHubElectron, app);
+    if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(connectionHubElectron);
+    if (ipc === undefined) ipc = require('./api/ipc')(connectionHubElectron);
+    if (menu === undefined) menu = require('./api/menu')(connectionHubElectron);
+    if (dialogApi === undefined) dialogApi = require('./api/dialog')(connectionHubElectron);
+    if (notification === undefined) notification = require('./api/notification')(connectionHubElectron);
+    if (tray === undefined) tray = require('./api/tray')(connectionHubElectron);
+    if (webContents === undefined) webContents = require('./api/webContents')(connectionHubElectron);
+    if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(connectionHubElectron);
+    if (shellApi === undefined) shellApi = require('./api/shell')(connectionHubElectron);
+    if (screen === undefined) screen = require('./api/screen')(connectionHubElectron);
+    if (clipboard === undefined) clipboard = require('./api/clipboard')(connectionHubElectron);
+    if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(connectionHubElectron);
+    if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(connectionHubElectron);
+    if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(connectionHubElectron);
+    if (dock === undefined) dock = require('./api/dock')(connectionHubElectron);
+
+
+    if (splashScreen && !splashScreen.isDestroyed()) {
+        splashScreen.close();
+    }
 
     // prototype
     app['mainWindowURL'] = "";
     app['mainWindow'] = null;
 
-    // @ts-ignore
-    io.on('connection', (socket) => {
+    connectionHubElectron.on('register-app-open-file-event', (id) => {
+        global['electronsocket'] = connectionHubElectron;
 
-        socket.on('disconnect', function (reason) {
-            console.log('Got disconnect! Reason: ' + reason);
-            try {
-                if (hostHook) {
-                    const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
-                    delete require.cache[require.resolve(hostHookScriptFilePath)];
-                    hostHook = undefined;
-                }
+        app.on('open-file', (event, file) => {
+            event.preventDefault();
 
-            } catch (error) {
-                console.error(error.message);
-            }
+            global['electronsocket'].invoke('AppOpenFile', id, file);
         });
 
-
-        if (global['electronsocket'] === undefined) {
-            global['electronsocket'] = socket;
-            global['electronsocket'].setMaxListeners(0);
-        }
-
-        console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
-
-        if (appApi === undefined) appApi = require('./api/app')(socket, app);
-        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
-        if (commandLine === undefined) commandLine = require('./api/commandLine')(socket, app);
-        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(socket);
-        if (ipc === undefined) ipc = require('./api/ipc')(socket);
-        if (menu === undefined) menu = require('./api/menu')(socket);
-        if (dialogApi === undefined) dialogApi = require('./api/dialog')(socket);
-        if (notification === undefined) notification = require('./api/notification')(socket);
-        if (tray === undefined) tray = require('./api/tray')(socket);
-        if (webContents === undefined) webContents = require('./api/webContents')(socket);
-        if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(socket);
-        if (shellApi === undefined) shellApi = require('./api/shell')(socket);
-        if (screen === undefined) screen = require('./api/screen')(socket);
-        if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
-        if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
-        if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
-        if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
-        if (dock === undefined) dock = require('./api/dock')(socket);
-
-        socket.on('register-app-open-file-event', (id) => {
-            global['electronsocket'] = socket;
-
-            app.on('open-file', (event, file) => {
-                event.preventDefault();
-
-                global['electronsocket'].emit('app-open-file' + id, file);
-            });
-
-            if (launchFile) {
-                global['electronsocket'].emit('app-open-file' + id, launchFile);
-            }
-        });
-
-        socket.on('register-app-open-url-event', (id) => {
-            global['electronsocket'] = socket;
-
-            app.on('open-url', (event, url) => {
-                event.preventDefault();
-
-                global['electronsocket'].emit('app-open-url' + id, url);
-            });
-
-            if (launchUrl) {
-                global['electronsocket'].emit('app-open-url' + id, launchUrl);
-            }
-        });
-
-        try {
-            const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
-
-            if (isModuleAvailable(hostHookScriptFilePath) && hostHook === undefined) {
-                const { HookService } = require(hostHookScriptFilePath);
-                hostHook = new HookService(socket, app);
-                hostHook.onHostReady();
-            }
-        } catch (error) {
-            console.error(error.message);
+        if (launchFile) {
+            global['electronsocket'].invoke('AppOpenFile', id, launchFile);
         }
     });
+
+    connectionHubElectron.on('register-app-open-url-event', (id) => {
+        global['electronsocket'] = connectionHubElectron;
+
+        app.on('open-url', (event, url) => {
+            event.preventDefault();
+
+            global['electronsocket'].invoke('app-open-url', id, url);
+        });
+
+        if (launchUrl) {
+            global['electronsocket'].invoke('app-open-url', id, launchUrl);
+        }
+    });
+
+    try {
+        const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
+
+        if (isModuleAvailable(hostHookScriptFilePath) && hostHook === undefined) {
+            const { HookService } = require(hostHookScriptFilePath);
+            hostHook = new HookService(connectionHubElectron, app);
+            hostHook.onHostReady();
+        }
+    } catch (error) {
+        console.error(error.message);
+    }
+    
+};
+
+function startSocketApiBridge(port, skipBackendStart) {
+    startAspCoreBackend(port, skipBackendStart);
 }
 
 function isModuleAvailable(name) {
@@ -268,19 +290,16 @@ function isModuleAvailable(name) {
     return false;
 }
 
-function startAspCoreBackend(electronPort) {
-    if (manifestJsonFile.aspCoreBackendPort) {
-        startBackend(manifestJsonFile.aspCoreBackendPort)
-    } else {
-        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-        portscanner.findAPortNotInUse(electronPort + 1, 65535, 'localhost', function (error, electronWebPort) {
-            startBackend(electronWebPort);
-        });
-    }
+function startAspCoreBackend(electronPort, skipBackendStart) {
+    
+    startBackend(electronPort, skipBackendStart);
 
-    function startBackend(aspCoreBackendPort) {
+    function startBackend(aspCoreBackendPort, skipBackendStart) {
+        if (skipBackendStart){
+            return;
+        }
         console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
-        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        loadURL = `http://127.0.0.1:${aspCoreBackendPort}`;
         const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
         let binaryFile = manifestJsonFile.executable;
 
@@ -297,6 +316,8 @@ function startAspCoreBackend(electronPort) {
             console.log(`stdout: ${data.toString()}`);
         });
     }
+
+    getStartSignalrConnections(electronPort);
 }
 
 function startAspCoreBackendWithWatch(electronPort) {
@@ -311,7 +332,7 @@ function startAspCoreBackendWithWatch(electronPort) {
 
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
-        loadURL = `http://localhost:${aspCoreBackendPort}`;
+        loadURL = `http://127.0.0.1:${aspCoreBackendPort}`;
         const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
 
         var options = {

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -41,9 +42,9 @@ namespace ElectronNET.API
         /// <remarks>
         /// Note: This will not affect process.argv. The intended usage of this function is to control Chromium's behavior.
         /// </remarks>
-        public void AppendSwitch(string the_switch, string value = "")
+        public async void AppendSwitch(string the_switch, string value = "")
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", the_switch, value);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appCommandLineAppendSwitch", the_switch, value);
         }
 
         /// <summary>
@@ -55,9 +56,9 @@ namespace ElectronNET.API
         /// <remarks>
         /// Note: This will not affect process.argv. The intended usage of this function is to control Chromium's behavior.
         /// </remarks>
-        public void AppendArgument(string value)
+        public async void AppendArgument(string value)
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
+            await Electron.SignalrElectron.Clients.All.SendAsync("appCommandLineAppendArgument", value);
         }
 
         /// <summary>
@@ -68,21 +69,7 @@ namespace ElectronNET.API
         /// <returns>Whether the command-line switch is present.</returns>
         public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken)) 
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appCommandLineHasSwitchCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appCommandLineHasSwitchCompleted");
-                    taskCompletionSource.SetResult((bool)result);
-                });
-
-                BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
+            return (await SignalrSerializeHelper.GetSignalrResultBool("appCommandLineHasSwitch", switchName));
         }
 
         /// <summary>
@@ -96,21 +83,7 @@ namespace ElectronNET.API
         /// </remarks>
         public async Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appCommandLineGetSwitchValueCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appCommandLineGetSwitchValueCompleted");
-                    taskCompletionSource.SetResult((string)result);
-                });
-
-                BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
+            return (await SignalrSerializeHelper.GetSignalrResultString("appCommandLineGetSwitchValue", switchName));
         }
     }
 }

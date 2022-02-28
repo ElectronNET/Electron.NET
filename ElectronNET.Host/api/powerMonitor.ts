@@ -1,42 +1,39 @@
-import { Socket } from 'net';
 import { powerMonitor } from 'electron';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
     socket.on('register-pm-lock-screen', () => {
         powerMonitor.on('lock-screen', () => {
-            electronSocket.emit('pm-lock-screen');
+            socket.invoke('TriggerOnLockScreen');
         });
     });
     socket.on('register-pm-unlock-screen', () => {
         powerMonitor.on('unlock-screen', () => {
-            electronSocket.emit('pm-unlock-screen');
+            socket.invoke('PowerMonitorOnUnLockScreen');
         });
     });
     socket.on('register-pm-suspend', () => {
         powerMonitor.on('suspend', () => {
-            electronSocket.emit('pm-suspend');
+            socket.invoke('PowerMonitorOnSuspend');
         });
     });
     socket.on('register-pm-resume', () => {
         powerMonitor.on('resume', () => {
-            electronSocket.emit('pm-resume');
+            socket.invoke('PowerMonitorOnResume');
         });
     });
     socket.on('register-pm-on-ac', () => {
         powerMonitor.on('on-ac', () => {
-            electronSocket.emit('pm-on-ac');
+            socket.invoke('PowerMonitorOnAC');
         });
     });
     socket.on('register-pm-on-battery', () => {
         powerMonitor.on('on-battery', () => {
-            electronSocket.emit('pm-on-battery');
+            socket.invoke('PowerMonitorOnBattery');
         });
     });
     socket.on('register-pm-shutdown', () => {
         powerMonitor.on('shutdown', () => {
-            electronSocket.emit('pm-shutdown');
+            socket.invoke('PowerMonitorOnShutdown');
         });
     });
 };

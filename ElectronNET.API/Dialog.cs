@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -46,30 +47,16 @@ namespace ElectronNET.API
         /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
         /// <param name="options"></param>
         /// <returns>An array of file paths chosen by the user</returns>
-        public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
+        public async Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("showOpenDialogComplete" + guid, (filePaths) =>
+            var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArray("showOpenDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer));
+            var result = ((JArray)resultSignalr).ToObject<string[]>();
+            var list = new List<string>();
+            foreach (var item in result)
             {
-                BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
-
-                var result = ((JArray)filePaths).ToObject<string[]>();
-                var list = new List<string>();
-                foreach (var item in result)
-                {
-                    list.Add(HttpUtility.UrlDecode(item));
-                }
-                taskCompletionSource.SetResult(list.ToArray());
-            });
-
-
-            BridgeConnector.Socket.Emit("showOpenDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer), guid);
-
-            return taskCompletionSource.Task;
+                list.Add(HttpUtility.UrlDecode(item));
+            }
+            return list.ToArray();
         }
 
         /// <summary>
@@ -78,24 +65,9 @@ namespace ElectronNET.API
         /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
         /// <param name="options"></param>
         /// <returns>Returns String, the path of the file chosen by the user, if a callback is provided it returns an empty string.</returns>
-        public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
+        public async Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("showSaveDialogComplete" + guid, (filename) =>
-            {
-                BridgeConnector.Socket.Off("showSaveDialogComplete" + guid);
-
-                taskCompletionSource.SetResult(filename.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("showSaveDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("showSaveDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -147,37 +119,26 @@ namespace ElectronNET.API
         /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
         /// <param name="messageBoxOptions"></param>
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
-        public Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, MessageBoxOptions messageBoxOptions)
+        public async Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, MessageBoxOptions messageBoxOptions)
         {
-            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
-            var guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("showMessageBoxComplete" + guid, (args) =>
-            {
-                BridgeConnector.Socket.Off("showMessageBoxComplete" + guid);
-
-                var result = ((JArray)args);
-
-                taskCompletionSource.SetResult(new MessageBoxResult
-                {
-                    Response = (int)result.First,
-                    CheckboxChecked = (bool)result.Last
-                });
-
-            });
-
             if (browserWindow == null)
             {
-                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
-            } else
-            {
-                BridgeConnector.Socket.Emit("showMessageBox", 
-                    JObject.FromObject(browserWindow, _jsonSerializer),
-                    JObject.FromObject(messageBoxOptions, _jsonSerializer),
-                    guid);
+                var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArray("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer));
+                return new MessageBoxResult
+                {
+                    Response = (int)resultSignalr.First,
+                    CheckboxChecked = (bool)resultSignalr.Last
+                };
             }
-
-            return taskCompletionSource.Task;
+            else
+            {
+                var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArray("showMessageBox", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(messageBoxOptions, _jsonSerializer));
+                return new MessageBoxResult
+                {
+                    Response = (int)resultSignalr.First,
+                    CheckboxChecked = (bool)resultSignalr.Last
+                };
+            }
         }
 
         /// <summary>
@@ -190,9 +151,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="title">The title to display in the error box.</param>
         /// <param name="content">The text content to display in the error box.</param>
-        public void ShowErrorBox(string title, string content)
+        public async void ShowErrorBox(string title, string content)
         {
-            BridgeConnector.Socket.Emit("showErrorBox", title, content);
+            await Electron.SignalrElectron.Clients.All.SendAsync("showErrorBox", title, content);
         }
 
         /// <summary>
@@ -215,23 +176,9 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
+        public async Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("showCertificateTrustDialogComplete" + guid, () =>
-            {
-                BridgeConnector.Socket.Off("showCertificateTrustDialogComplete" + guid);
-                taskCompletionSource.SetResult(null);
-            });
-
-            BridgeConnector.Socket.Emit("showCertificateTrustDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
-                guid);
-
-            return taskCompletionSource.Task;
+            await Electron.SignalrElectron.Clients.All.SendAsync("showCertificateTrustDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer));
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

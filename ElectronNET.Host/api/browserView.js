@@ -3,11 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.browserViewMediateService = exports.browserViewApi = void 0;
 const electron_1 = require("electron");
 const browserViews = (global['browserViews'] = global['browserViews'] || []);
-let browserView, electronSocket;
+let browserView;
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
 const browserViewApi = (socket) => {
-    electronSocket = socket;
-    socket.on('createBrowserView', (options) => {
+    socket.on('createBrowserView', (guid, options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
@@ -20,11 +19,11 @@ const browserViewApi = (socket) => {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
         browserViews.push(browserView);
-        electronSocket.emit('BrowserViewCreated', browserView['id']);
+        socket.invoke('SendClientResponseString', guid, browserView['id']);
     });
-    socket.on('browserView-getBounds', (id) => {
+    socket.on('browserView-getBounds', (guid, id) => {
         const bounds = getBrowserViewById(id).getBounds();
-        electronSocket.emit('browserView-getBounds-reply', bounds);
+        socket.invoke('SendClientResponseJObject', guid, bounds);
     });
     socket.on('browserView-setBounds', (id, bounds) => {
         getBrowserViewById(id).setBounds(bounds);

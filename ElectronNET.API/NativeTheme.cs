@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ElectronNET.API
 {
@@ -90,33 +91,22 @@ namespace ElectronNET.API
         /// Your application should then always use <see cref="ShouldUseDarkColorsAsync"/> to determine what CSS to apply.
         /// </summary>
         /// <param name="themeSourceMode">The new ThemeSource.</param>
-        public void SetThemeSource(ThemeSourceMode themeSourceMode)
+        public async Task SetThemeSource(ThemeSourceMode themeSourceMode)
         {
             var themeSource = themeSourceMode.GetDescription();
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync("nativeTheme-themeSource", themeSource);
         }
 
         /// <summary>
         /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<ThemeSourceMode> GetThemeSourceAsync()
+        public async Task<ThemeSourceMode> GetThemeSourceAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
-
-            BridgeConnector.Socket.On("nativeTheme-themeSource-getCompleted", (themeSource) =>
-            {
-                BridgeConnector.Socket.Off("nativeTheme-themeSource-getCompleted");
-
-                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)themeSource, true);
-
-                taskCompletionSource.SetResult(themeSourceValue);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
-
-            return taskCompletionSource.Task;
+            var resultSignalr = await SignalrSerializeHelper.GetSignalrResultString("nativeTheme-themeSource-get");
+            var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)resultSignalr, true);
+            return themeSourceValue;
         }
 
         /// <summary>
@@ -124,57 +114,27 @@ namespace ElectronNET.API
         /// being instructed to show a dark-style UI. If you want to modify this value you
         /// should use <see cref="SetThemeSource"/>.
         /// </summary>
-        public Task<bool> ShouldUseDarkColorsAsync()
+        public async Task<bool> ShouldUseDarkColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseDarkColors-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseDarkColors);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("nativeTheme-shouldUseDarkColors");
         }
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
-        public Task<bool> ShouldUseHighContrastColorsAsync()
+        public async Task<bool> ShouldUseHighContrastColorsAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseHighContrastColors-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("nativeTheme-shouldUseHighContrastColors");
         }
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
-        public Task<bool> ShouldUseInvertedColorSchemeAsync()
+        public async Task<bool> ShouldUseInvertedColorSchemeAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
-                BridgeConnector.Socket.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
-
-                taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
-            });
-
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("nativeTheme-shouldUseInvertedColorScheme");
         }
 
         /// <summary>
@@ -187,24 +147,19 @@ namespace ElectronNET.API
             {
                 if (_updated == null)
                 {
-                    BridgeConnector.Socket.On("nativeTheme-updated" + GetHashCode(), () =>
-                    {
-                        _updated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-nativeTheme-updated-event", GetHashCode());
                 }
                 _updated += value;
             }
             remove
             {
                 _updated -= value;
-
-                if (_updated == null)
-                {
-                    BridgeConnector.Socket.Off("nativeTheme-updated" + GetHashCode());
-                }
             }
+        }
+
+        public void TriggerOnUpdated()
+        {
+            _updated();
         }
 
         private event Action _updated;

@@ -1,17 +1,14 @@
-import { Socket } from 'net';
 import { BrowserWindow, BrowserView } from 'electron';
 import { browserViewMediateService } from './browserView';
 const fs = require('fs');
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
 
         browserWindow.webContents.removeAllListeners('crashed');
         browserWindow.webContents.on('crashed', (event, killed) => {
-            electronSocket.emit('webContents-crashed' + id, killed);
+            socket.invoke('WebContentOnCrashed', id, killed);
         });
     });
 
@@ -20,7 +17,7 @@ export = (socket: Socket) => {
 
         browserWindow.webContents.removeAllListeners('did-finish-load');
         browserWindow.webContents.on('did-finish-load', () => {
-            electronSocket.emit('webContents-didFinishLoad' + id);
+            socket.invoke('WebContentOnDidFinishLoad', id);
         });
     });
 
@@ -32,31 +29,31 @@ export = (socket: Socket) => {
         }
     });
 
-    socket.on('webContents-getPrinters', async (id) => {
+    socket.on('webContents-getPrinters', async (guid, id) => {
         const printers = await getWindowById(id).webContents.getPrinters();
-        electronSocket.emit('webContents-getPrinters-completed', printers);
+        socket.invoke('SendClientResponseJArray', guid, printers);
     });
 
-    socket.on('webContents-print', async (id, options = {}) => {
+    socket.on('webContents-print', async (guid, id, options = {}) => {
         await getWindowById(id).webContents.print(options);
-        electronSocket.emit('webContents-print-completed', true);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
-    socket.on('webContents-printToPDF', async (id, options = {}, path) => {
+    socket.on('webContents-printToPDF', async (guid, id, options = {}, path) => {
         const buffer = await getWindowById(id).webContents.printToPDF(options);
 
         fs.writeFile(path, buffer, (error) => {
             if (error) {
-                electronSocket.emit('webContents-printToPDF-completed', false);
+                socket.invoke('SendClientResponseBool', guid, false);
             } else {
-                electronSocket.emit('webContents-printToPDF-completed', true);
+                socket.invoke('SendClientResponseBool', guid, true);
             }
         });
     });
 
-    socket.on('webContents-getUrl', function (id) {
+    socket.on('webContents-getUrl', function (guid, id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
+        socket.invoke('SendClientResponseString', guid, browserWindow.webContents.getURL());
     });
 
     socket.on('webContents-session-allowNTLMCredentialsForDomains', (id, domains) => {
@@ -64,39 +61,34 @@ export = (socket: Socket) => {
         browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
     });
 
-    socket.on('webContents-session-clearAuthCache', async (id, guid) => {
+    socket.on('webContents-session-clearAuthCache', async (guid, id) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.clearAuthCache();
-
-        electronSocket.emit('webContents-session-clearAuthCache-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
-    socket.on('webContents-session-clearCache', async (id, guid) => {
+    socket.on('webContents-session-clearCache', async (guid, id) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.clearCache();
-
-        electronSocket.emit('webContents-session-clearCache-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
-    socket.on('webContents-session-clearHostResolverCache', async (id, guid) => {
+    socket.on('webContents-session-clearHostResolverCache', async (guid, id) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.clearHostResolverCache();
-
-        electronSocket.emit('webContents-session-clearHostResolverCache-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
-    socket.on('webContents-session-clearStorageData', async (id, guid) => {
+    socket.on('webContents-session-clearStorageData', async (guid, id) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.clearStorageData({});
-
-        electronSocket.emit('webContents-session-clearStorageData-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
-    socket.on('webContents-session-clearStorageData-options', async (id, options, guid) => {
+    socket.on('webContents-session-clearStorageData-options', async (guid, id, options) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.clearStorageData(options);
-
-        electronSocket.emit('webContents-session-clearStorageData-options-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
     socket.on('webContents-session-createInterruptedDownload', (id, options) => {
@@ -119,39 +111,39 @@ export = (socket: Socket) => {
         browserWindow.webContents.session.flushStorageData();
     });
 
-    socket.on('webContents-session-getBlobData', async (id, identifier, guid) => {
+    socket.on('webContents-session-getBlobData', async (guid, id, identifier) => {
         const browserWindow = getWindowById(id);
         const buffer = await browserWindow.webContents.session.getBlobData(identifier);
 
-        electronSocket.emit('webContents-session-getBlobData-completed' + guid, buffer.buffer);
+        socket.invoke('SendClientResponseJArray', guid, buffer.buffer);
     });
 
-    socket.on('webContents-session-getCacheSize', async (id, guid) => {
+    socket.on('webContents-session-getCacheSize', async (guid, id) => {
         const browserWindow = getWindowById(id);
         const size = await browserWindow.webContents.session.getCacheSize();
 
-        electronSocket.emit('webContents-session-getCacheSize-completed' + guid, size);
+        socket.invoke('SendClientResponseString', guid, size);
     });
 
-    socket.on('webContents-session-getPreloads', (id, guid) => {
+    socket.on('webContents-session-getPreloads', (guid, id) => {
         const browserWindow = getWindowById(id);
         const preloads = browserWindow.webContents.session.getPreloads();
 
-        electronSocket.emit('webContents-session-getPreloads-completed' + guid, preloads);
+        socket.invoke('SendClientResponseJArray', guid, preloads);
     });
 
-    socket.on('webContents-session-getUserAgent', (id, guid) => {
+    socket.on('webContents-session-getUserAgent', (guid, id) => {
         const browserWindow = getWindowById(id);
         const userAgent = browserWindow.webContents.session.getUserAgent();
 
-        electronSocket.emit('webContents-session-getUserAgent-completed' + guid, userAgent);
+        socket.invoke('SendClientResponseString', guid, userAgent);
     });
 
-    socket.on('webContents-session-resolveProxy', async (id, url, guid) => {
+    socket.on('webContents-session-resolveProxy', async (guid, id, url) => {
         const browserWindow = getWindowById(id);
         const proxy = await browserWindow.webContents.session.resolveProxy(url);
 
-        electronSocket.emit('webContents-session-resolveProxy-completed' + guid, proxy);
+        socket.invoke('SendClientResponseString', guid, proxy);
     });
 
     socket.on('webContents-session-setDownloadPath', (id, path) => {
@@ -164,11 +156,11 @@ export = (socket: Socket) => {
         browserWindow.webContents.session.setPreloads(preloads);
     });
 
-    socket.on('webContents-session-setProxy', async (id, configuration, guid) => {
+    socket.on('webContents-session-setProxy', async (guid, id, configuration) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.setProxy(configuration);
 
-        electronSocket.emit('webContents-session-setProxy-completed' + guid);
+        socket.invoke('SendClientResponseBool', guid, true);
     });
 
     socket.on('webContents-session-setUserAgent', (id, userAgent, acceptLanguages) => {
@@ -181,45 +173,45 @@ export = (socket: Socket) => {
 
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, [cookie, cause, removed]);
+            socket.invoke('CookiesOnChanged', id, [cookie, cause, removed]);
         });
     });
 
-    socket.on('webContents-session-cookies-get', async (id, filter, guid) => {
+    socket.on('webContents-session-cookies-get', async (guid, id, filter) => {
         const browserWindow = getWindowById(id);
         const cookies = await browserWindow.webContents.session.cookies.get(filter);
 
-        electronSocket.emit('webContents-session-cookies-get-completed' + guid, cookies);
+        socket.invoke('SendClientResponseJArray', guid, cookies);
     });
 
-    socket.on('webContents-session-cookies-set', async (id, details, guid) => {
+    socket.on('webContents-session-cookies-set', async (id, details) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.cookies.set(details);
-
-        electronSocket.emit('webContents-session-cookies-set-completed' + guid);
+        // Needed ?
+        //socket.invoke('webContents-session-cookies-set-completed', guid);
     });
 
-    socket.on('webContents-session-cookies-remove', async (id, url, name, guid) => {
+    socket.on('webContents-session-cookies-remove', async (id, url, name) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.cookies.remove(url, name);
-
-        electronSocket.emit('webContents-session-cookies-remove-completed' + guid);
+        // Needed ?
+        // socket.invoke('webContents-session-cookies-remove-completed', guid);
     });
 
-    socket.on('webContents-session-cookies-flushStore', async (id, guid) => {
+    socket.on('webContents-session-cookies-flushStore', async (id) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.session.cookies.flushStore();
-
-        electronSocket.emit('webContents-session-cookies-flushStore-completed' + guid);
+        // Needed ?
+        // socket.invoke('webContents-session-cookies-flushStore-completed' + guid);
     });
 
-    socket.on('webContents-loadURL', (id, url, options) => {
+    socket.on('webContents-loadURL', (guid, id, url, options) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.loadURL(url, options).then(() => {
-            electronSocket.emit('webContents-loadURL-complete' + id);
+            socket.invoke('webContents-loadURL-complete', guid, null);
         }).catch((error) => {
             console.error(error);
-            electronSocket.emit('webContents-loadURL-error' + id, error);
+            socket.invoke('webContents-loadURL-error', guid, error);
         });
     });
 
@@ -227,7 +219,7 @@ export = (socket: Socket) => {
         if (isBrowserWindow) {
             const browserWindow = getWindowById(id);
             if (browserWindow) {
-                browserWindow.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+                socket.invoke('webContents-printToPDF-completed', false);
             }
         } else {
             const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
@@ -239,12 +231,12 @@ export = (socket: Socket) => {
                 }
             }
             if (view) {
-                view.webContents.insertCSS(fs.readFileSync(path, 'utf8'));
+                socket.invoke('webContents-printToPDF-completed', true);
             }
         }
     });
 
-    socket.on('webContents-session-getAllExtensions', (id) => {
+    socket.on('webContents-session-getAllExtensions', (guid, id) => {
         const browserWindow = getWindowById(id);
         const extensionsList = browserWindow.webContents.session.getAllExtensions();
         const chromeExtensionInfo = [];
@@ -253,19 +245,19 @@ export = (socket: Socket) => {
             chromeExtensionInfo.push(extensionsList[key]);
         });
 
-        electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);
+        socket.invoke('SendClientResponseJArray', guid, chromeExtensionInfo);
     });
 
     socket.on('webContents-session-removeExtension', (id, name) => {
         const browserWindow = getWindowById(id);
-        browserWindow.webContents.session.removeExtension(name);
+        socket.invoke('webContents-getUrl' + id, browserWindow.webContents.getURL());
     });
 
-    socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
+    socket.on('webContents-session-loadExtension', async (guid, id, path, allowFileAccess = false) => {
         const browserWindow = getWindowById(id);
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
 
-        electronSocket.emit('webContents-session-loadExtension-completed', extension);
+        socket.invoke('SendClientResponseJObject', guid, extension);
     });
 
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {

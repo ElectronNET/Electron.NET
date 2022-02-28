@@ -1,13 +1,11 @@
-import { Socket } from 'net';
 import { BrowserView } from 'electron';
 const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
-let browserView: BrowserView, electronSocket;
+let browserView: BrowserView;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
-const browserViewApi = (socket: Socket) => {
-    electronSocket = socket;
+const browserViewApi = (socket: SignalR.Hub.Proxy) => {
 
-    socket.on('createBrowserView', (options) => {
+    socket.on('createBrowserView', (guid, options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
@@ -25,13 +23,12 @@ const browserViewApi = (socket: Socket) => {
 
         browserViews.push(browserView);
 
-        electronSocket.emit('BrowserViewCreated', browserView['id']);
+        socket.invoke('SendClientResponseString', guid, browserView['id']);
     });
 
-    socket.on('browserView-getBounds', (id) => {
+    socket.on('browserView-getBounds', (guid, id) => {
         const bounds = getBrowserViewById(id).getBounds();
-
-        electronSocket.emit('browserView-getBounds-reply', bounds);
+        socket.invoke('SendClientResponseJObject', guid, bounds);
     });
 
     socket.on('browserView-setBounds', (id, bounds) => {

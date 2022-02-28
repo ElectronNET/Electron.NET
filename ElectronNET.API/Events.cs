@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Microsoft.AspNetCore.SignalR;
 using Quobject.EngineIoClientDotNet.ComponentEmitter;
 
 namespace ElectronNET.API
@@ -60,13 +61,11 @@ namespace ElectronNET.API
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
         /// <param name="fn">The event handler</param>
-        private void On(string moduleName, string eventName, IListener fn)
+        private async void On(string moduleName, string eventName, IListener fn)
         {
             var listener = $"{moduleName}{_ti.ToTitleCase(eventName)}Completed";
             var subscriber = $"register-{moduleName}-on-event";
-            
-            BridgeConnector.Socket.On(listener, fn);
-            BridgeConnector.Socket.Emit(subscriber, eventName, listener);
+            await Electron.SignalrElectron.Clients.All.SendAsync(subscriber, eventName, listener);
         }
 
         /// <summary>
@@ -93,12 +92,11 @@ namespace ElectronNET.API
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
         /// <param name="fn">The event handler</param>
-        private void Once(string moduleName, string eventName, IListener fn)
+        private async void Once(string moduleName, string eventName, IListener fn)
         {
             var listener = $"{moduleName}{_ti.ToTitleCase(eventName)}Completed";
             var subscriber = $"register-{moduleName}-once-event";
-            BridgeConnector.Socket.Once(listener, fn);
-            BridgeConnector.Socket.Emit(subscriber, eventName, listener);
+            await Electron.SignalrElectron.Clients.All.SendAsync(subscriber, eventName, listener);
         }
 
     }

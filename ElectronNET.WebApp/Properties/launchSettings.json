@@ -3,19 +3,14 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:50394/",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:10008/",
+      "sslPort": 44376
     }
   },
   "profiles": {
-    "Electron.NET App": {
-      "commandName": "Executable",
-      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\netcoreapp3.1\\dotnet-electronize.exe",
-      "commandLineArgs": "start",
-      "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
-    },
     "IIS Express": {
       "commandName": "IISExpress",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -26,7 +21,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:50395/"
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

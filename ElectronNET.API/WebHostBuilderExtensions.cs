@@ -16,18 +16,24 @@ namespace ElectronNET.API
         /// <param name="builder">The builder.</param>
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
-        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args)
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, string signalrPort = null)
         {
             foreach (string argument in args)
             {
-                if (argument.ToUpper().Contains("ELECTRONPORT"))
+                if (argument.ToUpper().Contains("ELECTRONPORT") && signalrPort == null)
                 {
                     BridgeSettings.SocketPort = argument.ToUpper().Replace("/ELECTRONPORT=", "");
                     Console.WriteLine("Use Electron Port: " + BridgeSettings.SocketPort);
-                }
-                else if (argument.ToUpper().Contains("ELECTRONWEBPORT"))
+                } else if(argument.ToUpper().Contains("ELECTRONWEBPORT") && signalrPort == null)
                 {
                     BridgeSettings.WebPort = argument.ToUpper().Replace("/ELECTRONWEBPORT=", "");
+                }
+
+                if (signalrPort != null)
+                {
+                    BridgeSettings.SocketPort = signalrPort;
+                    Console.WriteLine("Use Electron Port: " + BridgeSettings.SocketPort);
+                    BridgeSettings.WebPort = signalrPort;
                 }
             }
 

@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ElectronNET.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using System.Threading;
 
 namespace ElectronNET.API
 {
@@ -50,7 +53,7 @@ namespace ElectronNET.API
             get { return _isQuitOnWindowAllClosed; }
             set
             {
-                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
+                Electron.SignalrElectron.Clients.All.SendAsync("quit-app-window-all-closed-event", value);
                 _isQuitOnWindowAllClosed = value;
             }
         }
@@ -90,34 +93,13 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
+        public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://127.0.0.1:5000")
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
+            var guid = Guid.NewGuid();
+            var taskCompletionSource = new TaskCompletionSource<string>();
+            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
 
-            BridgeConnector.Socket.On("BrowserWindowCreated", (id) =>
-            {
-                BridgeConnector.Socket.Off("BrowserWindowCreated");
-
-                string windowId = id.ToString();
-                BrowserWindow browserWindow = new BrowserWindow(int.Parse(windowId));
-                _browserWindows.Add(browserWindow);
-
-                taskCompletionSource.SetResult(browserWindow);
-            });
-
-            BridgeConnector.Socket.Off("BrowserWindowClosed");
-            BridgeConnector.Socket.On("BrowserWindowClosed", (ids) =>
-            {
-                var browserWindowIds = ((JArray)ids).ToObject<int[]>();
-
-                for (int index = 0; index < _browserWindows.Count; index++)
-                {
-                    if (!browserWindowIds.Contains(_browserWindows[index].Id))
-                    {
-                        _browserWindows.RemoveAt(index);
-                    }
-                }
-            });
+            string browserWindowId = null;
 
             if (loadUrl.ToUpper() == "HTTP://LOCALHOST")
             {
@@ -136,8 +118,8 @@ namespace ElectronNET.API
             {
                 options.X = 0;
                 options.Y = 0;
+                browserWindowId = await SignalrSerializeHelper.GetSignalrResultString("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
 
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
             else
             {
@@ -153,10 +135,15 @@ namespace ElectronNET.API
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
+                browserWindowId = await SignalrSerializeHelper.GetSignalrResultString("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
 
-            return taskCompletionSource.Task;
+            BrowserWindow browserWindow;
+            browserWindow = new BrowserWindow(int.Parse(browserWindowId));
+            _browserWindows.Add(browserWindow);
+
+
+            return browserWindow;
         }
 
         private bool isWindows10()
@@ -182,30 +169,21 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
+        public async Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserView>();
-
-            BridgeConnector.Socket.On("BrowserViewCreated", (id) =>
-            {
-                BridgeConnector.Socket.Off("BrowserViewCreated");
-
-                string browserViewId = id.ToString();
-                BrowserView browserView = new BrowserView(int.Parse(browserViewId));
-
-                _browserViews.Add(browserView);
-
-                taskCompletionSource.SetResult(browserView);
-            });
-
             var ownjsonSerializer = new JsonSerializer()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };
-            BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
 
-            return taskCompletionSource.Task;
+            var browserWindowResult = await SignalrSerializeHelper.GetSignalrResultString("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+
+            string browserViewId = browserWindowResult.ToString();
+            BrowserView browserView = new BrowserView(int.Parse(browserViewId));
+
+            _browserViews.Add(browserView);
+            return browserView;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

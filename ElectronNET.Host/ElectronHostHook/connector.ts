@@ -1,5 +1,5 @@
 export class Connector {
-    constructor(private socket: SocketIO.Socket,
+    constructor(private socket: SignalR.Hub.Proxy,
         // @ts-ignore
         public app: Electron.App) { }
 
@@ -10,11 +10,11 @@ export class Connector {
             try {
                 javaScriptCode(...args, (data) => {
                     if (data) {
-                        this.socket.emit(`${key}Complete${id}`, data);
+                        this.socket.invoke(`${key}Complete${id}`, data);
                     }
                 });
             } catch (error) {
-                this.socket.emit(`${key}Error${id}`, `Host Hook Exception`, error);
+                this.socket.invoke(`${key}Error${id}`, `Host Hook Exception`, error);
             }
         });
     }

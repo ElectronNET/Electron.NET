@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ namespace ElectronNET.API
             }
         }
 
-        private Dictionary<string, Action> _shortcuts = new Dictionary<string, Action>();
+        public Dictionary<string, Action> _shortcuts = new Dictionary<string, Action>();
 
         /// <summary>
         /// Registers a global shortcut of accelerator. 
@@ -49,16 +50,7 @@ namespace ElectronNET.API
             {
                 _shortcuts.Add(accelerator, function);
 
-                BridgeConnector.Socket.Off("globalShortcut-pressed");
-                BridgeConnector.Socket.On("globalShortcut-pressed", (shortcut) =>
-                {
-                    if (_shortcuts.ContainsKey(shortcut.ToString()))
-                    {
-                        _shortcuts[shortcut.ToString()]();
-                    }
-                });
-
-                BridgeConnector.Socket.Emit("globalShortcut-register", accelerator);
+                Electron.SignalrElectron.Clients.All.SendAsync("globalShortcut-register", accelerator);
             }
         }
 
@@ -68,38 +60,27 @@ namespace ElectronNET.API
         /// since they don’t want applications to fight for global shortcuts.
         /// </summary>
         /// <returns>Whether this application has registered accelerator.</returns>
-        public Task<bool> IsRegisteredAsync(string accelerator)
+        public async Task<bool> IsRegisteredAsync(string accelerator)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("globalShortcut-isRegisteredCompleted", (isRegistered) =>
-            {
-                BridgeConnector.Socket.Off("globalShortcut-isRegisteredCompleted");
-
-                taskCompletionSource.SetResult((bool)isRegistered);
-            });
-
-            BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("globalShortcut-isRegistered", accelerator);
         }
 
         /// <summary>
         /// Unregisters the global shortcut of accelerator.
         /// </summary>
-        public void Unregister(string accelerator)
+        public async void Unregister(string accelerator)
         {
             _shortcuts.Remove(accelerator);
-            BridgeConnector.Socket.Emit("globalShortcut-unregister", accelerator);
+            await Electron.SignalrElectron.Clients.All.SendAsync("globalShortcut-unregister", accelerator);
         }
 
         /// <summary>
         /// Unregisters all of the global shortcuts.
         /// </summary>
-        public void UnregisterAll()
+        public async void UnregisterAll()
         {
             _shortcuts.Clear();
-            BridgeConnector.Socket.Emit("globalShortcut-unregisterAll");
+            await Electron.SignalrElectron.Clients.All.SendAsync("globalShortcut-unregisterAll");
         }
     }
 }

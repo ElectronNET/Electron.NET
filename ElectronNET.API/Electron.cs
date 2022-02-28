@@ -1,4 +1,8 @@
-﻿namespace ElectronNET.API
+﻿using ElectronNET.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ElectronNET.API
 {
     /// <summary>
     /// The Electron.NET API
@@ -72,7 +76,11 @@
         /// ElectronHostHook directory:
         /// <c>electronize add HostHook</c>
         /// </summary>
-        public static HostHook HostHook { get { return HostHook.Instance; } }
+        public static HostHook HostHook { get { return API.HostHook.Instance; } }
+
+        public static IServiceScope ServiceScope { get; set; }
+        public static IHubContext<HubElectron> SignalrElectron;
+        public static bool ElectronConnected = false;
 
         /// <summary>
         /// Allows you to execute native Lock and Unlock process.       

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace ElectronNET.API
 {
+
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
@@ -45,8 +47,8 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public void On(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
-            BridgeConnector.Socket.Off(channel);
+            Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannel", channel);
+            /*BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On(channel, (args) => 
             {
                 List<object> objectArray = FormatArguments(args);
@@ -59,7 +61,7 @@ namespace ElectronNET.API
                 {
                     listener(objectArray);
                 }
-            });
+            });*/
         }
 
         private List<object> FormatArguments(object args)
@@ -89,8 +91,8 @@ namespace ElectronNET.API
         /// <param name="listener"></param>
         public void OnSync(string channel, Func<object, object> listener)
         {
-            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) => {
+            Electron.SignalrElectron.Clients.All.SendAsync("registerSyncIpcMainChannel", channel);
+            /*BridgeConnector.Socket.On(channel, (args) => {
                 List<object> objectArray = FormatArguments(args);
                 object parameter;
                 if (objectArray.Count == 1)
@@ -103,8 +105,8 @@ namespace ElectronNET.API
                 }
 
                 var result = listener(parameter);
-                BridgeConnector.Socket.Emit(channel + "Sync", result);
-            });
+                Electron.SignalrElectron.Clients.All.SendAsync(channel + "Sync", result);
+            });*/
         }
 
         /// <summary>
@@ -115,8 +117,8 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public void Once(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) =>
+            Electron.SignalrElectron.Clients.All.SendAsync("registerOnceIpcMainChannel", channel);
+            /*BridgeConnector.Socket.On(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
@@ -128,7 +130,7 @@ namespace ElectronNET.API
                 {
                     listener(objectArray);
                 }
-            });
+            });*/
         }
 
         /// <summary>
@@ -137,7 +139,7 @@ namespace ElectronNET.API
         /// <param name="channel">Channelname.</param>
         public void RemoveAllListeners(string channel)
         {
-            BridgeConnector.Socket.Emit("removeAllListenersIpcMainChannel", channel);
+            Electron.SignalrElectron.Clients.All.SendAsync("removeAllListenersIpcMainChannel", channel);
         }
 
         /// <summary>
@@ -171,11 +173,11 @@ namespace ElectronNET.API
 
             if(jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
             }
         }
 
@@ -210,11 +212,11 @@ namespace ElectronNET.API
 
             if(jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRendererBrowserView", browserView.Id, channel, data);
             }
         }
 

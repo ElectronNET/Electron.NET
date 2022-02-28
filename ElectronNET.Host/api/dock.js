@@ -1,11 +1,9 @@
 "use strict";
 const electron_1 = require("electron");
-let electronSocket;
 module.exports = (socket) => {
-    electronSocket = socket;
-    socket.on('dock-bounce', (type) => {
+    socket.on('dock-bounce', (guid, type) => {
         const id = electron_1.app.dock.bounce(type);
-        electronSocket.emit('dock-bounce-completed', id);
+        socket.invoke('SendClientResponseString', guid, id);
     });
     socket.on('dock-cancelBounce', (id) => {
         electron_1.app.dock.cancelBounce(id);
@@ -16,9 +14,9 @@ module.exports = (socket) => {
     socket.on('dock-setBadge', (text) => {
         electron_1.app.dock.setBadge(text);
     });
-    socket.on('dock-getBadge', () => {
+    socket.on('dock-getBadge', (guid) => {
         const text = electron_1.app.dock.getBadge();
-        electronSocket.emit('dock-getBadge-completed', text);
+        socket.invoke('SendClientResponseString', guid, text);
     });
     socket.on('dock-hide', () => {
         electron_1.app.dock.hide();
@@ -26,24 +24,24 @@ module.exports = (socket) => {
     socket.on('dock-show', () => {
         electron_1.app.dock.show();
     });
-    socket.on('dock-isVisible', () => {
+    socket.on('dock-isVisible', (guid) => {
         const isVisible = electron_1.app.dock.isVisible();
-        electronSocket.emit('dock-isVisible-completed', isVisible);
+        socket.invoke('SendClientResponseBool', guid, isVisible);
     });
     socket.on('dock-setMenu', (menuItems) => {
         let menu = null;
         if (menuItems) {
             menu = electron_1.Menu.buildFromTemplate(menuItems);
             addMenuItemClickConnector(menu.items, (id) => {
-                electronSocket.emit('dockMenuItemClicked', id);
+                socket.invoke('DockMenuItemClicked', id);
             });
         }
         electron_1.app.dock.setMenu(menu);
     });
     // TODO: Menu (macOS) still to be implemented
-    socket.on('dock-getMenu', () => {
+    socket.on('dock-getMenu', (guid) => {
         const menu = electron_1.app.dock.getMenu();
-        electronSocket.emit('dock-getMenu-completed', menu);
+        socket.invoke('SendClientResponseJObject', guid, menu);
     });
     socket.on('dock-setIcon', (image) => {
         electron_1.app.dock.setIcon(image);

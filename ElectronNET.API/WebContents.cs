@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -34,22 +35,19 @@ namespace ElectronNET.API
             {
                 if (_crashed == null)
                 {
-                    BridgeConnector.Socket.On("webContents-crashed" + Id, (killed) =>
-                    {
-                        _crashed((bool)killed);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-webContents-crashed", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-webContents-crashed", Id);
                 }
                 _crashed += value;
             }
             remove
             {
                 _crashed -= value;
-
-                if (_crashed == null)
-                    BridgeConnector.Socket.Off("webContents-crashed" + Id);
             }
+        }
+
+        public void TriggerOnCrashed(bool crashed)
+        {
+            _crashed(crashed);
         }
 
         private event Action<bool> _crashed;
@@ -64,22 +62,19 @@ namespace ElectronNET.API
             {
                 if (_didFinishLoad == null)
                 {
-                    BridgeConnector.Socket.On("webContents-didFinishLoad" + Id, () =>
-                    {
-                        _didFinishLoad();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-webContents-didFinishLoad", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-webContents-didFinishLoad", Id);
                 }
                 _didFinishLoad += value;
             }
             remove
             {
                 _didFinishLoad -= value;
-
-                if (_didFinishLoad == null)
-                    BridgeConnector.Socket.Off("webContents-didFinishLoad" + Id);
             }
+        }
+
+        public void TriggerOnDidFinishLoad()
+        {
+            _didFinishLoad();
         }
 
         private event Action _didFinishLoad;
@@ -93,38 +88,28 @@ namespace ElectronNET.API
         /// <summary>
         /// Opens the devtools.
         /// </summary>
-        public void OpenDevTools()
+        public async void OpenDevTools()
         {
-            BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContentsOpenDevTools", Id);
         }
 
         /// <summary>
         /// Opens the devtools.
         /// </summary>
         /// <param name="openDevToolsOptions"></param>
-        public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
+        public async void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
         {
-            BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
         }
 
         /// <summary>
         /// Get system printers.
         /// </summary>
         /// <returns>printers</returns>
-        public Task<PrinterInfo[]> GetPrintersAsync()
+        public async Task<PrinterInfo[]> GetPrintersAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
-
-            BridgeConnector.Socket.On("webContents-getPrinters-completed", (printers) =>
-            {
-                BridgeConnector.Socket.Off("webContents-getPrinters-completed");
-
-                taskCompletionSource.SetResult(((Newtonsoft.Json.Linq.JArray)printers).ToObject<PrinterInfo[]>());
-            });
-
-            BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
-
-            return taskCompletionSource.Task;
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJArray("webContents-getPrinters", Id);
+            return signalrResult.ToObject<PrinterInfo[]>();
         }
 
         /// <summary>
@@ -132,26 +117,16 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns>success</returns>
-        public Task<bool> PrintAsync(PrintOptions options = null)
+        public async Task<bool> PrintAsync(PrintOptions options = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("webContents-print-completed", (success) =>
+            if (options == null)
             {
-                BridgeConnector.Socket.Off("webContents-print-completed");
-                taskCompletionSource.SetResult((bool)success);
-            });
-
-            if(options == null)
-            {
-                BridgeConnector.Socket.Emit("webContents-print", Id, "");
+                return await SignalrSerializeHelper.GetSignalrResultBool("webContents-print", Id, new JObject());
             }
             else
             {
-                BridgeConnector.Socket.Emit("webContents-print", Id, JObject.FromObject(options, _jsonSerializer));
+                return await SignalrSerializeHelper.GetSignalrResultBool("webContents-print", Id, JObject.FromObject(options, _jsonSerializer));
             }
-
-            return taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -163,26 +138,16 @@ namespace ElectronNET.API
         /// <param name="path"></param>
         /// <param name="options"></param>
         /// <returns>success</returns>
-        public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
+        public async Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("webContents-printToPDF-completed", (success) =>
+            if (options == null)
             {
-                BridgeConnector.Socket.Off("webContents-printToPDF-completed");
-                taskCompletionSource.SetResult((bool)success);
-            });
-
-            if(options == null)
-            {
-                BridgeConnector.Socket.Emit("webContents-printToPDF", Id, "", path);
+                return await SignalrSerializeHelper.GetSignalrResultBool("webContents-printToPDF", Id, new JObject(), path);
             }
             else
             {
-                BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
+                return await SignalrSerializeHelper.GetSignalrResultBool("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
             }
-
-            return taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -190,20 +155,9 @@ namespace ElectronNET.API
         /// It's usefull if a web-server redirects you and you need to know where it redirects. For instance, It's useful in case of Implicit Authorization.
         /// </summary>
         /// <returns>URL of the loaded page</returns>
-        public Task<string> GetUrl()
+        public async Task<string> GetUrl()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            var eventString = "webContents-getUrl" + Id;
-            BridgeConnector.Socket.On(eventString, (url) =>
-            {
-                BridgeConnector.Socket.Off(eventString);
-                taskCompletionSource.SetResult((string)url);
-            });
-
-            BridgeConnector.Socket.Emit("webContents-getUrl", Id);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("webContents-getUrl", Id);
         }
 
         /// <summary>
@@ -236,26 +190,21 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="url"></param>
         /// <param name="options"></param>
-        public Task LoadURLAsync(string url, LoadURLOptions options)
+        public async Task LoadURLAsync(string url, LoadURLOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            BridgeConnector.Socket.On("webContents-loadURL-complete" + Id, () =>
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+
+            if (String.IsNullOrEmpty(signalrResult))
             {
-                BridgeConnector.Socket.Off("webContents-loadURL-complete" + Id);
-                BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
                 taskCompletionSource.SetResult(null);
-            });
-
-            BridgeConnector.Socket.On("webContents-loadURL-error" + Id, (error) =>
+            } else
             {
-                BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-                taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));
-            });
+                taskCompletionSource.SetException(new InvalidOperationException(signalrResult.ToString()));
+            }
 
-            BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
-
-            return taskCompletionSource.Task;
+            return;
         }
 
         /// <summary>
@@ -265,9 +214,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="isBrowserWindow">Whether the webContents belong to a BrowserWindow or not (the other option is a BrowserView)</param>
         /// <param name="path">Absolute path to the CSS file location</param>
-        public void InsertCSS(bool isBrowserWindow, string path)
+        public async Task InsertCSS(bool isBrowserWindow, string path)
         {
-            BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContents-insertCSS", Id, isBrowserWindow, path);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

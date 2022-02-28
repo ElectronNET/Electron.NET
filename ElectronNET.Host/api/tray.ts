@@ -1,14 +1,12 @@
-import { Socket } from 'net';
 import { Menu, Tray, nativeImage } from 'electron';
 let tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { value: null });
 let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
     socket.on('register-tray-click', (id) => {
         if (tray.value) {
             tray.value.on('click', (event, bounds) => {
-                electronSocket.emit('tray-click-event' + id, [(<any>event).__proto__, bounds]);
+                socket.invoke('TrayOnClick', id, [(<any>event).__proto__, bounds]);
             });
         }
     });
@@ -16,7 +14,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-right-click', (id) => {
         if (tray.value) {
             tray.value.on('right-click', (event, bounds) => {
-                electronSocket.emit('tray-right-click-event' + id, [(<any>event).__proto__, bounds]);
+                socket.invoke('TrayOnRightClick', id, [(<any>event).__proto__, bounds]);
             });
         }
     });
@@ -24,7 +22,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-double-click', (id) => {
         if (tray.value) {
             tray.value.on('double-click', (event, bounds) => {
-                electronSocket.emit('tray-double-click-event' + id, [(<any>event).__proto__, bounds]);
+                socket.invoke('TrayOnDoubleClick', id, [(<any>event).__proto__, bounds]);
             });
         }
     });
@@ -32,7 +30,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-balloon-show', (id) => {
         if (tray.value) {
             tray.value.on('balloon-show', () => {
-                electronSocket.emit('tray-balloon-show-event' + id);
+                socket.invoke('TrayOnBalloonShow', id);
             });
         }
     });
@@ -40,7 +38,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-balloon-click', (id) => {
         if (tray.value) {
             tray.value.on('balloon-click', () => {
-                electronSocket.emit('tray-balloon-click-event' + id);
+                socket.invoke('TrayOnBalloonClick', id);
             });
         }
     });
@@ -48,7 +46,7 @@ export = (socket: Socket) => {
     socket.on('register-tray-balloon-closed', (id) => {
         if (tray.value) {
             tray.value.on('balloon-closed', () => {
-                electronSocket.emit('tray-balloon-closed-event' + id);
+                socket.invoke('TrayOnBalloonClosed', id);
             });
         }
     });
@@ -62,7 +60,7 @@ export = (socket: Socket) => {
             const menu = Menu.buildFromTemplate(menuItems);
 
             addMenuItemClickConnector(menu.items, (id) => {
-                electronSocket.emit('trayMenuItemClicked', id);
+            	socket.invoke('TrayOnMenuItemClicked', id);
             });
             tray.value.setContextMenu(menu);
         }
@@ -105,10 +103,10 @@ export = (socket: Socket) => {
         }
     });
 
-    socket.on('tray-isDestroyed', () => {
+    socket.on('tray-isDestroyed', (guid) => {
         if (tray.value) {
             const isDestroyed = tray.value.isDestroyed();
-            electronSocket.emit('tray-isDestroyedCompleted', isDestroyed);
+            socket.invoke('SendClientResponseBool', guid, isDestroyed);
         }
     });
 
@@ -116,9 +114,9 @@ export = (socket: Socket) => {
         if (tray.value){
             tray.value.on(eventName, (...args) => {
                 if (args.length > 1) {
-                    electronSocket.emit(listenerName, args[1]);
+                    socket.invoke(listenerName, args[1]);
                 } else {
-                    electronSocket.emit(listenerName);
+                    socket.invoke(listenerName);
                 }
             });
         }
@@ -128,9 +126,9 @@ export = (socket: Socket) => {
         if (tray.value){
             tray.value.once(eventName, (...args) => {
                 if (args.length > 1) {
-                    electronSocket.emit(listenerName, args[1]);
+                    socket.invoke(listenerName, args[1]);
                 } else {
-                    electronSocket.emit(listenerName);
+                    socket.invoke(listenerName);
                 }
             });
         }

@@ -1,8 +1,4 @@
-import { Socket } from 'net';
-let electronSocket;
-
-export = (socket: Socket, app: Electron.App) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
 
     socket.on('appCommandLineAppendSwitch', (the_switch: string, value: string) => {
         app.commandLine.appendSwitch(the_switch, value);
@@ -12,13 +8,13 @@ export = (socket: Socket, app: Electron.App) => {
         app.commandLine.appendArgument(value);
     });
 
-    socket.on('appCommandLineHasSwitch', (value: string) => {
+    socket.on('appCommandLineHasSwitch', (guid, value: string) => {
         const hasSwitch = app.commandLine.hasSwitch(value);
-        electronSocket.emit('appCommandLineHasSwitchCompleted', hasSwitch);
+        socket.invoke('SendClientResponseBool', guid, hasSwitch);
     });
 
-    socket.on('appCommandLineGetSwitchValue', (the_switch: string) => {
+    socket.on('appCommandLineGetSwitchValue', (guid, the_switch: string) => {
         const value = app.commandLine.getSwitchValue(the_switch);
-        electronSocket.emit('appCommandLineGetSwitchValueCompleted', value);
+        socket.invoke('SendClientResponseString', guid, value);
     });
 };

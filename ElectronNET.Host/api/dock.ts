@@ -1,13 +1,10 @@
-import { Socket } from 'net';
 import { app, Menu } from 'electron';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
 
-    socket.on('dock-bounce', (type) => {
+    socket.on('dock-bounce', (guid, type) => {
         const id = app.dock.bounce(type);
-        electronSocket.emit('dock-bounce-completed', id);
+        socket.invoke('SendClientResponseString', guid, id);
     });
 
     socket.on('dock-cancelBounce', (id) => {
@@ -22,9 +19,9 @@ export = (socket: Socket) => {
         app.dock.setBadge(text);
     });
 
-    socket.on('dock-getBadge', () => {
+    socket.on('dock-getBadge', (guid) => {
         const text = app.dock.getBadge();
-        electronSocket.emit('dock-getBadge-completed', text);
+        socket.invoke('SendClientResponseString', guid, text);
     });
 
     socket.on('dock-hide', () => {
@@ -35,9 +32,9 @@ export = (socket: Socket) => {
         app.dock.show();
     });
 
-    socket.on('dock-isVisible', () => {
+    socket.on('dock-isVisible', (guid) => {
         const isVisible = app.dock.isVisible();
-        electronSocket.emit('dock-isVisible-completed', isVisible);
+        socket.invoke('SendClientResponseBool', guid, isVisible);
     });
 
     socket.on('dock-setMenu', (menuItems) => {
@@ -45,9 +42,8 @@ export = (socket: Socket) => {
 
         if (menuItems) {
             menu = Menu.buildFromTemplate(menuItems);
-
             addMenuItemClickConnector(menu.items, (id) => {
-                electronSocket.emit('dockMenuItemClicked', id);
+                socket.invoke('DockMenuItemClicked', id);
             });
         }
 
@@ -55,9 +51,9 @@ export = (socket: Socket) => {
     });
 
     // TODO: Menu (macOS) still to be implemented
-    socket.on('dock-getMenu', () => {
+    socket.on('dock-getMenu', (guid) => {
         const menu = app.dock.getMenu();
-        electronSocket.emit('dock-getMenu-completed', menu);
+        socket.invoke('SendClientResponseJObject', guid, menu);
     });
 
     socket.on('dock-setIcon', (image) => {

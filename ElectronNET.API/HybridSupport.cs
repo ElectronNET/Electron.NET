@@ -15,7 +15,8 @@
         {
             get
             {
-                return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
+                //return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
+                return true;
             }
         }
     }

@@ -1,12 +1,10 @@
 import { ipcMain, BrowserWindow, BrowserView } from 'electron';
-import { Socket } from 'net';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
+
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            socket.invoke(channel, [event.preventDefault(), args]);
         });
     });
 
@@ -18,13 +16,13 @@ export = (socket: Socket) => {
                 event.returnValue = result;
             });
 
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            socket.invoke(channel, [event.preventDefault(), args]);
         });
     });
 
     socket.on('registerOnceIpcMainChannel', (channel) => {
         ipcMain.once(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            socket.invoke(channel, [event.preventDefault(), args]);
         });
     });
 

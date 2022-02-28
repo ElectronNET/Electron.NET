@@ -13,6 +13,8 @@
   "author": "Gregor Biswanger",
   "license": "MIT",
   "devDependencies": {
+    "@microsoft/signalr": "^6.0.2",
+    "@types/signalr": "^2.2.37",
     "@types/socket.io": "^2.1.2",
     "typescript": "^3.4.5"
   },

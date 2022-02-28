@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
+
     /// <summary>
     /// Allows you to execute native JavaScript/TypeScript code from the host process.
     /// 
@@ -40,6 +41,9 @@ namespace ElectronNET.API
             }
         }
 
+        // ToDo: Need reimplementation
+
+        /*
         /// <summary>
         /// Execute native JavaScript/TypeScript code.
         /// </summary>
@@ -124,5 +128,6 @@ namespace ElectronNET.API
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore
         };
+        */
     }
 }

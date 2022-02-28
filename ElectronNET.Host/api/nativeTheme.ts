@@ -1,32 +1,29 @@
-import { Socket } from 'net';
 import { nativeTheme } from 'electron';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: SignalR.Hub.Proxy) => {
 
-    socket.on('nativeTheme-shouldUseDarkColors', () => {
+    socket.on('nativeTheme-shouldUseDarkColors', (guid) => {
         const shouldUseDarkColors = nativeTheme.shouldUseDarkColors;
 
-        electronSocket.emit('nativeTheme-shouldUseDarkColors-completed', shouldUseDarkColors);
+        socket.invoke('SendClientResponseBool', guid, shouldUseDarkColors);
     });
 
-    socket.on('nativeTheme-shouldUseHighContrastColors', () => {
+    socket.on('nativeTheme-shouldUseHighContrastColors', (guid) => {
         const shouldUseHighContrastColors = nativeTheme.shouldUseHighContrastColors;
 
-        electronSocket.emit('nativeTheme-shouldUseHighContrastColors-completed', shouldUseHighContrastColors);
+        socket.invoke('SendClientResponseBool', guid, shouldUseHighContrastColors);
     });
 
-    socket.on('nativeTheme-shouldUseInvertedColorScheme', () => {
+    socket.on('nativeTheme-shouldUseInvertedColorScheme', (guid) => {
         const shouldUseInvertedColorScheme = nativeTheme.shouldUseInvertedColorScheme;
 
-        electronSocket.emit('nativeTheme-shouldUseInvertedColorScheme-completed', shouldUseInvertedColorScheme);
+        socket.invoke('SendClientResponseBool', guid, shouldUseInvertedColorScheme);
     });
 
-    socket.on('nativeTheme-themeSource-get', () => {
+    socket.on('nativeTheme-themeSource-get', (guid) => {
         const themeSource = nativeTheme.themeSource;
 
-        electronSocket.emit('nativeTheme-themeSource-getCompleted', themeSource);
+        socket.invoke('SendClientResponseString', guid, themeSource);
     });
 
     socket.on('nativeTheme-themeSource', (themeSource) => {
@@ -35,7 +32,7 @@ export = (socket: Socket) => {
 
     socket.on('register-nativeTheme-updated-event', (id) => {
         nativeTheme.on('updated', () => {
-            electronSocket.emit('nativeTheme-updated' + id);
+            socket.invoke('NativeThemeOnChanged', id);
         });
     });
 };

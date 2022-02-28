@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -34,25 +35,22 @@ namespace ElectronNET.API
             {
                 if (_changed == null)
                 {
-                    BridgeConnector.Socket.On("webContents-session-cookies-changed" + Id, (args) =>
-                    {
-                        Cookie cookie = ((JArray)args)[0].ToObject<Cookie>();
-                        CookieChangedCause cause = ((JArray)args)[1].ToObject<CookieChangedCause>();
-                        bool removed = ((JArray)args)[2].ToObject<bool>();
-                        _changed(cookie, cause, removed);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-webContents-session-cookies-changed", Id);
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-webContents-session-cookies-changed", Id);
                 }
                 _changed += value;
             }
             remove
             {
                 _changed -= value;
-
-                if (_changed == null)
-                    BridgeConnector.Socket.Off("webContents-session-cookies-changed" + Id);
             }
+        }
+
+        public void TriggerOnChanged(JArray jarray)
+        {
+            Cookie cookie = ((JArray)jarray)[0].ToObject<Cookie>();
+            CookieChangedCause cause = ((JArray)jarray)[1].ToObject<CookieChangedCause>();
+            bool removed = ((JArray)jarray)[2].ToObject<bool>();
+            _changed(cookie, cause, removed);
         }
 
         private event Action<Cookie, CookieChangedCause, bool> _changed;
@@ -63,22 +61,11 @@ namespace ElectronNET.API
         /// <param name="filter">
         /// </param>
         /// <returns>A task which resolves an array of cookie objects.</returns>
-        public Task<Cookie[]> GetAsync(CookieFilter filter)
+        public async Task<Cookie[]> GetAsync(CookieFilter filter)
         {
-            var taskCompletionSource = new TaskCompletionSource<Cookie[]>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("webContents-session-cookies-get-completed" + guid, (cookies) =>
-            {
-                Cookie[] result = ((JArray)cookies).ToObject<Cookie[]>();
-
-                BridgeConnector.Socket.Off("webContents-session-cookies-get-completed" + guid);
-                taskCompletionSource.SetResult(result);
-            });
-
-            BridgeConnector.Socket.Emit("webContents-session-cookies-get", Id, JObject.FromObject(filter, _jsonSerializer), guid);
-
-            return taskCompletionSource.Task;
+            var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArray("webContents-session-cookies-get", Id, JObject.FromObject(filter, _jsonSerializer));
+            Cookie[] result = ((JArray)resultSignalr).ToObject<Cookie[]>();
+            return result;
         }
 
         /// <summary>
@@ -86,20 +73,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="details"></param>
         /// <returns></returns>
-        public Task SetAsync(CookieDetails details)
+        public async Task SetAsync(CookieDetails details)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("webContents-session-cookies-set-completed" + guid, () =>
-            {
-                BridgeConnector.Socket.Off("webContents-session-cookies-set-completed" + guid);
-                taskCompletionSource.SetResult(null);
-            });
-
-            BridgeConnector.Socket.Emit("webContents-session-cookies-set", Id, JObject.FromObject(details, _jsonSerializer), guid);
-
-            return taskCompletionSource.Task;
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContents-session-cookies-set", Id, JObject.FromObject(details, _jsonSerializer));
         }
 
         /// <summary>
@@ -108,40 +84,18 @@ namespace ElectronNET.API
         /// <param name="url">The URL associated with the cookie.</param>
         /// <param name="name">The name of cookie to remove.</param>
         /// <returns>A task which resolves when the cookie has been removed</returns>
-        public Task RemoveAsync(string url, string name)
+        public async Task RemoveAsync(string url, string name)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("webContents-session-cookies-remove-completed" + guid, () =>
-            {
-                BridgeConnector.Socket.Off("webContents-session-cookies-remove-completed" + guid);
-                taskCompletionSource.SetResult(null);
-            });
-
-            BridgeConnector.Socket.Emit("webContents-session-cookies-remove", Id, url, name, guid);
-
-            return taskCompletionSource.Task;
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContents-session-cookies-remove", Id, url, name);
         }
 
         /// <summary>
         /// Writes any unwritten cookies data to disk.
         /// </summary>
         /// <returns>A task which resolves when the cookie store has been flushed</returns>
-        public Task FlushStoreAsync()
+        public async Task FlushStoreAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
-
-            BridgeConnector.Socket.On("webContents-session-cookies-flushStore-completed" + guid, () =>
-            {
-                BridgeConnector.Socket.Off("webContents-session-cookies-flushStore-completed" + guid);
-                taskCompletionSource.SetResult(null);
-            });
-
-            BridgeConnector.Socket.Emit("webContents-session-cookies-flushStore", Id, guid);
-
-            return taskCompletionSource.Task;
+            await Electron.SignalrElectron.Clients.All.SendAsync("webContents-session-cookies-flushStore", Id);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

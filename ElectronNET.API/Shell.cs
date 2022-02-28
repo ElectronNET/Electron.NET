@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -40,18 +41,9 @@ namespace ElectronNET.API
         /// Show the given file in a file manager. If possible, select the file.
         /// </summary>
         /// <param name="fullPath">The full path to the directory / file.</param>
-        public Task ShowItemInFolderAsync(string fullPath)
+        public async Task<bool> ShowItemInFolderAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
-
-            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () =>
-            {
-                BridgeConnector.Socket.Off("shell-showItemInFolderCompleted");
-            });
-
-            BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("shell-showItemInFolder", fullPath);
         }
 
         /// <summary>
@@ -59,20 +51,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="path">The path to the directory / file.</param>
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
-        public Task<string> OpenPathAsync(string path)
+        public async Task<string> OpenPathAsync(string path)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("shell-openPathCompleted", (errorMessage) =>
-            {
-                BridgeConnector.Socket.Off("shell-openPathCompleted");
-
-                taskCompletionSource.SetResult((string) errorMessage);
-            });
-
-            BridgeConnector.Socket.Emit("shell-openPath", path);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultString("shell-openPath", path);
         }
 
         /// <summary>
@@ -93,27 +74,16 @@ namespace ElectronNET.API
         /// <param name="url">Max 2081 characters on windows.</param>
         /// <param name="options">Controls the behavior of OpenExternal.</param>
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
-        public Task<string> OpenExternalAsync(string url, OpenExternalOptions options)
+        public async Task<string> OpenExternalAsync(string url, OpenExternalOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("shell-openExternalCompleted", (error) =>
-            {
-                BridgeConnector.Socket.Off("shell-openExternalCompleted");
-
-                taskCompletionSource.SetResult((string) error);
-            });
-
             if (options == null)
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url);
+                return await SignalrSerializeHelper.GetSignalrResultString("shell-openExternal", url);
             }
             else
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
+                return await SignalrSerializeHelper.GetSignalrResultString("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
             }
-
-            return taskCompletionSource.Task;
         }
 
         /// <summary>
@@ -121,28 +91,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="fullPath">The full path to the directory / file.</param>
         /// <returns> Whether the item was successfully moved to the trash.</returns>
-        public Task<bool> TrashItemAsync(string fullPath)
+        public async Task<bool> TrashItemAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("shell-trashItem-completed", (success) =>
-            {
-                BridgeConnector.Socket.Off("shell-trashItem-completed");
-
-                taskCompletionSource.SetResult((bool) success);
-            });
-
-            BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("shell-trashItem", fullPath);
         }
 
         /// <summary>
         /// Play the beep sound.
         /// </summary>
-        public void Beep()
+        public async void Beep()
         {
-            BridgeConnector.Socket.Emit("shell-beep");
+            await Electron.SignalrElectron.Clients.All.SendAsync("shell-beep");
         }
 
         /// <summary>
@@ -152,20 +111,9 @@ namespace ElectronNET.API
         /// <param name="operation">Default is <see cref="ShortcutLinkOperation.Create"/></param>
         /// <param name="options">Structure of a shortcut.</param>
         /// <returns>Whether the shortcut was created successfully.</returns>
-        public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
+        public async Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("shell-writeShortcutLinkCompleted", (success) =>
-            {
-                BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
-
-                taskCompletionSource.SetResult((bool) success);
-            });
-
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -174,23 +122,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="shortcutPath">The path tot the shortcut.</param>
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
-        public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
+        public async Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
-
-            BridgeConnector.Socket.On("shell-readShortcutLinkCompleted", (shortcutDetails) =>
-            {
-                BridgeConnector.Socket.Off("shell-readShortcutLinkCompleted");
-
-                var shortcutObject = shortcutDetails as JObject;
-                var details = shortcutObject?.ToObject<ShortcutDetails>();
-
-                taskCompletionSource.SetResult(details);
-            });
-
-            BridgeConnector.Socket.Emit("shell-readShortcutLink", shortcutPath);
-
-            return taskCompletionSource.Task;
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("shell-readShortcutLink", shortcutPath);
+            return signalrResult?.ToObject<ShortcutDetails>();
         }
 
         private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
