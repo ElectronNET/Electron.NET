@@ -597,7 +597,7 @@ module.exports = (socket, app) => {
         getWindowById(id).setVibrancy(type);
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
-        getWindowById(id).setBrowserView(browserView_1.browserViewMediateService(browserViewId));
+        getWindowById(id).setBrowserView((0, browserView_1.browserViewMediateService)(browserViewId));
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {

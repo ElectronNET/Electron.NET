@@ -15,10 +15,10 @@
   "devDependencies": {
     "@microsoft/signalr": "^6.0.2",
     "@types/signalr": "^2.2.37",
-    "@types/socket.io": "^2.1.2",
-    "typescript": "^3.4.5"
+    "@types/socket.io": "^3.0.1",
+    "typescript": "^4.6.2"
   },
   "dependencies": {
-    "exceljs": "^1.10.0"
+    "exceljs": "^4.3.0"
   }
 }
