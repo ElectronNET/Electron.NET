@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using ElectronNET.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using ReactiveUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace ElectronNET.API
 {
@@ -45,23 +49,34 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void On(string channel, Action<object> listener)
+        public async void On(string channel, Action<object> listener)
         {
-            Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannel", channel);
-            /*BridgeConnector.Socket.Off(channel);
-            BridgeConnector.Socket.On(channel, (args) => 
-            {
-                List<object> objectArray = FormatArguments(args);
+            await Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannel", channel);
 
-                if(objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
-            });*/
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(HubElectron.SignalrObservedJArray, "CollectionChanged")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .Subscribe(x => {
+                    if (x.EventArgs.NewItems != null)
+                    {
+                        foreach (HubElectron.SignalrResponse entry in x.EventArgs.NewItems)
+                        {
+                            if (entry.Channel == channel && entry.Value != null)
+                            {
+                                List<object> objectArray = FormatArguments(entry.Value);
+
+                                if (objectArray.Count == 1)
+                                {
+                                    listener(objectArray.First());
+                                }
+                                else
+                                {
+                                    listener(objectArray);
+                                }
+                            }
+                        }
+                    }
+                });
         }
 
         private List<object> FormatArguments(object args)
@@ -89,24 +104,36 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="listener"></param>
-        public void OnSync(string channel, Func<object, object> listener)
+        public async void OnSync(string channel, Func<object, object> listener)
         {
-            Electron.SignalrElectron.Clients.All.SendAsync("registerSyncIpcMainChannel", channel);
-            /*BridgeConnector.Socket.On(channel, (args) => {
-                List<object> objectArray = FormatArguments(args);
-                object parameter;
-                if (objectArray.Count == 1)
-                {
-                    parameter = objectArray.First();
-                }
-                else
-                {
-                    parameter = objectArray;
-                }
+            await Electron.SignalrElectron.Clients.All.SendAsync("registerSyncIpcMainChannel", channel);
 
-                var result = listener(parameter);
-                Electron.SignalrElectron.Clients.All.SendAsync(channel + "Sync", result);
-            });*/
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(HubElectron.SignalrObservedJArray, "CollectionChanged")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .Subscribe(x => {
+                    if (x.EventArgs.NewItems != null)
+                    {
+                        foreach (HubElectron.SignalrResponse entry in x.EventArgs.NewItems)
+                        {
+                            if (entry.Channel == channel && entry.Value != null)
+                            {
+                                List<object> objectArray = FormatArguments(entry.Value);
+                                object parameter;
+                                if (objectArray.Count == 1)
+                                {
+                                    parameter = objectArray.First();
+                                }
+                                else
+                                {
+                                    parameter = objectArray;
+                                }
+                                var result = listener(parameter);
+                                Electron.SignalrElectron.Clients.All.SendAsync(channel + "Sync", result);
+                            }
+                        }
+                    }
+                });            
         }
 
         /// <summary>
@@ -115,22 +142,21 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void Once(string channel, Action<object> listener)
+        public async void Once(string channel, Action<object> listener)
         {
-            Electron.SignalrElectron.Clients.All.SendAsync("registerOnceIpcMainChannel", channel);
-            /*BridgeConnector.Socket.On(channel, (args) =>
-            {
-                List<object> objectArray = FormatArguments(args);
+            var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArrayNoTimeout("registerOnceIpcMainChannel", channel);
 
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
-            });*/
+            List<object> objectArray = FormatArguments(resultSignalr);
+
+            if (objectArray.Count == 1)
+            {
+                listener(objectArray.First());
+            }
+            else
+            {
+                listener(objectArray);
+            }
+
         }
 
         /// <summary>

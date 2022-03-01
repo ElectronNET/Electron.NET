@@ -3,22 +3,22 @@ const electron_1 = require("electron");
 module.exports = (socket) => {
     socket.on('registerIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            socket.invoke(channel, [event.preventDefault(), args]);
+            socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            const x = socket;
-            x.removeAllListeners(channel + 'Sync');
+            //const x = <any>socket;
+            //x.removeAllListeners(channel + 'Sync');
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
-            socket.invoke(channel, [event.preventDefault(), args]);
+            socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
         });
     });
-    socket.on('registerOnceIpcMainChannel', (channel) => {
+    socket.on('registerOnceIpcMainChannel', (guid, channel) => {
         electron_1.ipcMain.once(channel, (event, args) => {
-            socket.invoke(channel, [event.preventDefault(), args]);
+            socket.invoke("SendClientResponseJArray", guid, [event.preventDefault(), args]);
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {

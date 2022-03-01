@@ -20,6 +20,8 @@ let launchUrl;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
+let autoReconnect = true;
+
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
@@ -206,6 +208,36 @@ var getStartSignalrListener = function (port) {
             setTimeout(() => {
                 getStartSignalrConnections(port);
             }, 5000);
+        });
+
+        connectionHubElectron.onclose(function (e) {
+            isConnected = false;
+
+            if (e) {
+                console.log('Connection closed with error: ' + e);
+            } else {
+                console.log('Disconnected');
+            }
+
+            if (!autoReconnect) {
+                return;
+            }
+        
+            setTimeout(function () {
+                connectionHubElectron.start().then(function () {
+                    isConnected = true;
+                    console.log('Electron signalr Connection started on port %s at %s', port, "127.0.0.1" + "/electron");
+                    /*connectionHubElectron.send("CreateNewWindows", null).catch(function (err) {
+                        return console.error(err.toString());
+                    });*/
+                })
+                .catch(function (err) {
+                    console.log("HubElectron error: " + err);
+                    setTimeout(() => {
+                        getStartSignalrConnections(port);
+                    }, 5000);
+                });;
+            }, 2000);
         });
 
     if (appApi === undefined) appApi = require('./api/app')(connectionHubElectron, app);

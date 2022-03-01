@@ -742,6 +742,27 @@ namespace ElectronNET.API
             return result;
         }
 
+        public static async Task<JArray> GetSignalrResultJArrayNoTimeout(string signalrCommand, string parameter1)
+        {
+            var taskCompletionSource = new TaskCompletionSource<JArray>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
+
+            JArray result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                result = (JArray)await task;
+            }
+            finally
+            {
+                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
         public static async Task<JArray> GetSignalrResultJArray(string signalrCommand, JObject parameter1, JObject parameter2)
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();

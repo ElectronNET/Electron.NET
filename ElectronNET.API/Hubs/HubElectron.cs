@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -17,11 +18,18 @@ namespace ElectronNET.API.Hubs
 
     public class HubElectron : Hub
     {
+        public class SignalrResponse
+        {
+            public string Channel { get; set; } = null;
+            public JArray Value { get; set; } = null;
+        }
 
         public async Task SendMessage(string user)
         {
             await Clients.All.SendAsync("ReceiveMessage", user);
         }
+
+        public static readonly ObservableCollection<SignalrResponse> SignalrObservedJArray = new ObservableCollection<SignalrResponse>();
 
         public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<string>> ClientResponsesString = new ConcurrentDictionary<Guid, TaskCompletionSource<string>>();
         public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<int>> ClientResponsesInt = new ConcurrentDictionary<Guid, TaskCompletionSource<int>>();
@@ -546,6 +554,19 @@ namespace ElectronNET.API.Hubs
         #endregion
 
         #region IpcMain
+
+        public void IpcOnChannel(string channel, JArray args)
+        {
+            foreach (var item in HubElectron.SignalrObservedJArray.Where(x => x.Channel == channel).ToList())
+            {
+                HubElectron.SignalrObservedJArray.Remove(item);
+            }
+
+            SignalrResponse signalrResponse = new SignalrResponse();
+            signalrResponse.Channel = channel;
+            signalrResponse.Value = args;
+            HubElectron.SignalrObservedJArray.Add(signalrResponse);
+        }
 
         #endregion
 
