@@ -12,7 +12,7 @@ namespace ElectronNET.WebApp.Controllers
             {
                 Electron.IpcMain.On("process-crash", async (args) =>
                 {
-                    string viewPath = $"http://localhost:{BridgeSettings.WebPort}/crashhang/processcrash";
+                    string viewPath = $"http://127.0.0.1:{BridgeSettings.WebPort}/crashhang/processcrash";
 
                     var browserWindow = await Electron.WindowManager.CreateWindowAsync(viewPath);
                     browserWindow.WebContents.OnCrashed += async (killed) =>
@@ -38,7 +38,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.IpcMain.On("process-hang", async (args) =>
                 {
-                    string viewPath = $"http://localhost:{BridgeSettings.WebPort}/crashhang/processhang";
+                    string viewPath = $"http://127.0.0.1:{BridgeSettings.WebPort}/crashhang/processhang";
 
                     var browserWindow = await Electron.WindowManager.CreateWindowAsync(viewPath);
                     browserWindow.OnUnresponsive += async () =>

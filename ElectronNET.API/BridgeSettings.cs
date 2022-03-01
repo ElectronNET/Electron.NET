@@ -11,7 +11,7 @@
         /// <value>
         /// The socket port.
         /// </value>
-        public static string SocketPort { get; internal set; }
+        public static string SocketPort { get; set; }
 
         /// <summary>
         /// Gets the web port.
@@ -19,6 +19,6 @@
         /// <value>
         /// The web port.
         /// </value>
-        public static string WebPort { get; internal set; }
+        public static string WebPort { get; set; }
     }
 }

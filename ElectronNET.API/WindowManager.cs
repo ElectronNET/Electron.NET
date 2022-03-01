@@ -101,7 +101,7 @@ namespace ElectronNET.API
 
             string browserWindowId = null;
 
-            if (loadUrl.ToUpper() == "HTTP://LOCALHOST")
+            if (loadUrl.ToUpper() == "HTTP://127.0.0.1")
             {
                 loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
             }

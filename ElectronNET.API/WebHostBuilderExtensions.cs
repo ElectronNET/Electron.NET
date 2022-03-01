@@ -50,11 +50,11 @@ namespace ElectronNET.API
                 if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
                 {
                     builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
-                        .UseUrls("http://localhost:" + BridgeSettings.WebPort);
+                        .UseUrls("http://127.0.0.1:" + BridgeSettings.WebPort);
                 }
                 else
                 {
-                    builder.UseUrls("http://localhost:" + BridgeSettings.WebPort);
+                    builder.UseUrls("http://127.0.0.1:" + BridgeSettings.WebPort);
                 }
             }
 

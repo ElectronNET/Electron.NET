@@ -67,6 +67,16 @@ namespace ElectronNET.WebApp
                 endpoints.MapHub<HubElectron>("/electron");
             });
 
+            // Set Defaults
+            if (BridgeSettings.SocketPort == null)
+            {
+                BridgeSettings.SocketPort = "5000";
+            }
+            if (BridgeSettings.WebPort == null)
+            {
+                BridgeSettings.WebPort = "5000";
+            }
+
             if (HybridSupport.IsElectronActive)
             {
                 ElectronBootstrap();
