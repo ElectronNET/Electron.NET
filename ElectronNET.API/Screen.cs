@@ -134,8 +134,7 @@ namespace ElectronNET.API
         /// <returns>The height of the menu bar in pixels.</returns>
         public async Task<int> GetMenuBarHeightAsync()
         {
-            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("screen-getMenuBarHeight");
-            return int.Parse(signalrResult);
+            return await SignalrSerializeHelper.GetSignalrResultInt("screen-getMenuBarHeight");
         }
 
         /// <summary>

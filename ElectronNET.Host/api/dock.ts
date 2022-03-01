@@ -4,7 +4,7 @@ export = (socket: SignalR.Hub.Proxy) => {
 
     socket.on('dock-bounce', (guid, type) => {
         const id = app.dock.bounce(type);
-        socket.invoke('SendClientResponseString', guid, id);
+        socket.invoke('SendClientResponseInt', guid, id);
     });
 
     socket.on('dock-cancelBounce', (id) => {

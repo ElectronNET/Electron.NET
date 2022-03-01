@@ -23,7 +23,7 @@ const browserViewApi = (socket: SignalR.Hub.Proxy) => {
 
         browserViews.push(browserView);
 
-        socket.invoke('SendClientResponseString', guid, browserView['id']);
+        socket.invoke('SendClientResponseInt', guid, browserView['id']);
     });
 
     socket.on('browserView-getBounds', (guid, id) => {

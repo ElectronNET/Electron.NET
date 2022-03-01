@@ -1064,8 +1064,7 @@ namespace ElectronNET.API
         /// <returns>Result of import. Value of 0 indicates success.</returns>
         public async Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default)
         {
-            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
-            return int.Parse(signalrResult);
+            return await SignalrSerializeHelper.GetSignalrResultInt("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -1115,8 +1114,7 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         public async Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default)
         {
-            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("appGetBadgeCount");
-            return int.Parse(signalrResult);
+            return await SignalrSerializeHelper.GetSignalrResultInt("appGetBadgeCount");
         }
 
         /// <summary>

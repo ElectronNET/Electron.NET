@@ -1876,8 +1876,7 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<BrowserWindow> GetParentWindowAsync()
         {
-            string parentId = await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetParentWindow", Id);
-            var browserWindowId = int.Parse(parentId.ToString());
+            int browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("browserWindowGetParentWindow", Id);
             var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
             return browserWindow;
         }

@@ -223,7 +223,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
             if (window) {
                 window.reload();
                 windows.push(window);
-                socket.invoke('SendClientResponseString', guid, window.id);
+                socket.invoke('SendClientResponseInt', guid, window.id);
                 return;
             }
         } else {
@@ -261,7 +261,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
                         windows.forEach(x => ids.push(x.id));
                         console.log("------------------------------------");
                         console.log(ids);
-                        socket.invoke('BrowserWindowsClosed', ids);
+                        socket.invoke('SendClientResponseInt', ids);
                     }
                 }
             }
@@ -292,7 +292,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
         }
 
         windows.push(window);
-        socket.invoke('SendClientResponseString', guid, window.id);
+        socket.invoke('SendClientResponseInt', guid, window.id);
     });
 
     socket.on('browserWindowDestroy', (id) => {
@@ -624,8 +624,8 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
         if (menuItems) {
             menu = Menu.buildFromTemplate(menuItems);
 
-            addMenuItemClickConnector(menu.items, (id) => {
-                socket.invoke('BrowserWindowMenuItemClicked', id);
+            addMenuItemClickConnector(menu.items, (menuid) => {
+                socket.invoke('BrowserWindowMenuItemClicked', id, menuid);
             });
         }
 
@@ -671,7 +671,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
             const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = nativeImage.createFromPath(imagePath);
             thumbarButton.click = () => {
-                socket.invoke('BrowserWindowThumbbarButtonClicked', thumbarButton['id']);
+                socket.invoke('BrowserWindowThumbbarButtonClicked', id, thumbarButton['id']);
             };
         });
 
@@ -746,7 +746,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
     socket.on('browserWindowGetParentWindow', (guid, id) => {
         const browserWindow = getWindowById(id).getParentWindow();
 
-        socket.invoke('SendClientResponseString', guid, browserWindow.id);
+        socket.invoke('SendClientResponseInt', guid, browserWindow.id);
     });
 
     socket.on('browserWindowGetChildWindows', (guid, id) => {

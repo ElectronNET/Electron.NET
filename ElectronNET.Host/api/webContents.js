@@ -101,7 +101,7 @@ module.exports = (socket) => {
     socket.on('webContents-session-getCacheSize', async (guid, id) => {
         const browserWindow = getWindowById(id);
         const size = await browserWindow.webContents.session.getCacheSize();
-        socket.invoke('SendClientResponseString', guid, size);
+        socket.invoke('SendClientResponseInt', guid, size);
     });
     socket.on('webContents-session-getPreloads', (guid, id) => {
         const browserWindow = getWindowById(id);

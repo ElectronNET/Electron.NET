@@ -27,7 +27,7 @@ export = (socket: SignalR.Hub.Proxy) => {
 
     socket.on('screen-getMenuBarHeight', (guid) => {
         const height = screen.getPrimaryDisplay().workArea;
-        socket.invoke('SendClientResponseString', guid, height);
+        socket.invoke('SendClientResponseInt', guid, height);
     });
 
     socket.on('screen-getPrimaryDisplay', (guid) => {

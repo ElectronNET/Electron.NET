@@ -22,7 +22,7 @@ module.exports = (socket) => {
     });
     socket.on('screen-getMenuBarHeight', (guid) => {
         const height = electron_1.screen.getPrimaryDisplay().workArea;
-        socket.invoke('SendClientResponseString', guid, height);
+        socket.invoke('SendClientResponseInt', guid, height);
     });
     socket.on('screen-getPrimaryDisplay', (guid) => {
         const display = electron_1.screen.getPrimaryDisplay();

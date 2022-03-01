@@ -93,12 +93,13 @@ namespace ElectronNET.API.Hubs
             }
         }
 
-        public void SendClientResponseInt(string guidString, JObject response)
+        public void SendClientResponseInt(string guidString, int response)
         {
-            TaskCompletionSource<JObject> tcs;
+            //Type type = ((ObjectHandle)response).Unwrap().GetType();
+            TaskCompletionSource<int> tcs;
             Guid guid = new Guid(guidString);
 
-            if (ClientResponsesJObject.TryGetValue(guid, out tcs))
+            if (ClientResponsesInt.TryGetValue(guid, out tcs))
             {
                 // Trigger the task continuation
                 tcs.TrySetResult(response);
@@ -129,54 +130,54 @@ namespace ElectronNET.API.Hubs
 
         #region App
 
-        public void AppWindowAllClosed(string id)
+        public void AppWindowAllClosed(int id)
         {
             // We invoke this hub always because we dont know if it's started independent from electron
             // If the main app quits id = 0, else we get the event id from electron (appWindowAllClosedEventId)
             Electron.App.TriggerOnWindowAllClosed();
         }
 
-        public void AppBeforeQuit(string id)
+        public void AppBeforeQuit(int id)
         {
             Electron.App.TriggerOnBeforeQuit(new QuitEventArgs());
         }
 
-        public void AppWillQuit(string id)
+        public void AppWillQuit(int id)
         {
             Electron.App.TriggerOnWillQuit(new QuitEventArgs());
         }
 
-        public void AppBrowserWindowBlur(string id)
+        public void AppBrowserWindowBlur(int id)
         {
             Electron.App.TriggerOnBrowserWindowBlur();
         }
 
-        public void AppBrowserWindowFocus(string id)
+        public void AppBrowserWindowFocus(int id)
         {
             Electron.App.TriggerOnBrowserWindowFocus();
         }
 
-        public async Task AppBrowserWindowCreated(string id)
+        public async Task AppBrowserWindowCreated(int id)
         {
             Electron.App.TriggerOnBrowserWindowCreated();
         }
 
-        public void AppWebContentsCreated(string id)
+        public void AppWebContentsCreated(int id)
         {
             Electron.App.TriggerOnWebContentsCreated();
         }
 
-        public void AppAccessibilitySupportChanged(string id, bool state)
+        public void AppAccessibilitySupportChanged(int id, bool state)
         {
             Electron.App.TriggerOnAccessibilitySupportChanged(state);
         }
 
-        public void AppOpenFile(string id, string file)
+        public void AppOpenFile(int id, string file)
         {
             Electron.App.TriggerOnOpenFile(file);
         }
 
-        public void AppOpenUrl(string id, string url)
+        public void AppOpenUrl(int id, string url)
         {
             Electron.App.TriggerOnOpenUrl(url);
         }
@@ -184,32 +185,32 @@ namespace ElectronNET.API.Hubs
 
         #region AutoUpdater
 
-        public void AutoUpdaterOnError(string id, string error)
+        public void AutoUpdaterOnError(int id, string error)
         {
             Electron.AutoUpdater.TriggerOnError(error);
         }
 
-        public void AutoUpdaterOnCheckingForUpdate(string id)
+        public void AutoUpdaterOnCheckingForUpdate(int id)
         {
             Electron.AutoUpdater.TriggerOnCheckingForUpdate();
         }
 
-        public void AutoUpdaterOnUpdateAvailable(string id, JObject jobject)
+        public void AutoUpdaterOnUpdateAvailable(int id, JObject jobject)
         {
             Electron.AutoUpdater.TriggerOnUpdateAvailable(jobject);
         }
 
-        public void AutoUpdaterOnUpdateNotAvailable(string id, JObject jobject)
+        public void AutoUpdaterOnUpdateNotAvailable(int id, JObject jobject)
         {
             Electron.AutoUpdater.TriggerOnUpdateNotAvailable(jobject);
         }
 
-        public void AutoUpdaterOnDownloadProgress(string id, JObject jobject)
+        public void AutoUpdaterOnDownloadProgress(int id, JObject jobject)
         {
             Electron.AutoUpdater.TriggerOnUpdateNotAvailable(jobject);
         }
 
-        public void AutoUpdaterOnUpdateDownloaded(string id, JObject jobject)
+        public void AutoUpdaterOnUpdateDownloaded(int id, JObject jobject)
         {
             Electron.AutoUpdater.TriggerOnUpdateNotAvailable(jobject);
         }
@@ -218,21 +219,21 @@ namespace ElectronNET.API.Hubs
 
         #region BrowserWindow
 
-        public void BrowserWindowReadyToShow(string id)
+        public void BrowserWindowReadyToShow(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnReadyToShow();
         }
 
-        public void BrowserWindowPageTitleUpdated(string id, string title)
+        public void BrowserWindowPageTitleUpdated(int id, string title)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnPageTitleUpdated(title);
         }
 
-        public void BrowserWindowClose(string id)
+        public void BrowserWindowClose(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnClose();
         }
 
@@ -245,187 +246,187 @@ namespace ElectronNET.API.Hubs
             }
         }
 
-        public void BrowserWindowClosed(string id)
+        public void BrowserWindowClosed(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnClosed();
         }
 
-        public void BrowserWindowSessionEnd(string id)
+        public void BrowserWindowSessionEnd(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnSessionEnd();
         }
 
-        public void BrowserWindowUnresponsive(string id)
+        public void BrowserWindowUnresponsive(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnUnresponsive();
         }
 
-        public void BrowserWindowResponsive(string id)
+        public void BrowserWindowResponsive(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnResponsive();
         }
 
-        public void BrowserWindowBlur(string id)
+        public void BrowserWindowBlur(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnBlur();
         }
 
-        public void BrowserWindowFocus(string id)
+        public void BrowserWindowFocus(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnFocus();
         }
 
-        public void BrowserWindowShow(string id)
+        public void BrowserWindowShow(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnShow();
         }
 
-        public void BrowserWindowHide(string id)
+        public void BrowserWindowHide(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnHide();
         }
 
-        public void BrowserWindowMaximize(string id)
+        public void BrowserWindowMaximize(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnMaximize();
         }
 
-        public void BrowserWindowUnmaximize(string id)
+        public void BrowserWindowUnmaximize(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnUnmaximize();
         }
 
-        public void BrowserWindowMinimize(string id)
+        public void BrowserWindowMinimize(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnMinimize();
         }
 
-        public void BrowserWindowRestore(string id)
+        public void BrowserWindowRestore(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnRestore();
         }
 
-        public void BrowserWindowResize(string id)
+        public void BrowserWindowResize(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnResize();
         }
 
-        public void BrowserWindowMove(string id)
+        public void BrowserWindowMove(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnMove();
         }
 
-        public void BrowserWindowMoved(string id)
+        public void BrowserWindowMoved(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnMoved();
         }
 
-        public void BrowserWindowEnterFullScreen(string id)
+        public void BrowserWindowEnterFullScreen(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnEnterFullScreen();
         }
 
-        public void BrowserWindowLeaveFullScreen(string id)
+        public void BrowserWindowLeaveFullScreen(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnLeaveFullScreen();
         }
 
-        public void BrowserWindowEnterHtmlFullScreen(string id)
+        public void BrowserWindowEnterHtmlFullScreen(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnEnterHtmlFullScreen();
         }
 
-        public void BrowserWindowLeaveHtmlFullScreen(string id)
+        public void BrowserWindowLeaveHtmlFullScreen(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnLeaveHtmlFullScreen();
         }
 
-        public void BrowserWindowAppCommand(string id, string command)
+        public void BrowserWindowAppCommand(int id, string command)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnAppCommand(command);
         }
 
-        public void BrowserWindowScrollTouchBegin(string id)
+        public void BrowserWindowScrollTouchBegin(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnScrollTouchBegin();
         }
 
-        public void BrowserWindowScrollTouchEnd(string id)
+        public void BrowserWindowScrollTouchEnd(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnScrollTouchEnd();
         }
 
-        public void BrowserWindowScrollTouchEdge(string id)
+        public void BrowserWindowScrollTouchEdge(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnScrollTouchEdge();
         }
 
-        public void BrowserWindowSwipe(string id, string direction)
+        public void BrowserWindowSwipe(int id, string direction)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnSwipe(direction);
         }
 
-        public void BrowserWindowSheetBegin(string id)
+        public void BrowserWindowSheetBegin(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnSheetBegin();
         }
 
-        public void BrowserWindowSheetEnd(string id)
+        public void BrowserWindowSheetEnd(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnSheetEnd();
         }
 
-        public void BrowserWindowNewWindowForTab(string id)
+        public void BrowserWindowNewWindowForTab(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.TriggerOnNewWindowForTab();
         }
 
-        public void BrowserWindowMenuItemClicked(string id)
+        public void BrowserWindowMenuItemClicked(int id, string menuid)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
-            window.TriggerOnMenuItemClicked(id);
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
+            window.TriggerOnMenuItemClicked(menuid);
         }
 
-        public void BrowserWindowThumbbarButtonClicked(string id)
+        public void BrowserWindowThumbbarButtonClicked(int id, string thumbarButtonId)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
-            ThumbarButton thumbarButton = window.ThumbarButtons.Where(x => x.Id == id).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
+            ThumbarButton thumbarButton = window.ThumbarButtons.Where(x => x.Id == thumbarButtonId).FirstOrDefault();
             thumbarButton?.Click();
         }
 
         #endregion
 
         #region Cookies
-        public void CookiesOnChanged(string id, JArray jarray)
+        public void CookiesOnChanged(int id, JArray jarray)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.WebContents.Session.Cookies.TriggerOnChanged(jarray);
         }
         #endregion
@@ -639,15 +640,15 @@ namespace ElectronNET.API.Hubs
         #endregion
 
         #region WebContents
-        public void WebContentOnCrashed(string id, bool crashed)
+        public void WebContentOnCrashed(int id, bool crashed)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.WebContents.TriggerOnCrashed(crashed);
         }
 
-        public void WebContentOnDidFinishLoad(string id)
+        public void WebContentOnDidFinishLoad(int id)
         {
-            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == Int32.Parse(id)).FirstOrDefault();
+            var window = Electron.WindowManager.BrowserWindows.Where(o => o.Id == id).FirstOrDefault();
             window.WebContents.TriggerOnDidFinishLoad();
         }
         #endregion

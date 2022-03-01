@@ -152,8 +152,7 @@ namespace ElectronNET.API
         /// <returns>Callback is invoked with the session's current cache size.</returns>
         public async Task<int> GetCacheSizeAsync()
         {
-            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("webContents-session-getCacheSize", Id);
-            return int.Parse(signalrResult);
+            return await SignalrSerializeHelper.GetSignalrResultInt("webContents-session-getCacheSize", Id);
         }
 
         /// <summary>

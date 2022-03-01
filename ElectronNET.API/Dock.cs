@@ -53,8 +53,7 @@ namespace ElectronNET.API
         /// <returns>Return an ID representing the request.</returns>
         public async Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
         {
-            var result = await SignalrSerializeHelper.GetSignalrResultString("dock-bounce", type.GetDescription());
-            return int.Parse(result);
+            return await SignalrSerializeHelper.GetSignalrResultInt("dock-bounce", type.GetDescription());
         }
 
         /// <summary>

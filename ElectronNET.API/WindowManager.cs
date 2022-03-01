@@ -96,10 +96,10 @@ namespace ElectronNET.API
         public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://127.0.0.1:5000")
         {
             var guid = Guid.NewGuid();
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
 
-            string browserWindowId = null;
+            int browserWindowId;
 
             if (loadUrl.ToUpper() == "HTTP://127.0.0.1")
             {
@@ -118,7 +118,7 @@ namespace ElectronNET.API
             {
                 options.X = 0;
                 options.Y = 0;
-                browserWindowId = await SignalrSerializeHelper.GetSignalrResultString("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+                browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
 
             }
             else
@@ -135,11 +135,11 @@ namespace ElectronNET.API
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
-                browserWindowId = await SignalrSerializeHelper.GetSignalrResultString("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+                browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
 
             BrowserWindow browserWindow;
-            browserWindow = new BrowserWindow(int.Parse(browserWindowId));
+            browserWindow = new BrowserWindow(browserWindowId);
             _browserWindows.Add(browserWindow);
 
 
@@ -177,10 +177,9 @@ namespace ElectronNET.API
                 NullValueHandling = NullValueHandling.Ignore
             };
 
-            var browserWindowResult = await SignalrSerializeHelper.GetSignalrResultString("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+            int browserViewId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
 
-            string browserViewId = browserWindowResult.ToString();
-            BrowserView browserView = new BrowserView(int.Parse(browserViewId));
+            BrowserView browserView = new BrowserView(browserViewId);
 
             _browserViews.Add(browserView);
             return browserView;

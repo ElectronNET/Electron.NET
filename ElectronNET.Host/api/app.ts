@@ -226,7 +226,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
 
     socket.on('appImportCertificate', (guid, options) => {
         app.importCertificate(options, (result) => {
-            socket.invoke('SendClientResponseString', guid, result);
+            socket.invoke('SendClientResponseInt', guid, result);
         });
     });
 
@@ -247,7 +247,7 @@ export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
 
     socket.on('appGetBadgeCount', (guid) => {
         const count = app.getBadgeCount();
-        socket.invoke('SendClientResponseString', guid, count);
+        socket.invoke('SendClientResponseInt', guid, count);
     });
 
     socket.on('appIsUnityRunning', (guid) => {

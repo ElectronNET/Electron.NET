@@ -903,5 +903,145 @@ namespace ElectronNET.API
             return result;
         }
 
+        public static async Task<int> GetSignalrResultInt(string signalrCommand)
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
+
+            int result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
+                {
+                    result = await task;
+                }
+                else
+                {
+                    throw new ArgumentNullException();
+                }
+            }
+            finally
+            {
+                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
+        public static async Task<int> GetSignalrResultInt(string signalrCommand, int parameter1)
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
+
+            int result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
+                {
+                    result = await task;
+                }
+                else
+                {
+                    throw new ArgumentNullException();
+                }
+            }
+            finally
+            {
+                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
+        public static async Task<int> GetSignalrResultInt(string signalrCommand, string parameter1)
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
+
+            int result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
+                {
+                    result = await task;
+                }
+                else
+                {
+                    throw new ArgumentNullException();
+                }
+            }
+            finally
+            {
+                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
+        public static async Task<int> GetSignalrResultInt(string signalrCommand, JObject parameter1)
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
+
+            int result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
+                {
+                    result = await task;
+                }
+                else
+                {
+                    throw new ArgumentNullException();
+                }
+            }
+            finally
+            {
+                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
+        public static async Task<int> GetSignalrResultInt(string signalrCommand, JObject parameter1, string parameter2)
+        {
+            var taskCompletionSource = new TaskCompletionSource<int>();
+            var guid = Guid.NewGuid();
+            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
+
+            int result;
+            try
+            {
+                var task = taskCompletionSource.Task;
+                if (await Task.WhenAny(task, Task.Delay(5000)) == task)
+                {
+                    result = await task;
+                }
+                else
+                {
+                    throw new ArgumentNullException();
+                }
+            }
+            finally
+            {
+                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+            }
+
+            return result;
+        }
+
     }
 }

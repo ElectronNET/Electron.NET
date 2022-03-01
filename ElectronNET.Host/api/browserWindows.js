@@ -190,7 +190,7 @@ module.exports = (socket, app) => {
             if (window) {
                 window.reload();
                 windows.push(window);
-                socket.invoke('SendClientResponseString', guid, window.id);
+                socket.invoke('SendClientResponseInt', guid, window.id);
                 return;
             }
         }
@@ -225,7 +225,7 @@ module.exports = (socket, app) => {
                         windows.forEach(x => ids.push(x.id));
                         console.log("------------------------------------");
                         console.log(ids);
-                        socket.invoke('BrowserWindowsClosed', ids);
+                        socket.invoke('SendClientResponseInt', ids);
                     }
                 }
             }
@@ -251,7 +251,7 @@ module.exports = (socket, app) => {
             app['mainWindow'] = window;
         }
         windows.push(window);
-        socket.invoke('SendClientResponseString', guid, window.id);
+        socket.invoke('SendClientResponseInt', guid, window.id);
     });
     socket.on('browserWindowDestroy', (id) => {
         getWindowById(id).destroy();
@@ -489,8 +489,8 @@ module.exports = (socket, app) => {
         let menu = null;
         if (menuItems) {
             menu = electron_1.Menu.buildFromTemplate(menuItems);
-            addMenuItemClickConnector(menu.items, (id) => {
-                socket.invoke('BrowserWindowMenuItemClicked', id);
+            addMenuItemClickConnector(menu.items, (menuid) => {
+                socket.invoke('BrowserWindowMenuItemClicked', id, menuid);
             });
         }
         getWindowById(id).setMenu(menu);
@@ -526,7 +526,7 @@ module.exports = (socket, app) => {
             const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = electron_1.nativeImage.createFromPath(imagePath);
             thumbarButton.click = () => {
-                socket.invoke('BrowserWindowThumbbarButtonClicked', thumbarButton['id']);
+                socket.invoke('BrowserWindowThumbbarButtonClicked', id, thumbarButton['id']);
             };
         });
         const success = getWindowById(id).setThumbarButtons(thumbarButtons);
@@ -580,7 +580,7 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowGetParentWindow', (guid, id) => {
         const browserWindow = getWindowById(id).getParentWindow();
-        socket.invoke('SendClientResponseString', guid, browserWindow.id);
+        socket.invoke('SendClientResponseInt', guid, browserWindow.id);
     });
     socket.on('browserWindowGetChildWindows', (guid, id) => {
         const browserWindows = getWindowById(id).getChildWindows();

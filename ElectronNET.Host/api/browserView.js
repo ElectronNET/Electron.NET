@@ -19,7 +19,7 @@ const browserViewApi = (socket) => {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
         browserViews.push(browserView);
-        socket.invoke('SendClientResponseString', guid, browserView['id']);
+        socket.invoke('SendClientResponseInt', guid, browserView['id']);
     });
     socket.on('browserView-getBounds', (guid, id) => {
         const bounds = getBrowserViewById(id).getBounds();

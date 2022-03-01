@@ -122,7 +122,7 @@ export = (socket: SignalR.Hub.Proxy) => {
         const browserWindow = getWindowById(id);
         const size = await browserWindow.webContents.session.getCacheSize();
 
-        socket.invoke('SendClientResponseString', guid, size);
+        socket.invoke('SendClientResponseInt', guid, size);
     });
 
     socket.on('webContents-session-getPreloads', (guid, id) => {

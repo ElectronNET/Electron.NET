@@ -3,7 +3,7 @@ const electron_1 = require("electron");
 module.exports = (socket) => {
     socket.on('dock-bounce', (guid, type) => {
         const id = electron_1.app.dock.bounce(type);
-        socket.invoke('SendClientResponseString', guid, id);
+        socket.invoke('SendClientResponseInt', guid, id);
     });
     socket.on('dock-cancelBounce', (id) => {
         electron_1.app.dock.cancelBounce(id);
