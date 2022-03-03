@@ -196,11 +196,6 @@ namespace ElectronNET.API.Entities
         public bool ContextIsolation { get; set; } = true;
 
         /// <summary>
-        /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
-        /// </summary>
-        public bool NativeWindowOpen { get; set; }
-
-        /// <summary>
         /// Whether to enable the Webview. Defaults to the value of the nodeIntegration option. The
         /// preload script configured for the Webview will have node integration enabled
         /// when it is executed so you should ensure remote/untrusted content is not able to
