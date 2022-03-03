@@ -1,7 +1,8 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { Notification } from 'electron';
 const notifications: Electron.Notification[] = (global['notifications'] = global['notifications'] || []) as Electron.Notification[];
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('createNotification', (options) => {
         const notification = new Notification(options);
         let haveEvent = false;

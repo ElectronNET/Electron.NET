@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { shell } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
 
     socket.on('shell-showItemInFolder', (guid, fullPath) => {
         shell.showItemInFolder(fullPath);

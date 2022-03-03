@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { globalShortcut } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {
             socket.invoke('GlobalShortcutPressed', accelerator);

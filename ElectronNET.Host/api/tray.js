@@ -1,7 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
 let tray = (global['$tray'] = global['tray'] || { value: null });
-let electronSocket;
 module.exports = (socket) => {
     socket.on('register-tray-click', (id) => {
         if (tray.value) {

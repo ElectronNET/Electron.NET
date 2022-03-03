@@ -1,3 +1,4 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 import { browserViewMediateService } from './browserView';
 const path = require('path');
@@ -7,7 +8,7 @@ let window, lastOptions;
 let mainWindowURL;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
-export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
+export = (socket: HubConnection, app: Electron.App) => {
 
     app.on('login', (event, webContents, request, authInfo, callback) => {
         if (authInfo.isProxy) {

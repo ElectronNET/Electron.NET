@@ -1,7 +1,8 @@
+import { HubConnection  } from "@microsoft/signalr";
 
 let isQuitWindowAllClosed = true;
 let appWindowAllClosedEventId;
-export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
+export = (socket: HubConnection, app: Electron.App) => {
 
     // By default, quit when all windows are closed
     app.on('window-all-closed', () => {

@@ -1,9 +1,10 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { BrowserView } from 'electron';
 const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
 let browserView: BrowserView;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 
-const browserViewApi = (socket: SignalR.Hub.Proxy) => {
+const browserViewApi = (socket: HubConnection) => {
 
     socket.on('createBrowserView', (guid, options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {

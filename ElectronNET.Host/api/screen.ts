@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { screen } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     
     socket.on('register-screen-display-added', (id) => {
         screen.on('display-added', (event, display) => {

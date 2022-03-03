@@ -1,8 +1,9 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { BrowserWindow, BrowserView } from 'electron';
 import { browserViewMediateService } from './browserView';
 const fs = require('fs');
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
 

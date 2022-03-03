@@ -1,4 +1,6 @@
-export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
+import { HubConnection  } from "@microsoft/signalr";
+
+export = (socket: HubConnection, app: Electron.App) => {
 
     socket.on('appCommandLineAppendSwitch', (the_switch: string, value: string) => {
         app.commandLine.appendSwitch(the_switch, value);

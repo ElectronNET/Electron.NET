@@ -1,7 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { clipboard, nativeImage } from 'electron';
-let electronSocket;
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
 
     socket.on('clipboard-readText', (guid, type) => {
         const text = clipboard.readText(type);

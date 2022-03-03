@@ -1,8 +1,8 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { Menu, Tray, nativeImage } from 'electron';
 let tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { value: null });
-let electronSocket;
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('register-tray-click', (id) => {
         if (tray.value) {
             tray.value.on('click', (event, bounds) => {

@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { BrowserWindow, dialog } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('showMessageBox', async (guid, browserWindow, options) => {
         if ('id' in browserWindow) {
             const window = BrowserWindow.fromId(browserWindow.id);

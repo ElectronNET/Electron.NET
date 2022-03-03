@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { powerMonitor } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('register-pm-lock-screen', () => {
         powerMonitor.on('lock-screen', () => {
             socket.invoke('TriggerOnLockScreen');

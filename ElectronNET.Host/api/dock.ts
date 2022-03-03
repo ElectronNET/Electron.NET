@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { app, Menu } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
 
     socket.on('dock-bounce', (guid, type) => {
         const id = app.dock.bounce(type);

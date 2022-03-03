@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { nativeTheme } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
 
     socket.on('nativeTheme-shouldUseDarkColors', (guid) => {
         const shouldUseDarkColors = nativeTheme.shouldUseDarkColors;

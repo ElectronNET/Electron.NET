@@ -1,7 +1,8 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { Menu, BrowserWindow } from 'electron';
 const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
 

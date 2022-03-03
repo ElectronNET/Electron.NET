@@ -1,6 +1,7 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { ipcMain, BrowserWindow, BrowserView } from 'electron';
 
-export = (socket: SignalR.Hub.Proxy) => {
+export = (socket: HubConnection) => {
 
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {

@@ -1,7 +1,7 @@
-import { Socket } from 'net';
+import { HubConnection  } from "@microsoft/signalr";
 import { autoUpdater } from 'electron-updater';
 
-export = (socket: SignalR.Hub.Proxy, app: Electron.App) => {
+export = (socket: HubConnection, app: Electron.App) => {
 
     socket.on('register-autoUpdater-error-event', (id) => {
         autoUpdater.on('error', (error) => {

@@ -1,6 +1,5 @@
 "use strict";
 const electron_1 = require("electron");
-let electronSocket;
 module.exports = (socket) => {
     socket.on('clipboard-readText', (guid, type) => {
         const text = electron_1.clipboard.readText(type);
