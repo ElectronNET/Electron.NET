@@ -15,10 +15,10 @@ namespace ElectronNET.API.Entities
         public bool DevTools { get; set; } = true;
 
         /// <summary>
-        /// Whether node integration is enabled. Required to enable IPC. Default is true.
+        /// Whether node integration is enabled. Required to enable IPC. Default is false.
         /// </summary>
-        [DefaultValue(true)]
-        public bool NodeIntegration { get; set; } = true;
+        [DefaultValue(false)]
+        public bool NodeIntegration { get; set; } = false;
 
         /// <summary>
         /// Whether node integration is enabled in web workers. Default is false.
@@ -172,6 +172,12 @@ namespace ElectronNET.API.Entities
         public bool Offscreen { get; set; }
 
         /// <summary>
+        /// Whether to enable built-in spellcheck
+        /// </summary>
+        [DefaultValue(true)]
+        public bool Spellcheck { get; set; } = true;
+
+        /// <summary>
         /// Whether to run Electron APIs and the specified preload script in a separate
         /// JavaScript context. Defaults to false. The context that the preload script runs
         /// in will still have full access to the document and window globals but it will
@@ -184,9 +190,10 @@ namespace ElectronNET.API.Entities
         /// can access this context in the dev tools by selecting the 'Electron Isolated
         /// Context' entry in the combo box at the top of the Console tab. This option is
         /// currently experimental and may change or be removed in future Electron releases.
+        /// Default value is true.
         /// </summary>
-        [DefaultValue(false)]
-        public bool ContextIsolation { get; set; } = false;
+        [DefaultValue(true)]
+        public bool ContextIsolation { get; set; } = true;
 
         /// <summary>
         /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
@@ -208,9 +215,9 @@ namespace ElectronNET.API.Entities
         public bool WebviewTag { get; set; } = false;
 
         /// <summary>
-        /// Whether to enable the remote module. Defaults to false.
+        /// Make the web view transparent
         /// </summary>
         [DefaultValue(false)]
-        public bool EnableRemoteModule { get; set; } = false;
+        public bool Transparent { get; set; } = false;
     }
 }

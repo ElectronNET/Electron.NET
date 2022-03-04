@@ -1,5 +1,10 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    public class DisplayChanged
+    {
+        public Display display { get; set; }
+        public string[] metrics { get; set; }
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -21,12 +26,12 @@
         /// <summary>
         /// Can be 0, 90, 180, 270, represents screen rotation in clock-wise degrees.
         /// </summary>
-        public int Rotation { get; set; }
+        public float Rotation { get; set; }
 
         /// <summary>
         /// Output device's pixel scale factor.
         /// </summary>
-        public int ScaleFactor { get; set; }
+        public float ScaleFactor { get; set; }
 
         /// <summary>
         /// Gets or sets the size.

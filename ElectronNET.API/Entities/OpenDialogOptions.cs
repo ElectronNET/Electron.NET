@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -39,6 +40,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Message to display above input boxes.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string Message { get; set; }
 
         /// <summary>

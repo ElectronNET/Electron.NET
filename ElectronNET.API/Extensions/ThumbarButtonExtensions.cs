@@ -23,7 +23,7 @@ namespace ElectronNET.API.Extensions
 
         public static ThumbarButton GetThumbarButton(this List<ThumbarButton> thumbarButtons, string id)
         {
-            ThumbarButton result = new ThumbarButton("");
+            ThumbarButton result = new("");
 
             foreach (var item in thumbarButtons)
             {

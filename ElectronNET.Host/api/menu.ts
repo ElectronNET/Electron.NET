@@ -1,15 +1,14 @@
-import { Socket } from 'net';
+import { HubConnection  } from "@microsoft/signalr";
 import { Menu, BrowserWindow } from 'electron';
-const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
+
+export = (socket: HubConnection) => {
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addContextMenuItemClickConnector(menu.items, browserWindowId, (id, windowId) => {
-            electronSocket.emit('contextMenuItemClicked', [id, windowId]);
+            socket.invoke('MenuContextMenuItemClicked', [id, browserWindowId]);
         });
 
         const index = contextMenuItems.findIndex(contextMenu => contextMenu.browserWindowId === browserWindowId);
@@ -33,7 +32,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id, browserWindowId); };
+                item.click = () => {
+                    callback(item.id, browserWindowId);
+                };
             }
         });
     }
@@ -51,7 +52,7 @@ export = (socket: Socket) => {
         const menu = Menu.buildFromTemplate(menuItems);
 
         addMenuItemClickConnector(menu.items, (id) => {
-            electronSocket.emit('menuItemClicked', id);
+            socket.invoke('MenuMenuItemClicked', id);
         });
 
         Menu.setApplicationMenu(menu);
@@ -64,7 +65,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

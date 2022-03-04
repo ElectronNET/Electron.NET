@@ -1,31 +1,29 @@
 "use strict";
 const electron_1 = require("electron");
-let electronSocket;
 module.exports = (socket) => {
-    electronSocket = socket;
-    socket.on('shell-showItemInFolder', (fullPath) => {
+    socket.on('shell-showItemInFolder', (guid, fullPath) => {
         electron_1.shell.showItemInFolder(fullPath);
-        electronSocket.emit('shell-showItemInFolderCompleted');
+        socket.invoke('SendClientResponseBool', guid, true);
     });
-    socket.on('shell-openPath', async (path) => {
+    socket.on('shell-openPath', async (guid, path) => {
         const errorMessage = await electron_1.shell.openPath(path);
-        electronSocket.emit('shell-openPathCompleted', errorMessage);
+        socket.invoke('SendClientResponseString', guid, errorMessage);
     });
-    socket.on('shell-openExternal', async (url, options) => {
+    socket.on('shell-openExternal', async (guid, url) => {
         let result = '';
-        if (options) {
-            await electron_1.shell.openExternal(url, options).catch(e => {
-                result = e.message;
-            });
-        }
-        else {
-            await electron_1.shell.openExternal(url).catch((e) => {
-                result = e.message;
-            });
-        }
-        electronSocket.emit('shell-openExternalCompleted', result);
+        await electron_1.shell.openExternal(url).catch((e) => {
+            result = e.message;
+        });
+        socket.invoke('SendClientResponseString', guid, result);
     });
-    socket.on('shell-trashItem', async (fullPath, deleteOnFail) => {
+    socket.on('shell-openExternal-options', async (guid, url, options) => {
+        let result = '';
+        await electron_1.shell.openExternal(url, options).catch(e => {
+            result = e.message;
+        });
+        socket.invoke('SendClientResponseString', guid, result);
+    });
+    socket.on('shell-trashItem', async (guid, fullPath, deleteOnFail) => {
         let success = false;
         try {
             await electron_1.shell.trashItem(fullPath);
@@ -34,18 +32,18 @@ module.exports = (socket) => {
         catch (error) {
             success = false;
         }
-        electronSocket.emit('shell-trashItem-completed', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
     socket.on('shell-beep', () => {
         electron_1.shell.beep();
     });
-    socket.on('shell-writeShortcutLink', (shortcutPath, operation, options) => {
+    socket.on('shell-writeShortcutLink', (guid, shortcutPath, operation, options) => {
         const success = electron_1.shell.writeShortcutLink(shortcutPath, operation, options);
-        electronSocket.emit('shell-writeShortcutLinkCompleted', success);
+        socket.invoke('SendClientResponseBool', guid, success);
     });
-    socket.on('shell-readShortcutLink', (shortcutPath) => {
+    socket.on('shell-readShortcutLink', (guid, shortcutPath) => {
         const shortcutDetails = electron_1.shell.readShortcutLink(shortcutPath);
-        electronSocket.emit('shell-readShortcutLinkCompleted', shortcutDetails);
+        socket.invoke('SendClientResponseJObject', guid, shortcutDetails);
     });
 };
 //# sourceMappingURL=shell.js.map

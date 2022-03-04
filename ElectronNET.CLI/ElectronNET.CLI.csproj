@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
 
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>dotnet-electronize</AssemblyName>
     <ToolCommandName>electronize</ToolCommandName>
 
@@ -13,7 +13,7 @@
     <PackageId>ElectronNET.CLI</PackageId>
     <!-- Version 99 is just set for local development stuff to avoid a conflict with "real" packages on NuGet.org -->
     <Version>99.0.0.0</Version>
-    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira, Thiemo Borger</Authors>
     <Product>Electron.NET</Product>
     <Company />
     <Description>
@@ -66,6 +66,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\desktopCapturer.js" Link="ElectronHost\api\desktopCapturer.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />
@@ -77,7 +78,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

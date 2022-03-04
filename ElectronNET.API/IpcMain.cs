@@ -1,20 +1,27 @@
-﻿using Newtonsoft.Json;
+﻿using ElectronNET.API.Hubs;
+using ElectronNET.API.Models;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using ReactiveUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace ElectronNET.API
 {
+
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
     public sealed class IpcMain
     {
         private static IpcMain _ipcMain;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal IpcMain() { }
 
@@ -43,23 +50,85 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void On(string channel, Action<object> listener)
+        public async void On(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
-            BridgeConnector.Socket.Off(channel);
-            BridgeConnector.Socket.On(channel, (args) => 
-            {
-                List<object> objectArray = FormatArguments(args);
+            await Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannel", channel);
 
-                if(objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
-            });
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJArray, "CollectionChanged")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .Subscribe(x => {
+                    if (x.EventArgs.NewItems != null)
+                    {
+                        foreach (SignalrResponse entry in x.EventArgs.NewItems)
+                        {
+                            if (entry.Channel == channel && entry.Value != null)
+                            {
+                                List<object> objectArray = FormatArguments(entry.Value);
+
+                                if (objectArray.Count == 1)
+                                {
+                                    listener(objectArray.First());
+                                }
+                                else
+                                {
+                                    listener(objectArray);
+                                }
+                            }
+                        }
+                    }
+                });
+
+        }
+
+        /// <summary>
+        ///  Listens to channel, when a new message arrives listener would be called with 
+        ///  listener(event, args...). This listner will keep the window event sender id
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public async void OnWithId(string channel, Action<(int browserId, int webContentId, object arguments)> listener)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannelWithId", channel);
+
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJObject, "CollectionChanged")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .Subscribe(x => {
+                    if (x.EventArgs.NewItems != null)
+                    {
+                        foreach (SignalrResponseJObject entry in x.EventArgs.NewItems)
+                        {
+                            //ArgsAndIds signalrResponse = ((JObject)args).ToObject<ArgsAndIds>();
+                            if (entry.Channel == channel && entry.Value != null)
+                            {
+                                var signalrResponse = ((JObject)entry.Value).ToObject<ArgsAndIds>();
+                                List<object> objectArray = FormatArgumentsIds(signalrResponse.args);
+
+                                if (objectArray.Count == 1)
+                                {
+                                    listener((signalrResponse.id, signalrResponse.wcId, objectArray.First()));
+                                }
+                                else
+                                {
+                                    listener((signalrResponse.id, signalrResponse.wcId, objectArray));
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+
+        private class ArgsAndIds
+        {
+            public int id { get; set; }
+            public int wcId { get; set; }
+            public object[] args { get; set; }
+        }
+
+        private List<object> FormatArgumentsIds(object[] objectArray)
+        {
+            return objectArray.Where(o => o is object).ToList();
         }
 
         private List<object> FormatArguments(object args)
@@ -87,24 +156,36 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="listener"></param>
-        public void OnSync(string channel, Func<object, object> listener)
+        public async void OnSync(string channel, Func<object, object> listener)
         {
-            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) => {
-                List<object> objectArray = FormatArguments(args);
-                object parameter;
-                if (objectArray.Count == 1)
-                {
-                    parameter = objectArray.First();
-                }
-                else
-                {
-                    parameter = objectArray;
-                }
+            await Electron.SignalrElectron.Clients.All.SendAsync("registerSyncIpcMainChannel", channel);
 
-                var result = listener(parameter);
-                BridgeConnector.Socket.Emit(channel + "Sync", result);
-            });
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJArray, "CollectionChanged")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.TaskpoolScheduler)
+                .Subscribe(x => {
+                    if (x.EventArgs.NewItems != null)
+                    {
+                        foreach (SignalrResponse entry in x.EventArgs.NewItems)
+                        {
+                            if (entry.Channel == channel && entry.Value != null)
+                            {
+                                List<object> objectArray = FormatArguments(entry.Value);
+                                object parameter;
+                                if (objectArray.Count == 1)
+                                {
+                                    parameter = objectArray.First();
+                                }
+                                else
+                                {
+                                    parameter = objectArray;
+                                }
+                                var result = listener(parameter);
+                                Electron.SignalrElectron.Clients.All.SendAsync(channel + "Sync", result);
+                            }
+                        }
+                    }
+                });            
         }
 
         /// <summary>
@@ -113,22 +194,21 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void Once(string channel, Action<object> listener)
+        public async void Once(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) =>
-            {
-                List<object> objectArray = FormatArguments(args);
+            var resultSignalr = await SignalrSerializeHelper.GetSignalrResultJArrayNoTimeout("registerOnceIpcMainChannel", channel);
 
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
-            });
+            List<object> objectArray = FormatArguments(resultSignalr);
+
+            if (objectArray.Count == 1)
+            {
+                listener(objectArray.First());
+            }
+            else
+            {
+                listener(objectArray);
+            }
+
         }
 
         /// <summary>
@@ -137,7 +217,7 @@ namespace ElectronNET.API
         /// <param name="channel">Channelname.</param>
         public void RemoveAllListeners(string channel)
         {
-            BridgeConnector.Socket.Emit("removeAllListenersIpcMainChannel", channel);
+            Electron.SignalrElectron.Clients.All.SendAsync("removeAllListenersIpcMainChannel", channel);
         }
 
         /// <summary>
@@ -157,25 +237,27 @@ namespace ElectronNET.API
 
             foreach (var parameterObject in data)
             {
-                if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
+                if (parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
                     jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
                     jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
                     objects.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
             }
         }
 
@@ -190,9 +272,9 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserView browserView, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            List<JObject> jobjects = new();
+            List<JArray> jarrays = new();
+            List<object> objects = new();
 
             foreach (var parameterObject in data)
             {
@@ -208,17 +290,38 @@ namespace ElectronNET.API
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
+                Electron.SignalrElectron.Clients.All.SendAsync("sendToIpcRendererBrowserView", browserView.Id, channel, data);
             }
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        /// <summary>
+        /// Log a message to the console output pipe. This is used when running with "detachedProcess" : true on the electron.manifest.json,
+        /// as in that case we can't open pipes to read the console output from the child process anymore
+        /// </summary>
+        /// <param name="text">Message to log</param>
+        public static async void ConsoleLog(string text)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("console-stdout", text);
+        }
+
+        /// <summary>
+        /// Log a message to the console error pipe. This is used when running with "detachedProcess" : true on the electron.manifest.json,
+        /// as in that case we can't open pipes to read the console output from the child process anymore
+        /// </summary>
+        /// <param name="text">Message to log</param>
+
+        public static async void ConsoleError(string text)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("console-stderr", text);
+        }
+
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

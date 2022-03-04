@@ -1,6 +1,6 @@
 {
   "executable": "ElectronNET.WebApp",
-  "splashscreen": {
+  "splashscreen2": {
     "imageFile": "/wwwroot/assets/img/about@2x.png"
   },
   "environment": "Production",

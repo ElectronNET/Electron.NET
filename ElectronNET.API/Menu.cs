@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using ElectronNET.API.Extensions;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ElectronNET.API
 {
@@ -15,7 +17,7 @@ namespace ElectronNET.API
     public sealed class Menu
     {
         private static Menu _menu;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Menu() { }
 
@@ -45,27 +47,30 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _menuItems.AsReadOnly(); } }
-        private List<MenuItem> _menuItems = new List<MenuItem>();
+        private readonly List<MenuItem> _menuItems = new();
 
         /// <summary>
         /// Sets the application menu.
         /// </summary>
         /// <param name="menuItems">The menu items.</param>
-        public void SetApplicationMenu(MenuItem[] menuItems)
+        public async void SetApplicationMenu(MenuItem[] menuItems)
         {
             _menuItems.Clear();
 
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _menuItems.AddRange(menuItems);
+        }
 
-            BridgeConnector.Socket.Off("menuItemClicked");
-            BridgeConnector.Socket.On("menuItemClicked", (id) => {
-                MenuItem menuItem = _menuItems.GetMenuItem(id.ToString());
-                menuItem.Click?.Invoke();
-            });
+        /// <summary>
+        /// Get appication menu item
+        /// </summary>
+        /// <param name="id">The items id.</param>
+        public MenuItem GetMenuItem(string id)
+        {
+            return _menuItems.GetMenuItem(id);
         }
 
         /// <summary>
@@ -75,19 +80,19 @@ namespace ElectronNET.API
         /// The context menu items.
         /// </value>
         public IReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>> ContextMenuItems { get; internal set; }
-        private Dictionary<int, List<MenuItem>> _contextMenuItems = new Dictionary<int, List<MenuItem>>();
+        private readonly Dictionary<int, List<MenuItem>> _contextMenuItems = new();
 
         /// <summary>
         /// Sets the context menu.
         /// </summary>
         /// <param name="browserWindow">The browser window.</param>
         /// <param name="menuItems">The menu items.</param>
-        public void SetContextMenu(BrowserWindow browserWindow, MenuItem[] menuItems)
+        public async void SetContextMenu(BrowserWindow browserWindow, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
+            Electron.SignalrElectron.Clients.All.SendAsync("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
 
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
             {
@@ -95,28 +100,18 @@ namespace ElectronNET.API
                 var x = _contextMenuItems.ToDictionary(kv => kv.Key, kv => kv.Value.AsReadOnly());
                 ContextMenuItems = new ReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>>(x);
             }
-
-            BridgeConnector.Socket.Off("contextMenuItemClicked");
-            BridgeConnector.Socket.On("contextMenuItemClicked", (results) =>
-            {
-                var id = ((JArray)results).First.ToString();
-                var browserWindowId = (int)((JArray)results).Last;
-
-                MenuItem menuItem = _contextMenuItems[browserWindowId].GetMenuItem(id);
-                menuItem.Click?.Invoke();
-            });
         }
 
         /// <summary>
         /// Contexts the menu popup.
         /// </summary>
         /// <param name="browserWindow">The browser window.</param>
-        public void ContextMenuPopup(BrowserWindow browserWindow)
+        public async void ContextMenuPopup(BrowserWindow browserWindow)
         {
-            BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id);
+            await Electron.SignalrElectron.Clients.All.SendAsync("menu-contextMenuPopup", browserWindow.Id);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

@@ -1,19 +1,17 @@
+import { HubConnection  } from "@microsoft/signalr";
 import { globalShortcut } from 'electron';
-import { Socket } from 'net';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
+export = (socket: HubConnection) => {
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {
-            electronSocket.emit('globalShortcut-pressed', accelerator);
+            socket.invoke('GlobalShortcutPressed', accelerator);
         });
     });
 
-    socket.on('globalShortcut-isRegistered', (accelerator) => {
+    socket.on('globalShortcut-isRegistered', (guid, accelerator) => {
         const isRegistered = globalShortcut.isRegistered(accelerator);
 
-        electronSocket.emit('globalShortcut-isRegisteredCompleted', isRegistered);
+        socket.invoke('SendClientResponseBool', guid, isRegistered);
     });
 
     socket.on('globalShortcut-unregister', (accelerator) => {
@@ -23,6 +21,7 @@ export = (socket: Socket) => {
     socket.on('globalShortcut-unregisterAll', () => {
         try {
             globalShortcut.unregisterAll();
-        } catch (error) { }
+        } catch (error) {
+        }
     });
 };

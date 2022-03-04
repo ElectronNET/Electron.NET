@@ -1,10 +1,12 @@
 ﻿using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -12,6 +14,9 @@ namespace ElectronNET.API
     /// <summary>
     /// Add icons and context menus to the system's notification area.
     /// </summary>
+    
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("windows")]
     public sealed class Tray
     {
         /// <summary>
@@ -23,25 +28,19 @@ namespace ElectronNET.API
             {
                 if (_click == null)
                 {
-                    BridgeConnector.Socket.On("tray-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _click(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-click", GetHashCode());
                 }
                 _click += value;
             }
             remove
             {
                 _click -= value;
-
-                if (_click == null)
-                    BridgeConnector.Socket.Off("tray-click-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnClick(TrayClickEventArgs trayClickEventArgs, Rectangle rectangle)
+        {
+            _click(trayClickEventArgs, rectangle);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _click;
@@ -49,31 +48,27 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is right clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action<TrayClickEventArgs, Rectangle> OnRightClick
         {
             add
             {
                 if (_rightClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-right-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _rightClick(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-right-click", GetHashCode());
                 }
                 _rightClick += value;
             }
             remove
             {
                 _rightClick -= value;
-
-                if (_rightClick == null)
-                    BridgeConnector.Socket.Off("tray-right-click-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnRightClick(TrayClickEventArgs trayClickEventArgs, Rectangle rectangle)
+        {
+            _rightClick(trayClickEventArgs, rectangle);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _rightClick;
@@ -81,31 +76,27 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is double clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action<TrayClickEventArgs, Rectangle> OnDoubleClick
         {
             add
             {
                 if (_doubleClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-double-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _doubleClick(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-double-click", GetHashCode());
                 }
                 _doubleClick += value;
             }
             remove
             {
                 _doubleClick -= value;
-
-                if (_doubleClick == null)
-                    BridgeConnector.Socket.Off("tray-double-click-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnDoubleClick(TrayClickEventArgs trayClickEventArgs, Rectangle rectangle)
+        {
+            _doubleClick(trayClickEventArgs, rectangle);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _doubleClick;
@@ -113,28 +104,26 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon shows.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonShow
         {
             add
             {
                 if (_balloonShow == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-show-event" + GetHashCode(), () =>
-                    {
-                        _balloonShow();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-balloon-show", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-balloon-show", GetHashCode());
                 }
                 _balloonShow += value;
             }
             remove
             {
                 _balloonShow -= value;
-
-                if (_balloonShow == null)
-                    BridgeConnector.Socket.Off("tray-balloon-show-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBalloonShow()
+        {
+            _balloonShow();
         }
 
         private event Action _balloonShow;
@@ -142,28 +131,26 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon is clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonClick
         {
             add
             {
                 if (_balloonClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-click-event" + GetHashCode(), () =>
-                    {
-                        _balloonClick();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-balloon-click", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-balloon-click", GetHashCode());
                 }
                 _balloonClick += value;
             }
             remove
             {
                 _balloonClick -= value;
-
-                if (_balloonClick == null)
-                    BridgeConnector.Socket.Off("tray-balloon-click-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBalloonClick()
+        {
+            _balloonClick();
         }
 
         private event Action _balloonClick;
@@ -172,28 +159,27 @@ namespace ElectronNET.API
         /// Windows: Emitted when the tray balloon is closed 
         /// because of timeout or user manually closes it.
         /// </summary>
+
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonClosed
         {
             add
             {
                 if (_balloonClosed == null)
                 {
-                    BridgeConnector.Socket.On("tray-balloon-closed-event" + GetHashCode(), () =>
-                    {
-                        _balloonClosed();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-balloon-closed", GetHashCode());
+                    Electron.SignalrElectron.Clients.All.SendAsync("register-tray-balloon-closed", GetHashCode());
                 }
                 _balloonClosed += value;
             }
             remove
             {
                 _balloonClosed -= value;
-
-                if (_balloonClosed == null)
-                    BridgeConnector.Socket.Off("tray-balloon-closed-event" + GetHashCode());
             }
+        }
+
+        public void TriggerOnBalloonClosed()
+        {
+            _balloonClosed();
         }
 
         private event Action _balloonClosed;
@@ -201,7 +187,7 @@ namespace ElectronNET.API
         // TODO: Implement macOS Events
 
         private static Tray _tray;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Tray() { }
 
@@ -231,7 +217,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Shows the Traybar.
@@ -248,36 +234,30 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="menuItems">The menu items.</param>
-        public void Show(string image, MenuItem[] menuItems)
+        public async Task Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+
             _items.Clear();
             _items.AddRange(menuItems);
-
-            BridgeConnector.Socket.Off("trayMenuItemClicked");
-            BridgeConnector.Socket.On("trayMenuItemClicked", (id) =>
-            {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
-                menuItem?.Click();
-            });
         }
 
         /// <summary>
         /// Shows the Traybar (empty).
         /// </summary>
         /// <param name="image">The image.</param>
-        public void Show(string image)
+        public async Task Show(string image)
         {
-            BridgeConnector.Socket.Emit("create-tray", image);
+            await Electron.SignalrElectron.Clients.All.SendAsync("create-tray", image);
         }
 
         /// <summary>
         /// Destroys the tray icon immediately.
         /// </summary>
-        public void Destroy()
+        public async void Destroy()
         {
-            BridgeConnector.Socket.Emit("tray-destroy");
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-destroy");
             _items.Clear();
         }
 
@@ -285,101 +265,94 @@ namespace ElectronNET.API
         /// Sets the image associated with this tray icon.
         /// </summary>
         /// <param name="image"></param>
-        public void SetImage(string image)
+        public async void SetImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setImage", image);
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-setImage", image);
         }
 
         /// <summary>
         /// Sets the image associated with this tray icon when pressed on macOS.
         /// </summary>
         /// <param name="image"></param>
-        public void SetPressedImage(string image)
+        [SupportedOSPlatform("macos")]
+        public async void SetPressedImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setPressedImage", image);
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-setPressedImage", image);
         }
 
         /// <summary>
         /// Sets the hover text for this tray icon.
         /// </summary>
         /// <param name="toolTip"></param>
-        public void SetToolTip(string toolTip)
+        public async void SetToolTip(string toolTip)
         {
-            BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-setToolTip", toolTip);
         }
 
         /// <summary>
         /// macOS: Sets the title displayed aside of the tray icon in the status bar.
         /// </summary>
         /// <param name="title"></param>
-        public void SetTitle(string title)
+        [SupportedOSPlatform("macos")]
+        public async void SetTitle(string title)
         {
-            BridgeConnector.Socket.Emit("tray-setTitle", title);
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-setTitle", title);
         }
 
         /// <summary>
         /// Windows: Displays a tray balloon.
         /// </summary>
         /// <param name="options"></param>
-        public void DisplayBalloon(DisplayBalloonOptions options)
+        [SupportedOSPlatform("windows")]
+        public async void DisplayBalloon(DisplayBalloonOptions options)
         {
-            BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
         /// Whether the tray icon is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync()
+        public async Task<bool> IsDestroyedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.On("tray-isDestroyedCompleted", (isDestroyed) =>
-            {
-                BridgeConnector.Socket.Off("tray-isDestroyedCompleted");
-
-                taskCompletionSource.SetResult((bool)isDestroyed);
-            });
-
-            BridgeConnector.Socket.Emit("tray-isDestroyed");
-
-            return taskCompletionSource.Task;
+            return await SignalrSerializeHelper.GetSignalrResultBool("tray-isDestroyed");
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private const string ModuleName = "tray";
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action fn) => Events.Instance.On(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action<object> fn) => Events.Instance.On(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private const string ModuleName = "tray";
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
     }
 }

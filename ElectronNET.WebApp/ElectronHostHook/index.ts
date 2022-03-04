@@ -4,7 +4,7 @@ import { Connector } from "./connector";
 import { ExcelCreator } from "./excelCreator";
 
 export class HookService extends Connector {
-    constructor(socket: SocketIO.Socket, public app: Electron.App) {
+    constructor(socket: SignalR.Hub.Proxy, public app: Electron.App) {
         super(socket, app);
     }
 

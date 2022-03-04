@@ -1,8 +1,11 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
     /// </summary>
+    [SupportedOSPlatform("macos")]
     public class NotificationAction
     {
         /// <summary>

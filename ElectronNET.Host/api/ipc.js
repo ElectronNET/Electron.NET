@@ -1,26 +1,41 @@
 "use strict";
 const electron_1 = require("electron");
-let electronSocket;
 module.exports = (socket) => {
-    electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            socket.invoke("IpcOnChannel", channel, [args]);
+            event.returnValue = null;
+        });
+    });
+    socket.on('registerIpcMainChannelWithId', (channel) => {
+        electron_1.ipcMain.on(channel, (event, args) => {
+            event.preventDefault();
+            let wcId = event.sender.id;
+            let wc = electron_1.webContents.fromId(wcId);
+            let bw = electron_1.BrowserWindow.fromWebContents(wc);
+            if (bw) {
+                socket.invoke("IpcMainChannelWithId", channel, { id: bw.id, wcId: wcId, args: [args] });
+            }
+            event.returnValue = null;
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            const x = socket;
-            x.removeAllListeners(channel + 'Sync');
+            //const x = <any>socket;
+            //x.removeAllListeners(channel + 'Sync');
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
         });
     });
-    socket.on('registerOnceIpcMainChannel', (channel) => {
+    socket.on('registerOnceIpcMainChannel', (guid, channel) => {
         electron_1.ipcMain.once(channel, (event, args) => {
-            electronSocket.emit(channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            socket.invoke("SendClientResponseJArray", guid, [event.preventDefault(), args]);
+            event.returnValue = null;
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {

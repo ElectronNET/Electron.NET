@@ -12,7 +12,7 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_ARGUMENTS = "";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        public VersionCommand(string[] args)
+        public VersionCommand()
         {
         }
 

@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -31,29 +32,19 @@ namespace ElectronNET.API
         /// 
         /// (experimental)
         /// </summary>
-        public Rectangle Bounds
+        public async Task<Rectangle> GetBoundsAsync()
         {
-            get
-            {
-                return Task.Run<Rectangle>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("browserView-getBounds", Id);
+            return ((JObject)signalrResult).ToObject<Rectangle>();
+        }
 
-                    BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult((Rectangle)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
-            }
+        /// <summary>
+        /// Set the bounds of the current view inside the window
+        /// </summary>
+        /// <param name="value"></param>
+        public async void SetBounds(Rectangle value)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
         }
 
         /// <summary>
@@ -72,9 +63,9 @@ namespace ElectronNET.API
         /// (experimental)
         /// </summary>
         /// <param name="options"></param>
-        public void SetAutoResize(AutoResizeOptions options)
+        public async void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
@@ -83,9 +74,9 @@ namespace ElectronNET.API
         /// (experimental)
         /// </summary>
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
-        public void SetBackgroundColor(string color)
+        public async void SetBackgroundColor(string color)
         {
-            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBackgroundColor", Id, color);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

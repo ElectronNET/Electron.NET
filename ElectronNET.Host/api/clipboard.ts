@@ -1,48 +1,47 @@
-import { Socket } from 'net';
+import { HubConnection  } from "@microsoft/signalr";
 import { clipboard, nativeImage } from 'electron';
-let electronSocket;
 
-export = (socket: Socket) => {
-    electronSocket = socket;
-    socket.on('clipboard-readText', (type) => {
+export = (socket: HubConnection) => {
+
+    socket.on('clipboard-readText', (guid, type) => {
         const text = clipboard.readText(type);
-        electronSocket.emit('clipboard-readText-Completed', text);
+        socket.invoke('SendClientResponseString', guid, text);
     });
 
     socket.on('clipboard-writeText', (text, type) => {
         clipboard.writeText(text, type);
     });
 
-    socket.on('clipboard-readHTML', (type) => {
+    socket.on('clipboard-readHTML', (guid, type) => {
         const content = clipboard.readHTML(type);
-        electronSocket.emit('clipboard-readHTML-Completed', content);
+        socket.invoke('SendClientResponseString', guid, content);
     });
 
     socket.on('clipboard-writeHTML', (markup, type) => {
         clipboard.writeHTML(markup, type);
     });
 
-    socket.on('clipboard-readRTF', (type) => {
+    socket.on('clipboard-readRTF', (guid, type) => {
         const content = clipboard.readRTF(type);
-        electronSocket.emit('clipboard-readRTF-Completed', content);
+        socket.invoke('SendClientResponseString', guid, content);
     });
 
     socket.on('clipboard-writeRTF', (text, type) => {
         clipboard.writeHTML(text, type);
     });
 
-    socket.on('clipboard-readBookmark', () => {
+    socket.on('clipboard-readBookmark', (guid) => {
         const bookmark = clipboard.readBookmark();
-        electronSocket.emit('clipboard-readBookmark-Completed', bookmark);
+        socket.invoke('SendClientResponseJObject', guid, bookmark);
     });
 
     socket.on('clipboard-writeBookmark', (title, url, type) => {
         clipboard.writeBookmark(title, url, type);
     });
 
-    socket.on('clipboard-readFindText', () => {
+    socket.on('clipboard-readFindText', (guid) => {
         const content = clipboard.readFindText();
-        electronSocket.emit('clipboard-readFindText-Completed', content);
+        socket.invoke('SendClientResponseString', guid, content);
     });
 
     socket.on('clipboard-writeFindText', (text) => {
@@ -53,32 +52,38 @@ export = (socket: Socket) => {
         clipboard.clear(type);
     });
 
-    socket.on('clipboard-availableFormats', (type) => {
+    socket.on('clipboard-availableFormats', (guid, type) => {
         const formats = clipboard.availableFormats(type);
-        electronSocket.emit('clipboard-availableFormats-Completed', formats);
+        socket.invoke('SendClientResponseJArray', guid, formats);
     });
 
     socket.on('clipboard-write', (data, type) => {
+        if (data.hasOwnProperty("image")) {
+            data["image"] = deserializeImage(data["image"]);
+        }
         clipboard.write(data, type);
     });
 
-    socket.on('clipboard-readImage', (type) => {
+    socket.on('clipboard-readImage', (guid, type) => {
         const image = clipboard.readImage(type);
-        electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
+        socket.invoke('SendClientResponseJObject', guid, { 1: image.toPNG().toString('base64') });
     });
 
     socket.on('clipboard-writeImage', (data, type) => {
         const dataContent = JSON.parse(data);
-        const image = nativeImage.createEmpty();
+        const image = deserializeImage(dataContent);
+        clipboard.writeImage(image, type);
+    });
 
+    function deserializeImage(data) {
+        const image = nativeImage.createEmpty();
         // tslint:disable-next-line: forin
-        for (const key in dataContent) {
+        for (const key in data) {
             const scaleFactor = key;
             const bytes = data[key];
             const buffer = Buffer.from(bytes, 'base64');
-            image.addRepresentation({ scaleFactor: +scaleFactor, buffer: buffer });
+            image.addRepresentation({scaleFactor: +scaleFactor, buffer: buffer});
         }
-
-        clipboard.writeImage(image, type);
-    });
+        return image;
+    }
 };

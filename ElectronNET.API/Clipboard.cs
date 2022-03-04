@@ -1,7 +1,9 @@
 ﻿using ElectronNET.API.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -12,7 +14,7 @@ namespace ElectronNET.API
     public sealed class Clipboard
     {
         private static Clipboard _clipboard;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Clipboard() { }
 
@@ -40,20 +42,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns>The content in the clipboard as plain text.</returns>
-        public Task<string> ReadTextAsync(string type = "")
+        public async Task<string> ReadTextAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("clipboard-readText-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readText-Completed");
-
-                taskCompletionSource.SetResult(text.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readText", type);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readText", type));
         }
 
         /// <summary>
@@ -61,9 +52,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="text"></param>
         /// <param name="type"></param>
-        public void WriteText(string text, string type = "")
+        public async void WriteText(string text, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeText", text, type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeText", text, type);
         }
 
         /// <summary>
@@ -71,20 +62,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadHTMLAsync(string type = "")
+        public async Task<string> ReadHTMLAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("clipboard-readHTML-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readHTML-Completed");
-
-                taskCompletionSource.SetResult(text.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readHTML", type);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readHTML", type));
         }
 
         /// <summary>
@@ -92,9 +72,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="markup"></param>
         /// <param name="type"></param>
-        public void WriteHTML(string markup, string type = "")
+        public async void WriteHTML(string markup, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeHTML", markup, type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeHTML", markup, type);
         }
 
         /// <summary>
@@ -102,20 +82,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadRTFAsync(string type = "")
+        public async Task<string> ReadRTFAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("clipboard-readRTF-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readRTF-Completed");
-
-                taskCompletionSource.SetResult(text.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readRTF", type);
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readRTF", type));
         }
 
         /// <summary>
@@ -123,9 +92,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="text"></param>
         /// <param name="type"></param>
-        public void WriteRTF(string text, string type = "")
+        public async void WriteRTF(string text, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeHTML", text, type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeHTML", text, type);
         }
 
         /// <summary>
@@ -134,20 +103,12 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
-        public Task<ReadBookmark> ReadBookmarkAsync()
+		[SupportedOSPlatform("windows")]
+		[SupportedOSPlatform("macos")] 
+        public async Task<ReadBookmark> ReadBookmarkAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<ReadBookmark>();
-
-            BridgeConnector.Socket.On("clipboard-readBookmark-Completed", (bookmark) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readBookmark-Completed");
-
-                taskCompletionSource.SetResult(((JObject)bookmark).ToObject<ReadBookmark>());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readBookmark");
-
-            return taskCompletionSource.Task;
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("clipboard-readBookmark");
+            return ((JObject)signalrResult).ToObject<ReadBookmark>();
         }
 
         /// <summary>
@@ -160,9 +121,11 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         /// <param name="url"></param>
         /// <param name="type"></param>
-        public void WriteBookmark(string title, string url, string type = "")
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
+        public async void WriteBookmark(string title, string url, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeBookmark", title, url, type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeBookmark", title, url, type);
         }
 
         /// <summary>
@@ -171,20 +134,9 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
-        public Task<string> ReadFindTextAsync()
+        public async Task<string> ReadFindTextAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.On("clipboard-readFindText-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readFindText-Completed");
-
-                taskCompletionSource.SetResult(text.ToString());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readFindText");
-
-            return taskCompletionSource.Task;
+            return (await SignalrSerializeHelper.GetSignalrResultString("clipboard-readFindText"));
         }
 
         /// <summary>
@@ -192,18 +144,19 @@ namespace ElectronNET.API
         /// synchronous IPC when called from the renderer process.
         /// </summary>
         /// <param name="text"></param>
-        public void WriteFindText(string text)
+        [SupportedOSPlatform("macos")]
+        public async void WriteFindText(string text)
         {
-            BridgeConnector.Socket.Emit("clipboard-writeFindText", text);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeFindText", text);
         }
 
         /// <summary>
         /// Clears the clipboard content.
         /// </summary>
         /// <param name="type"></param>
-        public void Clear(string type = "")
+        public async void Clear(string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-clear", type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-clear", type);
         }
 
         /// <summary>
@@ -211,20 +164,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string[]> AvailableFormatsAsync(string type = "")
+        public async Task<string[]> AvailableFormatsAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
-
-            BridgeConnector.Socket.On("clipboard-availableFormats-Completed", (formats) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-availableFormats-Completed");
-
-                taskCompletionSource.SetResult(((JArray)formats).ToObject<string[]>());
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-availableFormats", type);
-
-            return taskCompletionSource.Task;
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJArray("clipboard-availableFormats");
+            return ((JArray)signalrResult).ToObject<string[]>();
         }
 
         /// <summary>
@@ -232,9 +175,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="data"></param>
         /// <param name="type"></param>
-        public void Write(Data data, string type = "")
+        public async void Write(Data data, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
         }
 
         /// <summary>
@@ -242,23 +185,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<NativeImage> ReadImageAsync(string type = "")
+        public async Task<NativeImage> ReadImageAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<NativeImage>();
-
-            BridgeConnector.Socket.On("clipboard-readImage-Completed", (image) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readImage-Completed");
-
-                var nativeImage = ((JObject)image).ToObject<NativeImage>();
-
-                taskCompletionSource.SetResult(nativeImage);
-                
-            });
-
-            BridgeConnector.Socket.Emit("clipboard-readImage", type);
-            
-            return taskCompletionSource.Task;
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("clipboard-readImage", type);
+            return ((JObject)signalrResult).ToObject<NativeImage>();
         }
         
         /// <summary>
@@ -266,9 +196,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="image"></param>
         /// <param name="type"></param>
-        public void WriteImage(NativeImage image, string type = "")
+        public async Task WriteImage(NativeImage image, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
+            await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

@@ -1,10 +1,32 @@
-﻿namespace ElectronNET.API
+﻿using ElectronNET.API.Hubs;
+using ElectronNET.API.Models;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.Runtime.Versioning;
+using System.Threading.Tasks;
+
+namespace ElectronNET.API
 {
     /// <summary>
     /// The Electron.NET API
     /// </summary>
     public static class Electron
     {
+
+        public static readonly ObservableCollection<SignalrResponse> SignalrObservedJArray = new ObservableCollection<SignalrResponse>();
+        public static readonly ObservableCollection<SignalrResponseJObject> SignalrObservedJObject = new ObservableCollection<SignalrResponseJObject>();
+
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<string>> ClientResponsesString = new ConcurrentDictionary<Guid, TaskCompletionSource<string>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<int>> ClientResponsesInt = new ConcurrentDictionary<Guid, TaskCompletionSource<int>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<bool>> ClientResponsesBool = new ConcurrentDictionary<Guid, TaskCompletionSource<bool>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<JObject>> ClientResponsesJObject = new ConcurrentDictionary<Guid, TaskCompletionSource<JObject>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<JArray>> ClientResponsesJArray = new ConcurrentDictionary<Guid, TaskCompletionSource<JArray>>();
+
         /// <summary>
         /// Communicate asynchronously from the main process to renderer processes.
         /// </summary>
@@ -61,6 +83,11 @@
         public static Screen Screen { get { return Screen.Instance; } }
 
         /// <summary>
+        /// Access information about media sources that can be used to capture audio and video from the desktop using the navigator.mediaDevices.getUserMedia API.
+        /// </summary>
+        public static DesktopCapturer DesktopCapturer { get { return DesktopCapturer.Instance; } }
+
+        /// <summary>
         /// Perform copy and paste operations on the system clipboard.
         /// </summary>
         public static Clipboard Clipboard { get { return Clipboard.Instance; } }
@@ -72,7 +99,11 @@
         /// ElectronHostHook directory:
         /// <c>electronize add HostHook</c>
         /// </summary>
-        public static HostHook HostHook { get { return HostHook.Instance; } }
+        public static HostHook HostHook { get { return API.HostHook.Instance; } }
+
+        public static IServiceScope ServiceScope { get; set; }
+        public static IHubContext<HubElectron> SignalrElectron;
+        public static bool ElectronConnected = false;
 
         /// <summary>
         /// Allows you to execute native Lock and Unlock process.       
@@ -87,6 +118,7 @@
         /// <summary>
         /// Control your app in the macOS dock.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public static Dock Dock { get { return Dock.Instance; } }
     }
 }
