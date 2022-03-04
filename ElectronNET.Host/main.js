@@ -1,22 +1,29 @@
-﻿const { app } = require('electron');
-const { BrowserWindow } = require('electron');
-const { protocol } = require('electron');
+﻿const { app, nativeTheme, BrowserWindow, protocol } = require('electron');
 const path = require('path');
-const cProcess = require('child_process').spawn;
+const cProcess = require('child_process');
+const process = require('process');
 const portscanner = require('portscanner');
 const signalR = require('@microsoft/signalr');
 const os = require('os');
 const { imageSize } = require('image-size');
+const { connect } = require('http2');
+const crypto = require('crypto');
+
+fixPath(); //For macOS and Linux packaged-apps, the path variable might be missing
+
+const auth = crypto.randomBytes(32).toString('hex');
+
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let commandLine, browserView;
+let commandLine, browserView, desktopCapturer;
 let powerMonitor;
 let splashScreen, hostHook;
-let mainWindowId, nativeTheme;
+let mainWindowId, nativeThemeApi;
 let dock;
 let launchFile;
 let launchUrl;
+let ignoreApiProcessClosed = false;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -51,33 +58,74 @@ app.on('will-finish-launching', () => {
     })
 });
 
+function prepareForUpdate() {
+    console.log('closing all windows before update');
+
+    ignoreApiProcessClosed = true;
+
+    app.removeAllListeners("window-all-closed");
+
+    const windows = BrowserWindow.getAllWindows();
+
+    if (windows.length) {
+        windows.forEach(w => {
+            try {
+                w.removeAllListeners("close");
+                w.hide();
+                w.destroy();
+            }
+            catch {
+                //ignore, probably already destroyed
+            }
+        });
+    }
+}
+
+app.on('before-quit-for-update', () => { prepareForUpdate(); });
+
 const manifestJsonFile = require(manifestJsonFilePath);
+
 if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', (events, args = []) => {
-        args.forEach(parameter => {
-            const words = parameter.split('=');
 
-            if(words.length > 1) {
-                app.commandLine.appendSwitch(words[0].replace('--', ''), words[1]);
-            } else {
-                app.commandLine.appendSwitch(words[0].replace('--', ''));
-            }
-        });
+        let socket = global['electronsocket'];
 
-        const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
-            if (windows[0].isMinimized()) {
-                windows[0].restore();
-            }
-            windows[0].focus();
+        if (socket) {
+            socket.emit('app-activate-from-second-instance', args);
         }
+
+        //args.forEach(parameter => {
+        //    const words = parameter.split('=');
+
+        //    if(words.length > 1) {
+        //        app.commandLine.appendSwitch(words[0].replace('--', ''), words[1]);
+        //    } else {
+        //        app.commandLine.appendSwitch(words[0].replace('--', ''));
+        //    }
+        //});
+
+        //const windows = BrowserWindow.getAllWindows();
+        //if (windows.length) {
+        //    if (windows[0].isMinimized()) {
+        //        windows[0].restore();
+        //    }
+        //    windows[0].focus();
+        //}
     });
 
     if (!mainInstance) {
         app.quit();
     }
 }
+
+//Some flags need to be set before app is ready
+if (manifestJsonFile.hasOwnProperty('cliFlags') && manifestJsonFile.cliFlags.length > 0) {
+    manifestJsonFile.cliFlags.forEach(flag => {
+        app.commandLine.appendSwitch(flag);
+    });
+}
+
 
 // If Backend is already running use default port -> This is for debugging and or restart electron AFTER dotnet app
 var dotnetOtherSide = false;
@@ -130,7 +178,16 @@ app.on('ready', () => {
 
 app.on('quit', async (event, exitCode) => {
     await server.close();
-    apiProcess.kill();
+
+    var detachedProcess = false;
+
+    if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+        detachedProcess = manifestJsonFile.detachedProcess;
+    }
+
+    if (!detachedProcess) {
+        apiProcess.kill();
+    }
 });
 
 function isSplashScreenEnabled() {
@@ -145,9 +202,14 @@ function isSplashScreenEnabled() {
 
 function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
+
+    if (manifestJsonFile.splashscreen.imageFileDark && nativeTheme.shouldUseDarkColors) {
+        imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFileDark);
+    }
+
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
+            console.log('load splashscreen error:');
             console.error(error);
 
             throw new Error(error.message);
@@ -165,13 +227,29 @@ function startSplashScreen() {
             alwaysOnTop: true,
             show: true
         });
-        splashScreen.setIgnoreMouseEvents(true);
+
+        if (manifestJsonFile.hasOwnProperty('splashscreen')) {
+            if (manifestJsonFile.splashscreen.hasOwnProperty('timeout')) {
+                var timeout = manifestJsonFile.splashscreen.timeout;
+                setTimeout((t) => {
+                    if (splashScreen) {
+                        splashScreen.hide();
+                    }
+                }, timeout);
+            }
+        }
+
+        //Removed as we want to be able to drag the splash screen: splashScreen.setIgnoreMouseEvents(true);
 
         app.once('browser-window-created', () => {
-            splashScreen.destroy();
+            if (splashScreen) {
+                splashScreen.hide();
+            }
+            //We cannot destroy the window here as this triggers an electron freeze bug (https://github.com/electron/electron/issues/29050)
         });
 
         const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
+
         splashScreen.loadURL('file://' + loadSplashscreenUrl);
 
         splashScreen.once('closed', () => {
@@ -240,24 +318,29 @@ var getStartSignalrListener = function (port) {
             }, 2000);
         });
 
-    if (appApi === undefined) appApi = require('./api/app')(connectionHubElectron, app);
-    if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(connectionHubElectron, app);
-    if (commandLine === undefined) commandLine = require('./api/commandLine')(connectionHubElectron, app);
-    if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(connectionHubElectron);
-    if (ipc === undefined) ipc = require('./api/ipc')(connectionHubElectron);
-    if (menu === undefined) menu = require('./api/menu')(connectionHubElectron);
-    if (dialogApi === undefined) dialogApi = require('./api/dialog')(connectionHubElectron);
-    if (notification === undefined) notification = require('./api/notification')(connectionHubElectron);
-    if (tray === undefined) tray = require('./api/tray')(connectionHubElectron);
-    if (webContents === undefined) webContents = require('./api/webContents')(connectionHubElectron);
-    if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(connectionHubElectron);
-    if (shellApi === undefined) shellApi = require('./api/shell')(connectionHubElectron);
-    if (screen === undefined) screen = require('./api/screen')(connectionHubElectron);
-    if (clipboard === undefined) clipboard = require('./api/clipboard')(connectionHubElectron);
-    if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(connectionHubElectron);
-    if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(connectionHubElectron);
-    if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(connectionHubElectron);
-    if (dock === undefined) dock = require('./api/dock')(connectionHubElectron);
+    //We only hook to events on app on the first initialization of each component
+    let firstTime = (connectionHubElectron == undefined);
+
+    //console.log('.NET connected on socket ' + socket.id + ' on ' + new Date());
+    appApi = require('./api/app')(connectionHubElectron, app, firstTime);
+    browserWindows = require('./api/browserWindows')(connectionHubElectron, app, firstTime);
+    commandLine = require('./api/commandLine')(connectionHubElectron, app);
+    autoUpdater = require('./api/autoUpdater')(connectionHubElectron, app);
+    ipc = require('./api/ipc')(connectionHubElectron);
+    menu = require('./api/menu')(connectionHubElectron);
+    dialogApi = require('./api/dialog')(connectionHubElectron);
+    notification = require('./api/notification')(connectionHubElectron);
+    tray = require('./api/tray')(connectionHubElectron);
+    webContents = require('./api/webContents')(connectionHubElectron);
+    globalShortcut = require('./api/globalShortcut')(connectionHubElectron);
+    shellApi = require('./api/shell')(connectionHubElectron);
+    screen = require('./api/screen')(connectionHubElectron);
+    desktopCapturer = require('./api/desktopCapturer')(connectionHubElectron);
+    clipboard = require('./api/clipboard')(connectionHubElectron);
+    browserView = require('./api/browserView').browserViewApi(connectionHubElectron);
+    powerMonitor = require('./api/powerMonitor')(connectionHubElectron);
+    nativeThemeApi = require('./api/nativeTheme')(connectionHubElectron);
+    dock = require('./api/dock')(connectionHubElectron);
 
 
     if (splashScreen && !splashScreen.isDestroyed()) {
@@ -267,18 +350,25 @@ var getStartSignalrListener = function (port) {
     // prototype
     app['mainWindowURL'] = "";
     app['mainWindow'] = null;
+    
+    connectionHubElectron.on('splashscreen-destroy', () => {
+        if (splashScreen) {
+            splashScreen.destroy();
+            splashScreen = null;
+        }
+    });
+
+    connectionHubElectron.on('prepare-for-update', () => { prepareForUpdate(); });    
 
     connectionHubElectron.on('register-app-open-file-event', (id) => {
-        global['electronsocket'] = connectionHubElectron;
-
         app.on('open-file', (event, file) => {
             event.preventDefault();
 
-            global['electronsocket'].invoke('AppOpenFile', id, file);
+            connectionHubElectron.invoke('AppOpenFile', id, file);
         });
 
         if (launchFile) {
-            global['electronsocket'].invoke('AppOpenFile', id, launchFile);
+            connectionHubElectron.invoke('AppOpenFile', id, launchFile);
         }
     });
 
@@ -288,12 +378,20 @@ var getStartSignalrListener = function (port) {
         app.on('open-url', (event, url) => {
             event.preventDefault();
 
-            global['electronsocket'].invoke('app-open-url', id, url);
+            connectionHubElectron.invoke('app-open-url', id, url);
         });
 
         if (launchUrl) {
-            global['electronsocket'].invoke('app-open-url', id, launchUrl);
+            connectionHubElectron.invoke('app-open-url', id, launchUrl);
         }
+    });
+    
+    connectionHubElectron.on('console-stdout', (data) => {
+        console.log(`stdout: ${data.toString()}`);
+    });
+
+    connectionHubElectron.on('console-stderr', (data) => {
+        console.log(`stderr: ${data.toString()}`);
     });
 
     try {
@@ -330,9 +428,9 @@ function startAspCoreBackend(electronPort, skipBackendStart) {
         if (skipBackendStart){
             return;
         }
-        console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
+        console.log('.NET Core Port: ' + aspCoreBackendPort);
         loadURL = `http://127.0.0.1:${aspCoreBackendPort}`;
-        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -340,13 +438,56 @@ function startAspCoreBackend(electronPort, skipBackendStart) {
             binaryFile = binaryFile + '.exe';
         }
 
-        let binFilePath = path.join(currentBinPath, binaryFile);
-        var options = { cwd: currentBinPath };
-        apiProcess = cProcess(binFilePath, parameters, options);
+        var detachedProcess = false;
+        var stdioopt = 'pipe';
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+            if (detachedProcess) {
+                stdioopt = ['pipe', 'ignore', 'ignore'];
+            }
+        }
+
+        let binFilePath = path.join(currentBinPath, binaryFile);
+
+        var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt };
+
+        apiProcess = cProcess.spawn(binFilePath, parameters, options);
+
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
+
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
+
+        apiProcess.on('close', (code) => {
+            console.log(`.NET process exited with code ${code}`);
+            if (!ignoreApiProcessClosed) {
+                if (code != 0) {
+                    console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                }
+                app.exit(code);
+            }
+            else if (os.platform() === 'darwin') {
+                //There is a bug on the updater on macOS never quiting and starting the update process
+                //We give Squirrel.Mac enough time to access the update file, and then just force-exit here
+                setTimeout(() => app.exit(0), 30_000);
+            }
         });
+
+
+        apiProcess.stdin.setEncoding = 'utf-8';
+        apiProcess.stdin.write('Auth=' + auth + '\n');
+        apiProcess.stdin.end();
+
+        if (detachedProcess) {
+            console.log('Detached from .NET process');
+            apiProcess.unref();
+        }
     }
 
     getStartSignalrConnections(electronPort);
@@ -363,19 +504,59 @@ function startAspCoreBackendWithWatch(electronPort) {
     }
 
     function startBackend(aspCoreBackendPort) {
-        console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
+        console.log('.NET watch Port: ' + aspCoreBackendPort);
         loadURL = `http://127.0.0.1:${aspCoreBackendPort}`;
-        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
 
-        var options = {
-            cwd: currentBinPath,
-            env: process.env,
-        };
-        apiProcess = cProcess('dotnet', parameters, options);
+        var detachedProcess = false;
+        var stdioopt = 'pipe';
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+            if (detachedProcess) {
+                stdioopt = 'ignore';
+            }
+        }
+
+        var options = { cwd: currentBinPath, env: process.env, detached: detachedProcess, stdio: stdioopt };
+
+        apiProcess = cProcess.spawn('dotnet', parameters, options);
+
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
+
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
+
+        apiProcess.on('close', (code) => {
+            console.log(`.NET process exited with code ${code}`);
+            if (!ignoreApiProcessClosed) {
+                if (code != 0) {
+                    console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                }
+                console.log('Will quit Electron now');
+
+                app.exit(code);
+            }
+            else if (os.platform() === 'darwin') {
+                console.log('.NET process and Electron has a pending update, will force quit in 10s...');
+                //There is a bug on the updater on macOS never quiting and starting the update process
+                //We give Squirrel.Mac enough time to access the update file, and then just force-exit here
+                setTimeout(() => app.exit(0), 10_000);
+            }
+            else {
+                console.log('.NET process and Electron has a pending update...');
+            }
         });
+
+        if (detachedProcess) {
+            console.log('Detached from ASP.NET process');
+            apiProcess.unref();
+        }
     }
 }
 
@@ -385,4 +566,85 @@ function getEnvironmentParameter() {
     }
 
     return '';
+}
+
+
+//This code is derived from gh/sindresorhus/shell-path/, gh/sindresorhus/shell-env/, gh/sindresorhus/default-shell/, gh/chalk/ansi-regex, all under MIT license
+function fixPath() {
+    if (process.platform === 'win32') {
+        return;
+    }
+    const shellFromEnv = shellEnvSync();
+
+    if (process.env.PATH) {
+        console.log("Started with PATH = " + process.env.PATH);
+    }
+
+    if (shellFromEnv) {
+        process.env.PATH = shellFromEnv;
+    } else {
+        process.env.PATH = [
+            './node_modules/.bin',
+            '/.nodebrew/current/bin',
+            '/usr/local/bin',
+            process.env.PATH,
+        ].join(':'); //macOS and Linux path separator is ':'
+    }
+    console.log("Using PATH = " + process.env.PATH);
+}
+
+function shellEnvSync() {
+    const args = [
+        '-ilc',
+        'echo -n "_SHELL_ENV_DELIMITER_"; env; echo -n "_SHELL_ENV_DELIMITER_"; exit',
+    ];
+
+    const env = {
+        // Disables Zsh auto-update that can block the process.
+        DISABLE_AUTO_UPDATE: 'true',
+    };
+
+    let shell = process.env.SHELL || '/bin/sh';
+
+    if (process.platform === 'darwin') {
+        shell = process.env.SHELL || '/bin/zsh';
+    }
+
+    try {
+        let { stdout } = cProcess.spawnSync(shell, args, { env });
+        if (Buffer.isBuffer(stdout)) {
+            stdout = stdout.toString();
+        }
+        return parseEnv(stdout);
+    } catch (error) {
+        if (shell) {
+            throw error;
+        } else {
+            return process.env;
+        }
+    }
+}
+
+function parseEnv(envString) {
+    const returnValue = {};
+
+    if (envString) {
+        envString = envString.split('_SHELL_ENV_DELIMITER_')[1];
+        for (const line of envString.replace(ansiRegex(), '').split('\n').filter(line => Boolean(line))) {
+            const [key, ...values] = line.split('=');
+            returnValue[key.toUpperCase()] = values.join('=');
+        }
+    }
+
+    return returnValue["PATH"];
+
+
+    function ansiRegex() {
+        const pattern = [
+            '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+            '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+        ].join('|');
+
+        return new RegExp(pattern, 'g');
+    }
 }

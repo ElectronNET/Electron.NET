@@ -7,11 +7,12 @@ export = (socket: HubConnection) => {
             const window = BrowserWindow.fromId(browserWindow.id);
 
             const messageBoxReturnValue = await dialog.showMessageBox(window, options);
-                socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
+            socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         } else {
+            const id = guid || options;
             const messageBoxReturnValue = await dialog.showMessageBox(browserWindow);
 
-                socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
+            socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         }
     });
 

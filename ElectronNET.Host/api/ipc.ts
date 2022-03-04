@@ -1,11 +1,26 @@
 import { HubConnection  } from "@microsoft/signalr";
-import { ipcMain, BrowserWindow, BrowserView } from 'electron';
+import {BrowserView, BrowserWindow, ipcMain, webContents} from 'electron';
 
 export = (socket: HubConnection) => {
 
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
-            socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            socket.invoke("IpcOnChannel", channel, [args]);
+            event.returnValue = null;
+        });
+    });
+
+    socket.on('registerIpcMainChannelWithId', (channel) => {
+        ipcMain.on(channel, (event, args) => {
+            event.preventDefault();
+            let wcId = event.sender.id;
+            let wc = webContents.fromId(wcId)
+            let bw = BrowserWindow.fromWebContents(wc);
+            if (bw) {
+                socket.invoke("IpcMainChannelWithId", channel, {id: bw.id, wcId: wcId, args: [args]});
+            }
+            event.returnValue = null;
         });
     });
 
@@ -16,13 +31,16 @@ export = (socket: HubConnection) => {
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
+            event.preventDefault();
             socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
         });
     });
 
     socket.on('registerOnceIpcMainChannel', (guid, channel) => {
         ipcMain.once(channel, (event, args) => {
+            event.preventDefault();
             socket.invoke("SendClientResponseJArray",guid, [event.preventDefault(), args]);
+            event.returnValue = null;
         });
     });
 

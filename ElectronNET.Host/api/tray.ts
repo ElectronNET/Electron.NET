@@ -4,7 +4,7 @@ let tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { valu
 
 export = (socket: HubConnection) => {
     socket.on('register-tray-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('click', (event, bounds) => {
                 socket.invoke('TrayOnClick', id, [(<any>event).__proto__, bounds]);
             });
@@ -12,7 +12,7 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-right-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('right-click', (event, bounds) => {
                 socket.invoke('TrayOnRightClick', id, [(<any>event).__proto__, bounds]);
             });
@@ -20,15 +20,18 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-double-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('double-click', (event, bounds) => {
-                socket.invoke('TrayOnDoubleClick', id, [(<any>event).__proto__, bounds]);
+                socket.invoke('TrayOnDoubleClick', id, {
+                    eventArgs: (<any>event).__proto__,
+                    bounds: bounds
+                });
             });
         }
     });
 
     socket.on('register-tray-balloon-show', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-show', () => {
                 socket.invoke('TrayOnBalloonShow', id);
             });
@@ -36,7 +39,7 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-balloon-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-click', () => {
                 socket.invoke('TrayOnBalloonClick', id);
             });
@@ -44,7 +47,7 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-balloon-closed', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-closed', () => {
                 socket.invoke('TrayOnBalloonClosed', id);
             });
@@ -67,38 +70,38 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('tray-destroy', () => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.destroy();
         }
     });
 
     socket.on('tray-setImage', (image) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setImage(image);
         }
     });
 
     socket.on('tray-setPressedImage', (image) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             const img = nativeImage.createFromPath(image);
             tray.value.setPressedImage(img);
         }
     });
 
     socket.on('tray-setToolTip', (toolTip) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setToolTip(toolTip);
         }
     });
 
     socket.on('tray-setTitle', (title) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setTitle(title);
         }
     });
 
     socket.on('tray-displayBalloon', (options) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.displayBalloon(options);
         }
     });
@@ -111,7 +114,7 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-on-event', (eventName, listenerName) => {
-        if (tray.value){
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on(eventName, (...args) => {
                 if (args.length > 1) {
                     socket.invoke(listenerName, args[1]);
@@ -123,7 +126,7 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('register-tray-once-event', (eventName, listenerName) => {
-        if (tray.value){
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.once(eventName, (...args) => {
                 if (args.length > 1) {
                     socket.invoke(listenerName, args[1]);
@@ -141,7 +144,9 @@ export = (socket: HubConnection) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

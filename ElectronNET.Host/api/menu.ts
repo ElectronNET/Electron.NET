@@ -1,5 +1,6 @@
 import { HubConnection  } from "@microsoft/signalr";
 import { Menu, BrowserWindow } from 'electron';
+
 const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 
 export = (socket: HubConnection) => {
@@ -31,7 +32,9 @@ export = (socket: HubConnection) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id, browserWindowId); };
+                item.click = () => {
+                    callback(item.id, browserWindowId);
+                };
             }
         });
     }
@@ -62,7 +65,9 @@ export = (socket: HubConnection) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

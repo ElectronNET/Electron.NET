@@ -68,7 +68,9 @@ export = (socket: HubConnection) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

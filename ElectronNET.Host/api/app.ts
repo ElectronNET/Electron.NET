@@ -2,23 +2,31 @@ import { HubConnection  } from "@microsoft/signalr";
 
 let isQuitWindowAllClosed = true;
 let appWindowAllClosedEventId;
-export = (socket: HubConnection, app: Electron.App) => {
+export = (socket: HubConnection, app: Electron.App, firstTime: boolean) => {
 
-    // By default, quit when all windows are closed
-    app.on('window-all-closed', () => {
-        // On macOS it is common for applications and their menu bar
-        // to stay active until the user quits explicitly with Cmd + Q
-        if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
+    if (firstTime) {
+        // By default, quit when all windows are closed
+        app.on('window-all-closed', () => {
+            // On macOS it is common for applications and their menu bar
+            // to stay active until the user quits explicitly with Cmd + Q
+            if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
             socket.invoke('AppWindowAllClosed', 0);
-            app.quit();
-        } else if (appWindowAllClosedEventId) {
-            // If the user is on macOS
-            // - OR -
-            // If the user has indicated NOT to quit when all windows are closed,
-            // emit the event.
+                app.quit();
+            } else if (appWindowAllClosedEventId) {
+                // If the user is on macOS
+                // - OR -
+                // If the user has indicated NOT to quit when all windows are closed,
+                // emit the event.
             socket.invoke('AppWindowAllClosed', appWindowAllClosedEventId);
-        }
-    });
+            }
+        });
+
+        app.on('activate', () => {
+            // On macOS it's common to re-create a window in the app when the
+            // dock icon is clicked and there are no other windows open.
+            socket.invoke('AppWindowActivate');
+        });
+    }
 
     socket.on('quit-app-window-all-closed-event', (quit) => {
         isQuitWindowAllClosed = quit;
@@ -116,11 +124,11 @@ export = (socket: HubConnection, app: Electron.App) => {
         let error = {};
 
         if (options) {
-            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) =>  error = errorFileIcon);
+            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) => error = errorFileIcon);
 
                 socket.invoke('appGetFileIconCompleted', [error, nativeImage]);
         } else {
-            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) =>  error = errorFileIcon);
+            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) => error = errorFileIcon);
 
                 socket.invoke('appGetFileIconCompleted', [error, nativeImage]);
         }
@@ -190,7 +198,7 @@ export = (socket: HubConnection, app: Electron.App) => {
         socket.invoke('SendClientResponseBool', guid, success);
 
         app.on('second-instance', (event, args = [], workingDirectory = '') => {
-            socket.invoke('SendClientResponseJArray', guid, [args, workingDirectory]);
+            socket.invoke('AppActivateFromSecondInstance', {args: args, workingDirectory: workingDirectory});
         });
     });
 

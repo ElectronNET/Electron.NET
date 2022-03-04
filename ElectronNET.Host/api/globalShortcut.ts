@@ -21,6 +21,7 @@ export = (socket: HubConnection) => {
     socket.on('globalShortcut-unregisterAll', () => {
         try {
             globalShortcut.unregisterAll();
-        } catch (error) { }
+        } catch (error) {
+        }
     });
 };

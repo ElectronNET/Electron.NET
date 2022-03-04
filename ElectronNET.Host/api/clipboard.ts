@@ -58,6 +58,9 @@ export = (socket: HubConnection) => {
     });
 
     socket.on('clipboard-write', (data, type) => {
+        if (data.hasOwnProperty("image")) {
+            data["image"] = deserializeImage(data["image"]);
+        }
         clipboard.write(data, type);
     });
 
@@ -68,16 +71,19 @@ export = (socket: HubConnection) => {
 
     socket.on('clipboard-writeImage', (data, type) => {
         const dataContent = JSON.parse(data);
-        const image = nativeImage.createEmpty();
+        const image = deserializeImage(dataContent);
+        clipboard.writeImage(image, type);
+    });
 
+    function deserializeImage(data) {
+        const image = nativeImage.createEmpty();
         // tslint:disable-next-line: forin
-        for (const key in dataContent) {
+        for (const key in data) {
             const scaleFactor = key;
             const bytes = data[key];
             const buffer = Buffer.from(bytes, 'base64');
-            image.addRepresentation({ scaleFactor: +scaleFactor, buffer: buffer });
+            image.addRepresentation({scaleFactor: +scaleFactor, buffer: buffer});
         }
-
-        clipboard.writeImage(image, type);
-    });
+        return image;
+    }
 };
