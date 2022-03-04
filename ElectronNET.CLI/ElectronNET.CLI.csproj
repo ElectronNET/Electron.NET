@@ -14,6 +14,7 @@
     <!-- Version 99 is just set for local development stuff to avoid a conflict with "real" packages on NuGet.org -->
     <Version>99.0.0.0</Version>
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
     <Product>Electron.NET</Product>
     <Company />
     <Description>
@@ -66,6 +67,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\desktopCapturer.js" Link="ElectronHost\api\desktopCapturer.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />

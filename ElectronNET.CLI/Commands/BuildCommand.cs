@@ -11,42 +11,45 @@ namespace ElectronNET.CLI.Commands
     {
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
-        public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
-                                                 " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
-                                                 " e.g. '/target win' or '/target custom \"win7-x86;win\"'" + Environment.NewLine +
-                                                 "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
-                                                 "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
-                                                 "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
-                                                 "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
-                                                 "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
-                                                 "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
-                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
-                                                 "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
-                                                 "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
-                                                 "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"" + Environment.NewLine +
-                                                 "Full example to pass publish parameters: build /PublishReadyToRun false /PublishSingleFile false  /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
+        public const string COMMAND_ARGUMENTS = 
+@"Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config
+for custom target, check .NET Core RID Catalog and Electron build target/
+e.g. '/target win' or '/target custom ""win7-x86;win""'
+Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release
+Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!
+Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager.
+Optional: '/relative-path' to specify output a subdirectory for output.
+Optional: '/absolute-path to specify and absolute path for output.
+Optional: '/package-json' to specify a custom package.json file.
+Optional: '/install-modules' to force node module install. Implied by '/package-json'
+Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'
+Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion
+Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params ""--prune=true """;
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private string[] _args;
+        private readonly string[] _args;
 
         public BuildCommand(string[] args)
         {
             _args = args;
         }
 
-        private string _paramTarget = "target";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramElectronArch = "electron-arch";
-        private string _paramElectronParams = "electron-params";
-        private string _paramOutputDirectory = "relative-path";
-        private string _paramAbsoluteOutput = "absolute-path";
-        private string _paramPackageJson = "package-json";
-        private string _paramForceNodeInstall = "install-modules";
-        private string _manifest = "manifest";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramVersion = "Version";
+        private const string _defaultElectronVersion = "17.0.1";
+
+        private const string _paramTarget = "target";
+        private const string _paramDotNetConfig = "dotnet-configuration";
+        private const string _paramElectronArch = "electron-arch";
+        private const string _paramElectronParams = "electron-params";
+        private const string _paramElectronVersion = "electron-version";
+        private const string _paramOutputDirectory = "relative-path";
+        private const string _paramAbsoluteOutput = "absolute-path";
+        private const string _paramPackageJson = "package-json";
+        private const string _paramForceNodeInstall = "install-modules";
+        private const string _manifest = "manifest";
+        private const string _paramPublishReadyToRun = "PublishReadyToRun";
+        private const string _paramPublishSingleFile = "PublishSingleFile";
+        private const string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
         {
@@ -62,7 +65,7 @@ namespace ElectronNET.CLI.Commands
                 if (parser.Arguments.ContainsKey(_paramVersion))
                     version = parser.Arguments[_paramVersion][0];
 
-                if (!parser.Arguments.ContainsKey(_paramTarget) || parser.Arguments[_paramTarget].Length == 0)
+                if (!parser.Arguments.ContainsKey(_paramTarget))
                 {
                     Console.WriteLine($"Error: missing '{_paramTarget}' argument.");
                     Console.WriteLine(COMMAND_ARGUMENTS);
@@ -105,7 +108,7 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
                 
-                var dotNetPublishFlags = GetDotNetPublishFlags(parser);
+                var dotNetPublishFlags = GetDotNetPublishFlags(parser, "false", "false");
 
                 var command =
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
@@ -135,10 +138,11 @@ namespace ElectronNET.CLI.Commands
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
+                if (!Directory.Exists(checkForNodeModulesDirPath)|| parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
+                {
                     Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
+                    ProcessHelper.CmdExecute("npm install --production", tempPath);
+                }
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
@@ -177,6 +181,12 @@ namespace ElectronNET.CLI.Commands
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
+                var electronVersion = _defaultElectronVersion;
+                if (parser.Arguments.ContainsKey(_paramElectronVersion))
+                {
+                    electronVersion = parser.Arguments[_paramElectronVersion][0];
+                }
+
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
                 {
@@ -199,7 +209,7 @@ namespace ElectronNET.CLI.Commands
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=13.1.5 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
@@ -207,12 +217,12 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
+        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
-                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
-                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "false"},
+                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : defaultReadyToRun},
+                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : defaultSingleFile},
             };
 
             if (parser.Arguments.ContainsKey(_paramVersion))

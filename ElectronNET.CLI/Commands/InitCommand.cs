@@ -25,8 +25,8 @@ namespace ElectronNET.CLI.Commands
             _parser.Parse(args);
         }
 
-        private static string _aspCoreProjectPath = "project-path";
-        private static string _manifest = "manifest";
+        private const string _aspCoreProjectPath = "project-path";
+        private const string _manifest = "manifest";
 
         public Task<bool> ExecuteAsync()
         {

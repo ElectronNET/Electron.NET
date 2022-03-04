@@ -2,7 +2,12 @@
   "profiles": {
     "ElectronNET.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\" /watch"
+      "commandLineArgs": "build /target win /PublishSingleFile false /PublishReadyToRun false",
+      "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
+    },
+    "Start Test App": {
+      "commandName": "Project",
+      "commandLineArgs": "start /project-path \"$(SolutionDir)ElectronNET.WebApp\""
     }
   }
 }

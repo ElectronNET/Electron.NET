@@ -16,14 +16,14 @@ namespace ElectronNET.CLI.Commands
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
 
-        private string[] _args;
+        private readonly string[] _args;
 
         public AddCommand(string[] args)
         {
             _args = args;
         }
 
-        private static string ElectronHostHookFolderName = "ElectronHostHook";
+        private const string ElectronHostHookFolderName = "ElectronHostHook";
 
         public Task<bool> ExecuteAsync()
         {
@@ -124,11 +124,10 @@ namespace ElectronNET.CLI.Commands
                     OmitXmlDeclaration = true,
                     Indent = true
                 };
-                using (XmlWriter xw = XmlWriter.Create(stream, xws))
-                {
-                    xmlDocument.Save(xw);
-                }
+                
+                using XmlWriter xw = XmlWriter.Create(stream, xws);
 
+                xmlDocument.Save(xw);
             }
 
             Console.WriteLine($"Publish setting added in csproj/fsproj!");
