@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
-    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
-    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira, Thiemo Borger</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
