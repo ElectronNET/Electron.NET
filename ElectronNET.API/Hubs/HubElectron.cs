@@ -24,12 +24,26 @@ namespace ElectronNET.API.Hubs
             public JArray Value { get; set; } = null;
         }
 
+        public class SignalrResponseJObject
+        {
+            public string Channel { get; set; } = null;
+            public JObject Value { get; set; } = null;
+        }
+
+        public class ArgsAndIds
+        {
+            public int id { get; set; }
+            public int wcId { get; set; }
+            public object[] args { get; set; }
+        }
+
         public async Task SendMessage(string user)
         {
             await Clients.All.SendAsync("ReceiveMessage", user);
         }
 
         public static readonly ObservableCollection<SignalrResponse> SignalrObservedJArray = new ObservableCollection<SignalrResponse>();
+        public static readonly ObservableCollection<SignalrResponseJObject> SignalrObservedJObject = new ObservableCollection<SignalrResponseJObject>();
 
         public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<string>> ClientResponsesString = new ConcurrentDictionary<Guid, TaskCompletionSource<string>>();
         public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<int>> ClientResponsesInt = new ConcurrentDictionary<Guid, TaskCompletionSource<int>>();
@@ -129,6 +143,16 @@ namespace ElectronNET.API.Hubs
         }
 
         #region App
+
+        public void AppWindowActivate()
+        {
+            Electron.App.TriggerOnActivate();
+        }
+
+        public void AppActivateFromSecondInstance(string[] args)
+        {
+            Electron.App.TriggerOnAppActivateFromSecondInstance(args);
+        }
 
         public void AppWindowAllClosed(int id)
         {
@@ -569,6 +593,19 @@ namespace ElectronNET.API.Hubs
             HubElectron.SignalrObservedJArray.Add(signalrResponse);
         }
 
+        public void IpcMainChannelWithId(string channel, JObject args)
+        {
+            foreach (var item in HubElectron.SignalrObservedJObject.Where(x => x.Channel == channel).ToList())
+            {
+                HubElectron.SignalrObservedJObject.Remove(item);
+            }
+
+            SignalrResponseJObject signalrResponse = new SignalrResponseJObject();
+            signalrResponse.Channel = channel;
+            signalrResponse.Value = args;
+            HubElectron.SignalrObservedJObject.Add(signalrResponse);
+        }
+
         #endregion
 
         #region Screen
@@ -653,7 +690,13 @@ namespace ElectronNET.API.Hubs
         }
         #endregion
 
-  
+        #region WindowManager
+        public void BootstrapUpdateOpenIDsEvent(int[] id)
+        {
+            WindowManager.Instance.TriggerOnBootstrapUpdateOpenIDsEvent(id);
+        }
+        #endregion
+
 
         public override async Task OnConnectedAsync()
         {

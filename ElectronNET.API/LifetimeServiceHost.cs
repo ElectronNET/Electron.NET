@@ -15,8 +15,6 @@ namespace ElectronNET.API
             lifetime.ApplicationStarted.Register(() =>
             {
                 App.Instance.IsReady = true;
-
-                Console.WriteLine("ASP.NET Core host has fully started.");
             });
         }
 

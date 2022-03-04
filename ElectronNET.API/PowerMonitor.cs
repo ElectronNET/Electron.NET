@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -12,6 +13,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the system is about to lock the screen. 
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnLockScreen
         {
             add
@@ -38,6 +41,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the system is about to unlock the screen. 
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnUnLockScreen
         {
             add
@@ -64,6 +69,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the system is suspending.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnSuspend
         {
             add
@@ -90,6 +97,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when system is resuming.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnResume
         {
             add
@@ -116,6 +125,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the system changes to AC power.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnAC
         {
             add
@@ -142,6 +153,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when system changes to battery power.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action OnBattery
         {
             add
@@ -172,6 +185,9 @@ namespace ElectronNET.API
         /// order for the app to exit cleanly.If `e.preventDefault()` is called, the app
         /// should exit as soon as possible by calling something like `app.quit()`.
         /// </summary>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("macos")]
+
         public event Action OnShutdown
         {
             add
@@ -196,7 +212,7 @@ namespace ElectronNET.API
         private event Action _shutdown;
 
         private static PowerMonitor _powerMonitor;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal PowerMonitor() { }
 

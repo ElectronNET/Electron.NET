@@ -16,10 +16,10 @@ namespace ElectronNET.API.Entities
     [JsonConverter(typeof(NativeImageJsonConverter))]
     public class NativeImage
     {
-        private readonly Dictionary<float, Image> _images = new Dictionary<float, Image>();
+        private readonly Dictionary<float, Image> _images = new();
         private bool _isTemplateImage;
 
-        private static readonly Dictionary<string, float> ScaleFactorPairs = new Dictionary<string, float>
+        private static readonly Dictionary<string, float> ScaleFactorPairs = new()
         {
             {"@2x",   2.0f}, {"@3x",     3.0f}, {"@1x",     1.0f}, {"@4x",   4.0f},
             {"@5x",   5.0f}, {"@1.25x", 1.25f}, {"@1.33x", 1.33f}, {"@1.4x", 1.4f},
@@ -434,7 +434,7 @@ namespace ElectronNET.API.Entities
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("Error getting scaled images " + ex.Message);
             }
             
             return dict;

@@ -17,18 +17,52 @@ namespace ElectronNET.API
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
+        public async Task<bool> IsAutoDownloadEnabledAsync()
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-autoDownload-get");
+        }
+
+        /// <summary>
+        /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
+        /// 
+        /// Applicable only on Windows and Linux.
+        /// </summary>
+        public async Task<bool> IsAutoInstallOnAppQuitEnabledAsync()
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-autoInstallOnAppQuit-get");
+        }
+
+        /// <summary>
+        /// *GitHub provider only.* Whether to allow update to pre-release versions. 
+        /// Defaults to "true" if application version contains prerelease components (e.g. "0.12.1-alpha.1", here "alpha" is a prerelease component), otherwise "false".
+        /// 
+        /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
+        /// </summary>
+        public async Task<bool> IsAllowPrereleaseEnabledAsync()
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-allowPrerelease-get");
+        }
+
+        /// <summary>
+        /// *GitHub provider only.* 
+        /// Get all release notes (from current version to latest), not just the latest (Default is false).
+        /// </summary>
+        public async Task<bool> IsFullChangeLogEnabledAsync()
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-fullChangelog-get");
+        }
+
+        public async Task<bool> IsAllowDowngradeEnabledAsync()
+        {
+            return await SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-allowDowngrade-get");
+        }
+        
+
+        /// <summary>
+        /// Whether to automatically download an update when it is found. (Default is true)
+        /// </summary>
         public bool AutoDownload
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-autoDownload-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
                 Electron.SignalrElectron.Clients.All.SendAsync("autoUpdater-autoDownload-set", value);
@@ -42,16 +76,6 @@ namespace ElectronNET.API
         /// </summary>
         public bool AutoInstallOnAppQuit
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-autoInstallOnAppQuit-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
                 Electron.SignalrElectron.Clients.All.SendAsync("autoUpdater-autoInstallOnAppQuit-set", value);
@@ -66,16 +90,6 @@ namespace ElectronNET.API
         /// </summary>
         public bool AllowPrerelease
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-allowPrerelease-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
                 Electron.SignalrElectron.Clients.All.SendAsync("autoUpdater-allowPrerelease-set", value);
@@ -88,16 +102,6 @@ namespace ElectronNET.API
         /// </summary>
         public bool FullChangelog
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-fullChangelog-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
                 Electron.SignalrElectron.Clients.All.SendAsync("autoUpdater-fullChangelog-set", value);
@@ -111,17 +115,6 @@ namespace ElectronNET.API
         /// </summary>
         public bool AllowDowngrade
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultBool("autoUpdater-allowDowngrade-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
                 Electron.SignalrElectron.Clients.All.SendAsync("autoUpdater-allowDowngrade-set", value);
@@ -131,87 +124,39 @@ namespace ElectronNET.API
         /// <summary>
         /// For test only.
         /// </summary>
-        public string UpdateConfigPath
+        public async Task<string> GetUpdateConfigPathAsync()
         {
-            get
-            {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultString("autoUpdater-updateConfigPath-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
+            return await SignalrSerializeHelper.GetSignalrResultString("autoUpdater-updateConfigPath-get");
         }
-
+        
         /// <summary>
         /// The current application version
         /// </summary>
-        public Task<SemVer> CurrentVersionAsync
+        public async Task<SemVer> GetCurrentVersionAsync()
         {
-            get
-            {
-                return Task.Run<SemVer>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<SemVer>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultJObject("autoUpdater-currentVersion-get");
-                    SemVer version = ((JObject)signalrResult.Result).ToObject<SemVer>();
-                    taskCompletionSource.SetResult(version);
-                    return taskCompletionSource.Task;
-                });
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultString("autoUpdater-updateConcurrentVersionfigPath-get");
+            SemVer version = ((JObject)signalrResult).ToObject<SemVer>();
+            return version;
         }
+
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
-        [Obsolete("Use the asynchronous version ChannelAsync instead")]
-        public string Channel
+        public async Task<string> GetChannelAsync()
         {
-            get
-            {
-                return ChannelAsync.Result;
-            }
+            return await SignalrSerializeHelper.GetSignalrResultString("autoUpdater-channel-get");
         }
-
-        /// <summary>
-        /// Get the update channel. Not applicable for GitHub. 
-        /// Doesn’t return channel from the update configuration, only if was previously set.
-        /// </summary>
-        public Task<string> ChannelAsync
-        {
-            get
-            {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultString("autoUpdater-channel-get");
-                    taskCompletionSource.SetResult(signalrResult.Result);
-                    return taskCompletionSource.Task;
-                });
-            }
-        }
-
-
 
         /// <summary>
         /// The request headers.
         /// </summary>
-        public Task<Dictionary<string, string>> RequestHeadersAsync
+        public async Task<Dictionary<string, string>> GetRequestHeadersAsync()
         {
-            get
-            {
-                return Task.Run(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultJObject("autoUpdater-requestHeaders-get");
-                    Dictionary<string, string> result = ((JObject)signalrResult.Result).ToObject<Dictionary<string, string>>();
-                    taskCompletionSource.SetResult(result);
-                    return taskCompletionSource.Task;
-                });
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("autoUpdater-requestHeaders-get");
+            Dictionary<string, string> result = signalrResult.ToObject<Dictionary<string, string>>();
+            return result;
         }
 
         /// <summary>
@@ -327,7 +272,7 @@ namespace ElectronNET.API
 
         public void TriggerOnUpdateNotAvailable(JObject jobject)
         {
-            _updateAvailable(JObject.Parse(jobject.ToString()).ToObject<UpdateInfo>());
+            _updateNotAvailable(JObject.Parse(jobject.ToString()).ToObject<UpdateInfo>());
         }
 
         private event Action<UpdateInfo> _updateNotAvailable;
@@ -385,7 +330,7 @@ namespace ElectronNET.API
         private event Action<UpdateInfo> _updateDownloaded;
 
         private static AutoUpdater _autoUpdater;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal AutoUpdater() { }
 
@@ -462,6 +407,7 @@ namespace ElectronNET.API
                 {
                     var updateCheckResult = signalrResult.ToObject<UpdateCheckResult>();
                     taskCompletionSource.SetResult(updateCheckResult);
+                        taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
                 }
                 catch (Exception ex)
                 {
@@ -483,6 +429,7 @@ namespace ElectronNET.API
         /// <param name="isForceRunAfter">Run the app after finish even on silent install. Not applicable for macOS. Ignored if `isSilent` is set to `false`.</param>
         public async void QuitAndInstall(bool isSilent = false, bool isForceRunAfter = false)
         {
+            await Electron.SignalrElectron.Clients.All.SendAsync("prepare-for-update", isSilent, isForceRunAfter);
             await Electron.SignalrElectron.Clients.All.SendAsync("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
         }
 

@@ -3,9 +3,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -19,7 +21,7 @@ namespace ElectronNET.API
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal WindowManager() { }
 
@@ -65,8 +67,18 @@ namespace ElectronNET.API
         /// <value>
         /// The browser windows.
         /// </value>
-        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.AsReadOnly(); } }
-        private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
+        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.Values.ToList().AsReadOnly(); } }
+
+        /// <summary>
+        /// Get a browser window using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser window</param>
+        /// <param name="window">The window, if any</param>
+        /// <returns>True if it found the window</returns>
+        public bool TryGetBrowserWindows(int id, out BrowserWindow window) => _browserWindows.TryGetValue(id, out window);
+
+
+        private readonly ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
 
         /// <summary>
         /// Gets the browser views.
@@ -74,8 +86,16 @@ namespace ElectronNET.API
         /// <value>
         /// The browser view.
         /// </value>
-        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.AsReadOnly(); } }
-        private List<BrowserView> _browserViews = new List<BrowserView>();
+        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.Values.ToList().AsReadOnly(); } }
+        private readonly ConcurrentDictionary<int, BrowserView> _browserViews = new ();
+
+        /// <summary>
+        /// Get a browser view using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser view</param>
+        /// <param name="view">The view, if any</param>
+        /// <returns>True if it found the view</returns>
+        public bool TryGetBrowserViews(int id, out BrowserView view) => _browserViews.TryGetValue(id, out view);
 
         /// <summary>
         /// Creates the window asynchronous.
@@ -95,6 +115,8 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://127.0.0.1:5000")
         {
+			BootstrapUpdateOpenIDsEvent();
+
             var guid = Guid.NewGuid();
             var taskCompletionSource = new TaskCompletionSource<int>();
             HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
@@ -108,47 +130,73 @@ namespace ElectronNET.API
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
-            if (isWindows10())
+            if (IsWindows10())
             {
-                options.Width = options.Width + 14;
-                options.Height = options.Height + 7;
+                options.Width += 14;
+                options.Height += 7;
             }
 
             if (options.X == -1 && options.Y == -1)
             {
-                options.X = 0;
+                options.X = 0; //This is manually removed by the browserWindows.js code before creating the window
                 options.Y = 0;
-                browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
 
+                browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
             else
             {
                 // Workaround Windows 10 / Electron Bug
                 // https://github.com/electron/electron/issues/4045
-                if (isWindows10())
+                if (IsWindows10())
                 {
-                    options.X = options.X - 7;
+                    options.X -= 7;
                 }
 
-                var ownjsonSerializer = new JsonSerializer()
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
-                };
                 browserWindowId = await SignalrSerializeHelper.GetSignalrResultInt("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
 
             BrowserWindow browserWindow;
             browserWindow = new BrowserWindow(browserWindowId);
-            _browserWindows.Add(browserWindow);
-
+            _browserWindows.TryAdd(browserWindowId, browserWindow);
 
             return browserWindow;
         }
 
-        private bool isWindows10()
+
+        private bool _hasClosedEvent = false;
+        private readonly object _hasClosedEventLock  = new();
+        private void BootstrapUpdateOpenIDsEvent()
         {
-            return RuntimeInformation.OSDescription.Contains("Windows 10");
+            if (!_hasClosedEvent)
+            {
+                lock(_hasClosedEventLock)
+                {
+                    if(!_hasClosedEvent)
+                    {
+                        _hasClosedEvent = true;
+                    }
+                }    
+            }
+        }
+
+        public void TriggerOnBootstrapUpdateOpenIDsEvent(int[] browserWindowIdsStillOpen)
+        {
+            if (browserWindowIdsStillOpen.Any())
+            {
+                foreach (var id in _browserWindows.Keys.ToArray())
+                {
+                    if (!browserWindowIdsStillOpen.Contains(id)) _browserWindows.TryRemove(id, out _);
+                }
+            }
+            else
+            {
+                _browserWindows.Clear();
+            }
+        }
+
+        private bool IsWindows10()
+        {
+            return OperatingSystem.IsWindowsVersionAtLeast(10);
         }
 
         /// <summary>
@@ -181,8 +229,23 @@ namespace ElectronNET.API
 
             BrowserView browserView = new BrowserView(browserViewId);
 
-            _browserViews.Add(browserView);
+            _browserViews.TryAdd(browserViewId, browserView);
             return browserView;
+
+        }
+
+
+        /// <summary>
+        /// Destroy all windows.
+        /// </summary>
+        /// <returns>Number of windows destroyed</returns>
+        public async Task<int> DestroyAllWindows()
+        {
+
+            var destroyed = await SignalrSerializeHelper.GetSignalrResultInt("browserWindowDestroyAll");
+            _browserViews.Clear();
+            _browserWindows.Clear();
+            return destroyed;
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()
@@ -191,5 +254,6 @@ namespace ElectronNET.API
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore
         };
+
     }
 }

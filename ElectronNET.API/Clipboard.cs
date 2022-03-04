@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -13,7 +14,7 @@ namespace ElectronNET.API
     public sealed class Clipboard
     {
         private static Clipboard _clipboard;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Clipboard() { }
 
@@ -102,6 +103,8 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
+		[SupportedOSPlatform("windows")]
+		[SupportedOSPlatform("macos")] 
         public async Task<ReadBookmark> ReadBookmarkAsync()
         {
             var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("clipboard-readBookmark");
@@ -118,6 +121,8 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         /// <param name="url"></param>
         /// <param name="type"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void WriteBookmark(string title, string url, string type = "")
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeBookmark", title, url, type);
@@ -139,6 +144,7 @@ namespace ElectronNET.API
         /// synchronous IPC when called from the renderer process.
         /// </summary>
         /// <param name="text"></param>
+        [SupportedOSPlatform("macos")]
         public async void WriteFindText(string text)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("clipboard-writeFindText", text);

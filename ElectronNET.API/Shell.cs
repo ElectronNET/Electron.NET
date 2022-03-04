@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API
 {
@@ -14,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Shell
     {
         private static Shell _shell;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Shell() { }
 
@@ -111,6 +112,7 @@ namespace ElectronNET.API
         /// <param name="operation">Default is <see cref="ShortcutLinkOperation.Create"/></param>
         /// <param name="options">Structure of a shortcut.</param>
         /// <returns>Whether the shortcut was created successfully.</returns>
+        [SupportedOSPlatform("windows")]
         public async Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
@@ -122,6 +124,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="shortcutPath">The path tot the shortcut.</param>
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
+        [SupportedOSPlatform("windows")]
         public async Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
             var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("shell-readShortcutLink", shortcutPath);

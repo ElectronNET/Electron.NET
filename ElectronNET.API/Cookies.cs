@@ -98,7 +98,7 @@ namespace ElectronNET.API
             await Electron.SignalrElectron.Clients.All.SendAsync("webContents-session-cookies-flushStore", Id);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

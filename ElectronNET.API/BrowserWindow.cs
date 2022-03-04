@@ -9,7 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
+
+//TODO: Add setTrafficLightPosition and getTrafficLightPosition: https://www.electronjs.org/docs/api/browser-window#winsettrafficlightpositionposition-macos
 
 namespace ElectronNET.API
 {
@@ -140,6 +143,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when window session is going to end due to force shutdown or machine restart or session log off.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public event Action OnSessionEnd
         {
             add
@@ -426,6 +430,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the window is being resized.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public event Action OnResize
         {
             add
@@ -454,6 +460,8 @@ namespace ElectronNET.API
         /// 
         /// Note: On macOS this event is just an alias of moved.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public event Action OnMove
         {
             add
@@ -478,8 +486,10 @@ namespace ElectronNET.API
         private event Action _move;
 
         /// <summary>
-        /// macOS: Emitted once when the window is moved to a new position.
+        /// Emitted once when the window is moved to a new position.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public event Action OnMoved
         {
             add
@@ -616,6 +626,8 @@ namespace ElectronNET.API
         /// and the APPCOMMAND_ prefix is stripped off.e.g.APPCOMMAND_BROWSER_BACKWARD 
         /// is emitted as browser-backward.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public event Action<string> OnAppCommand
         {
             add
@@ -642,6 +654,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when scroll wheel event phase has begun.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnScrollTouchBegin
         {
             add
@@ -668,6 +681,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when scroll wheel event phase has ended.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnScrollTouchEnd
         {
             add
@@ -694,6 +708,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when scroll wheel event phase filed upon reaching the edge of element.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnScrollTouchEdge
         {
             add
@@ -720,6 +735,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted on 3-finger swipe. Possible directions are up, right, down, left.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action<string> OnSwipe
         {
             add
@@ -746,6 +762,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the window opens a sheet.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnSheetBegin
         {
             add
@@ -772,6 +789,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the window has closed a sheet.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnSheetEnd
         {
             add
@@ -798,6 +816,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the native new tab button is clicked.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public event Action OnNewWindowForTab
         {
             add
@@ -978,6 +997,14 @@ namespace ElectronNET.API
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetFullScreen", Id, flag);
         }
+        
+        /// <summary>
+        /// Sets whether the background color of the window
+        /// </summary>
+        public async void SetBackgroundColor(string color)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetBackgroundColor", Id, color);
+        }
 
         /// <summary>
         /// Whether the window is in fullscreen mode.
@@ -1001,7 +1028,26 @@ namespace ElectronNET.API
         /// sum any extra width and height areas you have within the overall content view.
         /// </summary>
         /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
+        public async void SetAspectRatio(int aspectRatio)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(new Size() { Height = 0, Width = 0 }, _jsonSerializer));
+        }
+
+        /// <summary>
+        /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
+        /// specified in pixels, not included within the aspect ratio calculations. This API already takes into
+        /// account the difference between a window’s size and its content size.
+        ///
+        /// Consider a normal window with an HD video player and associated controls.Perhaps there are 15 pixels
+        /// of controls on the left edge, 25 pixels of controls on the right edge and 50 pixels of controls below
+        /// the player. In order to maintain a 16:9 aspect ratio (standard aspect ratio for HD @1920x1080) within
+        /// the player itself we would call this function with arguments of 16/9 and[40, 50]. The second argument
+        /// doesn’t care where the extra width and height are within the content view–only that they exist. Just 
+        /// sum any extra width and height areas you have within the overall content view.
+        /// </summary>
+        /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
         /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
+        [SupportedOSPlatform("macos")]
         public async void SetAspectRatio(int aspectRatio, Size extraSize)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
@@ -1013,6 +1059,7 @@ namespace ElectronNET.API
         /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as 
         /// Quick Look uses the file name and file extension on the path to determine the content type of the 
         /// file to open.</param>
+        [SupportedOSPlatform("macos")]
         public async void PreviewFile(string path)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowPreviewFile", Id, path);
@@ -1026,6 +1073,7 @@ namespace ElectronNET.API
         /// file to open.</param>
         /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is 
         /// purely visual and does not affect the content type of the file. Defaults to path.</param>
+        [SupportedOSPlatform("macos")]
         public async void PreviewFile(string path, string displayname)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowPreviewFile", Id, path, displayname);
@@ -1034,6 +1082,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Closes the currently open Quick Look panel.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public async void CloseFilePreview()
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowCloseFilePreview", Id);
@@ -1053,6 +1102,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="bounds"></param>
         /// <param name="animate"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetBounds(Rectangle bounds, bool animate)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
@@ -1082,6 +1132,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="bounds"></param>
         /// <param name="animate"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetContentBounds(Rectangle bounds, bool animate)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
@@ -1113,6 +1164,7 @@ namespace ElectronNET.API
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="animate"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetSize(int width, int height, bool animate)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSize", Id, width, height, animate);
@@ -1143,6 +1195,7 @@ namespace ElectronNET.API
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="animate"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetContentSize(int width, int height, bool animate)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentSize", Id, width, height, animate);
@@ -1217,6 +1270,8 @@ namespace ElectronNET.API
         /// Sets whether the window can be moved by user. On Linux does nothing.
         /// </summary>
         /// <param name="movable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetMovable(bool movable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMovable", Id, movable);
@@ -1224,10 +1279,10 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Whether the window can be moved by user.
-        /// 
-        /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task<bool> IsMovableAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMovable", Id);
@@ -1237,6 +1292,8 @@ namespace ElectronNET.API
         /// Sets whether the window can be manually minimized by user. On Linux does nothing.
         /// </summary>
         /// <param name="minimizable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetMinimizable(bool minimizable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMinimizable", Id, minimizable);
@@ -1244,10 +1301,10 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Whether the window can be manually minimized by user.
-        /// 
-        /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task<bool> IsMinimizableAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMinimizable", Id);
@@ -1257,6 +1314,8 @@ namespace ElectronNET.API
         /// Sets whether the window can be manually maximized by user. On Linux does nothing.
         /// </summary>
         /// <param name="maximizable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetMaximizable(bool maximizable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMaximizable", Id, maximizable);
@@ -1264,10 +1323,10 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Whether the window can be manually maximized by user.
-        /// 
-        /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task<bool> IsMaximizableAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMaximizable", Id);
@@ -1295,6 +1354,8 @@ namespace ElectronNET.API
         /// Sets whether the window can be manually closed by user. On Linux does nothing.
         /// </summary>
         /// <param name="closable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetClosable(bool closable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetClosable", Id, closable);
@@ -1302,10 +1363,10 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Whether the window can be manually closed by user.
-        /// 
-        /// On Linux always returns true.
         /// </summary>
         /// <returns>On Linux always returns true.</returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task<bool> IsClosableAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsClosable", Id);
@@ -1331,6 +1392,8 @@ namespace ElectronNET.API
         /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
         /// status, pop-up-menu and screen-saver. The default is floating. 
         /// See the macOS docs</param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetAlwaysOnTop(bool flag, OnTopLevel level)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
@@ -1347,6 +1410,7 @@ namespace ElectronNET.API
         /// See the macOS docs</param>
         /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level. 
         /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
+        [SupportedOSPlatform("macos")]
         public async void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
@@ -1380,7 +1444,7 @@ namespace ElectronNET.API
             // https://github.com/electron/electron/issues/4045
             if (isWindows10())
             {
-                x = x - 7;
+                x -= 7;
             }
 
             Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetPosition", Id, x, y);
@@ -1392,13 +1456,14 @@ namespace ElectronNET.API
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="animate"></param>
+        [SupportedOSPlatform("macos")]
         public void SetPosition(int x, int y, bool animate)
         {
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
             if (isWindows10())
             {
-                x = x - 7;
+                x -= 7;
             }
 
             Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetPosition", Id, x, y, animate);
@@ -1406,7 +1471,7 @@ namespace ElectronNET.API
 
         private bool isWindows10()
         {
-            return RuntimeInformation.OSDescription.Contains("Windows 10");
+            return OperatingSystem.IsWindowsVersionAtLeast(10);
         }
 
         /// <summary>
@@ -1444,6 +1509,7 @@ namespace ElectronNET.API
         /// but you may want to display them beneath a HTML-rendered toolbar.
         /// </summary>
         /// <param name="offsetY"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetSheetOffset(float offsetY)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSheetOffset", Id, offsetY);
@@ -1456,6 +1522,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="offsetY"></param>
         /// <param name="offsetX"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetSheetOffset(float offsetY, float offsetX)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetSheetOffset", Id, offsetY, offsetX);
@@ -1511,6 +1578,7 @@ namespace ElectronNET.API
         /// and the icon of the file will show in window’s title bar.
         /// </summary>
         /// <param name="filename"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetRepresentedFilename(string filename)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetRepresentedFilename", Id, filename);
@@ -1520,6 +1588,7 @@ namespace ElectronNET.API
         /// The pathname of the file the window represents.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("macos")]
         public async Task<string> GetRepresentedFilenameAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultString("browserWindowGetRepresentedFilename", Id);
@@ -1530,6 +1599,7 @@ namespace ElectronNET.API
         /// and the icon in title bar will become gray when set to true.
         /// </summary>
         /// <param name="edited"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetDocumentEdited(bool edited)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetDocumentEdited", Id, edited);
@@ -1539,6 +1609,7 @@ namespace ElectronNET.API
         /// Whether the window’s document has been edited.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("macos")]
         public async Task<bool> IsDocumentEditedAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsDocumentEdited", Id);
@@ -1596,7 +1667,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         // ToDo: Check this -> Possibly wrong
 
@@ -1605,19 +1676,8 @@ namespace ElectronNET.API
         /// setting it to null will remove the menu bar.
         /// </summary>
         /// <param name="menuItems"></param>
-        /*public void SetMenu(MenuItem[] menuItems)
-        {
-            menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("browserWindowSetMenu", JArray.FromObject(menuItems, _jsonSerializer));
-            _items.AddRange(menuItems);
-
-            BridgeConnector.Socket.Off("windowMenuItemClicked");
-            BridgeConnector.Socket.On("windowMenuItemClicked", (id) => {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
-                menuItem?.Click();
-            });
-        }*/
-
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
@@ -1634,6 +1694,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Remove the window's menu bar.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
         public async void RemoveMenu()
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowRemoveMenu", Id);
@@ -1667,6 +1729,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="progress"></param>
         /// <param name="progressBarOptions"></param>
+        [SupportedOSPlatform("windows")]
         public async void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
@@ -1676,6 +1739,7 @@ namespace ElectronNET.API
         /// Sets whether the window should have a shadow. On Windows and Linux does nothing.
         /// </summary>
         /// <param name="hasShadow"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetHasShadow(bool hasShadow)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetHasShadow", Id, hasShadow);
@@ -1699,7 +1763,8 @@ namespace ElectronNET.API
         /// The thumbar buttons.
         /// </value>
         public IReadOnlyCollection<ThumbarButton> ThumbarButtons { get { return _thumbarButtons.AsReadOnly(); } }
-        private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
+
+        private readonly List<ThumbarButton> _thumbarButtons = new();
 
         /// <summary>
         /// Add a thumbnail toolbar with a specified set of buttons to the thumbnail 
@@ -1731,6 +1796,7 @@ namespace ElectronNET.API
         /// an empty region: {x: 0, y: 0, width: 0, height: 0}.
         /// </summary>
         /// <param name="rectangle"></param>
+        [SupportedOSPlatform("windows")]
         public async void SetThumbnailClip(Rectangle rectangle)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetThumbnailClip", Id, rectangle);
@@ -1740,6 +1806,7 @@ namespace ElectronNET.API
         /// Sets the toolTip that is displayed when hovering over the window thumbnail in the taskbar.
         /// </summary>
         /// <param name="tooltip"></param>
+        [SupportedOSPlatform("windows")]
         public async void SetThumbnailToolTip(string tooltip)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetThumbnailToolTip", Id, tooltip);
@@ -1752,6 +1819,7 @@ namespace ElectronNET.API
         /// If one of those properties is not set, then neither will be used.
         /// </summary>
         /// <param name="options"></param>
+        [SupportedOSPlatform("windows")]
         public async void SetAppDetails(AppDetailsOptions options)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
@@ -1760,6 +1828,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Same as webContents.showDefinitionForSelection().
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public async void ShowDefinitionForSelection()
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowShowDefinitionForSelection", Id);
@@ -1791,6 +1860,8 @@ namespace ElectronNET.API
         /// users can still bring up the menu bar by pressing the single Alt key.
         /// </summary>
         /// <param name="visible"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
         public async void SetMenuBarVisibility(bool visible)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetMenuBarVisibility", Id, visible);
@@ -1800,6 +1871,8 @@ namespace ElectronNET.API
         /// Whether the menu bar is visible.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
         public async Task<bool> IsMenuBarVisibleAsync()
         {
             return await SignalrSerializeHelper.GetSignalrResultBool("browserWindowIsMenuBarVisible", Id);
@@ -1846,6 +1919,8 @@ namespace ElectronNET.API
         /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
         /// </summary>
         /// <param name="enable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetContentProtection(bool enable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetContentProtection", Id, enable);
@@ -1855,6 +1930,8 @@ namespace ElectronNET.API
         /// Changes whether the window can be focused.
         /// </summary>
         /// <param name="focusable"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async void SetFocusable(bool focusable)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetFocusable", Id, focusable);
@@ -1904,6 +1981,7 @@ namespace ElectronNET.API
         /// Controls whether to hide cursor when typing.
         /// </summary>
         /// <param name="autoHide"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetAutoHideCursor(bool autoHide)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetAutoHideCursor", Id, autoHide);
@@ -1916,6 +1994,7 @@ namespace ElectronNET.API
         /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
         /// menu, popover, sidebar, medium-light or ultra-dark. 
         /// See the macOS documentation for more details.</param>
+        [SupportedOSPlatform("macos")]
         public async void SetVibrancy(Vibrancy type)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("browserWindowSetVibrancy", Id, type.GetDescription());

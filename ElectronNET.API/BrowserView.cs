@@ -32,22 +32,19 @@ namespace ElectronNET.API
         /// 
         /// (experimental)
         /// </summary>
-        public Rectangle Bounds
+        public async Task<Rectangle> GetBoundsAsync()
         {
-            get
-            {
-                return Task.Run<Rectangle>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-                    var signalrResult = SignalrSerializeHelper.GetSignalrResultJObject("browserView-getBounds", Id).Result;
-                    taskCompletionSource.SetResult(((JObject)signalrResult).ToObject<Rectangle>());
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
-            }
+            var signalrResult = await SignalrSerializeHelper.GetSignalrResultJObject("browserView-getBounds", Id);
+            return ((JObject)signalrResult).ToObject<Rectangle>();
+        }
+
+        /// <summary>
+        /// Set the bounds of the current view inside the window
+        /// </summary>
+        /// <param name="value"></param>
+        public async void SetBounds(Rectangle value)
+        {
+            await Electron.SignalrElectron.Clients.All.SendAsync("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
         }
 
         /// <summary>

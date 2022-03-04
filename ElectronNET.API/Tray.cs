@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -13,6 +14,9 @@ namespace ElectronNET.API
     /// <summary>
     /// Add icons and context menus to the system's notification area.
     /// </summary>
+    
+    [SupportedOSPlatform("macos")]
+    [SupportedOSPlatform("windows")]
     public sealed class Tray
     {
         /// <summary>
@@ -44,6 +48,8 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is right clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action<TrayClickEventArgs, Rectangle> OnRightClick
         {
             add
@@ -70,6 +76,8 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is double clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public event Action<TrayClickEventArgs, Rectangle> OnDoubleClick
         {
             add
@@ -96,6 +104,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon shows.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonShow
         {
             add
@@ -122,6 +131,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon is clicked.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonClick
         {
             add
@@ -149,6 +159,8 @@ namespace ElectronNET.API
         /// Windows: Emitted when the tray balloon is closed 
         /// because of timeout or user manually closes it.
         /// </summary>
+
+        [SupportedOSPlatform("windows")]
         public event Action OnBalloonClosed
         {
             add
@@ -175,7 +187,7 @@ namespace ElectronNET.API
         // TODO: Implement macOS Events
 
         private static Tray _tray;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Tray() { }
 
@@ -205,7 +217,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Shows the Traybar.
@@ -262,6 +274,7 @@ namespace ElectronNET.API
         /// Sets the image associated with this tray icon when pressed on macOS.
         /// </summary>
         /// <param name="image"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetPressedImage(string image)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("tray-setPressedImage", image);
@@ -280,6 +293,7 @@ namespace ElectronNET.API
         /// macOS: Sets the title displayed aside of the tray icon in the status bar.
         /// </summary>
         /// <param name="title"></param>
+        [SupportedOSPlatform("macos")]
         public async void SetTitle(string title)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("tray-setTitle", title);
@@ -289,6 +303,7 @@ namespace ElectronNET.API
         /// Windows: Displays a tray balloon.
         /// </summary>
         /// <param name="options"></param>
+        [SupportedOSPlatform("windows")]
         public async void DisplayBalloon(DisplayBalloonOptions options)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
@@ -303,40 +318,41 @@ namespace ElectronNET.API
             return await SignalrSerializeHelper.GetSignalrResultBool("tray-isDestroyed");
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private const string ModuleName = "tray";
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action fn) => Events.Instance.On(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void On(string eventName, Action<object> fn) => Events.Instance.On(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
+
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private const string ModuleName = "tray";
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
     }
 }

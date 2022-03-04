@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -16,7 +17,7 @@ namespace ElectronNET.API
     public sealed class Dialog
     {
         private static Dialog _dialog;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Dialog() { }
 
@@ -163,6 +164,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task ShowCertificateTrustDialogAsync(CertificateTrustDialogOptions options)
         {
             return ShowCertificateTrustDialogAsync(null, options);
@@ -176,12 +179,14 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public async Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("showCertificateTrustDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer));
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace ElectronNET.API.Entities {
+namespace ElectronNET.API.Entities
+{
+
     /// <summary>
     /// The cause of the change 
     /// </summary>

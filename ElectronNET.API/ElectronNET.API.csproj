@@ -6,6 +6,7 @@
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
     <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
