@@ -119,7 +119,7 @@ namespace ElectronNET.API
 
             var guid = Guid.NewGuid();
             var taskCompletionSource = new TaskCompletionSource<int>();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
 
             int browserWindowId;
 

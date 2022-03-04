@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API.Hubs;
+using ElectronNET.API.Models;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,13 +54,13 @@ namespace ElectronNET.API
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannel", channel);
 
-            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(HubElectron.SignalrObservedJArray, "CollectionChanged")
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJArray, "CollectionChanged")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SubscribeOn(RxApp.TaskpoolScheduler)
                 .Subscribe(x => {
                     if (x.EventArgs.NewItems != null)
                     {
-                        foreach (HubElectron.SignalrResponse entry in x.EventArgs.NewItems)
+                        foreach (SignalrResponse entry in x.EventArgs.NewItems)
                         {
                             if (entry.Channel == channel && entry.Value != null)
                             {
@@ -90,13 +91,13 @@ namespace ElectronNET.API
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("registerIpcMainChannelWithId", channel);
 
-            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(HubElectron.SignalrObservedJObject, "CollectionChanged")
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJObject, "CollectionChanged")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SubscribeOn(RxApp.TaskpoolScheduler)
                 .Subscribe(x => {
                     if (x.EventArgs.NewItems != null)
                     {
-                        foreach (HubElectron.SignalrResponseJObject entry in x.EventArgs.NewItems)
+                        foreach (SignalrResponseJObject entry in x.EventArgs.NewItems)
                         {
                             //ArgsAndIds signalrResponse = ((JObject)args).ToObject<ArgsAndIds>();
                             if (entry.Channel == channel && entry.Value != null)
@@ -159,13 +160,13 @@ namespace ElectronNET.API
         {
             await Electron.SignalrElectron.Clients.All.SendAsync("registerSyncIpcMainChannel", channel);
 
-            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(HubElectron.SignalrObservedJArray, "CollectionChanged")
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(Electron.SignalrObservedJArray, "CollectionChanged")
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SubscribeOn(RxApp.TaskpoolScheduler)
                 .Subscribe(x => {
                     if (x.EventArgs.NewItems != null)
                     {
-                        foreach (HubElectron.SignalrResponse entry in x.EventArgs.NewItems)
+                        foreach (SignalrResponse entry in x.EventArgs.NewItems)
                         {
                             if (entry.Channel == channel && entry.Value != null)
                             {

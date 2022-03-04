@@ -1,9 +1,14 @@
 ﻿using ElectronNET.API.Hubs;
+using ElectronNET.API.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -12,6 +17,16 @@ namespace ElectronNET.API
     /// </summary>
     public static class Electron
     {
+
+        public static readonly ObservableCollection<SignalrResponse> SignalrObservedJArray = new ObservableCollection<SignalrResponse>();
+        public static readonly ObservableCollection<SignalrResponseJObject> SignalrObservedJObject = new ObservableCollection<SignalrResponseJObject>();
+
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<string>> ClientResponsesString = new ConcurrentDictionary<Guid, TaskCompletionSource<string>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<int>> ClientResponsesInt = new ConcurrentDictionary<Guid, TaskCompletionSource<int>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<bool>> ClientResponsesBool = new ConcurrentDictionary<Guid, TaskCompletionSource<bool>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<JObject>> ClientResponsesJObject = new ConcurrentDictionary<Guid, TaskCompletionSource<JObject>>();
+        public static readonly ConcurrentDictionary<Guid, TaskCompletionSource<JArray>> ClientResponsesJArray = new ConcurrentDictionary<Guid, TaskCompletionSource<JArray>>();
+
         /// <summary>
         /// Communicate asynchronously from the main process to renderer processes.
         /// </summary>

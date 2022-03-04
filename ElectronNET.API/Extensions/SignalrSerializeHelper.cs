@@ -15,7 +15,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
 
             string result;
@@ -33,7 +33,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -43,7 +43,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             string result;
@@ -61,7 +61,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -71,7 +71,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             string result;
@@ -89,7 +89,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -99,7 +99,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2, parameter3);
 
             string result;
@@ -117,7 +117,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -127,7 +127,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             string result;
@@ -145,7 +145,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -155,7 +155,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             string result;
@@ -173,7 +173,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -183,7 +183,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             string result;
@@ -201,7 +201,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -211,7 +211,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             string result;
@@ -229,7 +229,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -240,7 +240,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesString.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             string result;
@@ -258,7 +258,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesString.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -268,7 +268,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             bool result;
@@ -286,7 +286,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -296,7 +296,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             bool result;
@@ -314,7 +314,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -324,7 +324,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2, parameter3);
 
             bool result;
@@ -342,7 +342,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -352,7 +352,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2, parameter3);
 
             bool result;
@@ -370,7 +370,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -380,7 +380,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             bool result;
@@ -398,7 +398,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -408,7 +408,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             bool result;
@@ -426,7 +426,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -437,7 +437,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), first, parameter1, parameter2);
 
             bool result;
@@ -455,7 +455,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -465,7 +465,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
 
             bool result;
@@ -483,7 +483,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -493,7 +493,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             bool result;
@@ -511,7 +511,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -521,7 +521,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             bool result;
@@ -539,7 +539,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -549,7 +549,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesBool.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             bool result;
@@ -567,7 +567,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesBool.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -577,7 +577,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JObject>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JObject result;
@@ -595,7 +595,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -605,7 +605,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JObject>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JObject result;
@@ -623,7 +623,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -633,7 +633,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JObject>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2, parameter3);
 
             JObject result;
@@ -651,7 +651,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -662,7 +662,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JObject>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
 
             JObject result;
@@ -680,7 +680,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -690,7 +690,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JObject>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJObject.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JObject result;
@@ -708,7 +708,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJObject.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -718,7 +718,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
 
             JArray result;
@@ -736,7 +736,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -746,7 +746,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JArray result;
@@ -757,7 +757,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -767,7 +767,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             JArray result;
@@ -785,7 +785,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -795,7 +795,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             JArray result;
@@ -813,7 +813,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -823,7 +823,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             JArray result;
@@ -841,7 +841,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -851,7 +851,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JArray result;
@@ -869,7 +869,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -879,7 +879,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<JArray>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesJArray.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             JArray result;
@@ -897,7 +897,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesJArray.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -907,7 +907,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString());
 
             int result;
@@ -925,7 +925,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -935,7 +935,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             int result;
@@ -953,7 +953,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -963,7 +963,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             int result;
@@ -981,7 +981,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -991,7 +991,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1);
 
             int result;
@@ -1009,7 +1009,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
@@ -1019,7 +1019,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
             var guid = Guid.NewGuid();
-            HubElectron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
+            Electron.ClientResponsesInt.TryAdd(guid, taskCompletionSource);
             await Electron.SignalrElectron.Clients.All.SendAsync(signalrCommand, guid.ToString(), parameter1, parameter2);
 
             int result;
@@ -1037,7 +1037,7 @@ namespace ElectronNET.API
             }
             finally
             {
-                HubElectron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
+                Electron.ClientResponsesInt.TryRemove(guid, out taskCompletionSource);
             }
 
             return result;
