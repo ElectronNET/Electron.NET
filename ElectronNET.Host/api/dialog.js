@@ -8,6 +8,7 @@ module.exports = (socket) => {
             socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         }
         else {
+            const id = guid || options;
             const messageBoxReturnValue = await electron_1.dialog.showMessageBox(browserWindow);
             socket.invoke('SendClientResponseJArray', guid, [messageBoxReturnValue.response, messageBoxReturnValue.checkboxChecked]);
         }

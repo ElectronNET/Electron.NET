@@ -52,7 +52,9 @@ module.exports = (socket) => {
                 addMenuItemClickConnector(item.submenu.items, callback);
             }
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

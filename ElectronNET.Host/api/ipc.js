@@ -3,7 +3,21 @@ const electron_1 = require("electron");
 module.exports = (socket) => {
     socket.on('registerIpcMainChannel', (channel) => {
         electron_1.ipcMain.on(channel, (event, args) => {
-            socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
+            event.preventDefault();
+            socket.invoke("IpcOnChannel", channel, [args]);
+            event.returnValue = null;
+        });
+    });
+    socket.on('registerIpcMainChannelWithId', (channel) => {
+        electron_1.ipcMain.on(channel, (event, args) => {
+            event.preventDefault();
+            let wcId = event.sender.id;
+            let wc = electron_1.webContents.fromId(wcId);
+            let bw = electron_1.BrowserWindow.fromWebContents(wc);
+            if (bw) {
+                socket.invoke("IpcMainChannelWithId", channel, { id: bw.id, wcId: wcId, args: [args] });
+            }
+            event.returnValue = null;
         });
     });
     socket.on('registerSyncIpcMainChannel', (channel) => {
@@ -13,12 +27,15 @@ module.exports = (socket) => {
             socket.on(channel + 'Sync', (result) => {
                 event.returnValue = result;
             });
+            event.preventDefault();
             socket.invoke("IpcOnChannel", channel, [event.preventDefault(), args]);
         });
     });
     socket.on('registerOnceIpcMainChannel', (guid, channel) => {
         electron_1.ipcMain.once(channel, (event, args) => {
+            event.preventDefault();
             socket.invoke("SendClientResponseJArray", guid, [event.preventDefault(), args]);
+            event.returnValue = null;
         });
     });
     socket.on('removeAllListenersIpcMainChannel', (channel) => {

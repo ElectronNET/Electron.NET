@@ -206,7 +206,7 @@ module.exports = (socket) => {
     });
     socket.on('webContents-session-removeExtension', (id, name) => {
         const browserWindow = getWindowById(id);
-        socket.invoke('webContents-getUrl' + id, browserWindow.webContents.getURL());
+        browserWindow.webContents.session.removeExtension(name);
     });
     socket.on('webContents-session-loadExtension', async (guid, id, path, allowFileAccess = false) => {
         const browserWindow = getWindowById(id);
