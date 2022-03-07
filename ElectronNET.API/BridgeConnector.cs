@@ -438,11 +438,11 @@ namespace ElectronNET.API
                         {
                             var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
                             {
-                                EIO = 3,
+                                EIO = 4,
                                 Reconnection = true,
                                 ReconnectionAttempts = int.MaxValue,
                                 ReconnectionDelay = 500,
-                                ReconnectionDelayMax = 5000,
+                                ReconnectionDelayMax = 2000,
                                 RandomizationFactor = 0.5,
                                 ConnectionTimeout = TimeSpan.FromSeconds(10)
                             });
