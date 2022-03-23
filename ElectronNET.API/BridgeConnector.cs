@@ -444,7 +444,8 @@ namespace ElectronNET.API
                                 ReconnectionDelay = 500,
                                 ReconnectionDelayMax = 2000,
                                 RandomizationFactor = 0.5,
-                                ConnectionTimeout = TimeSpan.FromSeconds(10)
+                                ConnectionTimeout = TimeSpan.FromSeconds(10),
+                                Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
                             });
 
                             socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
@@ -483,6 +484,12 @@ namespace ElectronNET.API
                             {
                                 _connectedSocketEvent.Reset();
                                 Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
+                            };
+
+                            socket.OnError += (_, msg) =>
+                            {
+                                //_connectedSocketEvent.Reset();
+                                Log("ElectronNET socket {1} error: {0}...", msg, socket.Id);
                             };
 
                             _socket = socket;

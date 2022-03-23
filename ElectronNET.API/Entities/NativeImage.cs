@@ -18,6 +18,8 @@ namespace ElectronNET.API.Entities
     {
         private readonly Dictionary<float, Image> _images = new();
         private bool _isTemplateImage;
+        private static readonly object _lock = new object();
+
 
         private static readonly Dictionary<string, float> ScaleFactorPairs = new()
         {
@@ -36,8 +38,7 @@ namespace ElectronNET.API.Entities
         }
         private static Image BytesToImage(byte[] bytes)
         {
-            var ms = new MemoryStream(bytes);
-            return Image.FromStream(ms);
+            return Image.FromStream(new MemoryStream(bytes));
         }
 
         /// <summary>
@@ -71,8 +72,7 @@ namespace ElectronNET.API.Entities
                 options = new CreateFromBufferOptions();
             }
 
-            var ms = new MemoryStream(buffer);
-            var image = Image.FromStream(ms);
+            var image = Image.FromStream(new MemoryStream(buffer));
 
             return new NativeImage(image, options.ScaleFactor);
         }
@@ -288,22 +288,26 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public string ToDataURL(ToDataUrlOptions options)
         {
-            if (!_images.ContainsKey(options.ScaleFactor))
+            if (!_images.TryGetValue(options.ScaleFactor, out var image))
             {
                 return null;
             }
 
-            var image = _images[options.ScaleFactor];
-            var mimeType = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == image.RawFormat.Guid)?.MimeType;
-            if (mimeType is null)
+            lock (_lock)
             {
-                mimeType = "image/png";
+                var mimeType = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == image.RawFormat.Guid)?.MimeType;
+
+                if (mimeType is null)
+                {
+                    mimeType = "image/png";
+                }
+
+                var bytes = ImageToBytes(image.RawFormat, options.ScaleFactor);
+                var base64 = Convert.ToBase64String(bytes);
+
+                return $"data:{mimeType};base64,{base64}";
             }
 
-            var bytes = ImageToBytes(image.RawFormat, options.ScaleFactor);
-            var base64 = Convert.ToBase64String(bytes);
-
-            return $"data:{mimeType};base64,{base64}";
         }
 
         /// <summary>
@@ -326,23 +330,26 @@ namespace ElectronNET.API.Entities
         {
             using var ms = new MemoryStream();
 
-            if (_images.ContainsKey(scaleFactor))
+
+            if (_images.TryGetValue(scaleFactor, out var image))
             {
-                var image = _images[scaleFactor];
-                var encoderCodecInfo = GetEncoder(imageFormat ?? image.RawFormat);
-                var encoder = Encoder.Quality;
-
-                var encoderParameters = new EncoderParameters(1)
+                lock (_lock)
                 {
-                    Param = new[]
+                    var encoderCodecInfo = GetEncoder(imageFormat ?? image.RawFormat);
+                    var encoder = Encoder.Quality;
+
+                    var encoderParameters = new EncoderParameters(1)
                     {
-                        new EncoderParameter(encoder, quality)
-                    }
-                };
+                        Param = new[]
+                        {
+                            new EncoderParameter(encoder, quality)
+                        }
+                    };
 
-                image.Save(ms, encoderCodecInfo, encoderParameters);
+                    image.Save(ms, encoderCodecInfo, encoderParameters);
 
-                return ms.ToArray();
+                    return ms.ToArray();
+                }
             }
 
             return null;
@@ -350,62 +357,67 @@ namespace ElectronNET.API.Entities
 
         private Image Resize(int? width, int? height, float scaleFactor = 1.0f)
         {
-            if (!_images.ContainsKey(scaleFactor) || (width is null && height is null))
+            if (!_images.TryGetValue(scaleFactor, out var image) || (width is null && height is null))
             {
                 return null;
             }
 
-            var image = _images[scaleFactor];
-            using (var g = Graphics.FromImage(image))
+            lock (_lock)
             {
-                g.CompositingQuality = CompositingQuality.HighQuality;
 
-                var aspect = GetAspectRatio(scaleFactor);
+                using (var g = Graphics.FromImage(image))
+                {
+                    g.CompositingQuality = CompositingQuality.HighQuality;
 
-                width ??= Convert.ToInt32(image.Width * aspect);
-                height ??= Convert.ToInt32(image.Height * aspect);
+                    var aspect = GetAspectRatio(scaleFactor);
 
-                width = Convert.ToInt32(width * scaleFactor);
-                height = Convert.ToInt32(height * scaleFactor);
+                    width ??= Convert.ToInt32(image.Width * aspect);
+                    height ??= Convert.ToInt32(image.Height * aspect);
 
-                var bmp = new Bitmap(width.Value, height.Value);
-                g.DrawImage(bmp,
-                    new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                    GraphicsUnit.Pixel);
+                    width = Convert.ToInt32(width * scaleFactor);
+                    height = Convert.ToInt32(height * scaleFactor);
 
-                return bmp;
+                    var bmp = new Bitmap(width.Value, height.Value);
+                    g.DrawImage(bmp,
+                        new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
+                        new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                        GraphicsUnit.Pixel);
+
+                    return bmp;
+                }
             }
         }
 
         private Image Crop(int? x, int? y, int? width, int? height, float scaleFactor = 1.0f)
         {
-            if (!_images.ContainsKey(scaleFactor))
+            if (!_images.TryGetValue(scaleFactor, out var image))
             {
                 return null;
             }
 
-            var image = _images[scaleFactor];
-            using (var g = Graphics.FromImage(image))
+            lock (_lock)
             {
-                g.CompositingQuality = CompositingQuality.HighQuality;
+                using (var g = Graphics.FromImage(image))
+                {
+                    g.CompositingQuality = CompositingQuality.HighQuality;
 
-                x ??= 0;
-                y ??= 0;
+                    x ??= 0;
+                    y ??= 0;
 
-                x = Convert.ToInt32(x * scaleFactor);
-                y = Convert.ToInt32(y * scaleFactor);
+                    x = Convert.ToInt32(x * scaleFactor);
+                    y = Convert.ToInt32(y * scaleFactor);
 
-                width ??= image.Width;
-                height ??= image.Height;
+                    width ??= image.Width;
+                    height ??= image.Height;
 
-                width = Convert.ToInt32(width * scaleFactor);
-                height = Convert.ToInt32(height * scaleFactor);
+                    width = Convert.ToInt32(width * scaleFactor);
+                    height = Convert.ToInt32(height * scaleFactor);
 
-                var bmp = new Bitmap(width.Value, height.Value);
-                g.DrawImage(bmp, new System.Drawing.Rectangle(0, 0, image.Width, image.Height), new System.Drawing.Rectangle(x.Value, y.Value, width.Value, height.Value), GraphicsUnit.Pixel);
+                    var bmp = new Bitmap(width.Value, height.Value);
+                    g.DrawImage(bmp, new System.Drawing.Rectangle(0, 0, image.Width, image.Height), new System.Drawing.Rectangle(x.Value, y.Value, width.Value, height.Value), GraphicsUnit.Pixel);
 
-                return bmp;
+                    return bmp;
+                }
             }
         }
 
@@ -442,9 +454,9 @@ namespace ElectronNET.API.Entities
 
         internal Image GetScale(float scaleFactor)
         {
-            if (_images.ContainsKey(scaleFactor))
+            if (_images.TryGetValue(scaleFactor, out var image))
             {
-                return _images[scaleFactor];
+                return image;
             }
 
             return null;
