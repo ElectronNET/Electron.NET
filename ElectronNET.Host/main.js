@@ -141,7 +141,7 @@ app.on('ready', () => {
     if (manifestJsonFile.electronPort) {
         defaultElectronPort = (manifestJsonFile.electronPort)
         if (defaultElectronPort == 'random') {
-            defaultElectronPort = Math.floor(Math.random() * 2000 + 8000); //Use random port to reduce risk of race conditions between when we find a free port here, and when the app locks on the port
+            defaultElectronPort = (Math.floor(Math.random() * 2000 + 8000)); //Use random port to reduce risk of race conditions between when we find a free port here, and when the app locks on the port
         }
     }
     // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
