@@ -44,10 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		start.sh = start.sh
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketIOClient", "SocketIOClient\SocketIOClient.csproj", "{C8D750BD-AB6B-4038-94C6-89D37968C817}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocketIOClient.Newtonsoft.Json", "SocketIOClient.Newtonsoft.Json\SocketIOClient.Newtonsoft.Json.csproj", "{A77ABFF4-C9AA-4A0A-8422-8614733D2E71}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,14 +66,6 @@ Global
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{C8D750BD-AB6B-4038-94C6-89D37968C817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8D750BD-AB6B-4038-94C6-89D37968C817}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8D750BD-AB6B-4038-94C6-89D37968C817}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8D750BD-AB6B-4038-94C6-89D37968C817}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A77ABFF4-C9AA-4A0A-8422-8614733D2E71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A77ABFF4-C9AA-4A0A-8422-8614733D2E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A77ABFF4-C9AA-4A0A-8422-8614733D2E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A77ABFF4-C9AA-4A0A-8422-8614733D2E71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
