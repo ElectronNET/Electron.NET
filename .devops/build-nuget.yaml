@@ -55,6 +55,7 @@ steps:
     configuration: 'Release'
     versioningScheme: 'off'
     buildProperties: 'Version=$(PackageVersion)'
+    arguments: -IncludeReferencedProjects
 
 - task: DotNetCoreCLI@2
   inputs:
