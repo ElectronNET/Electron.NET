@@ -533,11 +533,7 @@ namespace ElectronNET.API
         {
             public CamelCaseNewtonsoftJsonSerializer() : base()
             {
-            }
-
-            public override JsonSerializerSettings CreateOptions()
-            {
-                return new JsonSerializerSettings()
+                OptionsProvider = () => new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore,
