@@ -730,6 +730,10 @@ export = (socket: Socket, app: Electron.App, firstTime: boolean) => {
         getWindowById(id)?.setAppDetails(options);
     });
 
+    socket.on('browserWindowSetTitleBarOverlay', (id, options) => {
+        getWindowById(id)?.setTitleBarOverlay(options);
+    });
+
     socket.on('browserWindowShowDefinitionForSelection', (id) => {
         getWindowById(id)?.showDefinitionForSelection();
     });

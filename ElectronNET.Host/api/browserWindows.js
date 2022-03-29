@@ -579,6 +579,9 @@ module.exports = (socket, app, firstTime) => {
     socket.on('browserWindowSetAppDetails', (id, options) => {
         getWindowById(id)?.setAppDetails(options);
     });
+    socket.on('browserWindowSetTitleBarOverlay', (id, options) => {
+        getWindowById(id)?.setTitleBarOverlay(options);
+    });
     socket.on('browserWindowShowDefinitionForSelection', (id) => {
         getWindowById(id)?.showDefinitionForSelection();
     });

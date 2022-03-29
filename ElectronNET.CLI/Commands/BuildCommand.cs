@@ -35,7 +35,7 @@ Full example for a 32bit debug build with electron prune: build /target custom w
             _args = args;
         }
 
-        private const string _defaultElectronVersion = "17.3.0";
+        private const string _defaultElectronVersion = "18.0.0";
 
         private const string _paramTarget = "target";
         private const string _paramDotNetConfig = "dotnet-configuration";

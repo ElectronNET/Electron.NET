@@ -1920,6 +1920,19 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        ///On a Window with Window Controls Overlay already enabled, this method updates
+        /// the style of the title bar overlay. It should not be called unless you enabled WCO
+        /// when creating the window.
+        /// </summary>
+        /// <param name="options"></param>
+        [SupportedOSPlatform("win")]
+        [SupportedOSPlatform("macos")]
+        public void SetTitleBarOverlay(TitleBarOverlayConfig options)
+        {
+            BridgeConnector.Emit("browserWindowSetTitleBarOverlay", Id, options);
+        }
+
+        /// <summary>
         /// Same as webContents.showDefinitionForSelection().
         /// </summary>
         [SupportedOSPlatform("macos")]
