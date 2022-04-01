@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
 
@@ -9,6 +10,8 @@ namespace ElectronNET.CLI.Commands
 {
     public class BuildCommand : ICommand
     {
+        private const string _defaultElectronVersion = "18.0.1";
+
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
         public const string COMMAND_ARGUMENTS = 
@@ -183,8 +186,31 @@ Full example for a 32bit debug build with electron prune: build /target custom w
                 var electronVersion = "";
                 if (parser.Arguments.ContainsKey(_paramElectronVersion))
                 {
-                    electronVersion = "-c.electronVersion=" + parser.Arguments[_paramElectronVersion][0];
+                    electronVersion = parser.Arguments[_paramElectronVersion][0];
                 }
+                else
+                {
+                    //try getting version from project
+                    foreach(var project in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj"))
+                    {
+                        var projectXML = File.ReadAllText(project);
+                        var match = Regex.Match(projectXML, @"<PackageReference\s+Include=""h5\.ElectronNET\.API""\s+Version=""([0-9\.]+)""\s+\/>");
+                        if (match.Success)
+                        {
+                            var candidate = match.Groups[1].Value;
+                            var majorMinorRevision = string.Join(".",candidate.Split(new char[] { '.' }).Take(3));
+                            electronVersion = majorMinorRevision;
+                            Console.WriteLine($"Found electron version {majorMinorRevision} in project file {project}");
+                            break;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(electronVersion))
+                {
+                    electronVersion = _defaultElectronVersion;
+                }
+
 
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
@@ -208,7 +234,7 @@ Full example for a 32bit debug build with electron prune: build /target custom w
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} {electronVersion} {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
