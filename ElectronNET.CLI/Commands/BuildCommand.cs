@@ -9,10 +9,6 @@ namespace ElectronNET.CLI.Commands
 {
     public class BuildCommand : ICommand
     {
-        private const string _defaultElectronVersion = "18.0.1";
-
-        
-        
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
         public const string COMMAND_ARGUMENTS = 
@@ -184,10 +180,10 @@ Full example for a 32bit debug build with electron prune: build /target custom w
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
-                var electronVersion = _defaultElectronVersion;
+                var electronVersion = "";
                 if (parser.Arguments.ContainsKey(_paramElectronVersion))
                 {
-                    electronVersion = parser.Arguments[_paramElectronVersion][0];
+                    electronVersion = "-c.electronVersion=" + parser.Arguments[_paramElectronVersion][0];
                 }
 
                 string electronParams = "";
@@ -212,7 +208,7 @@ Full example for a 32bit debug build with electron prune: build /target custom w
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} {electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
