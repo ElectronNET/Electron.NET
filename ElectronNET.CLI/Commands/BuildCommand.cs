@@ -9,6 +9,10 @@ namespace ElectronNET.CLI.Commands
 {
     public class BuildCommand : ICommand
     {
+        private const string _defaultElectronVersion = "18.0.1";
+
+        
+        
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
         public const string COMMAND_ARGUMENTS = 
@@ -35,7 +39,6 @@ Full example for a 32bit debug build with electron prune: build /target custom w
             _args = args;
         }
 
-        private const string _defaultElectronVersion = "18.0.0";
 
         private const string _paramTarget = "target";
         private const string _paramDotNetConfig = "dotnet-configuration";
