@@ -3,10 +3,9 @@ const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
 const path = require('path');
 const windows = (global['browserWindows'] = global['browserWindows'] || []);
-let readyToShowWindowsIds = [];
-let window, lastOptions, electronSocket;
-let mainWindowURL;
+const readyToShowWindowsIds = (global['readyToShowWindowsIds'] = global['readyToShowWindowsIds'] || []);
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
+let window, lastOptions, electronSocket;
 module.exports = (socket, app) => {
     electronSocket = socket;
     app.on('login', (event, webContents, request, authInfo, callback) => {
@@ -21,157 +20,188 @@ module.exports = (socket, app) => {
         }
     });
     socket.on('register-browserWindow-ready-to-show', (id) => {
-        if (readyToShowWindowsIds.includes(id)) {
-            readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
+        var _a;
+        const index = readyToShowWindowsIds.indexOf(id);
+        if (index > -1) {
+            readyToShowWindowsIds.splice(index, 1);
             electronSocket.emit('browserWindow-ready-to-show' + id);
         }
-        getWindowById(id)?.on('ready-to-show', () => {
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('ready-to-show', () => {
             readyToShowWindowsIds.push(id);
             electronSocket.emit('browserWindow-ready-to-show' + id);
         });
     });
     socket.on('register-browserWindow-page-title-updated', (id) => {
-        getWindowById(id)?.on('page-title-updated', (event, title) => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('page-title-updated', (event, title) => {
             electronSocket.emit('browserWindow-page-title-updated' + id, title);
         });
     });
     socket.on('register-browserWindow-close', (id) => {
-        getWindowById(id)?.on('close', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('close', () => {
             electronSocket.emit('browserWindow-close' + id);
         });
     });
     socket.on('register-browserWindow-closed', (id) => {
-        getWindowById(id)?.on('closed', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('closed', () => {
             electronSocket.emit('browserWindow-closed' + id);
         });
     });
     socket.on('register-browserWindow-session-end', (id) => {
-        getWindowById(id)?.on('session-end', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('session-end', () => {
             electronSocket.emit('browserWindow-session-end' + id);
         });
     });
     socket.on('register-browserWindow-unresponsive', (id) => {
-        getWindowById(id)?.on('unresponsive', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('unresponsive', () => {
             electronSocket.emit('browserWindow-unresponsive' + id);
         });
     });
     socket.on('register-browserWindow-responsive', (id) => {
-        getWindowById(id)?.on('responsive', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('responsive', () => {
             electronSocket.emit('browserWindow-responsive' + id);
         });
     });
     socket.on('register-browserWindow-blur', (id) => {
-        getWindowById(id)?.on('blur', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('blur', () => {
             electronSocket.emit('browserWindow-blur' + id);
         });
     });
     socket.on('register-browserWindow-focus', (id) => {
-        getWindowById(id)?.on('focus', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('focus', () => {
             electronSocket.emit('browserWindow-focus' + id);
         });
     });
     socket.on('register-browserWindow-show', (id) => {
-        getWindowById(id)?.on('show', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('show', () => {
             electronSocket.emit('browserWindow-show' + id);
         });
     });
     socket.on('register-browserWindow-hide', (id) => {
-        getWindowById(id)?.on('hide', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('hide', () => {
             electronSocket.emit('browserWindow-hide' + id);
         });
     });
     socket.on('register-browserWindow-maximize', (id) => {
-        getWindowById(id)?.on('maximize', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('maximize', () => {
             electronSocket.emit('browserWindow-maximize' + id);
         });
     });
     socket.on('register-browserWindow-unmaximize', (id) => {
-        getWindowById(id)?.on('unmaximize', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('unmaximize', () => {
             electronSocket.emit('browserWindow-unmaximize' + id);
         });
     });
     socket.on('register-browserWindow-minimize', (id) => {
-        getWindowById(id)?.on('minimize', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('minimize', () => {
             electronSocket.emit('browserWindow-minimize' + id);
         });
     });
     socket.on('register-browserWindow-restore', (id) => {
-        getWindowById(id)?.on('restore', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('restore', () => {
             electronSocket.emit('browserWindow-restore' + id);
         });
     });
     socket.on('register-browserWindow-resize', (id) => {
-        getWindowById(id)?.on('resize', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('resize', () => {
             electronSocket.emit('browserWindow-resize' + id);
         });
     });
     socket.on('register-browserWindow-move', (id) => {
-        getWindowById(id)?.on('move', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('move', () => {
             electronSocket.emit('browserWindow-move' + id);
         });
     });
     socket.on('register-browserWindow-moved', (id) => {
-        getWindowById(id)?.on('moved', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('moved', () => {
             electronSocket.emit('browserWindow-moved' + id);
         });
     });
     socket.on('register-browserWindow-enter-full-screen', (id) => {
-        getWindowById(id)?.on('enter-full-screen', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('enter-full-screen', () => {
             electronSocket.emit('browserWindow-enter-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-leave-full-screen', (id) => {
-        getWindowById(id)?.on('leave-full-screen', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('leave-full-screen', () => {
             electronSocket.emit('browserWindow-leave-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-enter-html-full-screen', (id) => {
-        getWindowById(id)?.on('enter-html-full-screen', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('enter-html-full-screen', () => {
             electronSocket.emit('browserWindow-enter-html-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-leave-html-full-screen', (id) => {
-        getWindowById(id)?.on('leave-html-full-screen', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('leave-html-full-screen', () => {
             electronSocket.emit('browserWindow-leave-html-full-screen' + id);
         });
     });
     socket.on('register-browserWindow-app-command', (id) => {
-        getWindowById(id)?.on('app-command', (event, command) => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('app-command', (event, command) => {
             electronSocket.emit('browserWindow-app-command' + id, command);
         });
     });
     socket.on('register-browserWindow-scroll-touch-begin', (id) => {
-        getWindowById(id)?.on('scroll-touch-begin', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('scroll-touch-begin', () => {
             electronSocket.emit('browserWindow-scroll-touch-begin' + id);
         });
     });
     socket.on('register-browserWindow-scroll-touch-end', (id) => {
-        getWindowById(id)?.on('scroll-touch-end', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('scroll-touch-end', () => {
             electronSocket.emit('browserWindow-scroll-touch-end' + id);
         });
     });
     socket.on('register-browserWindow-scroll-touch-edge', (id) => {
-        getWindowById(id)?.on('scroll-touch-edge', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('scroll-touch-edge', () => {
             electronSocket.emit('browserWindow-scroll-touch-edge' + id);
         });
     });
     socket.on('register-browserWindow-swipe', (id) => {
-        getWindowById(id)?.on('swipe', (event, direction) => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('swipe', (event, direction) => {
             electronSocket.emit('browserWindow-swipe' + id, direction);
         });
     });
     socket.on('register-browserWindow-sheet-begin', (id) => {
-        getWindowById(id)?.on('sheet-begin', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('sheet-begin', () => {
             electronSocket.emit('browserWindow-sheet-begin' + id);
         });
     });
     socket.on('register-browserWindow-sheet-end', (id) => {
-        getWindowById(id)?.on('sheet-end', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('sheet-end', () => {
             electronSocket.emit('browserWindow-sheet-end' + id);
         });
     });
     socket.on('register-browserWindow-new-window-for-tab', (id) => {
-        getWindowById(id)?.on('new-window-for-tab', () => {
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.on('new-window-for-tab', () => {
             electronSocket.emit('browserWindow-new-window-for-tab' + id);
         });
     });
@@ -190,7 +220,9 @@ module.exports = (socket, app) => {
             window = app['mainWindow'];
             if (window) {
                 window.reload();
-                windows.push(window);
+                if (windows.findIndex(i => i.id == window.id) == -1) {
+                    windows.push(window);
+                }
                 electronSocket.emit('BrowserWindowCreated', window.id);
                 return;
             }
@@ -198,31 +230,24 @@ module.exports = (socket, app) => {
         else {
             window = new electron_1.BrowserWindow(options);
         }
+        const thisWindow = window;
         if (options.proxy) {
-            window.webContents.session.setProxy({ proxyRules: options.proxy });
+            thisWindow.webContents.session.setProxy({ proxyRules: options.proxy });
         }
         if (options.proxy && options.proxyCredentials) {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
-        window.on('ready-to-show', () => {
-            try {
-                window.id;
-            }
-            catch (error) {
-                if (error.message === 'Object has been destroyed') {
-                    return;
-                }
-            }
-
-            if (readyToShowWindowsIds.includes(window.id)) {
-                readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
+        thisWindow.on('ready-to-show', () => {
+            const index = readyToShowWindowsIds.indexOf(thisWindow.id);
+            if (index > -1) {
+                readyToShowWindowsIds.splice(index, 1);
             }
             else {
-                readyToShowWindowsIds.push(window.id);
+                readyToShowWindowsIds.push(thisWindow.id);
             }
         });
         lastOptions = options;
-        window.on('closed', (sender) => {
+        thisWindow.on('closed', (sender) => {
             for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
                 try {
@@ -238,6 +263,7 @@ module.exports = (socket, app) => {
                 }
             }
         });
+        // this seems dangerous to assume
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open.
@@ -246,262 +272,328 @@ module.exports = (socket, app) => {
             }
         });
         if (loadUrl) {
-            window.loadURL(loadUrl);
+            thisWindow.loadURL(loadUrl);
         }
         if (app.commandLine.hasSwitch('clear-cache') &&
             app.commandLine.getSwitchValue('clear-cache')) {
-            window.webContents.session.clearCache();
+            thisWindow.webContents.session.clearCache();
             console.log('auto clear-cache active for new window.');
         }
         // set main window url
         if (app['mainWindowURL'] == undefined || app['mainWindowURL'] == "") {
             app['mainWindowURL'] = loadUrl;
-            app['mainWindow'] = window;
+            app['mainWindow'] = thisWindow;
         }
-        windows.push(window);
-        electronSocket.emit('BrowserWindowCreated', window.id);
+        windows.push(thisWindow);
+        electronSocket.emit('BrowserWindowCreated', thisWindow.id);
     });
     socket.on('browserWindowDestroy', (id) => {
-        getWindowById(id)?.destroy();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.destroy();
     });
     socket.on('browserWindowClose', (id) => {
-        getWindowById(id)?.close();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.close();
     });
     socket.on('browserWindowFocus', (id) => {
-        getWindowById(id)?.focus();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.focus();
     });
     socket.on('browserWindowBlur', (id) => {
-        getWindowById(id)?.blur();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.blur();
     });
     socket.on('browserWindowIsFocused', (id) => {
-        const isFocused = getWindowById(id)?.isFocused() ?? null;
+        var _a, _b;
+        const isFocused = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isFocused()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isFocused-completed' + id, isFocused);
     });
     socket.on('browserWindowIsDestroyed', (id) => {
         const w = getWindowById(id);
         if (w) {
             const isDestroyed = w.isDestroyed();
-            electronSocket.emit('browserWindow-isDestroyed-completed' + id, isDestroyed);
-        } else {
-            electronSocket.emit('browserWindow-isDestroyed-completed' + id, true);
+            electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
         }
     });
     socket.on('browserWindowShow', (id) => {
-        getWindowById(id)?.show();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.show();
     });
     socket.on('browserWindowShowInactive', (id) => {
-        getWindowById(id)?.showInactive();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.showInactive();
     });
     socket.on('browserWindowHide', (id) => {
-        getWindowById(id)?.hide();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.hide();
     });
     socket.on('browserWindowIsVisible', (id) => {
-        const isVisible = getWindowById(id)?.isVisible() ?? null;
+        var _a, _b;
+        const isVisible = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isVisible()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isVisible-completed' + id, isVisible);
     });
     socket.on('browserWindowIsModal', (id) => {
-        const isModal = getWindowById(id)?.isModal() ?? null;
+        var _a, _b;
+        const isModal = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isModal()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isModal-completed' + id, isModal);
     });
     socket.on('browserWindowMaximize', (id) => {
-        getWindowById(id)?.maximize();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.maximize();
     });
     socket.on('browserWindowUnmaximize', (id) => {
-        getWindowById(id)?.unmaximize();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.unmaximize();
     });
     socket.on('browserWindowIsMaximized', (id) => {
-        const isMaximized = getWindowById(id)?.isMaximized() ?? null;
+        var _a, _b;
+        const isMaximized = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMaximized()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMaximized-completed' + id, isMaximized);
     });
     socket.on('browserWindowMinimize', (id) => {
-        getWindowById(id)?.minimize();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.minimize();
     });
     socket.on('browserWindowRestore', (id) => {
-        getWindowById(id)?.restore();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.restore();
     });
     socket.on('browserWindowIsMinimized', (id) => {
-        const isMinimized = getWindowById(id)?.isMinimized() ?? null;
+        var _a, _b;
+        const isMinimized = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMinimized()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMinimized-completed' + id, isMinimized);
     });
     socket.on('browserWindowSetFullScreen', (id, fullscreen) => {
-        getWindowById(id)?.setFullScreen(fullscreen);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setFullScreen(fullscreen);
     });
     socket.on('browserWindowIsFullScreen', (id) => {
-        const isFullScreen = getWindowById(id)?.isFullScreen() ?? null;
+        var _a, _b;
+        const isFullScreen = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isFullScreen()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isFullScreen-completed' + id, isFullScreen);
     });
     socket.on('browserWindowSetAspectRatio', (id, aspectRatio, extraSize) => {
-        getWindowById(id)?.setAspectRatio(aspectRatio, extraSize);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setAspectRatio(aspectRatio, extraSize);
     });
     socket.on('browserWindowPreviewFile', (id, path, displayname) => {
-        getWindowById(id)?.previewFile(path, displayname);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.previewFile(path, displayname);
     });
     socket.on('browserWindowCloseFilePreview', (id) => {
-        getWindowById(id)?.closeFilePreview();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.closeFilePreview();
     });
     socket.on('browserWindowSetBounds', (id, bounds, animate) => {
-        getWindowById(id)?.setBounds(bounds, animate);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setBounds(bounds, animate);
     });
     socket.on('browserWindowGetBounds', (id) => {
-        const rectangle = getWindowById(id)?.getBounds() ?? null;
+        var _a, _b;
+        const rectangle = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getBounds()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getBounds-completed' + id, rectangle);
     });
     socket.on('browserWindowSetContentBounds', (id, bounds, animate) => {
-        getWindowById(id)?.setContentBounds(bounds, animate);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setContentBounds(bounds, animate);
     });
     socket.on('browserWindowGetContentBounds', (id) => {
-        const rectangle = getWindowById(id)?.getContentBounds() ?? null;
+        var _a, _b;
+        const rectangle = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getContentBounds()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getContentBounds-completed' + id, rectangle);
     });
     socket.on('browserWindowSetSize', (id, width, height, animate) => {
-        getWindowById(id)?.setSize(width, height, animate);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setSize(width, height, animate);
     });
     socket.on('browserWindowGetSize', (id) => {
-        const size = getWindowById(id)?.getSize() ?? null;
+        var _a, _b;
+        const size = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getSize()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getSize-completed' + id, size);
     });
     socket.on('browserWindowSetContentSize', (id, width, height, animate) => {
-        getWindowById(id)?.setContentSize(width, height, animate);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setContentSize(width, height, animate);
     });
     socket.on('browserWindowGetContentSize', (id) => {
-        const size = getWindowById(id)?.getContentSize() ?? null;
+        var _a, _b;
+        const size = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getContentSize()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getContentSize-completed' + id, size);
     });
     socket.on('browserWindowSetMinimumSize', (id, width, height) => {
-        getWindowById(id)?.setMinimumSize(width, height);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMinimumSize(width, height);
     });
     socket.on('browserWindowGetMinimumSize', (id) => {
-        const size = getWindowById(id)?.getMinimumSize() ?? null;
+        var _a, _b;
+        const size = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getMinimumSize()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getMinimumSize-completed' + id, size);
     });
     socket.on('browserWindowSetMaximumSize', (id, width, height) => {
-        getWindowById(id)?.setMaximumSize(width, height);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMaximumSize(width, height);
     });
     socket.on('browserWindowGetMaximumSize', (id) => {
-        const size = getWindowById(id)?.getMaximumSize() ?? null;
+        var _a, _b;
+        const size = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getMaximumSize()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getMaximumSize-completed' + id, size);
     });
     socket.on('browserWindowSetResizable', (id, resizable) => {
-        getWindowById(id)?.setResizable(resizable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setResizable(resizable);
     });
     socket.on('browserWindowIsResizable', (id) => {
-        const resizable = getWindowById(id)?.isResizable() ?? null;
+        var _a, _b;
+        const resizable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isResizable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isResizable-completed' + id, resizable);
     });
     socket.on('browserWindowSetMovable', (id, movable) => {
-        getWindowById(id)?.setMovable(movable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMovable(movable);
     });
     socket.on('browserWindowIsMovable', (id) => {
-        const movable = getWindowById(id)?.isMovable() ?? null;
+        var _a, _b;
+        const movable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMovable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMovable-completed' + id, movable);
     });
     socket.on('browserWindowSetMinimizable', (id, minimizable) => {
-        getWindowById(id)?.setMinimizable(minimizable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMinimizable(minimizable);
     });
     socket.on('browserWindowIsMinimizable', (id) => {
-        const minimizable = getWindowById(id)?.isMinimizable() ?? null;
+        var _a, _b;
+        const minimizable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMinimizable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMinimizable-completed' + id, minimizable);
     });
     socket.on('browserWindowSetMaximizable', (id, maximizable) => {
-        getWindowById(id)?.setMaximizable(maximizable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMaximizable(maximizable);
     });
     socket.on('browserWindowIsMaximizable', (id) => {
-        const maximizable = getWindowById(id)?.isMaximizable() ?? null;
+        var _a, _b;
+        const maximizable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMaximizable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMaximizable-completed' + id, maximizable);
     });
     socket.on('browserWindowSetFullScreenable', (id, fullscreenable) => {
-        getWindowById(id)?.setFullScreenable(fullscreenable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setFullScreenable(fullscreenable);
     });
     socket.on('browserWindowIsFullScreenable', (id) => {
-        const fullscreenable = getWindowById(id)?.isFullScreenable() ?? null;
+        var _a, _b;
+        const fullscreenable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isFullScreenable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isFullScreenable-completed' + id, fullscreenable);
     });
     socket.on('browserWindowSetClosable', (id, closable) => {
-        getWindowById(id)?.setClosable(closable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setClosable(closable);
     });
     socket.on('browserWindowIsClosable', (id) => {
-        const closable = getWindowById(id)?.isClosable() ?? null;
+        var _a, _b;
+        const closable = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isClosable()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isClosable-completed' + id, closable);
     });
     socket.on('browserWindowSetAlwaysOnTop', (id, flag, level, relativeLevel) => {
-        getWindowById(id)?.setAlwaysOnTop(flag, level, relativeLevel);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setAlwaysOnTop(flag, level, relativeLevel);
     });
     socket.on('browserWindowIsAlwaysOnTop', (id) => {
-        const isAlwaysOnTop = getWindowById(id)?.isAlwaysOnTop() ?? null;
+        var _a, _b;
+        const isAlwaysOnTop = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isAlwaysOnTop()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isAlwaysOnTop-completed' + id, isAlwaysOnTop);
     });
     socket.on('browserWindowCenter', (id) => {
-        getWindowById(id)?.center();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.center();
     });
     socket.on('browserWindowSetPosition', (id, x, y, animate) => {
-        getWindowById(id)?.setPosition(x, y, animate);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setPosition(x, y, animate);
     });
     socket.on('browserWindowGetPosition', (id) => {
-        const position = getWindowById(id)?.getPosition() ?? null;
+        var _a, _b;
+        const position = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getPosition()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getPosition-completed' + id, position);
     });
     socket.on('browserWindowSetTitle', (id, title) => {
-        getWindowById(id)?.setTitle(title);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setTitle(title);
     });
     socket.on('browserWindowGetTitle', (id) => {
-        const title = getWindowById(id)?.getTitle() ?? null;
+        var _a, _b;
+        const title = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getTitle()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getTitle-completed' + id, title);
     });
     socket.on('browserWindowSetTitle', (id, title) => {
-        getWindowById(id)?.setTitle(title);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setTitle(title);
     });
     socket.on('browserWindowSetSheetOffset', (id, offsetY, offsetX) => {
+        var _a, _b;
         if (offsetX) {
-            getWindowById(id)?.setSheetOffset(offsetY, offsetX);
+            (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setSheetOffset(offsetY, offsetX);
         }
         else {
-            getWindowById(id)?.setSheetOffset(offsetY);
+            (_b = getWindowById(id)) === null || _b === void 0 ? void 0 : _b.setSheetOffset(offsetY);
         }
     });
     socket.on('browserWindowFlashFrame', (id, flag) => {
-        getWindowById(id)?.flashFrame(flag);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.flashFrame(flag);
     });
     socket.on('browserWindowSetSkipTaskbar', (id, skip) => {
-        getWindowById(id)?.setSkipTaskbar(skip);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setSkipTaskbar(skip);
     });
     socket.on('browserWindowSetKiosk', (id, flag) => {
-        getWindowById(id)?.setKiosk(flag);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setKiosk(flag);
     });
     socket.on('browserWindowIsKiosk', (id) => {
-        const isKiosk = getWindowById(id)?.isKiosk() ?? null;
+        var _a, _b;
+        const isKiosk = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isKiosk()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isKiosk-completed' + id, isKiosk);
     });
     socket.on('browserWindowGetNativeWindowHandle', (id) => {
-        const nativeWindowHandle = getWindowById(id)?.getNativeWindowHandle()?.readInt32LE(0)?.toString(16) ?? null;
+        var _a, _b, _c, _d;
+        const nativeWindowHandle = (_d = (_c = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getNativeWindowHandle()) === null || _b === void 0 ? void 0 : _b.readInt32LE(0)) === null || _c === void 0 ? void 0 : _c.toString(16)) !== null && _d !== void 0 ? _d : null;
         electronSocket.emit('browserWindow-getNativeWindowHandle-completed' + id, nativeWindowHandle);
     });
     socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
-        getWindowById(id)?.setRepresentedFilename(filename);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setRepresentedFilename(filename);
     });
     socket.on('browserWindowGetRepresentedFilename', (id) => {
-        const pathname = getWindowById(id)?.getRepresentedFilename() ?? null;
+        var _a, _b;
+        const pathname = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getRepresentedFilename()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getRepresentedFilename-completed' + id, pathname);
     });
     socket.on('browserWindowSetDocumentEdited', (id, edited) => {
-        getWindowById(id)?.setDocumentEdited(edited);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setDocumentEdited(edited);
     });
     socket.on('browserWindowIsDocumentEdited', (id) => {
-        const edited = getWindowById(id)?.isDocumentEdited() ?? null;
+        var _a, _b;
+        const edited = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isDocumentEdited()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isDocumentEdited-completed' + id, edited);
     });
     socket.on('browserWindowFocusOnWebView', (id) => {
-        getWindowById(id)?.focusOnWebView();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.focusOnWebView();
     });
     socket.on('browserWindowBlurWebView', (id) => {
-        getWindowById(id)?.blurWebView();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.blurWebView();
     });
     socket.on('browserWindowLoadURL', (id, url, options) => {
-        getWindowById(id)?.loadURL(url, options);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.loadURL(url, options);
     });
     socket.on('browserWindowReload', (id) => {
-        getWindowById(id)?.reload();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.reload();
     });
     socket.on('browserWindowSetMenu', (id, menuItems) => {
+        var _a;
         let menu = null;
         if (menuItems) {
             menu = electron_1.Menu.buildFromTemplate(menuItems);
@@ -509,10 +601,11 @@ module.exports = (socket, app) => {
                 electronSocket.emit('windowMenuItemClicked', id);
             });
         }
-        getWindowById(id)?.setMenu(menu);
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMenu(menu);
     });
     socket.on('browserWindowRemoveMenu', (id) => {
-        getWindowById(id)?.removeMenu();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.removeMenu();
     });
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {
@@ -525,19 +618,24 @@ module.exports = (socket, app) => {
         });
     }
     socket.on('browserWindowSetProgressBar', (id, progress) => {
-        getWindowById(id)?.setProgressBar(progress);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setProgressBar(progress);
     });
     socket.on('browserWindowSetProgressBar', (id, progress, options) => {
-        getWindowById(id)?.setProgressBar(progress, options);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setProgressBar(progress, options);
     });
     socket.on('browserWindowSetHasShadow', (id, hasShadow) => {
-        getWindowById(id)?.setHasShadow(hasShadow);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setHasShadow(hasShadow);
     });
     socket.on('browserWindowHasShadow', (id) => {
-        const hasShadow = getWindowById(id)?.hasShadow() ?? null;
+        var _a, _b;
+        const hasShadow = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.hasShadow()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-hasShadow-completed' + id, hasShadow);
     });
     socket.on('browserWindowSetThumbarButtons', (id, thumbarButtons) => {
+        var _a, _b;
         thumbarButtons.forEach(thumbarButton => {
             const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
             thumbarButton.icon = electron_1.nativeImage.createFromPath(imagePath);
@@ -545,61 +643,77 @@ module.exports = (socket, app) => {
                 electronSocket.emit('thumbarButtonClicked', thumbarButton['id']);
             };
         });
-        const success = getWindowById(id)?.setThumbarButtons(thumbarButtons) ?? null;
+        const success = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setThumbarButtons(thumbarButtons)) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindowSetThumbarButtons-completed' + id, success);
     });
     socket.on('browserWindowSetThumbnailClip', (id, rectangle) => {
-        getWindowById(id)?.setThumbnailClip(rectangle);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setThumbnailClip(rectangle);
     });
     socket.on('browserWindowSetThumbnailToolTip', (id, toolTip) => {
-        getWindowById(id)?.setThumbnailToolTip(toolTip);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setThumbnailToolTip(toolTip);
     });
     socket.on('browserWindowSetAppDetails', (id, options) => {
-        getWindowById(id)?.setAppDetails(options);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setAppDetails(options);
     });
     socket.on('browserWindowShowDefinitionForSelection', (id) => {
-        getWindowById(id)?.showDefinitionForSelection();
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.showDefinitionForSelection();
     });
     socket.on('browserWindowSetAutoHideMenuBar', (id, hide) => {
-        getWindowById(id)?.setAutoHideMenuBar(hide);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setAutoHideMenuBar(hide);
     });
     socket.on('browserWindowIsMenuBarAutoHide', (id) => {
-        const isMenuBarAutoHide = getWindowById(id)?.isMenuBarAutoHide() ?? null;
+        var _a, _b;
+        const isMenuBarAutoHide = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMenuBarAutoHide()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMenuBarAutoHide-completed' + id, isMenuBarAutoHide);
     });
     socket.on('browserWindowSetMenuBarVisibility', (id, visible) => {
-        getWindowById(id)?.setMenuBarVisibility(visible);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setMenuBarVisibility(visible);
     });
     socket.on('browserWindowIsMenuBarVisible', (id) => {
-        const isMenuBarVisible = getWindowById(id)?.isMenuBarVisible() ?? null;
+        var _a, _b;
+        const isMenuBarVisible = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isMenuBarVisible()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isMenuBarVisible-completed' + id, isMenuBarVisible);
     });
     socket.on('browserWindowSetVisibleOnAllWorkspaces', (id, visible) => {
-        getWindowById(id)?.setVisibleOnAllWorkspaces(visible);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setVisibleOnAllWorkspaces(visible);
     });
     socket.on('browserWindowIsVisibleOnAllWorkspaces', (id) => {
-        const isVisibleOnAllWorkspaces = getWindowById(id)?.isVisibleOnAllWorkspaces() ?? null;
+        var _a, _b;
+        const isVisibleOnAllWorkspaces = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.isVisibleOnAllWorkspaces()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-isVisibleOnAllWorkspaces-completed' + id, isVisibleOnAllWorkspaces);
     });
     socket.on('browserWindowSetIgnoreMouseEvents', (id, ignore) => {
-        getWindowById(id)?.setIgnoreMouseEvents(ignore);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setIgnoreMouseEvents(ignore);
     });
     socket.on('browserWindowSetContentProtection', (id, enable) => {
-        getWindowById(id)?.setContentProtection(enable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setContentProtection(enable);
     });
     socket.on('browserWindowSetFocusable', (id, focusable) => {
-        getWindowById(id)?.setFocusable(focusable);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setFocusable(focusable);
     });
     socket.on('browserWindowSetParentWindow', (id, parent) => {
+        var _a;
         const browserWindow = electron_1.BrowserWindow.fromId(parent.id);
-        getWindowById(id)?.setParentWindow(browserWindow);
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setParentWindow(browserWindow);
     });
     socket.on('browserWindowGetParentWindow', (id) => {
-        const browserWindow = getWindowById(id)?.getParentWindow() ?? null;
+        var _a, _b;
+        const browserWindow = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getParentWindow()) !== null && _b !== void 0 ? _b : null;
         electronSocket.emit('browserWindow-getParentWindow-completed' + id, browserWindow.id);
     });
     socket.on('browserWindowGetChildWindows', (id) => {
-        const browserWindows = getWindowById(id)?.getChildWindows() ?? null;
+        var _a, _b;
+        const browserWindows = (_b = (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.getChildWindows()) !== null && _b !== void 0 ? _b : null;
         const ids = [];
         browserWindows.forEach(x => {
             ids.push(x.id);
@@ -607,13 +721,16 @@ module.exports = (socket, app) => {
         electronSocket.emit('browserWindow-getChildWindows-completed' + id, ids);
     });
     socket.on('browserWindowSetAutoHideCursor', (id, autoHide) => {
-        getWindowById(id)?.setAutoHideCursor(autoHide);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setAutoHideCursor(autoHide);
     });
     socket.on('browserWindowSetVibrancy', (id, type) => {
-        getWindowById(id)?.setVibrancy(type);
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setVibrancy(type);
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
-        getWindowById(id)?.setBrowserView(browserView_1.browserViewMediateService(browserViewId));
+        var _a;
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setBrowserView(browserView_1.browserViewMediateService(browserViewId));
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {
