@@ -5,14 +5,14 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
-    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ElectronNet/Electron.NET/</PackageProjectUrl>
     <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
 This package contains the API to access the "native" electron API.</Description>
-    <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ElectronNet/Electron.NET/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
@@ -40,8 +40,10 @@ This package contains the API to access the "native" electron API.</Description>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SocketIoClientDotNet" Version="1.0.5" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SocketIOClient" Version="2.3.1" />
+    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="2.3.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
 </Project>

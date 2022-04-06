@@ -22,14 +22,13 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
-        private string _aspCoreProjectPath = "project-path";
-        private string _arguments = "args";
-        private string _manifest = "manifest";
-        private string _clearCache = "clear-cache";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramTarget = "target";
+        private const string _aspCoreProjectPath = "project-path";
+        private const string _arguments = "args";
+        private const string _manifest = "manifest";
+        private const string _clearCache = "clear-cache";
+        private const string _paramDotNetConfig = "dotnet-configuration";
+        private const string _paramTarget = "target";
+        private const string _buildInsteadOfPublish = "simple-build";
 
         public Task<bool> ExecuteAsync()
         {
@@ -55,34 +54,26 @@ namespace ElectronNET.CLI.Commands
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
                 }
 
+
+                bool buildInsteadOfPublish = false;
+
+                if (parser.Arguments.ContainsKey(_buildInsteadOfPublish))
+                {
+                    buildInsteadOfPublish = bool.Parse(parser.Arguments[_buildInsteadOfPublish].First());
+                }
+
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
                 if (Directory.Exists(tempPath) == false)
                 {
                     Directory.CreateDirectory(tempPath);
                 }
 
-                string tempBinPath = Path.Combine(tempPath, "bin");
+                string tempBinPath = Path.GetFullPath(Path.Combine(tempPath, "bin"));
+
+                var dotNetPublishFlags = BuildCommand.GetDotNetPublishFlags(parser, "false", "false");
+
                 var resultCode = 0;
 
-                string publishReadyToRun = "/p:PublishReadyToRun=";
-                if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
-                {
-                    publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
-                }
-                else
-                {
-                    publishReadyToRun += "true";
-                }
-
-                string publishSingleFile = "/p:PublishSingleFile=";
-                if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
-                {
-                    publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
-                }
-                else
-                {
-                    publishSingleFile += "true";
-                }
 
                 // If target is specified as a command line argument, use it.
                 // Format is the same as the build command.
@@ -105,9 +96,19 @@ namespace ElectronNET.CLI.Commands
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
-                if (parser != null && !parser.Arguments.ContainsKey("watch"))
+                if (!buildInsteadOfPublish)
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
+                    if (parser != null && !parser.Arguments.ContainsKey("watch"))
+                    {
+                        resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --no-self-contained /p:DisabledWarnings=true", aspCoreProjectPath);
+                    }
+                }
+                else
+                {
+                    if (parser != null && !parser.Arguments.ContainsKey("watch"))
+                    {
+                        resultCode = ProcessHelper.CmdExecute($"dotnet build -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} /p:DisabledWarnings=true", aspCoreProjectPath);
+                    }
                 }
 
                 if (resultCode != 0)
@@ -120,10 +121,40 @@ namespace ElectronNET.CLI.Commands
 
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                Console.WriteLine("node_modules missing in: " + nodeModulesDirPath);
+                bool runNpmInstall = false;
 
-                Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", tempPath);
+                Console.WriteLine("node_modules in: " + nodeModulesDirPath);
+
+                if (!Directory.Exists(nodeModulesDirPath))
+                {
+                    runNpmInstall = true;
+                }
+
+                var packagesJson = Path.Combine(tempPath, "package.json");
+                var packagesPrevious = Path.Combine(tempPath, "package.json.previous");
+
+                if (!runNpmInstall)
+                {
+
+                    if (File.Exists(packagesPrevious))
+                    {
+                        if (File.ReadAllText(packagesPrevious) != File.ReadAllText(packagesJson))
+                        {
+                            runNpmInstall = true;
+                        }
+                    }
+                    else
+                    {
+                        runNpmInstall = true;
+                    }
+                }
+
+                if (runNpmInstall)
+                {
+                    Console.WriteLine("Start npm install...");
+                    ProcessHelper.CmdExecute("npm install", tempPath);
+                    File.Copy(packagesJson, packagesPrevious, true);
+                }
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
@@ -169,12 +200,14 @@ namespace ElectronNET.CLI.Commands
                 if (isWindows)
                 {
                     Console.WriteLine("Invoke electron.cmd - in dir: " + path);
+                    Console.WriteLine("\n\n---------------------------------------------------\n\n\n");
                     ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js"" " + arguments, path);
 
                 }
                 else
                 {
                     Console.WriteLine("Invoke electron - in dir: " + path);
+                    Console.WriteLine("\n\n---------------------------------------------------\n\n\n");
                     ProcessHelper.CmdExecute(@"./electron ""../../main.js"" " + arguments, path);
                 }
 

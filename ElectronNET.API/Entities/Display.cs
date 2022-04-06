@@ -1,5 +1,10 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    public class DisplayChanged
+    {
+        public Display display { get; set; }
+        public string[] metrics { get; set; }
+    }
     /// <summary>
     /// 
     /// </summary>

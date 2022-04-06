@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ElectronNET.WebApp
 {
@@ -9,6 +10,12 @@ namespace ElectronNET.WebApp
     {
         public static void Main(string[] args)
         {
+
+#if DEBUG
+            //Uncomment this line to automatically attach the Debugger on launch. This should only be used in development
+            //Debugger.Launch();
+#endif
+
             CreateWebHostBuilder(args).Build().Run();
         }
 

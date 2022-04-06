@@ -5,6 +5,7 @@ const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
+
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
@@ -101,7 +102,16 @@ app.on('ready', () => {
 
 app.on('quit', async (event, exitCode) => {
     await server.close();
-    apiProcess.kill();
+
+    var detachedProcess = false;
+
+    if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+        detachedProcess = manifestJsonFile.detachedProcess;
+    }
+
+    if (!detachedProcess) {
+        apiProcess.kill();
+    }
 });
 
 function isSplashScreenEnabled() {
@@ -118,7 +128,7 @@ function startSplashScreen() {
     let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
+            console.log('load splashscreen error:');
             console.error(error);
 
             throw new Error(error.message);
@@ -136,13 +146,28 @@ function startSplashScreen() {
             alwaysOnTop: true,
             show: true
         });
+
+        if (manifestJsonFile.hasOwnProperty('splashscreen')) {
+            if (manifestJsonFile.splashscreen.hasOwnProperty('timeout')) {
+                var timeout = manifestJsonFile.splashscreen.timeout;
+                setTimeout((t) => {
+                    if (splashScreen) {
+                        splashScreen.hide();
+                    }
+                }, timeout);
+            }
+        }
+
+
         splashScreen.setIgnoreMouseEvents(true);
 
         app.once('browser-window-created', () => {
             splashScreen.destroy();
+            splashScreen = null;
         });
 
         const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
+
         splashScreen.loadURL('file://' + loadSplashscreenUrl);
 
         splashScreen.once('closed', () => {
@@ -246,6 +271,14 @@ function startSocketApiBridge(port) {
             }
         });
 
+        socket.on('console-stdout', (data) => {
+            console.log(`stdout: ${data.toString()}`);
+        });
+
+        socket.on('console-stderr', (data) => {
+            console.log(`stderr: ${data.toString()}`);
+        });
+
         try {
             const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
 
@@ -281,7 +314,7 @@ function startAspCoreBackend(electronPort) {
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = [getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
         let binaryFile = manifestJsonFile.executable;
 
         const os = require('os');
@@ -289,13 +322,45 @@ function startAspCoreBackend(electronPort) {
             binaryFile = binaryFile + '.exe';
         }
 
+        var detachedProcess = false;
+        var stdioopt = 'pipe';
+
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+            if (detachedProcess) {
+                stdioopt = 'ignore';
+            }
+        }
+
         let binFilePath = path.join(currentBinPath, binaryFile);
-        var options = { cwd: currentBinPath };
+
+        var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt  };
+
         apiProcess = cProcess(binFilePath, parameters, options);
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
+
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
+
+        apiProcess.on('close', (code) => {
+            console.log(`ASP.NET Process exited with code ${code}`);
+            if (code != 0) {
+                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                app.exit(code);
+            }
         });
+
+        if (detachedProcess) {
+            console.log('Detached from ASP.NET process');
+            apiProcess.unref();
+        }
+
         apiProcess.stderr.on('data', (data) => {
             console.log(`stderr: ${data.toString()}`);
         });
@@ -315,17 +380,45 @@ function startAspCoreBackendWithWatch(electronPort) {
     function startBackend(aspCoreBackendPort) {
         console.log('ASP.NET Core Watch Port: ' + aspCoreBackendPort);
         loadURL = `http://localhost:${aspCoreBackendPort}`;
-        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`];
+        const parameters = ['watch', 'run', getEnvironmentParameter(), `/electronPort=${electronPort}`, `/electronWebPort=${aspCoreBackendPort}`, `/electronPID=${process.pid}`];
 
-        var options = {
-            cwd: currentBinPath,
-            env: process.env,
-        };
+        var detachedProcess = false;
+        var stdioopt = 'pipe';
+
+        if (manifestJsonFile.hasOwnProperty('detachedProcess')) {
+            detachedProcess = manifestJsonFile.detachedProcess;
+            if (detachedProcess) {
+                stdioopt = 'ignore';
+            }
+        }
+
+        var options = { cwd: currentBinPath, env: process.env, detached: detachedProcess, stdio: stdioopt };
+
         apiProcess = cProcess('dotnet', parameters, options);
 
-        apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+        if (!detachedProcess) {
+            apiProcess.stdout.on('data', (data) => {
+                console.log(`stdout: ${data.toString()}`);
+            });
+
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
+        }
+
+        apiProcess.on('close', (code) => {
+            console.log(`ASP.NET Process exited with code ${code}`);
+            if (code != 0) {
+                console.log(`Will quit Electron, as exit code != 0 (got ${code})`);
+                app.exit(code);
+            }
         });
+
+        if (detachedProcess) {
+            console.log('Detached from ASP.NET process');
+            apiProcess.unref();
+        }
+      
         apiProcess.stderr.on('data', (data) => {
             console.log(`stderr: ${data.toString()}`);
         });

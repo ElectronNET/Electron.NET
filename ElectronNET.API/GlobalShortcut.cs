@@ -49,16 +49,16 @@ namespace ElectronNET.API
             {
                 _shortcuts.Add(accelerator, function);
 
-                BridgeConnector.Socket.Off("globalShortcut-pressed");
-                BridgeConnector.Socket.On("globalShortcut-pressed", (shortcut) =>
+                BridgeConnector.Off("globalShortcut-pressed");
+                BridgeConnector.On<string>("globalShortcut-pressed", (shortcut) =>
                 {
-                    if (_shortcuts.ContainsKey(shortcut.ToString()))
+                    if (_shortcuts.ContainsKey(shortcut))
                     {
                         _shortcuts[shortcut.ToString()]();
                     }
                 });
 
-                BridgeConnector.Socket.Emit("globalShortcut-register", accelerator);
+                BridgeConnector.Emit("globalShortcut-register", accelerator);
             }
         }
 
@@ -68,21 +68,8 @@ namespace ElectronNET.API
         /// since they don’t want applications to fight for global shortcuts.
         /// </summary>
         /// <returns>Whether this application has registered accelerator.</returns>
-        public Task<bool> IsRegisteredAsync(string accelerator)
-        {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+        public Task<bool> IsRegisteredAsync(string accelerator) => BridgeConnector.OnResult<bool>("globalShortcut-isRegistered", "globalShortcut-isRegisteredCompleted", accelerator);
 
-            BridgeConnector.Socket.On("globalShortcut-isRegisteredCompleted", (isRegistered) =>
-            {
-                BridgeConnector.Socket.Off("globalShortcut-isRegisteredCompleted");
-
-                taskCompletionSource.SetResult((bool)isRegistered);
-            });
-
-            BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);
-
-            return taskCompletionSource.Task;
-        }
 
         /// <summary>
         /// Unregisters the global shortcut of accelerator.
@@ -90,7 +77,7 @@ namespace ElectronNET.API
         public void Unregister(string accelerator)
         {
             _shortcuts.Remove(accelerator);
-            BridgeConnector.Socket.Emit("globalShortcut-unregister", accelerator);
+            BridgeConnector.Emit("globalShortcut-unregister", accelerator);
         }
 
         /// <summary>
@@ -99,7 +86,7 @@ namespace ElectronNET.API
         public void UnregisterAll()
         {
             _shortcuts.Clear();
-            BridgeConnector.Socket.Emit("globalShortcut-unregisterAll");
+            BridgeConnector.Emit("globalShortcut-unregisterAll");
         }
     }
 }

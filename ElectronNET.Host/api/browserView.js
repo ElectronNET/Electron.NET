@@ -24,7 +24,7 @@ const browserViewApi = (socket) => {
     });
     socket.on('browserView-getBounds', (id) => {
         const bounds = getBrowserViewById(id).getBounds();
-        electronSocket.emit('browserView-getBounds-reply', bounds);
+        electronSocket.emit('browserView-getBounds-reply' + id, bounds);
     });
     socket.on('browserView-setBounds', (id, bounds) => {
         getBrowserViewById(id).setBounds(bounds);

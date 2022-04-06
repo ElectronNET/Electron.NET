@@ -184,6 +184,7 @@ namespace ElectronNET.API.Entities
         /// can access this context in the dev tools by selecting the 'Electron Isolated
         /// Context' entry in the combo box at the top of the Console tab. This option is
         /// currently experimental and may change or be removed in future Electron releases.
+        /// Default value is false.
         /// </summary>
         [DefaultValue(false)]
         public bool ContextIsolation { get; set; } = false;

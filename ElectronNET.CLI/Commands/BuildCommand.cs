@@ -35,18 +35,19 @@ namespace ElectronNET.CLI.Commands
             _args = args;
         }
 
-        private string _paramTarget = "target";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramElectronArch = "electron-arch";
-        private string _paramElectronParams = "electron-params";
-        private string _paramOutputDirectory = "relative-path";
-        private string _paramAbsoluteOutput = "absolute-path";
-        private string _paramPackageJson = "package-json";
-        private string _paramForceNodeInstall = "install-modules";
-        private string _manifest = "manifest";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramVersion = "Version";
+        private const string _paramTarget = "target";
+        private const string _paramDotNetConfig = "dotnet-configuration";
+        private const string _paramElectronArch = "electron-arch";
+        private const string _paramElectronParams = "electron-params";
+        private const string _paramElectronVersion = "electron-version";
+        private const string _paramOutputDirectory = "relative-path";
+        private const string _paramAbsoluteOutput = "absolute-path";
+        private const string _paramPackageJson = "package-json";
+        private const string _paramForceNodeInstall = "install-modules";
+        private const string _manifest = "manifest";
+        private const string _paramPublishReadyToRun = "PublishReadyToRun";
+        private const string _paramPublishSingleFile = "PublishSingleFile";
+        private const string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
         {
@@ -105,7 +106,7 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
                 
-                var dotNetPublishFlags = GetDotNetPublishFlags(parser);
+                var dotNetPublishFlags = GetDotNetPublishFlags(parser, "false", "false");
 
                 var command =
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
@@ -135,10 +136,11 @@ namespace ElectronNET.CLI.Commands
 
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
-                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
+                if (!Directory.Exists(checkForNodeModulesDirPath)|| parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
+                {
                     Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
+                    ProcessHelper.CmdExecute("npm install --production", tempPath);
+                }
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
@@ -177,6 +179,12 @@ namespace ElectronNET.CLI.Commands
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
+                string electronVersion = "13.1.5";
+                if (parser.Arguments.ContainsKey(_paramElectronVersion))
+                {
+                    electronVersion = parser.Arguments[_paramElectronVersion][0];
+                }
+
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
                 {
@@ -199,7 +207,7 @@ namespace ElectronNET.CLI.Commands
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=13.1.5 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
@@ -207,12 +215,12 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
+        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
-                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
-                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "false"},
+                {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : defaultReadyToRun},
+                {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : defaultSingleFile},
             };
 
             if (parser.Arguments.ContainsKey(_paramVersion))

@@ -50,24 +50,11 @@ namespace ElectronNET.API
         /// <param name="type">Can be critical or informational. The default is informational.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Return an ID representing the request.</returns>
-        public async Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
+        public Task<int> BounceAsync(DockBounceType type, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-bounce-completed", (id) =>
-                {
-                    BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult((int) id);
-                });
-
-                BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<int>("dock-bounce", "dock-bounce-completed", cancellationToken, type.GetDescription());
         }
 
         /// <summary>
@@ -76,7 +63,7 @@ namespace ElectronNET.API
         /// <param name="id">Id of the request.</param>
         public void CancelBounce(int id)
         {
-            BridgeConnector.Socket.Emit("dock-cancelBounce", id);
+            BridgeConnector.Emit("dock-cancelBounce", id);
         }
 
         /// <summary>
@@ -85,7 +72,7 @@ namespace ElectronNET.API
         /// <param name="filePath"></param>
         public void DownloadFinished(string filePath)
         {
-            BridgeConnector.Socket.Emit("dock-downloadFinished", filePath);
+            BridgeConnector.Emit("dock-downloadFinished", filePath);
         }
 
         /// <summary>
@@ -94,7 +81,7 @@ namespace ElectronNET.API
         /// <param name="text"></param>
         public void SetBadge(string text)
         {
-            BridgeConnector.Socket.Emit("dock-setBadge", text);
+            BridgeConnector.Emit("dock-setBadge", text);
         }
 
         /// <summary>
@@ -102,24 +89,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The badge string of the dock.</returns>
-        public async Task<string> GetBadgeAsync(CancellationToken cancellationToken = default)
+        public Task<string> GetBadgeAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-getBadge-completed", (text) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult((string) text);
-                });
-
-                BridgeConnector.Socket.Emit("dock-getBadge");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<string>("dock-getBadge", "dock-getBadge-completed", cancellationToken);
         }
 
         /// <summary>
@@ -127,7 +100,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Hide()
         {
-            BridgeConnector.Socket.Emit("dock-hide");
+            BridgeConnector.Emit("dock-hide");
         }
 
         /// <summary>
@@ -135,7 +108,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Show()
         {
-            BridgeConnector.Socket.Emit("dock-show");
+            BridgeConnector.Emit("dock-show");
         }
 
         /// <summary>
@@ -144,24 +117,10 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the dock icon is visible.</returns>
-        public async Task<bool> IsVisibleAsync(CancellationToken cancellationToken = default)
+        public Task<bool> IsVisibleAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-isVisible-completed", (isVisible) =>
-                {
-                    BridgeConnector.Socket.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult((bool) isVisible);
-                });
-
-                BridgeConnector.Socket.Emit("dock-isVisible");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
+            return BridgeConnector.OnResult<bool>("dock-isVisible", "dock-isVisible-completed", cancellationToken);
         }
 
         /// <summary>
@@ -179,40 +138,21 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Emit("dock-setMenu", JArray.FromObject(menuItems, _jsonSerializer));
             _items.AddRange(menuItems);
 
-            BridgeConnector.Socket.Off("dockMenuItemClicked");
-            BridgeConnector.Socket.On("dockMenuItemClicked", (id) => {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
+            BridgeConnector.Off("dockMenuItemClicked");
+            BridgeConnector.On<string>("dockMenuItemClicked", (id) => {
+                MenuItem menuItem = _items.GetMenuItem(id);
                 menuItem?.Click();
             });
-           
         }
 
         /// <summary>
         /// TODO: Menu (macOS) still to be implemented
         /// Gets the application's dock menu.
         /// </summary>
-        public async Task<Menu> GetMenu(CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<Menu>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("dock-getMenu-completed", (menu) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(((JObject)menu).ToObject<Menu>());
-                });
-
-                BridgeConnector.Socket.Emit("dock-getMenu");
-
-                return await taskCompletionSource.Task
-                    .ConfigureAwait(false);
-            }
-        }
+        public Task<Menu> GetMenu(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<Menu>("dock-getMenu", "dock-getMenu-completed", cancellationToken);
 
         /// <summary>
         /// Sets the image associated with this dock icon.
@@ -220,10 +160,10 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public void SetIcon(string image)
         {
-            BridgeConnector.Socket.Emit("dock-setIcon", image);
+            BridgeConnector.Emit("dock-setIcon", image);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

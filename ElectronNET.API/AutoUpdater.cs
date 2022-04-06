@@ -16,28 +16,40 @@ namespace ElectronNET.API
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
+        public Task<bool> IsAutoDownloadEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoDownload-get", "autoUpdater-autoDownload-get-reply");
+
+        /// <summary>
+        /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
+        /// 
+        /// Applicable only on Windows and Linux.
+        /// </summary>
+        public Task<bool> IsAutoInstallOnAppQuitEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoInstallOnAppQuit-get", "autoUpdater-autoInstallOnAppQuit-get-reply");
+
+        /// <summary>
+        /// *GitHub provider only.* Whether to allow update to pre-release versions. 
+        /// Defaults to "true" if application version contains prerelease components (e.g. "0.12.1-alpha.1", here "alpha" is a prerelease component), otherwise "false".
+        /// 
+        /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
+        /// </summary>
+        public Task<bool> IsAllowPrereleaseEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowPrerelease-get", "autoUpdater-allowPrerelease-get-reply");
+
+        /// <summary>
+        /// *GitHub provider only.* 
+        /// Get all release notes (from current version to latest), not just the latest (Default is false).
+        /// </summary>
+        public Task<bool> IsFullChangeLogEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-fullChangelog-get", "autoUpdater-fullChangelog-get-reply");
+
+        public Task<bool> IsAllowDowngradeEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowDowngrade-get", "autoUpdater-allowDowngrade-get-reply");
+        
+
+        /// <summary>
+        /// Whether to automatically download an update when it is found. (Default is true)
+        /// </summary>
         public bool AutoDownload
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("autoUpdater-autoDownload-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-autoDownload-get-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-autoDownload-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-autoDownload-set", value);
+                BridgeConnector.Emit("autoUpdater-autoDownload-set", value);
             }
         }
 
@@ -48,26 +60,9 @@ namespace ElectronNET.API
         /// </summary>
         public bool AutoInstallOnAppQuit
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("autoUpdater-autoInstallOnAppQuit-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-autoInstallOnAppQuit-get-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-autoInstallOnAppQuit-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-autoInstallOnAppQuit-set", value);
+                BridgeConnector.Emit("autoUpdater-autoInstallOnAppQuit-set", value);
             }
         }
 
@@ -79,26 +74,9 @@ namespace ElectronNET.API
         /// </summary>
         public bool AllowPrerelease
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("autoUpdater-allowPrerelease-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-allowPrerelease-get-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-allowPrerelease-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-allowPrerelease-set", value);
+                BridgeConnector.Emit("autoUpdater-allowPrerelease-set", value);
             }
         }
 
@@ -108,26 +86,9 @@ namespace ElectronNET.API
         /// </summary>
         public bool FullChangelog
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("autoUpdater-fullChangelog-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-fullChangelog-get-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-fullChangelog-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-fullChangelog-set", value);
+                BridgeConnector.Emit("autoUpdater-fullChangelog-set", value);
             }
         }
 
@@ -138,137 +99,32 @@ namespace ElectronNET.API
         /// </summary>
         public bool AllowDowngrade
         {
-            get
-            {
-                return Task.Run<bool>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<bool>();
-
-                    BridgeConnector.Socket.On("autoUpdater-allowDowngrade-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-allowDowngrade-get-reply");
-                        taskCompletionSource.SetResult((bool)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-allowDowngrade-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-allowDowngrade-set", value);
+                BridgeConnector.Emit("autoUpdater-allowDowngrade-set", value);
             }
         }
 
         /// <summary>
         /// For test only.
         /// </summary>
-        public string UpdateConfigPath
-        {
-            get
-            {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
-
-                    BridgeConnector.Socket.On("autoUpdater-updateConfigPath-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-updateConfigPath-get-reply");
-                        taskCompletionSource.SetResult(result.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("autoUpdater-updateConfigPath-get");
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
-        }
+        public Task<string> GetUpdateConfigPathAsync() => BridgeConnector.OnResult<string>("autoUpdater-updateConfigPath-get", "autoUpdater-updateConfigPath-get-reply");
 
         /// <summary>
         /// The current application version
         /// </summary>
-        public Task<SemVer> CurrentVersionAsync
-        {
-            get
-            {
-                return Task.Run<SemVer>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<SemVer>();
-
-                    BridgeConnector.Socket.On("autoUpdater-currentVersion-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-currentVersion-get-reply");
-                        SemVer version = ((JObject)result).ToObject<SemVer>();
-                        taskCompletionSource.SetResult(version);
-                    });
-                    BridgeConnector.Socket.Emit("autoUpdater-currentVersion-get");
-
-                    return taskCompletionSource.Task;
-                });
-            }
-        }
+        public Task<SemVer> GetCurrentVersionAsync() => BridgeConnector.OnResult<SemVer>("autoUpdater-updateConcurrentVersionfigPath-get", "autoUpdater-currentVersion-get-reply");
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
-        [Obsolete("Use the asynchronous version ChannelAsync instead")]
-        public string Channel
-        {
-            get
-            {
-                return ChannelAsync.Result;
-            }
-        }
-
-        /// <summary>
-        /// Get the update channel. Not applicable for GitHub. 
-        /// Doesn’t return channel from the update configuration, only if was previously set.
-        /// </summary>
-        public Task<string> ChannelAsync
-        {
-            get
-            {
-                return Task.Run<string>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<string>();
-
-                    BridgeConnector.Socket.On("autoUpdater-channel-get-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-channel-get-reply");
-                        taskCompletionSource.SetResult(result.ToString());
-                    });
-                    BridgeConnector.Socket.Emit("autoUpdater-channel-get");
-
-                    return taskCompletionSource.Task;
-                });
-            }
-        }
-
-
+        public Task<string> GetChannelAsync() => BridgeConnector.OnResult<string>("autoUpdater-channel-get", "autoUpdater-channel-get-reply");
 
         /// <summary>
         /// The request headers.
         /// </summary>
-        public Task<Dictionary<string, string>> RequestHeadersAsync
-        {
-            get
-            {
-                return Task.Run(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Dictionary<string, string>>();
-                    BridgeConnector.Socket.On("autoUpdater-requestHeaders-get-reply", (headers) =>
-                    {
-                        BridgeConnector.Socket.Off("autoUpdater-requestHeaders-get-reply");
-                        Dictionary<string, string> result = ((JObject)headers).ToObject<Dictionary<string, string>>();
-                        taskCompletionSource.SetResult(result);
-                    });
-                    BridgeConnector.Socket.Emit("autoUpdater-requestHeaders-get");
-                    return taskCompletionSource.Task;
-                });
-            }
-        }
+        public Task<Dictionary<string, string>> GetRequestHeadersAsync() => BridgeConnector.OnResult<Dictionary<string, string>>("autoUpdater-requestHeaders-get", "autoUpdater-requestHeaders-get-reply");
 
         /// <summary>
         /// The request headers.
@@ -277,7 +133,7 @@ namespace ElectronNET.API
         {
             set
             {
-                BridgeConnector.Socket.Emit("autoUpdater-requestHeaders-set", JObject.FromObject(value, _jsonSerializer));
+                BridgeConnector.Emit("autoUpdater-requestHeaders-set", value);
             }
         }
 
@@ -290,12 +146,12 @@ namespace ElectronNET.API
             {
                 if (_error == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-error" + GetHashCode(), (message) =>
+                    BridgeConnector.On<string>("autoUpdater-error" + GetHashCode(), (message) =>
                     {
                         _error(message.ToString());
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-error-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-error-event", GetHashCode());
                 }
                 _error += value;
             }
@@ -304,7 +160,7 @@ namespace ElectronNET.API
                 _error -= value;
 
                 if (_error == null)
-                    BridgeConnector.Socket.Off("autoUpdater-error" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-error" + GetHashCode());
             }
         }
 
@@ -319,12 +175,12 @@ namespace ElectronNET.API
             {
                 if (_checkingForUpdate == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-checking-for-update" + GetHashCode(), () =>
+                    BridgeConnector.On("autoUpdater-checking-for-update" + GetHashCode(), () =>
                     {
                         _checkingForUpdate();
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-checking-for-update-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-checking-for-update-event", GetHashCode());
                 }
                 _checkingForUpdate += value;
             }
@@ -333,7 +189,7 @@ namespace ElectronNET.API
                 _checkingForUpdate -= value;
 
                 if (_checkingForUpdate == null)
-                    BridgeConnector.Socket.Off("autoUpdater-checking-for-update" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-checking-for-update" + GetHashCode());
             }
         }
 
@@ -349,12 +205,12 @@ namespace ElectronNET.API
             {
                 if (_updateAvailable == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-update-available" + GetHashCode(), (updateInfo) =>
+                    BridgeConnector.On<UpdateInfo>("autoUpdater-update-available" + GetHashCode(), (updateInfo) =>
                     {
-                        _updateAvailable(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
+                        _updateAvailable(updateInfo);
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-available-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-update-available-event", GetHashCode());
                 }
                 _updateAvailable += value;
             }
@@ -363,7 +219,7 @@ namespace ElectronNET.API
                 _updateAvailable -= value;
 
                 if (_updateAvailable == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-available" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-update-available" + GetHashCode());
             }
         }
 
@@ -378,12 +234,12 @@ namespace ElectronNET.API
             {
                 if (_updateNotAvailable == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-update-not-available" + GetHashCode(), (updateInfo) =>
+                    BridgeConnector.On<UpdateInfo>("autoUpdater-update-not-available" + GetHashCode(), (updateInfo) =>
                     {
-                        _updateNotAvailable(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
+                        _updateNotAvailable(updateInfo);
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-not-available-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-update-not-available-event", GetHashCode());
                 }
                 _updateNotAvailable += value;
             }
@@ -392,7 +248,7 @@ namespace ElectronNET.API
                 _updateNotAvailable -= value;
 
                 if (_updateNotAvailable == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-not-available" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-update-not-available" + GetHashCode());
             }
         }
 
@@ -407,12 +263,12 @@ namespace ElectronNET.API
             {
                 if (_downloadProgress == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-download-progress" + GetHashCode(), (progressInfo) =>
+                    BridgeConnector.On<ProgressInfo>("autoUpdater-download-progress" + GetHashCode(), (progressInfo) =>
                     {
-                        _downloadProgress(JObject.Parse(progressInfo.ToString()).ToObject<ProgressInfo>());
+                        _downloadProgress(progressInfo);
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-download-progress-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-download-progress-event", GetHashCode());
                 }
                 _downloadProgress += value;
             }
@@ -421,7 +277,7 @@ namespace ElectronNET.API
                 _downloadProgress -= value;
 
                 if (_downloadProgress == null)
-                    BridgeConnector.Socket.Off("autoUpdater-download-progress" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-download-progress" + GetHashCode());
             }
         }
 
@@ -436,12 +292,12 @@ namespace ElectronNET.API
             {
                 if (_updateDownloaded == null)
                 {
-                    BridgeConnector.Socket.On("autoUpdater-update-downloaded" + GetHashCode(), (updateInfo) =>
+                    BridgeConnector.On<UpdateInfo>("autoUpdater-update-downloaded" + GetHashCode(), (updateInfo) =>
                     {
-                        _updateDownloaded(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
+                        _updateDownloaded(updateInfo);
                     });
 
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-downloaded-event", GetHashCode());
+                    BridgeConnector.Emit("register-autoUpdater-update-downloaded-event", GetHashCode());
                 }
                 _updateDownloaded += value;
             }
@@ -450,7 +306,7 @@ namespace ElectronNET.API
                 _updateDownloaded -= value;
 
                 if (_updateDownloaded == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-downloaded" + GetHashCode());
+                    BridgeConnector.Off("autoUpdater-update-downloaded" + GetHashCode());
             }
         }
 
@@ -486,33 +342,33 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<UpdateCheckResult> CheckForUpdatesAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>();
+            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesComplete" + guid, (updateCheckResult) =>
+            BridgeConnector.On<UpdateCheckResult>("autoUpdaterCheckForUpdatesComplete" + guid, (updateCheckResult) =>
             {
                 try
                 {
-                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesComplete" + guid);
-                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesError" + guid);
-                    taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                    BridgeConnector.Off("autoUpdaterCheckForUpdatesComplete" + guid);
+                    BridgeConnector.Off("autoUpdaterCheckForUpdatesError" + guid);
+                    taskCompletionSource.SetResult(updateCheckResult);
                 }
                 catch (Exception ex)
                 {
                     taskCompletionSource.SetException(ex);
                 }
             });
-            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesError" + guid, (error) =>
+            BridgeConnector.On<string>("autoUpdaterCheckForUpdatesError" + guid, (error) =>
             {
-                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesComplete" + guid);
-                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesError" + guid);
+                BridgeConnector.Off("autoUpdaterCheckForUpdatesComplete" + guid);
+                BridgeConnector.Off("autoUpdaterCheckForUpdatesError" + guid);
                 string message = "An error occurred in CheckForUpdatesAsync";
                 if (error != null && !string.IsNullOrEmpty(error.ToString()))
                     message = JsonConvert.SerializeObject(error);
                 taskCompletionSource.SetException(new Exception(message));
             });
 
-            BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdates", guid);
+            BridgeConnector.Emit("autoUpdaterCheckForUpdates", guid);
 
             return taskCompletionSource.Task;
         }
@@ -525,36 +381,36 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<UpdateCheckResult> CheckForUpdatesAndNotifyAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>();
+            var taskCompletionSource = new TaskCompletionSource<UpdateCheckResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid, (updateCheckResult) =>
+            BridgeConnector.On<UpdateCheckResult>("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid, (updateCheckResult) =>
             {
                 try
                 {
-                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
-                    BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
+                    BridgeConnector.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
+                    BridgeConnector.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
                     if (updateCheckResult == null)
                         taskCompletionSource.SetResult(null);
                     else
-                        taskCompletionSource.SetResult(JObject.Parse(updateCheckResult.ToString()).ToObject<UpdateCheckResult>());
+                        taskCompletionSource.SetResult(updateCheckResult);
                 }
                 catch (Exception ex)
                 {
                     taskCompletionSource.SetException(ex);
                 }
             });
-            BridgeConnector.Socket.On("autoUpdaterCheckForUpdatesAndNotifyError" + guid, (error) =>
+            BridgeConnector.On<string>("autoUpdaterCheckForUpdatesAndNotifyError" + guid, (error) =>
             {
-                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
-                BridgeConnector.Socket.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
+                BridgeConnector.Off("autoUpdaterCheckForUpdatesAndNotifyComplete" + guid);
+                BridgeConnector.Off("autoUpdaterCheckForUpdatesAndNotifyError" + guid);
                 string message = "An error occurred in autoUpdaterCheckForUpdatesAndNotify";
                 if (error != null)
                     message = JsonConvert.SerializeObject(error);
                 taskCompletionSource.SetException(new Exception(message));
             });
 
-            BridgeConnector.Socket.Emit("autoUpdaterCheckForUpdatesAndNotify", guid);
+            BridgeConnector.Emit("autoUpdaterCheckForUpdatesAndNotify", guid);
 
             return taskCompletionSource.Task;
         }
@@ -570,7 +426,7 @@ namespace ElectronNET.API
         /// <param name="isForceRunAfter">Run the app after finish even on silent install. Not applicable for macOS. Ignored if `isSilent` is set to `false`.</param>
         public void QuitAndInstall(bool isSilent = false, bool isForceRunAfter = false)
         {
-            BridgeConnector.Socket.Emit("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
+            BridgeConnector.EmitSync("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
         }
 
         /// <summary>
@@ -579,16 +435,16 @@ namespace ElectronNET.API
         /// <returns>Path to downloaded file.</returns>
         public Task<string> DownloadUpdateAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("autoUpdaterDownloadUpdateComplete" + guid, (downloadedPath) =>
+            BridgeConnector.On<string>("autoUpdaterDownloadUpdateComplete" + guid, (downloadedPath) =>
             {
-                BridgeConnector.Socket.Off("autoUpdaterDownloadUpdateComplete" + guid);
+                BridgeConnector.Off("autoUpdaterDownloadUpdateComplete" + guid);
                 taskCompletionSource.SetResult(downloadedPath.ToString());
             });
 
-            BridgeConnector.Socket.Emit("autoUpdaterDownloadUpdate", guid);
+            BridgeConnector.Emit("autoUpdaterDownloadUpdate", guid);
 
             return taskCompletionSource.Task;
         }
@@ -599,23 +455,18 @@ namespace ElectronNET.API
         /// <returns>Feed URL.</returns>
         public Task<string> GetFeedURLAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("autoUpdaterGetFeedURLComplete" + guid, (downloadedPath) =>
+            BridgeConnector.On<string>("autoUpdaterGetFeedURLComplete" + guid, (downloadedPath) =>
             {
-                BridgeConnector.Socket.Off("autoUpdaterGetFeedURLComplete" + guid);
+                BridgeConnector.Off("autoUpdaterGetFeedURLComplete" + guid);
                 taskCompletionSource.SetResult(downloadedPath.ToString());
             });
 
-            BridgeConnector.Socket.Emit("autoUpdaterGetFeedURL", guid);
+            BridgeConnector.Emit("autoUpdaterGetFeedURL", guid);
 
             return taskCompletionSource.Task;
         }
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
     }
 }

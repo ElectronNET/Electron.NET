@@ -50,7 +50,7 @@ namespace ElectronNET.API
             get { return _isQuitOnWindowAllClosed; }
             set
             {
-                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
+                BridgeConnector.Emit("quit-app-window-all-closed-event", value);
                 _isQuitOnWindowAllClosed = value;
             }
         }
@@ -92,24 +92,21 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
+            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            BridgeConnector.Socket.On("BrowserWindowCreated", (id) =>
+            BridgeConnector.On<int>("BrowserWindowCreated", (id) =>
             {
-                BridgeConnector.Socket.Off("BrowserWindowCreated");
+                BridgeConnector.Off("BrowserWindowCreated");
 
-                string windowId = id.ToString();
-                BrowserWindow browserWindow = new BrowserWindow(int.Parse(windowId));
+                BrowserWindow browserWindow = new BrowserWindow(id);
                 _browserWindows.Add(browserWindow);
 
                 taskCompletionSource.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.Off("BrowserWindowClosed");
-            BridgeConnector.Socket.On("BrowserWindowClosed", (ids) =>
+            BridgeConnector.Off("BrowserWindowClosed");
+            BridgeConnector.On<int[]>("BrowserWindowClosed", (browserWindowIds) =>
             {
-                var browserWindowIds = ((JArray)ids).ToObject<int[]>();
-
                 for (int index = 0; index < _browserWindows.Count; index++)
                 {
                     if (!browserWindowIds.Contains(_browserWindows[index].Id))
@@ -137,7 +134,7 @@ namespace ElectronNET.API
                 options.X = 0;
                 options.Y = 0;
 
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+                BridgeConnector.Emit("createBrowserWindow", options, loadUrl);
             }
             else
             {
@@ -153,7 +150,8 @@ namespace ElectronNET.API
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
+
+                BridgeConnector.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
             }
 
             return taskCompletionSource.Task;
@@ -184,35 +182,28 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserView>();
+            var taskCompletionSource = new TaskCompletionSource<BrowserView>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            BridgeConnector.Socket.On("BrowserViewCreated", (id) =>
+            BridgeConnector.On<int>("BrowserViewCreated", (id) =>
             {
-                BridgeConnector.Socket.Off("BrowserViewCreated");
+                BridgeConnector.Off("BrowserViewCreated");
 
-                string browserViewId = id.ToString();
-                BrowserView browserView = new BrowserView(int.Parse(browserViewId));
+                BrowserView browserView = new BrowserView(id);
 
                 _browserViews.Add(browserView);
 
                 taskCompletionSource.SetResult(browserView);
             });
 
-            var ownjsonSerializer = new JsonSerializer()
+            var keepDefaultValuesSerializer = new JsonSerializer()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Include
             };
-            BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, keepDefaultValuesSerializer));
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

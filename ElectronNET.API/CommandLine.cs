@@ -43,7 +43,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendSwitch(string the_switch, string value = "")
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", the_switch, value);
+            BridgeConnector.Emit("appCommandLineAppendSwitch", the_switch, value);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendArgument(string value)
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
+            BridgeConnector.Emit("appCommandLineAppendArgument", value);
         }
 
         /// <summary>
@@ -66,24 +66,7 @@ namespace ElectronNET.API
         /// <param name="switchName">A command-line switch</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Whether the command-line switch is present.</returns>
-        public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken)) 
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appCommandLineHasSwitchCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appCommandLineHasSwitchCompleted");
-                    taskCompletionSource.SetResult((bool)result);
-                });
-
-                BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        public Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appCommandLineHasSwitch", "appCommandLineHasSwitchCompleted", cancellationToken, switchName);
 
         /// <summary>
         /// The command-line switch value.
@@ -94,23 +77,6 @@ namespace ElectronNET.API
         /// <remarks>
         /// Note: When the switch is not present or has no value, it returns empty string.
         /// </remarks>
-        public async Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On("appCommandLineGetSwitchValueCompleted", (result) =>
-                {
-                    BridgeConnector.Socket.Off("appCommandLineGetSwitchValueCompleted");
-                    taskCompletionSource.SetResult((string)result);
-                });
-
-                BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        public Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appCommandLineGetSwitchValue", "appCommandLineGetSwitchValueCompleted", cancellationToken, switchName);
     }
 }

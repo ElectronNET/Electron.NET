@@ -190,7 +190,7 @@ export = (socket: Socket, app: Electron.App) => {
         electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
 
         app.on('second-instance', (event, args = [], workingDirectory = '') => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
+            electronSocket.emit('secondInstance', { args: args, workingDirectory: workingDirectory });
         });
     });
 

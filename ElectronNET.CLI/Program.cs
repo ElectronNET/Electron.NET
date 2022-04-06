@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ElectronNET.CLI
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length == 0)
             {
@@ -17,6 +18,12 @@ namespace ElectronNET.CLI
                 PrintUsage();
                 Environment.Exit(-1);
             }
+
+            Console.CancelKeyPress += (s,e) =>
+            {
+                ProcessHelper.KillActive();
+                Environment.Exit(-1);
+            };
 
             ICommand command = null;
 
@@ -56,7 +63,7 @@ namespace ElectronNET.CLI
 
             if (command != null)
             {
-                var success = command.ExecuteAsync().Result;
+                var success = await command.ExecuteAsync();
                 if (!success)
                 {
                     Environment.Exit(-1);

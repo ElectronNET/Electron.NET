@@ -48,26 +48,23 @@ namespace ElectronNET.API
         /// <returns>An array of file paths chosen by the user</returns>
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
+            var taskCompletionSource = new TaskCompletionSource<string[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showOpenDialogComplete" + guid, (filePaths) =>
+            BridgeConnector.On<string[]>("showOpenDialogComplete" + guid, (filePaths) =>
             {
-                BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
+                BridgeConnector.Off("showOpenDialogComplete" + guid);
 
-                var result = ((JArray)filePaths).ToObject<string[]>();
                 var list = new List<string>();
-                foreach (var item in result)
+
+                foreach (var item in filePaths)
                 {
                     list.Add(HttpUtility.UrlDecode(item));
                 }
                 taskCompletionSource.SetResult(list.ToArray());
             });
 
-
-            BridgeConnector.Socket.Emit("showOpenDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Emit("showOpenDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -80,20 +77,17 @@ namespace ElectronNET.API
         /// <returns>Returns String, the path of the file chosen by the user, if a callback is provided it returns an empty string.</returns>
         public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showSaveDialogComplete" + guid, (filename) =>
+            BridgeConnector.On<string>("showSaveDialogComplete" + guid, (filename) =>
             {
-                BridgeConnector.Socket.Off("showSaveDialogComplete" + guid);
+                BridgeConnector.Off("showSaveDialogComplete" + guid);
 
-                taskCompletionSource.SetResult(filename.ToString());
+                taskCompletionSource.SetResult(filename);
             });
 
-            BridgeConnector.Socket.Emit("showSaveDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
+            BridgeConnector.Emit("showSaveDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -149,32 +143,27 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, MessageBoxOptions messageBoxOptions)
         {
-            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
+            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showMessageBoxComplete" + guid, (args) =>
+            BridgeConnector.On<MessageBoxResponse>("showMessageBoxComplete" + guid, (args) =>
             {
-                BridgeConnector.Socket.Off("showMessageBoxComplete" + guid);
-
-                var result = ((JArray)args);
+                BridgeConnector.Off("showMessageBoxComplete" + guid);
 
                 taskCompletionSource.SetResult(new MessageBoxResult
                 {
-                    Response = (int)result.First,
-                    CheckboxChecked = (bool)result.Last
+                    Response = args.response,
+                    CheckboxChecked = args.@checked
                 });
 
             });
 
             if (browserWindow == null)
             {
-                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
+                BridgeConnector.Emit("showMessageBox", messageBoxOptions, guid);
             } else
             {
-                BridgeConnector.Socket.Emit("showMessageBox", 
-                    JObject.FromObject(browserWindow, _jsonSerializer),
-                    JObject.FromObject(messageBoxOptions, _jsonSerializer),
-                    guid);
+                BridgeConnector.Emit("showMessageBox", browserWindow , messageBoxOptions, guid);
             }
 
             return taskCompletionSource.Task;
@@ -192,7 +181,7 @@ namespace ElectronNET.API
         /// <param name="content">The text content to display in the error box.</param>
         public void ShowErrorBox(string title, string content)
         {
-            BridgeConnector.Socket.Emit("showErrorBox", title, content);
+            BridgeConnector.Emit("showErrorBox", title, content);
         }
 
         /// <summary>
@@ -217,28 +206,18 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showCertificateTrustDialogComplete" + guid, () =>
+            BridgeConnector.On("showCertificateTrustDialogComplete" + guid, () =>
             {
-                BridgeConnector.Socket.Off("showCertificateTrustDialogComplete" + guid);
+                BridgeConnector.Off("showCertificateTrustDialogComplete" + guid);
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("showCertificateTrustDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
-                guid);
+            BridgeConnector.Emit("showCertificateTrustDialog", browserWindow, options, guid);
 
             return taskCompletionSource.Task;
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

@@ -31,29 +31,11 @@ namespace ElectronNET.API
         /// 
         /// (experimental)
         /// </summary>
-        public Rectangle Bounds
+        public Task<Rectangle> GetBoundsAsync() => BridgeConnector.OnResult<Rectangle>("browserView-getBounds", "browserView-getBounds-reply" + Id, Id);
+
+        public void SetBounds(Rectangle value)
         {
-            get
-            {
-                return Task.Run<Rectangle>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-                    BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
-                    {
-                        BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult((Rectangle)result);
-                    });
-
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
-
-                    return taskCompletionSource.Task;
-                }).Result;
-            }
-            set
-            {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
-            }
+            BridgeConnector.Emit("browserView-setBounds", Id, value);
         }
 
         /// <summary>
@@ -74,7 +56,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Emit("browserView-setAutoResize", Id, options);
         }
 
         /// <summary>
@@ -85,13 +67,7 @@ namespace ElectronNET.API
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
         public void SetBackgroundColor(string color)
         {
-            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
+            BridgeConnector.Emit("browserView-setBackgroundColor", Id, color);
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }

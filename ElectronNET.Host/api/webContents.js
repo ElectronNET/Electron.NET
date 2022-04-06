@@ -29,20 +29,20 @@ module.exports = (socket) => {
     });
     socket.on('webContents-getPrinters', async (id) => {
         const printers = await getWindowById(id).webContents.getPrinters();
-        electronSocket.emit('webContents-getPrinters-completed', printers);
+        electronSocket.emit('webContents-getPrinters-completed' + Id, printers);
     });
     socket.on('webContents-print', async (id, options = {}) => {
         await getWindowById(id).webContents.print(options);
-        electronSocket.emit('webContents-print-completed', true);
+        electronSocket.emit('webContents-print-completed' + Id, true);
     });
     socket.on('webContents-printToPDF', async (id, options = {}, path) => {
         const buffer = await getWindowById(id).webContents.printToPDF(options);
         fs.writeFile(path, buffer, (error) => {
             if (error) {
-                electronSocket.emit('webContents-printToPDF-completed', false);
+                electronSocket.emit('webContents-printToPDF-completed' + Id, false);
             }
             else {
-                electronSocket.emit('webContents-printToPDF-completed', true);
+                electronSocket.emit('webContents-printToPDF-completed' + Id, true);
             }
         });
     });
@@ -141,7 +141,7 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, [cookie, cause, removed]);
+            electronSocket.emit('webContents-session-cookies-changed' + id, { cookie: cookie, cause: cause, removed: removed });
         });
     });
     socket.on('webContents-session-cookies-get', async (id, filter, guid) => {
@@ -201,7 +201,7 @@ module.exports = (socket) => {
         Object.keys(extensionsList).forEach(key => {
             chromeExtensionInfo.push(extensionsList[key]);
         });
-        electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);
+        electronSocket.emit('webContents-session-getAllExtensions-completed' + Id, chromeExtensionInfo);
     });
     socket.on('webContents-session-removeExtension', (id, name) => {
         const browserWindow = getWindowById(id);
@@ -210,7 +210,7 @@ module.exports = (socket) => {
     socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
         const browserWindow = getWindowById(id);
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
-        electronSocket.emit('webContents-session-loadExtension-completed', extension);
+        electronSocket.emit('webContents-session-loadExtension-completed' + Id, extension);
     });
     function getWindowById(id) {
         if (id >= 1000) {

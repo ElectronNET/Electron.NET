@@ -1,5 +1,11 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    internal class MessageBoxResponse
+    {
+        public int response { get; set; }
+        public bool @checked { get; set; }
+    }
+
     /// <summary>
     /// 
     /// </summary>

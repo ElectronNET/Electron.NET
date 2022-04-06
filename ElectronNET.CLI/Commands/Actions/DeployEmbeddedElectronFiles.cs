@@ -6,6 +6,8 @@ namespace ElectronNET.CLI.Commands.Actions
     {
         public static void Do(string tempPath)
         {
+            EmbeddedFileHelper.PrintAllResources();
+
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "main.js");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "build-helper.js");
