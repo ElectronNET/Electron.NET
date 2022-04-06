@@ -158,6 +158,17 @@
         /// <summary>
         /// Only macOS: The submenu is a “Services” menu
         /// </summary>
-        services
+        services,
+        
+        /// <summary>
+        /// Only macOS: the submenue for "Recent Documents"
+        /// </summary>
+        recentdocuments,
+        
+        /// <summary>
+        /// Only macOS: the menu to clear the recent document list
+        /// </summary>
+        clearrecentdocuments,
+        
     }
 }
