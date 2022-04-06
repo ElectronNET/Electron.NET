@@ -50,5 +50,6 @@ namespace ElectronNET.API
                 .AddSingleton<INativeTheme>(provider => NativeTheme.Instance)
                 .AddSingleton<IDock>(provider => Dock.Instance)
                 .AddSingleton<IApplicationSocket>(provider => provider.GetService<ApplicationSocket>());
+                .AddSingleton(provider => Process.Instance);
     }
 }
