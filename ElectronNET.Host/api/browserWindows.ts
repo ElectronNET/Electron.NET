@@ -3,10 +3,10 @@ import { BrowserWindow, Menu, nativeImage } from 'electron';
 import { browserViewMediateService } from './browserView';
 const path = require('path');
 const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
-let readyToShowWindowsIds: number[] = [];
-let window, lastOptions, electronSocket;
-let mainWindowURL;
+const readyToShowWindowsIds: number[] = (global['readyToShowWindowsIds'] = global['readyToShowWindowsIds'] || []) as number[];
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
+
+let window: Electron.BrowserWindow, lastOptions:Electron.BrowserWindowConstructorOptions, electronSocket: Socket;
 
 export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
@@ -24,8 +24,9 @@ export = (socket: Socket, app: Electron.App) => {
     })
 
     socket.on('register-browserWindow-ready-to-show', (id) => {
-        if (readyToShowWindowsIds.includes(id)) {
-            readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== id);
+        const index = readyToShowWindowsIds.indexOf(id);
+        if (index > -1) {
+            readyToShowWindowsIds.splice(index, 1);
             electronSocket.emit('browserWindow-ready-to-show' + id);
         }
 
@@ -225,7 +226,9 @@ export = (socket: Socket, app: Electron.App) => {
             window = app['mainWindow'];
             if (window) {
                 window.reload();
-                windows.push(window);
+                if (windows.findIndex(i => i.id == window.id) == -1){
+                    windows.push(window);
+                }
                 electronSocket.emit('BrowserWindowCreated', window.id);
                 return;
             }
@@ -233,25 +236,27 @@ export = (socket: Socket, app: Electron.App) => {
             window = new BrowserWindow(options);
         }
 
+        const thisWindow = window;
+
         if (options.proxy) {
-            window.webContents.session.setProxy({proxyRules: options.proxy});
+            thisWindow.webContents.session.setProxy({proxyRules: options.proxy});
         }
 
         if (options.proxy && options.proxyCredentials) {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
-
-        window.on('ready-to-show', () => {
-            if (readyToShowWindowsIds.includes(window.id)) {
-                readyToShowWindowsIds = readyToShowWindowsIds.filter(value => value !== window.id);
+        thisWindow.on('ready-to-show', () => {
+            const index = readyToShowWindowsIds.indexOf(thisWindow.id);
+            if (index > -1) {
+                readyToShowWindowsIds.splice(index, 1);
             } else {
-                readyToShowWindowsIds.push(window.id);
+                readyToShowWindowsIds.push(thisWindow.id);
             }
         });
 
         lastOptions = options;
 
-        window.on('closed', (sender) => {
+        thisWindow.on('closed', (sender) => {
             for (let index = 0; index < windows.length; index++) {
                 const windowItem = windows[index];
                 try {
@@ -268,6 +273,7 @@ export = (socket: Socket, app: Electron.App) => {
             }
         });
 
+        // this seems dangerous to assume
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open.
@@ -277,23 +283,23 @@ export = (socket: Socket, app: Electron.App) => {
         });
 
         if (loadUrl) {
-            window.loadURL(loadUrl);
+            thisWindow.loadURL(loadUrl);
         }
 
         if (app.commandLine.hasSwitch('clear-cache') &&
             app.commandLine.getSwitchValue('clear-cache')) {
-            window.webContents.session.clearCache();
+            thisWindow.webContents.session.clearCache();
             console.log('auto clear-cache active for new window.');
         }
 
         // set main window url
         if (app['mainWindowURL'] == undefined || app['mainWindowURL'] == "") {
             app['mainWindowURL'] = loadUrl;
-            app['mainWindow'] = window;
+            app['mainWindow'] = thisWindow;
         }
 
-        windows.push(window);
-        electronSocket.emit('BrowserWindowCreated', window.id);
+        windows.push(thisWindow);
+        electronSocket.emit('BrowserWindowCreated', thisWindow.id);
     });
 
     socket.on('browserWindowDestroy', (id) => {
@@ -322,9 +328,7 @@ export = (socket: Socket, app: Electron.App) => {
         const w = getWindowById(id);
         if (w) {
             const isDestroyed = w.isDestroyed();
-            electronSocket.emit('browserWindow-isDestroyed-completed' + id, isDestroyed);
-        } else {
-            electronSocket.emit('browserWindow-isDestroyed-completed' + id, true);
+            electronSocket.emit('browserWindow-isDestroyed-completed', isDestroyed);
         }
     });
 
@@ -761,11 +765,11 @@ export = (socket: Socket, app: Electron.App) => {
     socket.on('browserWindowGetChildWindows', (id) => {
         const browserWindows = getWindowById(id)?.getChildWindows() ?? null;
 
-        const ids = [];
+            const ids = [];
 
-        browserWindows.forEach(x => {
-            ids.push(x.id);
-        });
+            browserWindows.forEach(x => {
+                ids.push(x.id);
+            });
 
         electronSocket.emit('browserWindow-getChildWindows-completed' + id, ids);
     });

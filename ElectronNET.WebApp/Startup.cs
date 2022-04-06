@@ -43,7 +43,7 @@ namespace ElectronNET.WebApp
 
             if (HybridSupport.IsElectronActive)
             {
-                ElectronBootstrap();
+                Electron.App.Ready += () => ElectronBootstrap();
             }
         }
 
@@ -55,12 +55,11 @@ namespace ElectronNET.WebApp
             {
                 Width = 1152,
                 Height = 940,
-                Show = false
-            });
+                Show = true
+            }).ConfigureAwait(false);
 
             await browserWindow.WebContents.Session.ClearCacheAsync();
 
-            browserWindow.OnReadyToShow += () => browserWindow.Show();
             browserWindow.SetTitle(Configuration["DemoTitleInSettings"]);
         }
 
