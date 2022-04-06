@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <TypeScriptToolsVersion>4.2</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\ManageWindowsController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\Windows\HandleErrorCrashes.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" AdditionalProperties="TargetFramework=net6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\electron.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\electron_32x32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="ElectronHostHook\**\*.*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="electron.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

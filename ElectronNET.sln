@@ -2,10 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp", "ElectronNET.WebApp\ElectronNET.WebApp.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE} = {CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp.NET5", "ElectronNET.WebApp\ElectronNET.WebApp.NET5.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp.NET6", "ElectronNET.WebApp\ElectronNET.WebApp.NET6.csproj", "{76F72AED-31F4-4289-AFB5-D7ECA84072B8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.API", "ElectronNET.API\ElectronNET.API.csproj", "{A78157BA-B754-45F1-969F-D6A513CA0E72}"
 EndProject
@@ -66,6 +65,10 @@ Global
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{76F72AED-31F4-4289-AFB5-D7ECA84072B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76F72AED-31F4-4289-AFB5-D7ECA84072B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76F72AED-31F4-4289-AFB5-D7ECA84072B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76F72AED-31F4-4289-AFB5-D7ECA84072B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
