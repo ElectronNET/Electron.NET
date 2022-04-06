@@ -55,7 +55,7 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
         args.forEach(parameter => {
             const words = parameter.split('=');
 
-            if(words.length > 1) {
+            if (words.length > 1) {
                 app.commandLine.appendSwitch(words[0].replace('--', ''), words[1]);
             } else {
                 app.commandLine.appendSwitch(words[0].replace('--', ''));
@@ -73,6 +73,27 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
 
     if (!mainInstance) {
         app.quit();
+    }
+}
+
+// Bypass all SSL/TLS certificate errors. -- Less secure.
+if (manifestJsonFile.ignoreAllCertificateErrors) {
+    console.log('All SSL/TLS Certificate errors will be ignored.');
+    app.commandLine.appendSwitch('ignore-certificate-errors');
+}
+
+// Bypass SSL/TLS certificate errors only for the domain names specified in the electron.manifest.json file.
+if (manifestJsonFile.hasOwnProperty('domainNamesToIgnoreCertificateErrors')) {
+    if (manifestJsonFile.domainNamesToIgnoreCertificateErrors.length > 0) {
+        console.log(`SSL/TLS certificate errors will be ignored for ${manifestJsonFile.domainNamesToIgnoreCertificateErrors.join(', ')}`);
+
+        app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+            if (shouldIgnoreCertificateForUrl(url)) {
+                console.log('SSL/TLS certificate error ignored for URL: ' + url);
+                event.preventDefault()
+                callback(true)
+            }
+        })
     }
 }
 
@@ -431,4 +452,16 @@ function getEnvironmentParameter() {
     }
 
     return '';
+}
+
+function shouldIgnoreCertificateForUrl(url) {
+    if (manifestJsonFile.hasOwnProperty('domainNamesToIgnoreCertificateErrors')) {
+        // Removing the scheme from the url so it will cover https and wss://
+        const urlWithoutScheme = url.replace(/(^\w+:|^)\/\//, '');
+        const sites = manifestJsonFile.domainNamesToIgnoreCertificateErrors.filter((oneSite) => urlWithoutScheme.startsWith(oneSite));
+
+        return sites.length > 0;
+    }
+
+    return false;
 }
