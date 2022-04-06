@@ -137,10 +137,13 @@ There are additional platforms available:
 ```
 electronize build /target win
 electronize build /target osx
+electronize build /target osx-arm64
 electronize build /target linux
 ```
 
-Those three "default" targets will produce x64 packages for those platforms.
+Those four "default" targets will produce packages for those platforms.
+
+Note that the `osx-arm64` build requires that the project target `net6.0`. `osx-arm64` is for Apple Silicon Macs.
 
 For certain NuGet packages or certain scenarios you may want to build a pure x86 application. To support those things you can define the desired [.NET Core runtime](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog), the [electron platform](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#platform) and [electron architecture](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#arch) like this:
 
