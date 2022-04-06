@@ -23,7 +23,8 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
                                                  "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
-                                                 "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
+                                                 "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"" + Environment.NewLine +
+                                                 "Full example to pass publish parameters: build /PublishReadyToRun false /PublishSingleFile false  /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
@@ -62,7 +63,7 @@ namespace ElectronNET.CLI.Commands
                 if (parser.Arguments.ContainsKey(_paramVersion))
                     version = parser.Arguments[_paramVersion][0];
 
-                if (!parser.Arguments.ContainsKey(_paramTarget))
+                if (!parser.Arguments.ContainsKey(_paramTarget) || parser.Arguments[_paramTarget].Length == 0)
                 {
                     Console.WriteLine($"Error: missing '{_paramTarget}' argument.");
                     Console.WriteLine(COMMAND_ARGUMENTS);

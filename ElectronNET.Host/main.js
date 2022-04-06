@@ -360,6 +360,10 @@ function startAspCoreBackend(electronPort) {
             console.log('Detached from ASP.NET process');
             apiProcess.unref();
         }
+
+        apiProcess.stderr.on('data', (data) => {
+            console.log(`stderr: ${data.toString()}`);
+        });
     }
 }
 
@@ -414,6 +418,10 @@ function startAspCoreBackendWithWatch(electronPort) {
             console.log('Detached from ASP.NET process');
             apiProcess.unref();
         }
+      
+        apiProcess.stderr.on('data', (data) => {
+            console.log(`stderr: ${data.toString()}`);
+        });
     }
 }
 
