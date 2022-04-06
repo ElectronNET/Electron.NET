@@ -1,9 +1,9 @@
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Options for creating a new <see cref="NativeImage"/>
     /// </summary>
-    public class AddRepresentationOptions
+    public class CreateOptions
     {
         /// <summary>
         /// Gets or sets the width
@@ -19,15 +19,6 @@ namespace ElectronNET.API.Entities
         /// Gets or sets the scalefactor
         /// </summary>
         public float ScaleFactor { get; set; } = NativeImage.DefaultScaleFactor;
-
-        /// <summary>
-        /// Gets or sets the buffer
-        /// </summary>
-        public byte[] Buffer { get; set; }
-
-        /// <summary>
-        /// Gets or sets the dataURL
-        /// </summary>
-        public string DataUrl { get; set; } 
+        
     }
 }

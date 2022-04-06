@@ -1,8 +1,11 @@
+using System;
+
 namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
     /// </summary>
+    [Obsolete("Use CreateOptions instead")]
     public class CreateFromBufferOptions
     {
         /// <summary>
@@ -18,6 +21,11 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Gets or sets the scalefactor
         /// </summary>
-        public float ScaleFactor { get; set; } = 1.0f;
+        public float ScaleFactor { get; set; } = NativeImage.DefaultScaleFactor;
+        /// <summary>
+        /// Utility conversion for obsolete class
+        /// </summary>
+        public static implicit operator CreateOptions(CreateFromBufferOptions o) => new()
+            {Width = o.Width, Height = o.Height, ScaleFactor = o.ScaleFactor};
     }
 }
