@@ -216,6 +216,10 @@ export = (socket: Socket, app: Electron.App) => {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
 
+        if (options.parent) {
+            options.parent = BrowserWindow.fromId(options.parent.id);
+        }
+
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch('watch') && app['mainWindowURL'] === loadUrl) {
             window = app['mainWindow'];

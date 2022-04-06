@@ -154,14 +154,14 @@ namespace ElectronNET.API.Entities
         public bool Frame { get; set; } = true;
 
         /// <summary>
-        /// Whether this is a modal window. This only works when the window is a child
-        /// window.Default is false.
+        /// Whether this is a modal window. This only works when <see cref="Parent"/> is
+        /// also specified. Default is false.
         /// </summary>
         public bool Modal { get; set; }
 
         /// <summary>
         /// Whether the web view accepts a single mouse-down event that simultaneously
-        /// activates the window.Default is false.
+        /// activates the window. Default is false.
         /// </summary>
         public bool AcceptFirstMouse { get; set; }
 
@@ -270,5 +270,11 @@ namespace ElectronNET.API.Entities
         /// These will only be used if the Proxy field is also set.
         /// </summary>
         public string ProxyCredentials { get; set; }
+
+        /// <summary>
+        /// The window to use as the created window's parent.
+        /// </summary>
+        [DefaultValue(null)]
+        public BrowserWindow Parent { get; set; }
     }
 }
