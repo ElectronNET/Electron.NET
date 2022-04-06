@@ -1,6 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
-let tray = (global['$tray'] = global['tray'] || { value: null });
+const tray = (global['$tray'] = global['tray'] || { value: null });
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;

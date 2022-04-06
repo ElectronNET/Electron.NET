@@ -1,7 +1,7 @@
 import { Socket } from 'net';
 import { BrowserWindow, Menu, nativeImage } from 'electron';
 import { browserViewMediateService } from './browserView';
-const path = require('path');
+import * as path from 'path';
 const windows: Electron.BrowserWindow[] = (global['browserWindows'] = global['browserWindows'] || []) as Electron.BrowserWindow[];
 const readyToShowWindowsIds: number[] = (global['readyToShowWindowsIds'] = global['readyToShowWindowsIds'] || []) as number[];
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
@@ -13,11 +13,11 @@ export = (socket: Socket, app: Electron.App) => {
 
     app.on('login', (event, webContents, request, authInfo, callback) => {
         if (authInfo.isProxy) {
-            let proxy = `${authInfo.host}:${authInfo.port}`
+            const proxy = `${authInfo.host}:${authInfo.port}`
             if (proxy in proxyToCredentialsMap && proxyToCredentialsMap[proxy].split(':').length === 2) {
                 event.preventDefault()
-                let user = proxyToCredentialsMap[proxy].split(':')[0]
-                let pass = proxyToCredentialsMap[proxy].split(':')[1]
+                const user = proxyToCredentialsMap[proxy].split(':')[0]
+                const pass = proxyToCredentialsMap[proxy].split(':')[1]
                 callback(user, pass)
             }
         }

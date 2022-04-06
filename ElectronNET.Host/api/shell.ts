@@ -32,7 +32,7 @@ export = (socket: Socket) => {
         electronSocket.emit('shell-openExternalCompleted', result);
     });
 
-    socket.on('shell-trashItem', async (fullPath, deleteOnFail) => {
+    socket.on('shell-trashItem', async (fullPath) => {
         let success = false;
 
         try {

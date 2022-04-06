@@ -19,7 +19,9 @@ module.exports = (socket) => {
         try {
             electron_1.globalShortcut.unregisterAll();
         }
-        catch (error) { }
+        catch (error) {
+            console.error(error);
+        }
     });
 };
 //# sourceMappingURL=globalShortcut.js.map

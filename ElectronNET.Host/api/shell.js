@@ -25,7 +25,7 @@ module.exports = (socket) => {
         }
         electronSocket.emit('shell-openExternalCompleted', result);
     });
-    socket.on('shell-trashItem', async (fullPath, deleteOnFail) => {
+    socket.on('shell-trashItem', async (fullPath) => {
         let success = false;
         try {
             await electron_1.shell.trashItem(fullPath);

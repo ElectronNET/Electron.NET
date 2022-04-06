@@ -1,7 +1,7 @@
 "use strict";
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
-const fs = require('fs');
+const fs = require("fs");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -214,7 +214,7 @@ module.exports = (socket) => {
     });
     function getWindowById(id) {
         if (id >= 1000) {
-            return browserView_1.browserViewMediateService(id - 1000);
+            return (0, browserView_1.browserViewMediateService)(id - 1000);
         }
         return electron_1.BrowserWindow.fromId(id);
     }

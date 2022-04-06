@@ -55,7 +55,6 @@ module.exports = (socket) => {
     socket.on('clipboard-writeImage', (data, type) => {
         const dataContent = JSON.parse(data);
         const image = electron_1.nativeImage.createEmpty();
-        // tslint:disable-next-line: forin
         for (const key in dataContent) {
             const scaleFactor = key;
             const bytes = data[key];

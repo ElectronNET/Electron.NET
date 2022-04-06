@@ -71,7 +71,6 @@ export = (socket: Socket) => {
         const dataContent = JSON.parse(data);
         const image = nativeImage.createEmpty();
 
-        // tslint:disable-next-line: forin
         for (const key in dataContent) {
             const scaleFactor = key;
             const bytes = data[key];

@@ -1,7 +1,7 @@
 import { Socket } from 'net';
 import { BrowserWindow, BrowserView } from 'electron';
 import { browserViewMediateService } from './browserView';
-const fs = require('fs');
+import * as fs from 'fs';
 let electronSocket;
 
 export = (socket: Socket) => {

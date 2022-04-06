@@ -1,7 +1,7 @@
 "use strict";
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
-const path = require('path');
+const path = require("path");
 const windows = (global['browserWindows'] = global['browserWindows'] || []);
 const readyToShowWindowsIds = (global['readyToShowWindowsIds'] = global['readyToShowWindowsIds'] || []);
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
@@ -10,11 +10,11 @@ module.exports = (socket, app) => {
     electronSocket = socket;
     app.on('login', (event, webContents, request, authInfo, callback) => {
         if (authInfo.isProxy) {
-            let proxy = `${authInfo.host}:${authInfo.port}`;
+            const proxy = `${authInfo.host}:${authInfo.port}`;
             if (proxy in proxyToCredentialsMap && proxyToCredentialsMap[proxy].split(':').length === 2) {
                 event.preventDefault();
-                let user = proxyToCredentialsMap[proxy].split(':')[0];
-                let pass = proxyToCredentialsMap[proxy].split(':')[1];
+                const user = proxyToCredentialsMap[proxy].split(':')[0];
+                const pass = proxyToCredentialsMap[proxy].split(':')[1];
                 callback(user, pass);
             }
         }
@@ -730,7 +730,7 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindow-setBrowserView', (id, browserViewId) => {
         var _a;
-        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setBrowserView(browserView_1.browserViewMediateService(browserViewId));
+        (_a = getWindowById(id)) === null || _a === void 0 ? void 0 : _a.setBrowserView((0, browserView_1.browserViewMediateService)(browserViewId));
     });
     function getWindowById(id) {
         for (let index = 0; index < windows.length; index++) {

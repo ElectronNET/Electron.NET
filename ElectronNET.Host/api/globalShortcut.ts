@@ -23,6 +23,8 @@ export = (socket: Socket) => {
     socket.on('globalShortcut-unregisterAll', () => {
         try {
             globalShortcut.unregisterAll();
-        } catch (error) { }
+        } catch (error) { 
+            console.error(error);
+        }
     });
 };

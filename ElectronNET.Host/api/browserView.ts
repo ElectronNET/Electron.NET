@@ -48,7 +48,7 @@ const browserViewApi = (socket: Socket) => {
 
     function hasOwnChildreen(obj, ...childNames) {
         for (let i = 0; i < childNames.length; i++) {
-            if (!obj || !obj.hasOwnProperty(childNames[i])) {
+            if (!obj || !Object.prototype.hasOwnProperty.call(obj, childNames[i])) {
                 return false;
             }
             obj = obj[childNames[i]];
