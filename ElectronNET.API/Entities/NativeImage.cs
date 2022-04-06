@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace ElectronNET.API.Entities
 {
@@ -16,6 +16,11 @@ namespace ElectronNET.API.Entities
     [JsonConverter(typeof(NativeImageJsonConverter))]
     public class NativeImage
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public const float DefaultScaleFactor = 1.0f;
+        
         private readonly Dictionary<float, Image> _images = new Dictionary<float, Image>();
         private bool _isTemplateImage;
 
@@ -37,7 +42,7 @@ namespace ElectronNET.API.Entities
         private static Image BytesToImage(byte[] bytes)
         {
             var ms = new MemoryStream(bytes);
-            return Image.FromStream(ms);
+            return Image.Load(ms);
         }
 
         /// <summary>
@@ -51,30 +56,28 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// 
         /// </summary>
-        public static NativeImage CreateFromBitmap(Bitmap bitmap, CreateFromBitmapOptions options = null)
+        [Obsolete("System.Drawing.Common is no longer supported. Use NativeImage.CreateFromImage(image, options);", true)]
+        public static NativeImage CreateFromBitmap(object bitmap, CreateOptions options = null)
         {
-            if (options is null)
-            {
-                options = new CreateFromBitmapOptions();
-            }
-
-            return new NativeImage(bitmap, options.ScaleFactor);
+            throw new NotImplementedException(
+                "System.Drawing.Common is no longer supported. Use NativeImage.CreateFromImage(image, options);");
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static NativeImage CreateFromImage(Image image, CreateOptions options = null)
+            => new (image, options?.ScaleFactor ?? DefaultScaleFactor);
 
         /// <summary>
         /// Creates a NativeImage from a byte array.
         /// </summary>
-        public static NativeImage CreateFromBuffer(byte[] buffer, CreateFromBufferOptions options = null)
+        public static NativeImage CreateFromBuffer(byte[] buffer, CreateOptions options = null)
         {
-            if (options is null)
-            {
-                options = new CreateFromBufferOptions();
-            }
-
             var ms = new MemoryStream(buffer);
-            var image = Image.FromStream(ms);
+            var image = Image.Load(ms);
 
-            return new NativeImage(image, options.ScaleFactor);
+            return new NativeImage(image, options?.ScaleFactor ?? DefaultScaleFactor);
         }
 
         /// <summary>
@@ -110,14 +113,14 @@ namespace ElectronNET.API.Entities
                     throw new Exception($"Invalid scaling factor for '{path}'.");
                 }
 
-                images[dpi.Value] = Image.FromFile(path);
+                images[dpi.Value] = Image.Load(path);
             }
             else
             {
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
                 var extension = Path.GetExtension(path);
                 // Load as 1x dpi
-                images[1.0f] = Image.FromFile(path);
+                images[1.0f] = Image.Load(path);
 
                 foreach (var scale in ScaleFactorPairs)
                 {
@@ -127,7 +130,7 @@ namespace ElectronNET.API.Entities
                         var dpi = ExtractDpiFromFilePath(fileName);
                         if (dpi != null)
                         {
-                            images[dpi.Value] = Image.FromFile(fileName);
+                            images[dpi.Value] = Image.Load(fileName);
                         }
                     }
                 }
@@ -146,9 +149,9 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Creates a NativeImage from a bitmap and scale factor
         /// </summary>
-        public NativeImage(Image bitmap, float scaleFactor = 1.0f)
+        public NativeImage(Image image, float scaleFactor = DefaultScaleFactor)
         {
-            _images.Add(scaleFactor, bitmap);
+            _images.Add(scaleFactor, image);
         }
 
         /// <summary>
@@ -196,7 +199,7 @@ namespace ElectronNET.API.Entities
             if (options.Buffer.Length > 0)
             {
                 _images[options.ScaleFactor] =
-                    CreateFromBuffer(options.Buffer, new CreateFromBufferOptions {ScaleFactor = options.ScaleFactor})
+                    CreateFromBuffer(options.Buffer, new CreateOptions {ScaleFactor = options.ScaleFactor})
                         .GetScale(options.ScaleFactor);
             }
             else if (!string.IsNullOrEmpty(options.DataUrl))
@@ -214,7 +217,7 @@ namespace ElectronNET.API.Entities
             var image = GetScale(scaleFactor);
             if (image != null)
             {
-                return image.Width / image.Height;
+                return Convert.ToSingle(image.Width) / image.Height;
             }
 
             return 0f;
@@ -223,9 +226,9 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Returns a byte array that contains the image's raw bitmap pixel data.
         /// </summary>
-        public byte[] GetBitmap(BitmapOptions options)
+        public byte[] GetBitmap(ImageOptions options)
         {
-            return ToBitmap(new ToBitmapOptions{ ScaleFactor = options.ScaleFactor });
+            return ToBitmap(options);
         }
 
         /// <summary>
@@ -233,26 +236,14 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public byte[] GetNativeHandle()
         {
-            return ToBitmap(new ToBitmapOptions());
+            return ToBitmap(new ImageOptions());
         }
 
         /// <summary>
         /// Gets the size of the specified image based on scale factor
         /// </summary>
         public Size GetSize(float scaleFactor = 1.0f)
-        {
-            if (_images.ContainsKey(scaleFactor))
-            {
-                var image = _images[scaleFactor];
-                return new Size
-                {
-                    Width = image.Width,
-                    Height = image.Height
-                };
-            }
-
-            return null;
-        }
+            => _images.TryGetValue(scaleFactor, out var image) ? image.Size() : null;
 
         /// <summary>
         /// Checks to see if the NativeImage instance is empty.
@@ -278,104 +269,64 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Outputs a bitmap based on the scale factor
         /// </summary>
-        public byte[] ToBitmap(ToBitmapOptions options)
+        public byte[] ToBitmap(ImageOptions options)
         {
-            return ImageToBytes(ImageFormat.Bmp, options.ScaleFactor);
+            var ms = new MemoryStream();
+            _images[options.ScaleFactor].SaveAsBmp(ms);
+            return ms.ToArray();
         }
 
         /// <summary>
         /// Outputs a data URL based on the scale factor
         /// </summary>
-        public string ToDataURL(ToDataUrlOptions options)
-        {
-            if (!_images.ContainsKey(options.ScaleFactor))
-            {
-                return null;
-            }
-
-            var image = _images[options.ScaleFactor];
-            var mimeType = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == image.RawFormat.Guid)?.MimeType;
-            if (mimeType is null)
-            {
-                mimeType = "image/png";
-            }
-
-            var bytes = ImageToBytes(image.RawFormat, options.ScaleFactor);
-            var base64 = Convert.ToBase64String(bytes);
-
-            return $"data:{mimeType};base64,{base64}";
-        }
+        public string ToDataURL(ImageOptions options)
+            => _images.TryGetValue(options.ScaleFactor, out var image)
+                ? $"data:image/png;base64,{image.ToBase64String(PngFormat.Instance)}"
+                : null;
 
         /// <summary>
         /// Outputs a JPEG for the default scale factor
         /// </summary>
         public byte[] ToJPEG(int quality)
         {
-            return ImageToBytes(ImageFormat.Jpeg, 1.0f, quality);
+            var ms = new MemoryStream();
+            _images[1.0f].SaveAsJpeg(ms);
+            return ms.ToArray();
         }
 
         /// <summary>
         /// Outputs a PNG for the specified scale factor
         /// </summary>
-        public byte[] ToPNG(ToPNGOptions options)
+        public byte[] ToPNG(ImageOptions options)
         {
-            return ImageToBytes(ImageFormat.Png, options.ScaleFactor);
-        }
-
-        private byte[] ImageToBytes(ImageFormat imageFormat = null, float scaleFactor = 1.0f, int quality = 100)
-        {
-            using var ms = new MemoryStream();
-
-            if (_images.ContainsKey(scaleFactor))
+            if (_images.TryGetValue(options.ScaleFactor, out var image))
             {
-                var image = _images[scaleFactor];
-                var encoderCodecInfo = GetEncoder(imageFormat ?? image.RawFormat);
-                var encoder = Encoder.Quality;
-
-                var encoderParameters = new EncoderParameters(1)
-                {
-                    Param = new[]
-                    {
-                        new EncoderParameter(encoder, quality)
-                    }
-                };
-
-                image.Save(ms, encoderCodecInfo, encoderParameters);
-
+                var ms = new MemoryStream();
+                image.SaveAsPng(ms);
                 return ms.ToArray();
             }
-
             return null;
         }
 
         private Image Resize(int? width, int? height, float scaleFactor = 1.0f)
         {
-            if (!_images.ContainsKey(scaleFactor) || (width is null && height is null))
+            if (!_images.TryGetValue(scaleFactor, out var image) || (width is null && height is null))
             {
                 return null;
             }
+            var aspect = GetAspectRatio(scaleFactor);
 
-            var image = _images[scaleFactor];
-            using (var g = Graphics.FromImage(image))
+            width ??= Convert.ToInt32(image.Width * aspect);
+            height ??= Convert.ToInt32(image.Height * aspect);
+
+            width = Convert.ToInt32(width * scaleFactor);
+            height = Convert.ToInt32(height * scaleFactor);
+
+            return image.Clone(c => c.Resize(new SixLabors.ImageSharp.Processing.ResizeOptions
             {
-                g.CompositingQuality = CompositingQuality.HighQuality;
-
-                var aspect = GetAspectRatio(scaleFactor);
-
-                width ??= Convert.ToInt32(image.Width * aspect);
-                height ??= Convert.ToInt32(image.Height * aspect);
-
-                width = Convert.ToInt32(width * scaleFactor);
-                height = Convert.ToInt32(height * scaleFactor);
-
-                var bmp = new Bitmap(width.Value, height.Value);
-                g.DrawImage(bmp,
-                    new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                    GraphicsUnit.Pixel);
-
-                return bmp;
-            }
+                Size = new (width.Value, height.Value),
+                Sampler = KnownResamplers.Triangle,
+            }));
         }
 
         private Image Crop(int? x, int? y, int? width, int? height, float scaleFactor = 1.0f)
@@ -384,42 +335,23 @@ namespace ElectronNET.API.Entities
             {
                 return null;
             }
-
+            
             var image = _images[scaleFactor];
-            using (var g = Graphics.FromImage(image))
-            {
-                g.CompositingQuality = CompositingQuality.HighQuality;
+            
+            x ??= 0;
+            y ??= 0;
 
-                x ??= 0;
-                y ??= 0;
+            x = Convert.ToInt32(x * scaleFactor);
+            y = Convert.ToInt32(y * scaleFactor);
 
-                x = Convert.ToInt32(x * scaleFactor);
-                y = Convert.ToInt32(y * scaleFactor);
+            width ??= image.Width;
+            height ??= image.Height;
 
-                width ??= image.Width;
-                height ??= image.Height;
+            width = Convert.ToInt32(width * scaleFactor);
+            height = Convert.ToInt32(height * scaleFactor);
 
-                width = Convert.ToInt32(width * scaleFactor);
-                height = Convert.ToInt32(height * scaleFactor);
-
-                var bmp = new Bitmap(width.Value, height.Value);
-                g.DrawImage(bmp, new System.Drawing.Rectangle(0, 0, image.Width, image.Height), new System.Drawing.Rectangle(x.Value, y.Value, width.Value, height.Value), GraphicsUnit.Pixel);
-
-                return bmp;
-            }
-        }
-
-        private ImageCodecInfo GetEncoder(ImageFormat format)
-        {
-            var codecs = ImageCodecInfo.GetImageDecoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.FormatID == format.Guid)
-                {
-                    return codec;
-                }
-            }
-            return null;
+            return image.Clone(c =>
+                c.Crop(new SixLabors.ImageSharp.Rectangle(x.Value, y.Value, width.Value, height.Value)));
         }
 
         internal Dictionary<float,string> GetAllScaledImages()
@@ -429,7 +361,7 @@ namespace ElectronNET.API.Entities
             {
                 foreach (var (scale, image) in _images)
                 {
-                    dict.Add(scale, Convert.ToBase64String(ImageToBytes(null, scale)));
+                    dict.Add(scale, image.ToBase64String(PngFormat.Instance));
                 }
             }
             catch (Exception ex)
@@ -449,5 +381,10 @@ namespace ElectronNET.API.Entities
 
             return null;
         }
+        
+        /// <summary>
+        /// Utility conversion operator
+        /// </summary>
+        public static implicit operator NativeImage(Image src) => CreateFromImage(src);
     }
 }
