@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ElectronNET.API.Interfaces;
 
@@ -80,7 +81,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "http://localhost")
+        public async Task<BrowserWindow> CreateWindowAsync(string loadUrl = "/")
         {
             return await CreateWindowAsync(new BrowserWindowOptions(), loadUrl);
         }
@@ -91,7 +92,7 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
+        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "/")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -117,9 +118,9 @@ namespace ElectronNET.API
                 }
             });
 
-            if (loadUrl.ToUpper() == "HTTP://LOCALHOST")
-            {
-                loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
+            if(!TryParseLoadUrl(loadUrl, out loadUrl)) 
+            { 
+                throw new ArgumentException($"Unable to parse {loadUrl}", nameof(loadUrl));
             }
 
             // Workaround Windows 10 / Electron Bug
@@ -156,6 +157,20 @@ namespace ElectronNET.API
             }
 
             return taskCompletionSource.Task;
+        }
+
+        
+        private bool TryParseLoadUrl(string loadUrl, out string parsedUrl) 
+        {
+            Uri BaseUri = new Uri($"http://localhost:{BridgeSettings.WebPort}");
+            if (Uri.TryCreate(loadUrl, UriKind.Absolute, out var url) ||
+                Uri.TryCreate(BaseUri, loadUrl, out url)) {
+                var uri = new UriBuilder(url.ToString());
+                parsedUrl = uri.ToString();
+                return true;
+            }
+            parsedUrl = loadUrl;
+            return false;
         }
 
         private bool isWindows10()
