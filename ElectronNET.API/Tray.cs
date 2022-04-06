@@ -6,13 +6,14 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Add icons and context menus to the system's notification area.
     /// </summary>
-    public sealed class Tray
+    public sealed class Tray : ITray
     {
         /// <summary>
         /// Emitted when the tray icon is clicked.

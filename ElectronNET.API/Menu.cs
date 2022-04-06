@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using ElectronNET.API.Extensions;
 using System.Linq;
 using System.Collections.ObjectModel;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Create native application menus and context menus.
     /// </summary>
-    public sealed class Menu
+    public sealed class Menu : IMenu
     {
         private static Menu _menu;
         private static object _syncRoot = new object();

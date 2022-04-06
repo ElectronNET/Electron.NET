@@ -4,13 +4,14 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Manage files and URLs using their default applications.
     /// </summary>
-    public sealed class Shell
+    public sealed class Shell : IShell
     {
         private static Shell _shell;
         private static object _syncRoot = new object();

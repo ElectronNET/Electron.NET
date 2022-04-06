@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -12,7 +13,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Control your app in the macOS dock.
     /// </summary>
-    public sealed class Dock
+    public sealed class Dock : IDock
     {
         private static Dock _dock;
         private static object _syncRoot = new object();

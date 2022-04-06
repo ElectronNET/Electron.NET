@@ -1,26 +1,15 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Runtime.InteropServices;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ElectronNET.API.Extensions;
-using ElectronNET.API.Interfaces;
+using ElectronNET.API.Entities;
 
-namespace ElectronNET.API
+namespace ElectronNET.API.Interfaces
 {
     /// <summary>
     /// Control your application's event lifecycle.
     /// </summary>
-    public sealed class App : IApp
+    public interface IApp
     {
-        /// <summary>
-        /// Print every message sent to the socket
-        /// </summary>
-        public static bool SocketDebug { get; set; }
-
         /// <summary>
         /// Emitted when all windows have been closed.
         /// <para/>
@@ -30,34 +19,7 @@ namespace ElectronNET.API
         /// and then emit the <see cref="WillQuit"/> event, and in this case the <see cref="WindowAllClosed"/> event
         /// would not be emitted.
         /// </summary>
-        public event Action WindowAllClosed
-        {
-            add
-            {
-                if (_windowAllClosed == null)
-                {
-                    BridgeConnector.On("app-window-all-closed" + GetHashCode(), () =>
-                    {
-                        if (!Electron.WindowManager.IsQuitOnWindowAllClosed || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        {
-                            _windowAllClosed();
-                        }
-                    });
-
-                    BridgeConnector.Emit("register-app-window-all-closed-event", GetHashCode());
-                }
-                _windowAllClosed += value;
-            }
-            remove
-            {
-                _windowAllClosed -= value;
-
-                if(_windowAllClosed == null)
-                    BridgeConnector.Off("app-window-all-closed" + GetHashCode());
-            }
-        }
-
-        private event Action _windowAllClosed;
+        event Action WindowAllClosed;
 
         /// <summary>
         /// Emitted before the application starts closing its windows. 
@@ -67,69 +29,7 @@ namespace ElectronNET.API
         /// <para/>
         /// Note: On Windows, this event will not be emitted if the app is closed due to a shutdown/restart of the system or a user logout.
         /// </summary>
-        public event Func<QuitEventArgs, Task> BeforeQuit
-        {
-            add
-            {
-                if (_beforeQuit == null)
-                {
-                    BridgeConnector.On("app-before-quit" + GetHashCode(), async () =>
-                    {
-                        await _beforeQuit(new QuitEventArgs());
-
-                        if (_preventQuit)
-                        {
-                            _preventQuit = false;
-                        }
-                        else
-                        {
-                            if (_willQuit == null && _quitting == null)
-                            {
-                                Exit();
-                            }
-                            else if (_willQuit != null)
-                            {
-                                await _willQuit(new QuitEventArgs());
-
-                                if (_preventQuit)
-                                {
-                                    _preventQuit = false;
-                                }
-                                else
-                                {
-                                    if (_quitting == null)
-                                    {
-                                        Exit();
-                                    }
-                                    else
-                                    {
-                                        await _quitting();
-                                        Exit();
-                                    }
-                                }
-                            }
-                            else if (_quitting != null)
-                            {
-                                await _quitting();
-                                Exit();
-                            }
-                        }
-                    });
-
-                    BridgeConnector.Emit("register-app-before-quit-event", GetHashCode());
-                }
-                _beforeQuit += value;
-            }
-            remove
-            {
-                _beforeQuit -= value;
-
-                if (_beforeQuit == null)
-                    BridgeConnector.Off("app-before-quit" + GetHashCode());
-            }
-        }
-
-        private event Func<QuitEventArgs, Task> _beforeQuit;
+        event Func<QuitEventArgs, Task> BeforeQuit;
 
         /// <summary>
         /// Emitted when all windows have been closed and the application will quit.
@@ -139,271 +39,106 @@ namespace ElectronNET.API
         /// <para/>
         /// Note: On Windows, this event will not be emitted if the app is closed due to a shutdown/restart of the system or a user logout.
         /// </summary>
-        public event Func<QuitEventArgs, Task> WillQuit
-        {
-            add
-            {
-                if (_willQuit == null)
-                {
-                    BridgeConnector.On("app-will-quit" + GetHashCode(), async () =>
-                    {
-                        await _willQuit(new QuitEventArgs());
-
-                        if (_preventQuit)
-                        {
-                            _preventQuit = false;
-                        }
-                        else
-                        {
-                            if (_quitting == null)
-                            {
-                                Exit();
-                            }
-                            else
-                            {
-                                await _quitting();
-                                Exit();
-                            }
-                        }
-                    });
-
-                    BridgeConnector.Emit("register-app-will-quit-event", GetHashCode());
-                }
-                _willQuit += value;
-            }
-            remove
-            {
-                _willQuit -= value;
-
-                if (_willQuit == null)
-                    BridgeConnector.Off("app-will-quit" + GetHashCode());
-            }
-        }
-
-        private event Func<QuitEventArgs, Task> _willQuit;
+        event Func<QuitEventArgs, Task> WillQuit;
 
         /// <summary>
         /// Emitted when the application is quitting.
         /// <para/>
         /// Note: On Windows, this event will not be emitted if the app is closed due to a shutdown/restart of the system or a user logout.
         /// </summary>
-        public event Func<Task> Quitting
-        {
-            add
-            {
-                if (_quitting == null)
-                {
-                    BridgeConnector.On("app-will-quit" + GetHashCode() + "quitting", async () =>
-                    {
-                        if(_willQuit == null)
-                        {
-                            await _quitting();
-                            Exit();
-                        }
-                    });
-
-                    BridgeConnector.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
-                }
-                _quitting += value;
-            }
-            remove
-            {
-                _quitting -= value;
-
-                if (_quitting == null)
-                    BridgeConnector.Off("app-will-quit" + GetHashCode() + "quitting");
-            }
-        }
-
-        private event Func<Task> _quitting;
+        event Func<Task> Quitting;
 
         /// <summary>
         /// Emitted when a <see cref="BrowserWindow"/> blurred.
         /// </summary>
-        public event Action BrowserWindowBlur
-        {
-            add
-            {
-                if (_browserWindowBlur == null)
-                {
-                    BridgeConnector.On("app-browser-window-blur" + GetHashCode(), () =>
-                    {
-                        _browserWindowBlur();
-                    });
-
-                    BridgeConnector.Emit("register-app-browser-window-blur-event", GetHashCode());
-                }
-                _browserWindowBlur += value;
-            }
-            remove
-            {
-                _browserWindowBlur -= value;
-
-                if (_browserWindowBlur == null)
-                    BridgeConnector.Off("app-browser-window-blur" + GetHashCode());
-            }
-        }
-
-        private event Action _browserWindowBlur;
+        event Action BrowserWindowBlur;
 
         /// <summary>
         /// Emitted when a <see cref="BrowserWindow"/> gets focused.
         /// </summary>
-        public event Action BrowserWindowFocus
-        {
-            add
-            {
-                if (_browserWindowFocus == null)
-                {
-                    BridgeConnector.On("app-browser-window-focus" + GetHashCode(), () =>
-                    {
-                        _browserWindowFocus();
-                    });
-
-                    BridgeConnector.Emit("register-app-browser-window-focus-event", GetHashCode());
-                }
-                _browserWindowFocus += value;
-            }
-            remove
-            {
-                _browserWindowFocus -= value;
-
-                if (_browserWindowFocus == null)
-                    BridgeConnector.Off("app-browser-window-focus" + GetHashCode());
-            }
-        }
-
-        private event Action _browserWindowFocus;
+        event Action BrowserWindowFocus;
 
         /// <summary>
         /// Emitted when a new <see cref="BrowserWindow"/> is created.
         /// </summary>
-        public event Action BrowserWindowCreated
-        {
-            add
-            {
-                if (_browserWindowCreated == null)
-                {
-                    BridgeConnector.On("app-browser-window-created" + GetHashCode(), () =>
-                    {
-                        _browserWindowCreated();
-                    });
-
-                    BridgeConnector.Emit("register-app-browser-window-created-event", GetHashCode());
-                }
-                _browserWindowCreated += value;
-            }
-            remove
-            {
-                _browserWindowCreated -= value;
-
-                if (_browserWindowCreated == null)
-                    BridgeConnector.Off("app-browser-window-created" + GetHashCode());
-            }
-        }
-
-        private event Action _browserWindowCreated;
+        event Action BrowserWindowCreated;
 
         /// <summary>
         /// Emitted when a new <see cref="WebContents"/> is created.
         /// </summary>
-        public event Action WebContentsCreated
-        {
-            add
-            {
-                if (_webContentsCreated == null)
-                {
-                    BridgeConnector.On("app-web-contents-created" + GetHashCode(), () =>
-                    {
-                        _webContentsCreated();
-                    });
-
-                    BridgeConnector.Emit("register-app-web-contents-created-event", GetHashCode());
-                }
-                _webContentsCreated += value;
-            }
-            remove
-            {
-                _webContentsCreated -= value;
-
-                if (_webContentsCreated == null)
-                    BridgeConnector.Off("app-web-contents-created" + GetHashCode());
-            }
-        }
-
-        private event Action _webContentsCreated;
+        event Action WebContentsCreated;
 
         /// <summary>
         /// Emitted when Chrome’s accessibility support changes. This event fires when assistive technologies, such as
         /// screen readers, are enabled or disabled. See https://www.chromium.org/developers/design-documents/accessibility for more details.
         /// </summary>
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
-        public event Action<bool> AccessibilitySupportChanged
-        {
-            add
-            {
-                if (_accessibilitySupportChanged == null)
-                {
-                    BridgeConnector.On<bool>("app-accessibility-support-changed" + GetHashCode(), (state) =>
-                    {
-                        _accessibilitySupportChanged(state);
-                    });
-
-                    BridgeConnector.Emit("register-app-accessibility-support-changed-event", GetHashCode());
-                }
-                _accessibilitySupportChanged += value;
-            }
-            remove
-            {
-                _accessibilitySupportChanged -= value;
-
-                if (_accessibilitySupportChanged == null)
-                    BridgeConnector.Off("app-accessibility-support-changed" + GetHashCode());
-            }
-        }
-
-        private event Action<bool> _accessibilitySupportChanged;
+        event Action<bool> AccessibilitySupportChanged;
 
         /// <summary>
         /// Emitted when the application has finished basic startup.
         /// </summary>
-        public event Action Ready 
-        {
-            add
-            {
-                if(IsReady)
-                {
-                    value();
-                }
-
-                _ready += value;
-            }
-            remove
-            {
-                _ready -= value;
-            }
-        }
-
-        private event Action _ready;
+        event Action Ready;
 
         /// <summary>
         /// Application host fully started.
         /// </summary>
-        public bool IsReady 
-        { 
-            get { return _isReady; }
-            internal set
-            {
-                _isReady = value;
+        bool IsReady { get; }
 
-                if(value)
-                {
-                    _ready?.Invoke();
-                }
-            }
+        /// <summary>
+        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
+        /// application's package.json file.
+        ///
+        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
+        /// should usually also specify a productName field, which is your application's full capitalized name, and
+        /// which will be preferred over name by Electron.
+        /// </summary>
+        string Name
+        {
+            [Obsolete("Use the asynchronous version NameAsync instead")]
+            get;
+            set;
         }
 
-        private bool _isReady = false;
+        /// <summary>
+        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
+        /// application's package.json file.
+        ///
+        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
+        /// should usually also specify a productName field, which is your application's full capitalized name, and
+        /// which will be preferred over name by Electron.
+        /// </summary>
+        Task<string> NameAsync { get; }
+
+        /// <summary>
+        /// A <see cref="CommandLine"/> object that allows you to read and manipulate the command line arguments that Chromium uses.
+        /// </summary>
+        CommandLine CommandLine { get; }
+
+        /// <summary>
+        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
+        /// <para/>
+        /// This is the user agent that will be used when no user agent is set at the webContents or
+        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
+        /// custom value as early as possible in your app's initialization to ensure that your overridden value
+        /// is used.
+        /// </summary>
+        string UserAgentFallback
+        {
+            [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
+        /// <para/>
+        /// This is the user agent that will be used when no user agent is set at the webContents or
+        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
+        /// custom value as early as possible in your app's initialization to ensure that your overridden value
+        /// is used.
+        /// </summary>
+        Task<string> UserAgentFallbackAsync { get; }
 
         /// <summary>
         /// Emitted when a MacOS user wants to open a file with the application. The open-file event is usually emitted
@@ -412,124 +147,13 @@ namespace ElectronNET.API
         /// <para/>
         /// On Windows, you have to parse the arguments using App.CommandLine to get the filepath.
         /// </summary>
-        public event Action<string> OpenFile
-        {
-            add
-            {
-                if (_openFile == null)
-                {
-                    BridgeConnector.On<string>("app-open-file" + GetHashCode(), (file) =>
-                    {
-                        _openFile(file);
-                    });
-
-                    BridgeConnector.Emit("register-app-open-file-event", GetHashCode());
-                }
-                _openFile += value;
-            }
-            remove
-            {
-                _openFile -= value;
-
-                if (_openFile == null)
-                    BridgeConnector.Off("app-open-file" + GetHashCode());
-            }
-        }
-
-        private event Action<string> _openFile;
-
+        event Action<string> OpenFile;
 
         /// <summary>
         /// Emitted when a MacOS user wants to open a URL with the application. Your application's Info.plist file must
         /// define the URL scheme within the CFBundleURLTypes key, and set NSPrincipalClass to AtomApplication.
         /// </summary>
-        public event Action<string> OpenUrl
-        {
-            add
-            {
-                if (_openUrl == null)
-                {
-                    BridgeConnector.On<string>("app-open-url" + GetHashCode(), (url) =>
-                    {
-                        _openUrl(url);
-                    });
-
-                    BridgeConnector.Emit("register-app-open-url-event", GetHashCode());
-                }
-                _openUrl += value;
-            }
-            remove
-            {
-                _openUrl -= value;
-
-                if (_openUrl == null)
-                    BridgeConnector.Off("app-open-url" + GetHashCode());
-            }
-        }
-
-        private event Action<string> _openUrl;
-
-        /// <summary>
-        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
-        /// application's package.json file.
-        ///
-        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
-        /// should usually also specify a productName field, which is your application's full capitalized name, and
-        /// which will be preferred over name by Electron.
-        /// </summary>
-        public string Name
-        {
-            set
-            {
-                BridgeConnector.Emit("appSetName", value);
-            }
-        }
-
-        /// <summary>
-        /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
-        /// application's package.json file.
-        ///
-        /// Usually the name field of package.json is a short lowercase name, according to the npm modules spec. You
-        /// should usually also specify a productName field, which is your application's full capitalized name, and
-        /// which will be preferred over name by Electron.
-        /// </summary>
-        public Task<string> GetNameAsync() => BridgeConnector.OnResult<string>("appGetName", "appGetNameCompleted");
-
-
-        internal App() 
-        {
-            CommandLine = new CommandLine();
-        }
-
-        internal static App Instance
-        {
-            get
-            {
-                if (_app == null)
-                {
-                    lock (_syncRoot)
-                    {
-                        if(_app == null)
-                        {
-                            _app = new App();
-                        }
-                    }
-                }
-
-                return _app;
-            }
-        }
-
-        /// <summary>
-        /// Manually set that the app is ready instead of using the UseElectron extension method
-        /// </summary>
-        public static void ManuallySetIsReady()
-        {
-            Instance.IsReady = true;
-        }
-
-        private static App _app;
-        private static object _syncRoot = new object();
+        event Action<string> OpenUrl;
 
         /// <summary>
         /// Try to close all windows. The <see cref="BeforeQuit"/> event will be emitted first. If all windows are successfully
@@ -537,20 +161,14 @@ namespace ElectronNET.API
         /// guarantees that all beforeunload and unload event handlers are correctly executed. It is possible
         /// that a window cancels the quitting by returning <see langword="false"/> in the beforeunload event handler.
         /// </summary>
-        public void Quit()
-        {
-            BridgeConnector.EmitSync("appQuit");
-        }
+        void Quit();
 
         /// <summary>
         /// All windows will be closed immediately without asking user and the <see cref="BeforeQuit"/> and <see cref="WillQuit"/>
         /// events will not be emitted.
         /// </summary>
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
-        public void Exit(int exitCode = 0)
-        {
-            BridgeConnector.EmitSync("appExit", exitCode);
-        }
+        void Exit(int exitCode = 0);
 
         /// <summary>
         /// Relaunches the app when current instance exits. By default the new instance will use the same working directory
@@ -562,10 +180,7 @@ namespace ElectronNET.API
         /// When <see cref="Relaunch()"/> is called for multiple times, multiple instances will be started after current instance
         /// exited.
         /// </summary>
-        public void Relaunch()
-        {
-            BridgeConnector.EmitSync("appRelaunch");
-        }
+        void Relaunch();
 
         /// <summary>
         /// Relaunches the app when current instance exits. By default the new instance will use the same working directory
@@ -580,19 +195,13 @@ namespace ElectronNET.API
         /// exited.
         /// </summary>
         /// <param name="relaunchOptions">Options for the relaunch.</param>
-        public void Relaunch(RelaunchOptions relaunchOptions)
-        {
-            BridgeConnector.EmitSync("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
-        }
+        void Relaunch(RelaunchOptions relaunchOptions);
 
         /// <summary>
         /// On Linux, focuses on the first visible window. On macOS, makes the application the active app. On Windows, focuses
         /// on the application's first window.
         /// </summary>
-        public void Focus()
-        {
-            BridgeConnector.Emit("appFocus");
-        }
+        void Focus();
 
         /// <summary>
         /// On Linux, focuses on the first visible window. On macOS, makes the application the active app. On Windows, focuses
@@ -600,31 +209,22 @@ namespace ElectronNET.API
         /// <para/>
         /// You should seek to use the <see cref="FocusOptions.Steal"/> option as sparingly as possible.
         /// </summary>
-        public void Focus(FocusOptions focusOptions)
-        {
-            BridgeConnector.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
-        }
+        void Focus(FocusOptions focusOptions);
 
         /// <summary>
         /// Hides all application windows without minimizing them.
         /// </summary>
-        public void Hide()
-        {
-            BridgeConnector.Emit("appHide");
-        }
+        void Hide();
 
         /// <summary>
         /// Shows application windows after they were hidden. Does not automatically focus them.
         /// </summary>
-        public void Show()
-        {
-            BridgeConnector.Emit("appShow");
-        }
+        void Show();
 
         /// <summary>
         /// The current application directory.
         /// </summary>
-        public Task<string> GetAppPathAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetAppPath", "appGetAppPathCompleted", cancellationToken);
+        Task<string> GetAppPathAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets or creates a directory your app's logs which can then be manipulated with <see cref="GetPathAsync"/>
@@ -634,10 +234,7 @@ namespace ElectronNET.API
         /// ~/Library/Logs/YourAppName on macOS, and inside the userData directory on Linux and Windows.
         /// </summary>
         /// <param name="path">A custom path for your logs. Must be absolute.</param>
-        public void SetAppLogsPath(string path)
-        {
-            BridgeConnector.Emit("appSetAppLogsPath", path);
-        }
+        void SetAppLogsPath(string path);
 
         /// <summary>
         /// The path to a special directory. If <see cref="GetPathAsync"/> is called without called
@@ -647,8 +244,7 @@ namespace ElectronNET.API
         /// <param name="pathName">Special directory.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A path to a special directory or file associated with name.</returns>
-        public Task<string> GetPathAsync(PathName pathName, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetPath", "appGetPathCompleted", cancellationToken, pathName.GetDescription());
-
+        Task<string> GetPathAsync(PathName pathName, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Overrides the path to a special directory or file associated with name. If the path specifies a directory
@@ -662,17 +258,14 @@ namespace ElectronNET.API
         /// <param name="name">Special directory.</param>
         /// <param name="path">New path to a special directory.</param>
         /// </summary>
-        public void SetPath(PathName name, string path)
-        {
-            BridgeConnector.Emit("appSetPath", name.GetDescription(), path);
-        }
+        void SetPath(PathName name, string path);
 
         /// <summary>
         /// The version of the loaded application. If no version is found in the application’s package.json file, 
         /// the version of the current bundle or executable is returned.
         /// </summary>
         /// <returns>The version of the loaded application.</returns>
-        public Task<string> GetVersionAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetVersion", "appGetVersionCompleted", cancellationToken);
+        Task<string> GetVersionAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// The current application locale. Possible return values are documented <see href="https://www.electronjs.org/docs/api/locales">here</see>.
@@ -682,25 +275,19 @@ namespace ElectronNET.API
         /// Note: On Windows, you have to call it after the <see cref="Ready"/> events gets emitted.
         /// </summary>
         /// <returns>The current application locale.</returns>
-        public Task<string> GetLocaleAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetLocale", "appGetLocaleCompleted", cancellationToken);
+        Task<string> GetLocaleAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Adds path to the recent documents list. This list is managed by the OS. On Windows you can visit the
         /// list from the task bar, and on macOS you can visit it from dock menu.
         /// </summary>
         /// <param name="path">Path to add.</param>
-        public void AddRecentDocument(string path)
-        {
-            BridgeConnector.Emit("appAddRecentDocument", path);
-        }
+        void AddRecentDocument(string path);
 
         /// <summary>
         /// Clears the recent documents list.
         /// </summary>
-        public void ClearRecentDocuments()
-        {
-            BridgeConnector.Emit("appClearRecentDocuments");
-        }
+        void ClearRecentDocuments();
 
         /// <summary>
         /// Sets the current executable as the default handler for a protocol (aka URI scheme). It allows you to
@@ -727,10 +314,7 @@ namespace ElectronNET.API
         /// call this method with electron as the parameter.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
-        {
-            return await SetAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
-        }
+        Task<bool> SetAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets the current executable as the default handler for a protocol (aka URI scheme). It allows you to
@@ -758,10 +342,7 @@ namespace ElectronNET.API
         /// <param name="path">The path to the Electron executable. Defaults to process.execPath</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
-        {
-            return await SetAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
-        }
+        Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets the current executable as the default handler for a protocol (aka URI scheme). It allows you to
@@ -790,7 +371,7 @@ namespace ElectronNET.API
         /// <param name="args">Arguments passed to the executable. Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetAsDefaultProtocolClient", "appSetAsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
+        Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable as the default handler for a protocol (aka URI scheme).
@@ -799,10 +380,7 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
-        {
-            return await RemoveAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
-        }
+        Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable as the default handler for a protocol (aka URI scheme).
@@ -812,10 +390,7 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
-        {
-            return await RemoveAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
-        }
+        Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable as the default handler for a protocol (aka URI scheme).
@@ -826,8 +401,7 @@ namespace ElectronNET.API
         /// <param name="args">Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appRemoveAsDefaultProtocolClient", "appRemoveAsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
-
+        Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable is the default handler for a protocol (aka URI scheme).
@@ -842,10 +416,7 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
-        public async Task<bool> IsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
-        {
-            return await IsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
-        }
+        Task<bool> IsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable is the default handler for a protocol (aka URI scheme).
@@ -861,10 +432,7 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
-        public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
-        {
-            return await IsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
-        }
+        Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// This method checks if the current executable is the default handler for a protocol (aka URI scheme).
@@ -881,8 +449,7 @@ namespace ElectronNET.API
         /// <param name="args">Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
-        public Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsDefaultProtocolClient", "appIsDefaultProtocolClientCompleted", cancellationToken, protocol, path, args);
-
+        Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Adds tasks to the <see cref="UserTask"/> category of the JumpList on Windows.
@@ -892,14 +459,14 @@ namespace ElectronNET.API
         /// <param name="userTasks">Array of <see cref="UserTask"/> objects.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetUserTasks", "appSetUserTasksCompleted", cancellationToken, JArray.FromObject(userTasks, _jsonSerializer));
+        Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Jump List settings for the application.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Jump List settings.</returns>
-        public Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<JumpListSettings>("appGetJumpListSettings", "appGetJumpListSettingsCompleted", cancellationToken);
+        Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets or removes a custom Jump List for the application. If categories is null the previously set custom
@@ -917,10 +484,7 @@ namespace ElectronNET.API
         /// omitted from the Jump List. The list of removed items can be obtained using <see cref="GetJumpListSettingsAsync"/>.
         /// </summary>
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
-        public void SetJumpList(JumpListCategory[] categories)
-        {
-            BridgeConnector.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
-        }
+        void SetJumpList(JumpListCategory[] categories);
 
         /// <summary>
         /// The return value of this method indicates whether or not this instance of your application successfully obtained
@@ -943,39 +507,13 @@ namespace ElectronNET.API
         /// should continue loading. And returns true if your process has sent its parameters to another instance, and
         /// you should immediately quit.
         /// </returns>
-        public async Task<bool> RequestSingleInstanceLockAsync(Action<string[], string> newInstanceOpened, CancellationToken cancellationToken = default) 
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.On<bool>("appRequestSingleInstanceLockCompleted", (success) =>
-                {
-                    BridgeConnector.Off("appRequestSingleInstanceLockCompleted");
-                    taskCompletionSource.SetResult(success);
-                });
-
-                BridgeConnector.Off("secondInstance");
-                BridgeConnector.On<SecondInstanceResponse>("secondInstance", (result) =>
-                {
-                    newInstanceOpened(result.args, result.workingDirectory);
-                });
-
-                BridgeConnector.Emit("appRequestSingleInstanceLock");
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        Task<bool> RequestSingleInstanceLockAsync(Action<string[], string> newInstanceOpened, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Releases all locks that were created by makeSingleInstance. This will allow
         /// multiple instances of the application to once again run side by side.
         /// </summary>
-        public void ReleaseSingleInstanceLock()
-        {
-            BridgeConnector.Emit("appReleaseSingleInstanceLock");
-        }
+        void ReleaseSingleInstanceLock();
 
         /// <summary>
         /// This method returns whether or not this instance of your app is currently holding the single instance lock.
@@ -983,7 +521,7 @@ namespace ElectronNET.API
         /// <see cref="ReleaseSingleInstanceLock"/>.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task<bool> HasSingleInstanceLockAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appHasSingleInstanceLock", "appHasSingleInstanceLockCompleted", cancellationToken);
+        Task<bool> HasSingleInstanceLockAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Creates an NSUserActivity and sets it as the current activity. The activity is
@@ -992,10 +530,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type">Uniquely identifies the activity. Maps to <see href="https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSUserActivity_Class/index.html#//apple_ref/occ/instp/NSUserActivity/activityType">NSUserActivity.activityType</see>.</param>
         /// <param name="userInfo">App-specific state to store for use by another device.</param>
-        public void SetUserActivity(string type, object userInfo)
-        {
-            SetUserActivity(type, userInfo, null);
-        }
+        void SetUserActivity(string type, object userInfo);
 
         /// <summary>
         /// Creates an NSUserActivity and sets it as the current activity. The activity is
@@ -1009,42 +544,29 @@ namespace ElectronNET.API
         /// <param name="webpageUrl">
         /// The webpage to load in a browser if no suitable app is installed on the resuming device. The scheme must be http or https.
         /// </param>
-        public void SetUserActivity(string type, object userInfo, string webpageUrl)
-        {
-            BridgeConnector.Emit("appSetUserActivity", type, userInfo, webpageUrl);
-        }
+        void SetUserActivity(string type, object userInfo, string webpageUrl);
 
         /// <summary>
         /// The type of the currently running activity.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<string>("appGetCurrentActivityType", "appGetCurrentActivityTypeCompleted", cancellationToken);
-
+        Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Invalidates the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity.
         /// </summary>
-        public void InvalidateCurrentActivity()
-        {
-            BridgeConnector.Emit("appInvalidateCurrentActivity");
-        }
+        void InvalidateCurrentActivity();
 
         /// <summary>
         /// Marks the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity as inactive without invalidating it.
         /// </summary>
-        public void ResignCurrentActivity()
-        {
-            BridgeConnector.Emit("appResignCurrentActivity");
-        }
+        void ResignCurrentActivity();
 
         /// <summary>
         /// Changes the <see href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx">Application User Model ID</see> to id.
         /// </summary>
         /// <param name="id">Model Id.</param>
-        public void SetAppUserModelId(string id)
-        {
-            BridgeConnector.Emit("appSetAppUserModelId", id);
-        }
+        void SetAppUserModelId(string id);
 
         /// TODO: Check new parameter which is a function [App.ImportCertificate]
         /// <summary>
@@ -1055,7 +577,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Result of import. Value of 0 indicates success.</returns>
-        public Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appImportCertificate", "appImportCertificateCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
+        Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Memory and cpu usage statistics of all the processes associated with the app.
@@ -1065,7 +587,7 @@ namespace ElectronNET.API
         /// statistics of all the processes associated with the app.
         /// <param name="cancellationToken">The cancellation token.</param>
         /// </returns>
-        public Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<ProcessMetric[]>("appGetAppMetrics", "appGetAppMetricsCompleted", cancellationToken);
+        Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// The Graphics Feature Status from chrome://gpu/.
@@ -1073,7 +595,7 @@ namespace ElectronNET.API
         /// Note: This information is only usable after the gpu-info-update event is emitted.
         /// <param name="cancellationToken">The cancellation token.</param>
         /// </summary>
-        public Task<GPUFeatureStatus> GetGpuFeatureStatusAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<GPUFeatureStatus>("appGetGpuFeatureStatus", "appGetGpuFeatureStatusCompleted", cancellationToken);
+        Task<GPUFeatureStatus> GetGpuFeatureStatusAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets the counter badge for current app. Setting the count to 0 will hide the badge.
@@ -1085,33 +607,25 @@ namespace ElectronNET.API
         /// <param name="count">Counter badge.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
-        public Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appSetBadgeCount", "appSetBadgeCountCompleted", cancellationToken, count);
+        Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// The current value displayed in the counter badge.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<int>("appGetBadgeCount", "appGetBadgeCountCompleted", cancellationToken);
-
-        /// <summary>
-        /// A <see cref="CommandLine"/> object that allows you to read and manipulate the command line arguments that Chromium uses.
-        /// </summary>
-        public CommandLine CommandLine { get; internal set; }
+        Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Whether the current desktop environment is Unity launcher.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsUnityRunning", "appIsUnityRunningCompleted", cancellationToken);
+        Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// If you provided path and args options to <see cref="SetLoginItemSettings"/> then you need to pass the same
         /// arguments here for <see cref="LoginItemSettings.OpenAtLogin"/> to be set correctly.
         /// </summary>
-        public async Task<LoginItemSettings> GetLoginItemSettingsAsync(CancellationToken cancellationToken = default)
-        {
-            return await GetLoginItemSettingsAsync(null, cancellationToken);
-        }
+        Task<LoginItemSettings> GetLoginItemSettingsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// If you provided path and args options to <see cref="SetLoginItemSettings"/> then you need to pass the same
@@ -1119,9 +633,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default) =>
-            options is null ? BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken)
-                            : BridgeConnector.OnResult<LoginItemSettings>("appGetLoginItemSettings", "appGetLoginItemSettingsCompleted", cancellationToken, JObject.FromObject(options, _jsonSerializer));
+        Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set the app's login item settings.
@@ -1129,10 +641,7 @@ namespace ElectronNET.API
         /// you'll want to set the launch path to Update.exe, and pass arguments that specify your application name.
         /// </summary>
         /// <param name="loginSettings"></param>
-        public void SetLoginItemSettings(LoginSettings loginSettings)
-        {
-            BridgeConnector.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
-        }
+        void SetLoginItemSettings(LoginSettings loginSettings);
 
         /// <summary>
         /// <see langword="true"/> if Chrome's accessibility support is enabled, <see langword="false"/> otherwise. This API will
@@ -1140,8 +649,7 @@ namespace ElectronNET.API
         /// See <see href="chromium.org/developers/design-documents/accessibility">Chromium's accessibility docs</see> for more details.
         /// </summary>
         /// <returns><see langword="true"/> if Chrome’s accessibility support is enabled, <see langword="false"/> otherwise.</returns>
-        public Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default) => BridgeConnector.OnResult<bool>("appIsAccessibilitySupportEnabled", "appIsAccessibilitySupportEnabledCompleted", cancellationToken);
-
+        Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Manually enables Chrome's accessibility support, allowing to expose accessibility switch to users in application settings.
@@ -1153,19 +661,13 @@ namespace ElectronNET.API
         /// Note: Rendering accessibility tree can significantly affect the performance of your app. It should not be enabled by default.
         /// </summary>
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
-        public void SetAccessibilitySupportEnabled(bool enabled)
-        {
-            BridgeConnector.Emit("appSetAboutPanelOptions", enabled);
-        }
+        void SetAccessibilitySupportEnabled(bool enabled);
 
         /// <summary>
         /// Show the app's about panel options. These options can be overridden with
         /// <see cref="SetAboutPanelOptions"/>.
         /// </summary>
-        public void ShowAboutPanel()
-        {
-            BridgeConnector.Emit("appShowAboutPanel");
-        }
+        void ShowAboutPanel();
 
         /// <summary>
         /// Set the about panel options. This will override the values defined in the app's .plist file on macOS. See the
@@ -1178,76 +680,34 @@ namespace ElectronNET.API
         /// <see href="https://developer.apple.com/documentation/appkit/nsaboutpaneloptioncredits?language=objc">documentation</see> for more information.
         /// </summary>
         /// <param name="options">About panel options.</param>
-        public void SetAboutPanelOptions(AboutPanelOptions options)
-        {
-            BridgeConnector.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
-        }
-
-        /// <summary>
-        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
-        /// <para/>
-        /// This is the user agent that will be used when no user agent is set at the webContents or
-        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
-        /// custom value as early as possible in your app's initialization to ensure that your overridden value
-        /// is used.
-        /// </summary>
-        public string UserAgentFallback
-        {
-            set
-            {
-                BridgeConnector.Emit("appSetUserAgentFallback", value);
-            }
-        }
-
-        /// <summary>
-        /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
-        /// <para/>
-        /// This is the user agent that will be used when no user agent is set at the webContents or
-        /// session level. It is useful for ensuring that your entire app has the same user agent. Set to a
-        /// custom value as early as possible in your app's initialization to ensure that your overridden value
-        /// is used.
-        /// </summary>
-        public Task<string> GetUserAgentFallbackAsync() => BridgeConnector.OnResult<string>("appGetUserAgentFallback", "appGetUserAgentFallbackCompleted");
-
-        internal void PreventQuit()
-        {
-            _preventQuit = true;
-        }
-
-        private bool _preventQuit = false;
-
-        private const string ModuleName = "app";
-        /// <summary>
-        /// Subscribe to an unmapped event on the <see cref="App"/> module.
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn) => Events.Instance.On(ModuleName, eventName, fn);
+        void SetAboutPanelOptions(AboutPanelOptions options);
 
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn) => Events.Instance.On(ModuleName, eventName, fn);
+        void On(string eventName, Action fn);
+
+        /// <summary>
+        /// Subscribe to an unmapped event on the <see cref="App"/> module.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="fn">The handler</param>
+        void On(string eventName, Action<object> fn);
 
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn) => Events.Instance.Once(ModuleName, eventName, fn);
+        void Once(string eventName, Action fn);
 
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
         /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn) => Events.Instance.Once(ModuleName, eventName, fn);
-
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+        void Once(string eventName, Action<object> fn);
     }
 }

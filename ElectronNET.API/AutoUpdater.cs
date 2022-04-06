@@ -5,13 +5,14 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Enable apps to automatically update themselves. Based on electron-updater.
     /// </summary>
-    public sealed class AutoUpdater
+    public sealed class AutoUpdater : IAutoUpdater
     {
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)

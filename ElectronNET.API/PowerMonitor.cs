@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Monitor power state changes..
     /// </summary>
-    public sealed class PowerMonitor
+    public sealed class PowerMonitor : IPowerMonitor
     {
         /// <summary>
         /// Emitted when the system is about to lock the screen. 
