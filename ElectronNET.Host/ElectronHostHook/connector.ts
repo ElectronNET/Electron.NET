@@ -1,9 +1,10 @@
+import { Socket } from "socket.io";
+
 export class Connector {
-    constructor(private socket: SocketIO.Socket,
-        // @ts-ignore
+    constructor(private socket: Socket,
         public app: Electron.App) { }
 
-    on(key: string, javaScriptCode: Function): void {
+    on(key: string, javaScriptCode: (...args) => void): void {
         this.socket.on(key, (...args: any[]) => {
             const id: string = args.pop();
 
