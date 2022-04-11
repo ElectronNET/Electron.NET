@@ -434,88 +434,91 @@ namespace ElectronNET.API
                 {
                     lock (_syncRoot)
                     {
-                        if (_socket is null && HybridSupport.IsElectronActive)
+                        if (_socket is null)
                         {
-                            var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
+                            if (HybridSupport.IsElectronActive)
                             {
-                                EIO = 4,
-                                Reconnection = true,
-                                ReconnectionAttempts = int.MaxValue,
-                                ReconnectionDelay = 500,
-                                ReconnectionDelayMax = 2000,
-                                RandomizationFactor = 0.5,
-                                ConnectionTimeout = TimeSpan.FromSeconds(10),
-                                Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
-                            });
-
-                            socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
-                            
-                            _connectedSocketEvent.Reset();
-
-                            socket.OnConnected += (_, __) =>
-                            {
-                                Task.Run(async () =>
+                                var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
                                 {
-                                    await socket.EmitAsync("auth", AuthKey);
-                                    _connectedSocketEvent.Set();
-                                    Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
+                                    EIO = 4,
+                                    Reconnection = true,
+                                    ReconnectionAttempts = int.MaxValue,
+                                    ReconnectionDelay = 500,
+                                    ReconnectionDelayMax = 2000,
+                                    RandomizationFactor = 0.5,
+                                    ConnectionTimeout = TimeSpan.FromSeconds(10),
+                                    Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
                                 });
-                            };
 
-                            socket.OnReconnectAttempt += (_, __) =>
-                            {
+                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
+
                                 _connectedSocketEvent.Reset();
-                                Log("ElectronNET socket {1} is trying to reconnect on port {0}...", BridgeSettings.SocketPort, socket.Id);
-                            };
 
-                            socket.OnReconnectError += (_, ex) =>
-                            {
-                                _connectedSocketEvent.Reset();
-                                Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
-                            };
+                                socket.OnConnected += (_, __) =>
+                                {
+                                    Task.Run(async () =>
+                                    {
+                                        await socket.EmitAsync("auth", AuthKey);
+                                        _connectedSocketEvent.Set();
+                                        Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
+                                    });
+                                };
 
-                            socket.OnReconnected += (_, __) =>
-                            {
-                                _connectedSocketEvent.Set();
-                                Log("ElectronNET socket {1} reconnected on port {0}...", BridgeSettings.SocketPort, socket.Id);
-                            };
+                                socket.OnReconnectAttempt += (_, __) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} is trying to reconnect on port {0}...", BridgeSettings.SocketPort, socket.Id);
+                                };
 
-                            socket.OnDisconnected += (_, reason) =>
-                            {
-                                _connectedSocketEvent.Reset();
-                                Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
-                            };
+                                socket.OnReconnectError += (_, ex) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
+                                };
 
-                            socket.OnError += (_, msg) =>
-                            {
+                                socket.OnReconnected += (_, __) =>
+                                {
+                                    _connectedSocketEvent.Set();
+                                    Log("ElectronNET socket {1} reconnected on port {0}...", BridgeSettings.SocketPort, socket.Id);
+                                };
+
+                                socket.OnDisconnected += (_, reason) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
+                                };
+
+                                socket.OnError += (_, msg) =>
+                                {
                                 //_connectedSocketEvent.Reset();
                                 Log("ElectronNET socket {1} error: {0}...", msg, socket.Id);
-                            };
+                                };
 
-                            _socket = socket;
+                                _socket = socket;
 
-                            Task.Run(async () =>
-                            {
-                                try
+                                Task.Run(async () =>
                                 {
-                                    await socket.ConnectAsync();
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.ToString());
-                                    
-                                    if(!App.TryRaiseOnSocketConnectFail())
+                                    try
                                     {
-                                        Environment.Exit(0xDEAD);
+                                        await socket.ConnectAsync();
                                     }
-                                }
-                            });
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.ToString());
 
-                            RehookHandlers(socket);
-                        }
-                        else
-                        {
-                            throw new Exception("Missing Socket Port");
+                                        if (!App.TryRaiseOnSocketConnectFail())
+                                        {
+                                            Environment.Exit(0xDEAD);
+                                        }
+                                    }
+                                });
+
+                                RehookHandlers(socket);
+                            }
+                            else
+                            {
+                                throw new Exception("Missing Socket Port");
+                            }
                         }
                     }
                 }
