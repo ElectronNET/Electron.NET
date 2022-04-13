@@ -52,7 +52,12 @@ export = (socket: Socket) => {
     });
 
     socket.on('screen-getDisplayMatching', (rectangle) => {
-        const display = screen.getDisplayMatching(rectangle);
+        let display;
+        try {
+            display = screen.getDisplayMatching(rectangle);
+        } catch {
+            display = screen.getPrimaryDisplay();
+        }
         electronSocket.emit('screen-getDisplayMatchingCompleted', display);
     });
 };

@@ -42,7 +42,11 @@ module.exports = (socket) => {
         electronSocket.emit('screen-getDisplayNearestPointCompleted', display);
     });
     socket.on('screen-getDisplayMatching', (rectangle) => {
-        const display = electron_1.screen.getDisplayMatching(rectangle);
+        try {
+            display = electron_1.screen.getDisplayMatching(rectangle);
+        } catch {
+            display = electron_1.screen.getPrimaryDisplay();
+        }
         electronSocket.emit('screen-getDisplayMatchingCompleted', display);
     });
 };
