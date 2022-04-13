@@ -47,7 +47,12 @@ export = (socket: Socket) => {
     });
 
     socket.on('screen-getDisplayNearestPoint', (point) => {
-        const display = screen.getDisplayNearestPoint(point);
+        let display;
+        try {
+            display = screen.getDisplayNearestPoint(point);
+        } catch {
+            display = screen.getPrimaryDisplay();
+        }
         electronSocket.emit('screen-getDisplayNearestPointCompleted', display);
     });
 
