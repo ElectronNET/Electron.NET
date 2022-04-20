@@ -413,7 +413,7 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
 
-        var options = { cwd: currentBinPath, env = env, detached: detachedProcess, stdio: stdioopt };
+        var options = { cwd: currentBinPath, env : env, detached: detachedProcess, stdio: stdioopt };
 
         apiProcess = cProcess.spawn(binFilePath, parameters, options);
 
