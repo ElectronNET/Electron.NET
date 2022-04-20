@@ -405,9 +405,15 @@ function startAspCoreBackend(electronPort) {
             }
         }
 
+        let env = process.env;
+
+        if (manifestJsonFile.hasOwnProperty('variables')) {
+            env = { ...env, ...manifestJsonFile.variables };
+        }
+
         let binFilePath = path.join(currentBinPath, binaryFile);
 
-        var options = { cwd: currentBinPath, detached: detachedProcess, stdio: stdioopt };
+        var options = { cwd: currentBinPath, env = env, detached: detachedProcess, stdio: stdioopt };
 
         apiProcess = cProcess.spawn(binFilePath, parameters, options);
 
@@ -473,7 +479,13 @@ function startAspCoreBackendWithWatch(electronPort) {
             }
         }
 
-        var options = { cwd: currentBinPath, env: process.env, detached: detachedProcess, stdio: stdioopt };
+        let env = process.env;
+
+        if (manifestJsonFile.hasOwnProperty('variables')) {
+            env = { ...env, ...manifestJsonFile.variables };
+        }
+
+        var options = { cwd: currentBinPath, env: env, detached: detachedProcess, stdio: stdioopt };
 
         apiProcess = cProcess.spawn('dotnet', parameters, options);
 
