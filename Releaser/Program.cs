@@ -9,6 +9,16 @@ if (!Version.TryParse(version, out _))
     return 0xDEAD;
 }
 
+using var client = new HttpClient();
+
+var response = await client.GetAsync($"https://github.com/electron/electron/releases/tag/v{version}");
+if (!response.IsSuccessStatusCode)
+{
+    Console.WriteLine($"Version not found on GitHub : {version}");
+    return 0xDEAD;
+}
+
+
 var yamlFile    = Path.GetFullPath("../.devops/build-nuget.yaml");
 var csFile      = Path.GetFullPath("../ElectronNET.CLI/Commands/BuildCommand.cs");
 var packageFile = Path.GetFullPath("../ElectronNET.Host/package.json");
