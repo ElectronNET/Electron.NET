@@ -1,5 +1,5 @@
 variables:
-  PackageVersion: 18.1.0.$(Build.BuildId)
+  PackageVersion: 17.4.1.$(Build.BuildId)
   projectAPI:  './ElectronNET.API/ElectronNET.API.csproj'
   projectCLI:  './ElectronNET.CLI/ElectronNET.CLI.csproj'
 
