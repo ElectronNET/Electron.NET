@@ -240,7 +240,7 @@ function startSocketApiBridge(port) {
     server = require('http').createServer();
     io = require('socket.io')();
 
-    io.attach(server, { pingTimeout: 10000, pingInterval: 5000 });
+    io.attach(server, { pingTimeout: 10000, pingInterval: 5000, maxHttpBufferSize: 1e8 });
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
