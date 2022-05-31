@@ -55,7 +55,7 @@ app.on('will-finish-launching', () => {
 });
 
 function prepareForUpdate() {
-    console.log('closing all windows before update');
+    try { console.log('closing all windows before update'); } catch { }
 
     ignoreApiProcessClosed = true;
 
@@ -146,7 +146,7 @@ app.on('ready', () => {
     }
     // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
     portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
-        console.log('Electron Socket IO Port: ' + port);
+        try { console.log('Electron Socket IO Port: ' + port); } catch { }
         startSocketApiBridge(port);
     });
 });
@@ -184,8 +184,10 @@ function startSplashScreen() {
 
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log('load splashscreen error:');
-            console.error(error);
+            try {
+                console.log('load splashscreen error:');
+                console.error(error);
+            } catch { }
 
             throw new Error(error.message);
         }
@@ -244,7 +246,7 @@ function startSocketApiBridge(port) {
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
-        console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address);
+        try { console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address); } catch { }
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (watchable) {
             startAspCoreBackendWithWatch(port);
@@ -261,7 +263,7 @@ function startSocketApiBridge(port) {
     io.on('connection', (socket) => {
 
         socket.on('disconnect', function (reason) {
-            console.log('Socket ' + socket.id + ' disconnected from .NET with reason: ' + reason);
+            try { console.log('Socket ' + socket.id + ' disconnected from .NET with reason: ' + reason); } catch { }
             try {
                 if (hostHook) {
                     const hostHookScriptFilePath = path.join(__dirname, 'ElectronHostHook', 'index.js');
@@ -270,7 +272,7 @@ function startSocketApiBridge(port) {
                 }
 
             } catch (error) {
-                console.error(error.message);
+                try { console.error(error.message); } catch { }
             }
         });
 
@@ -286,7 +288,7 @@ function startSocketApiBridge(port) {
             global['electronsocket'] = socket;
             socket.setMaxListeners(0);
 
-            console.log('.NET connected on socket ' + socket.id + ' on ' + new Date());
+            try { console.log('.NET connected on socket ' + socket.id + ' on ' + new Date()); } catch { }
 
             appApi = require('./api/app')(socket, app, firstTime);
             browserWindows = require('./api/browserWindows')(socket, app, firstTime);
@@ -344,11 +346,11 @@ function startSocketApiBridge(port) {
             });
 
             socket.on('console-stdout', (data) => {
-                console.log(`stdout: ${data.toString()}`);
+                try { console.log(`stdout: ${data.toString()}`); } catch { }
             });
 
             socket.on('console-stderr', (data) => {
-                console.log(`stderr: ${data.toString()}`);
+                try { console.log(`stderr: ${data.toString()}`); } catch { }
             });
 
             try {
@@ -360,7 +362,7 @@ function startSocketApiBridge(port) {
                     hostHook.onHostReady();
                 }
             } catch (error) {
-                console.error(error.message);
+                try { console.error(error.message); } catch { }
             }
         });
     });
