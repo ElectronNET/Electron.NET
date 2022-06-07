@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SocketIOClient;
 using SocketIOClient.JsonSerializer;
@@ -298,7 +299,6 @@ namespace ElectronNET.API
             }
         }
 
-<<<<<<< HEAD
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {
             public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
@@ -315,7 +315,6 @@ namespace ElectronNET.API
                 };
             }
         }
-=======
         public static async Task<T> GetValueOverSocketAsync<T>(string eventString, string eventCompletedString)
         {
             CancellationToken cancellationToken = new();
@@ -345,7 +344,7 @@ namespace ElectronNET.API
                     }
                 });
 
-                BridgeConnector.Socket.Emit(eventString);
+                await BridgeConnector.Socket.EmitAsync(eventString);
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
@@ -380,7 +379,7 @@ namespace ElectronNET.API
                     }
                 });
 
-                BridgeConnector.Socket.Emit(eventString);
+                await BridgeConnector.Socket.EmitAsync(eventString);
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
@@ -406,7 +405,7 @@ namespace ElectronNET.API
 
                     try
                     {
-                        taskCompletionSource.SetResult( ((JArray)value).ToObject<T>() );
+                        taskCompletionSource.SetResult(((JArray)value).ToObject<T>() );
                     }
                     catch (Exception e)
                     {
@@ -414,12 +413,10 @@ namespace ElectronNET.API
                     }
                 });
 
-                BridgeConnector.Socket.Emit(eventString);
+                await BridgeConnector.Socket.EmitAsync(eventString);
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
         }
-        
->>>>>>> 64e058b0b59a4fbbd6c0ec9de2ee1850a66684c4
     }
 }

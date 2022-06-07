@@ -274,7 +274,7 @@ namespace ElectronNET.CLI.Commands
             return list;
         }
 
-        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
+        internal Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
