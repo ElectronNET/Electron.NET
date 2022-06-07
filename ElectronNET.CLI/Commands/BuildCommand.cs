@@ -44,6 +44,7 @@ namespace ElectronNET.CLI.Commands
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramElectronArch = "electron-arch";
         private string _paramElectronParams = "electron-params";
+        private string _paramElectronVersion = "electron-version";
         private string _paramOutputDirectory = "relative-path";
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
@@ -120,11 +121,7 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 var command =
-<<<<<<< HEAD
-                    $"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
-=======
-                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
->>>>>>> 5338749e4d2b0fcd9c46bad1a61e5c7d7d0f18cc
+                   $"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
                 
                 // add any additional dotnet flags
                 var dotnetFlags = GetDotNetArgs(parser);
@@ -147,8 +144,7 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
-                var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
-
+                
                 if (parser.Arguments.ContainsKey(_paramPackageJson))
                 {
                     Console.WriteLine("Copying custom package.json.");
@@ -243,9 +239,6 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-<<<<<<< HEAD
-        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
-=======
         private static List<string> DotNetFlagsWithValuesReserved = new List<string>
         {
             "-o", "--output", "-r", "--runtime", "-c", "--configuration"
@@ -281,8 +274,7 @@ namespace ElectronNET.CLI.Commands
             return list;
         }
 
-        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
->>>>>>> 5338749e4d2b0fcd9c46bad1a61e5c7d7d0f18cc
+        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
