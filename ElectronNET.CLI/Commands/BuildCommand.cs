@@ -50,9 +50,9 @@ namespace ElectronNET.CLI.Commands
         private string _paramPackageJson = "package-json";
         private string _paramForceNodeInstall = "install-modules";
         private string _manifest = "manifest";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramVersion = "Version";
+        private static string _paramPublishReadyToRun = "PublishReadyToRun";
+        private static string _paramPublishSingleFile = "PublishSingleFile";
+        private static string _paramVersion = "Version";
         private string _paramDotNetPublish = "dotnet-publish";
 
         public Task<bool> ExecuteAsync()
@@ -274,7 +274,7 @@ namespace ElectronNET.CLI.Commands
             return list;
         }
 
-        internal Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
+        internal static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser, string defaultReadyToRun, string defaultSingleFile)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
