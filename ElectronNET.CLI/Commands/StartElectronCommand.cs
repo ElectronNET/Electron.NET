@@ -27,8 +27,6 @@ namespace ElectronNET.CLI.Commands
         private string _arguments = "args";
         private string _manifest = "manifest";
         private string _clearCache = "clear-cache";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
         private string _paramDotNetConfig = "dotnet-configuration";
         private string _paramTarget = "target";
 
@@ -54,14 +52,6 @@ namespace ElectronNET.CLI.Commands
                 else
                 {
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
-                }
-
-
-                bool buildInsteadOfPublish = false;
-
-                if (parser.Arguments.ContainsKey(_buildInsteadOfPublish))
-                {
-                    buildInsteadOfPublish = bool.Parse(parser.Arguments[_buildInsteadOfPublish].First());
                 }
 
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
@@ -98,31 +88,15 @@ namespace ElectronNET.CLI.Commands
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
-<<<<<<< HEAD
-                if (!buildInsteadOfPublish)
-                {
-                    if (parser != null && !parser.Arguments.ContainsKey("watch"))
-                    {
-                        resultCode = ProcessHelper.CmdExecute($"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --no-self-contained /p:DisabledWarnings=true", aspCoreProjectPath);
-                    }
-                }
-                else
-                {
-                    if (parser != null && !parser.Arguments.ContainsKey("watch"))
-                    {
-                        resultCode = ProcessHelper.CmdExecute($"dotnet build -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} /p:DisabledWarnings=true", aspCoreProjectPath);
-                    }
-=======
                 var project = string.Empty;
                 if (parser.Arguments.ContainsKey(_paramDotNetProject))
                 {
                     project = parser.Arguments[_paramDotNetProject][0];
                 }
 
-                if (parser != null && !parser.Arguments.ContainsKey("watch"))
+                if (!parser.Arguments.ContainsKey("watch"))
                 {
-                    resultCode = ProcessHelper.CmdExecute($"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {publishReadyToRun} {publishSingleFile} --no-self-contained", aspCoreProjectPath);
->>>>>>> 2331ef43b4c2028c57564f3a8c885555c81661d4
+                    resultCode = ProcessHelper.CmdExecute($"dotnet publish {project} -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} /p:DisabledWarnings=true", aspCoreProjectPath);
                 }
 
                 if (resultCode != 0)
