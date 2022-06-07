@@ -4,7 +4,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
-    <Authors>Gregor Biswanger, Robert Muehsig, Rafael Oliveira</Authors>
+    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -21,7 +21,7 @@
     <PackageIcon>PackageIcon.png</PackageIcon>
     <Version>99.0.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

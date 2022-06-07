@@ -1,5 +1,29 @@
 # Not released
 
+# 18.6.1
+
+ElectronNET.CLI:  
+
+* New Feature: Support for additional dotnet publish flags (thanks [danatcofo](https://github.com/danatcofo)) [\#655](https://github.com/ElectronNET/Electron.NET/pull/655)  
+* New Feature: Support Apple Silicon Natively (thanks [bman46](https://github.com/bman46)) [\#624](https://github.com/ElectronNET/Electron.NET/pull/624)  
+
+ElectronNET.API:    
+
+* New Feature: Support for .NET 6 (thanks [danatcofo](https://github.com/danatcofo)) [\#636](https://github.com/ElectronNET/Electron.NET/pull/636)  
+* New Feature: Switch to async socket lib (thanks [theolivenbaum](https://github.com/theolivenbaum)) [\#595](https://github.com/ElectronNET/Electron.NET/pull/595)  
+* New Feature: Conversion to use ImageSharp rather than System.Drawing.Common (thanks [danatcofo](https://github.com/danatcofo)) [\#658](https://github.com/ElectronNET/Electron.NET/pull/658)  
+* New Feature: Support DI and Mocking better + Support launching app with file for win and linux (thanks [danatcofo](https://github.com/danatcofo)) [\#656](https://github.com/ElectronNET/Electron.NET/pull/656)  
+* New Feature: Support launching app with file for win and linux (thanks [schaveyt](https://github.com/schaveyt)) [\#648](https://github.com/ElectronNET/Electron.NET/pull/648)  
+* New Feature: Add ability to set a window's parent using BrowserWindowOptions (thanks [MutatedGamer](https://github.com/MutatedGamer)) [\#673](https://github.com/ElectronNET/Electron.NET/pull/673)  
+* New Feature: changed the processing of loadUrl at CreateWindowAsync (thanks [yannikHoeflich](https://github.com/yannikHoeflich)) [\#631](https://github.com/ElectronNET/Electron.NET/pull/631)  
+* New Feature: Recent Document Support for MacOS (thanks [danatcofo](https://github.com/danatcofo)) [\#634](https://github.com/ElectronNET/Electron.NET/pull/634)  
+* New Feature: Support DI and Mocking better (thanks [danatcofo](https://github.com/danatcofo)) [\#633](https://github.com/ElectronNET/Electron.NET/pull/633)  
+* New Feature: Allow ignoring certificate errors (thanks [javierlarota](https://github.com/javierlarota)) [\#626](https://github.com/ElectronNET/Electron.NET/pull/626)  
+* New Feature: Log errors in the dotnet process (thanks [Meberem](https://github.com/Meberem)) [\#592](https://github.com/ElectronNET/Electron.NET/pull/592)  
+* Fixed bug: Error on reloading a window after a second window is closed #664 (thanks [danatcofo](https://github.com/danatcofo)) [\#668](https://github.com/ElectronNET/Electron.NET/pull/668)  
+
+# Released
+
 # 13.5.1
 
 ElectronNET.CLI:
@@ -24,9 +48,6 @@ ElectronNET.API:
 * New Feature: Add PostData to LoadURLOptions to allow http-posts in LoadURL calls (thanks [Funkrusha](https://github.com/Funkrusha)) [\#547](https://github.com/ElectronNET/Electron.NET/pull/547)  
 * Fixed bug: Fix splash screen interaction causing crashes, ghost dragging, and resizable behavior #540 (thanks [MiniguyBrendan](https://github.com/MiniguyBrendan)) [\#540](https://github.com/ElectronNET/Electron.NET/pull/540)  
 * Fixed bug: Vibrancy serialization fix (thanks [tantumalice](https://github.com/tantumalice)) [\#573](https://github.com/ElectronNET/Electron.NET/pull/573)  
-
-
-# Released
 
 # 11.5.1
 
