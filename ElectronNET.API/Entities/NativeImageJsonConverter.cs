@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -26,7 +28,7 @@ namespace ElectronNET.API.Entities
                 if (float.TryParse(item.Key, out var size))
                 {
                     var bytes = Convert.FromBase64String(item.Value);
-                    newDictionary.Add(size, Image.FromStream(new MemoryStream(bytes)));
+                    newDictionary.Add(size, Image.Load(new MemoryStream(bytes)));
                 }
             }
             return new NativeImage(newDictionary);
