@@ -155,8 +155,8 @@ namespace ElectronNET.API.Entities
         public bool? Frame { get; set; } = true;
 
         /// <summary>
-        /// Whether this is a modal window. This only works when the window is a child
-        /// window.Default is false.
+        /// Whether this is a modal window. This only works when <see cref="Parent"/> is
+        /// also specified. Default is false.
         /// </summary>
         public bool? Modal { get; set; }
 
@@ -280,6 +280,12 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public string ProxyCredentials { get; set; }
 
+
+        /// <summary>
+        /// The window to use as the created window's parent.
+        /// </summary>
+        [DefaultValue(null)]
+        public BrowserWindow Parent { get; set; }
 
         /// <summary>
         ///  Set a custom position for the traffic light buttons in frameless windows.

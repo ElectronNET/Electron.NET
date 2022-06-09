@@ -187,6 +187,9 @@ module.exports = (socket, app, firstTime) => {
         else if (!options.webPreferences) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
+        if (options.parent) {
+            options.parent = electron_1.BrowserWindow.fromId(options.parent.id);
+        }
         if (options.x && options.y && options.x == 0 && options.y == 0) {
             delete options.x;
             delete options.y;
