@@ -242,9 +242,29 @@ function startSocketApiBridge(port) {
     server = require('http').createServer();
     io = require('socket.io')();
 
-    io.attach(server, { pingTimeout: 10000, pingInterval: 5000, maxHttpBufferSize: 1e8 });
+    let socketBufferSize = 1e8;
+    let pingTimeout = 10000;
+    let pingInterval = 5000;
+
+    if (manifestJsonFile.hasOwnProperty('socket')) {
+
+        if (manifestJsonFile.socket.hasOwnProperty('socketBufferSize') && manifestJsonFile.socket.bufferSize > 0) {
+            socketBufferSize = manifestJsonFile.bufferSize * 1e8;
+        }
+
+        if (manifestJsonFile.socket.hasOwnProperty('socketPingTimeout') && manifestJsonFile.socket.pingTimeout > 0) {
+            maxHttpBufferSize = manifestJsonFile.pingTimeout * 1000;
+        }
+
+        if (manifestJsonFile.socket.hasOwnProperty('socketPingInterval') && manifestJsonFile.socket.pingInterval > 0) {
+            pingInterval = manifestJsonFile.pingInterval * 1000;
+        }
+    }
+
+    io.attach(server, { pingTimeout: pingTimeout, pingInterval: pingInterval, maxHttpBufferSize: maxHttpBufferSize });
 
     server.listen(port, 'localhost');
+
     server.on('listening', function () {
         try { console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address); } catch { }
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
@@ -259,8 +279,13 @@ function startSocketApiBridge(port) {
     app['mainWindowURL'] = "";
     app['mainWindow'] = null;
 
+    let isConnected = false;
+    let checkReconnectTimeout = 0;
     // @ts-ignore
     io.on('connection', (socket) => {
+
+        isConnected = true;
+        window.clearTimeout(checkReconnectTimeout);
 
         socket.on('disconnect', function (reason) {
             try { console.log('Socket ' + socket.id + ' disconnected from .NET with reason: ' + reason); } catch { }
@@ -270,10 +295,19 @@ function startSocketApiBridge(port) {
                     delete require.cache[require.resolve(hostHookScriptFilePath)];
                     hostHook = undefined;
                 }
-
             } catch (error) {
                 try { console.error(error.message); } catch { }
             }
+
+            window.clearTimeout(checkReconnectTimeout);
+
+            //Give the server 60 seconds to reconnect, otherwise exits
+            checkReconnectTimeout = window.setTimeout((_) => {
+                if (!isConnected) {
+                    app.exit(57005); //0xDEAD
+                }
+            }, 60000);
+
         });
 
         socket.on("auth", function (authKey) {
