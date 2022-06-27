@@ -253,7 +253,7 @@ function startSocketApiBridge(port) {
         }
 
         if (manifestJsonFile.socket.hasOwnProperty('socketPingTimeout') && manifestJsonFile.socket.pingTimeout > 0) {
-            maxHttpBufferSize = manifestJsonFile.pingTimeout * 1000;
+            pingTimeout = manifestJsonFile.pingTimeout * 1000;
         }
 
         if (manifestJsonFile.socket.hasOwnProperty('socketPingInterval') && manifestJsonFile.socket.pingInterval > 0) {
@@ -261,7 +261,7 @@ function startSocketApiBridge(port) {
         }
     }
 
-    io.attach(server, { pingTimeout: pingTimeout, pingInterval: pingInterval, maxHttpBufferSize: maxHttpBufferSize });
+    io.attach(server, { pingTimeout: pingTimeout, pingInterval: pingInterval, maxHttpBufferSize: socketBufferSize });
 
     server.listen(port, 'localhost');
 
