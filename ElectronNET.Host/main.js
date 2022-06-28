@@ -285,7 +285,7 @@ function startSocketApiBridge(port) {
     io.on('connection', (socket) => {
 
         isConnected = true;
-        window.clearTimeout(checkReconnectTimeout);
+        clearTimeout(checkReconnectTimeout);
 
         socket.on('disconnect', function (reason) {
             try { console.log('Socket ' + socket.id + ' disconnected from .NET with reason: ' + reason); } catch { }
@@ -299,10 +299,10 @@ function startSocketApiBridge(port) {
                 try { console.error(error.message); } catch { }
             }
 
-            window.clearTimeout(checkReconnectTimeout);
+            clearTimeout(checkReconnectTimeout);
 
             //Give the server 60 seconds to reconnect, otherwise exits
-            checkReconnectTimeout = window.setTimeout((_) => {
+            checkReconnectTimeout = setTimeout((_) => {
                 if (!isConnected) {
                     app.exit(57005); //0xDEAD
                 }
