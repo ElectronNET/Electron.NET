@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Quobject.SocketIoClientDotNet.Client;
 
 namespace ElectronNET.API
 {
@@ -16,7 +15,7 @@ namespace ElectronNET.API
             lifetime.ApplicationStarted.Register(async () =>
             {
                 // wait till the socket is open before setting app to ready
-                while(BridgeConnector.Socket.Io().ReadyState != Manager.ReadyStateEnum.OPEN) {
+                while(!BridgeConnector.Socket.Connected) {
                     await Task.Delay(50).ConfigureAwait(false);
                 }
 

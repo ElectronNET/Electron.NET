@@ -43,6 +43,8 @@ namespace ElectronNET.API
         public Task<bool> IsAllowDowngradeEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowDowngrade-get", "autoUpdater-allowDowngrade-get-reply");
         
 
+        private bool _autoDownload;
+
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
@@ -50,9 +52,15 @@ namespace ElectronNET.API
         {
             set
             {
+                _autoDownload = value;
                 BridgeConnector.Emit("autoUpdater-autoDownload-set", value);
             }
+            get {
+              return _autoDownload;
+            }
         }
+
+        private bool _autoInstallOnAppQuit;
 
         /// <summary>
         /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
@@ -63,9 +71,16 @@ namespace ElectronNET.API
         {
             set
             {
+                _autoInstallOnAppQuit = value;
                 BridgeConnector.Emit("autoUpdater-autoInstallOnAppQuit-set", value);
             }
+
+            get {
+              return _autoInstallOnAppQuit;
+            }
         }
+
+        private bool _allowPrerelease;
 
         /// <summary>
         /// *GitHub provider only.* Whether to allow update to pre-release versions. 
@@ -77,9 +92,16 @@ namespace ElectronNET.API
         {
             set
             {
+                _allowPrerelease = value;
                 BridgeConnector.Emit("autoUpdater-allowPrerelease-set", value);
             }
+
+            get {
+                return _allowPrerelease;
+            }
         }
+
+        private bool _fullChangelog;
 
         /// <summary>
         /// *GitHub provider only.* 
@@ -89,9 +111,17 @@ namespace ElectronNET.API
         {
             set
             {
+                _fullChangelog = value;
                 BridgeConnector.Emit("autoUpdater-fullChangelog-set", value);
             }
+
+            get
+            {
+                return _fullChangelog;
+            }
         }
+
+        private bool _allowDowngrade;
 
         /// <summary>
         /// Whether to allow version downgrade (when a user from the beta channel wants to go back to the stable channel).
@@ -102,7 +132,12 @@ namespace ElectronNET.API
         {
             set
             {
+                _allowDowngrade = value;
                 BridgeConnector.Emit("autoUpdater-allowDowngrade-set", value);
+            }
+
+            get {
+                return _allowDowngrade;
             }
         }
 
@@ -111,21 +146,32 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetUpdateConfigPathAsync() => BridgeConnector.OnResult<string>("autoUpdater-updateConfigPath-get", "autoUpdater-updateConfigPath-get-reply");
 
+        public string UpdateConfigPath { get { return GetUpdateConfigPathAsync().Result; }}
+
         /// <summary>
         /// The current application version
         /// </summary>
         public Task<SemVer> GetCurrentVersionAsync() => BridgeConnector.OnResult<SemVer>("autoUpdater-updateConcurrentVersionfigPath-get", "autoUpdater-currentVersion-get-reply");
+
+        public Task<SemVer> CurrentVersionAsync { get { return GetCurrentVersionAsync(); } }
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
         public Task<string> GetChannelAsync() => BridgeConnector.OnResult<string>("autoUpdater-channel-get", "autoUpdater-channel-get-reply");
+ 
+        public string Channel { get { return GetChannelAsync().Result; } }
+
+        public Task<string> ChannelAsync { get { return GetChannelAsync(); } }
 
         /// <summary>
         /// The request headers.
         /// </summary>
         public Task<Dictionary<string, string>> GetRequestHeadersAsync() => BridgeConnector.OnResult<Dictionary<string, string>>("autoUpdater-requestHeaders-get", "autoUpdater-requestHeaders-get-reply");
+
+        public Task<Dictionary<string, string>> RequestHeadersAsync { get { return GetRequestHeadersAsync(); }}
+
 
         /// <summary>
         /// The request headers.

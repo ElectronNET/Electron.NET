@@ -469,6 +469,8 @@ namespace ElectronNET.API
 
         private event Action<string> _openUrl;
 
+        private string _name;
+
         /// <summary>
         /// A <see cref="string"/> property that indicates the current application's name, which is the name in the
         /// application's package.json file.
@@ -481,7 +483,12 @@ namespace ElectronNET.API
         {
             set
             {
+                _name = value;
                 BridgeConnector.Emit("appSetName", value);
+            }
+
+            get {
+              return _name;
             }
         }
 
@@ -495,6 +502,7 @@ namespace ElectronNET.API
         /// </summary>
         public Task<string> GetNameAsync() => BridgeConnector.OnResult<string>("appGetName", "appGetNameCompleted");
 
+        public Task<string> NameAsync { get { return GetNameAsync(); } }
 
         internal App() 
         {
@@ -1183,6 +1191,8 @@ namespace ElectronNET.API
             BridgeConnector.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
         }
 
+        private string _userAgentFallback;
+
         /// <summary>
         /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
         /// <para/>
@@ -1195,8 +1205,15 @@ namespace ElectronNET.API
         {
             set
             {
+                _userAgentFallback = value;
                 BridgeConnector.Emit("appSetUserAgentFallback", value);
             }
+
+            get
+            {
+              return _userAgentFallback;
+            }
+
         }
 
         /// <summary>
@@ -1208,6 +1225,8 @@ namespace ElectronNET.API
         /// is used.
         /// </summary>
         public Task<string> GetUserAgentFallbackAsync() => BridgeConnector.OnResult<string>("appGetUserAgentFallback", "appGetUserAgentFallbackCompleted");
+
+        public Task<string> UserAgentFallbackAsync { get { return GetUserAgentFallbackAsync(); } }
 
         internal void PreventQuit()
         {

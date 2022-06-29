@@ -1,4 +1,4 @@
-﻿using Quobject.SocketIoClientDotNet.Client;
+﻿using SocketIOClient;
 
 namespace ElectronNET.API.Interfaces
 {
@@ -10,6 +10,6 @@ namespace ElectronNET.API.Interfaces
         /// <summary>
         /// Socket used to communicate with main.js
         /// </summary>
-        Socket Socket { get; }
+        SocketIO Socket { get; }
     }
 }

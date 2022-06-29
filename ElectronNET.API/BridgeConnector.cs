@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SocketIOClient;
-using SocketIOClient.JsonSerializer;
 using SocketIOClient.Newtonsoft.Json;
 
 namespace ElectronNET.API
@@ -257,7 +256,7 @@ namespace ElectronNET.API
 
             return await taskCompletionSource.Task;
         }
-        private static SocketIO Socket
+        public static SocketIO Socket
         {
             get
             {
@@ -270,13 +269,7 @@ namespace ElectronNET.API
                         {
                             if (_socket is null && HybridSupport.IsElectronActive)
                             {
-                                var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
-                                {
-                                    EIO = 3
-                                });
-
-                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
-
+                                var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions());
 
                                 socket.OnConnected += (_, __) =>
                                 {
@@ -371,7 +364,7 @@ namespace ElectronNET.API
 
                     try
                     {
-                        taskCompletionSource.SetResult( ((JObject)value).ToObject<T>() );
+                        taskCompletionSource.SetResult( (JObject.Parse(value.ToString())).ToObject<T>() );
                     }
                     catch (Exception e)
                     {
@@ -405,7 +398,7 @@ namespace ElectronNET.API
 
                     try
                     {
-                        taskCompletionSource.SetResult(((JArray)value).ToObject<T>() );
+                        taskCompletionSource.SetResult((JArray.Parse(value.ToString())).ToObject<T>() );
                     }
                     catch (Exception e)
                     {
