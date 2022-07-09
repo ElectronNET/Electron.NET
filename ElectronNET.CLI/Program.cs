@@ -61,14 +61,8 @@ namespace ElectronNET.CLI
                     break;
             }
 
-            if (command != null)
-            {
-                var success = await command.ExecuteAsync();
-                if (!success)
-                {
-                    Environment.Exit(-1);
-                }
-            }
+            if (await command?.ExecuteAsync() != true)
+                Environment.Exit(-1);
         }
 
         private static void PrintUsageHeader()

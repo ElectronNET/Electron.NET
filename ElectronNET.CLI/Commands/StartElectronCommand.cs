@@ -55,10 +55,9 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
-                if (Directory.Exists(tempPath) == false)
-                {
-                    Directory.CreateDirectory(tempPath);
-                }
+
+                //Create the tempPath directory, if it doesn't already exist
+                Directory.CreateDirectory(tempPath);
 
                 string tempBinPath = Path.GetFullPath(Path.Combine(tempPath, "bin"));
 
@@ -123,18 +122,8 @@ namespace ElectronNET.CLI.Commands
 
                 if (!runNpmInstall)
                 {
-
-                    if (File.Exists(packagesPrevious))
-                    {
-                        if (File.ReadAllText(packagesPrevious) != File.ReadAllText(packagesJson))
-                        {
-                            runNpmInstall = true;
-                        }
-                    }
-                    else
-                    {
-                        runNpmInstall = true;
-                    }
+                    //True if the file in packagesPrevious does not exist or its contents are different from the contents of packagesJson.
+                    runNpmInstall = !File.Exists(packagesPrevious) || (File.ReadAllText(packagesPrevious) != File.ReadAllText(packagesJson));
                 }
 
                 if (runNpmInstall)

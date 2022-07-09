@@ -95,15 +95,12 @@ namespace ElectronNET.CLI.Commands
 
                 string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
 
-                if (Directory.Exists(tempPath) == false)
-                {
-                    Directory.CreateDirectory(tempPath);
-                }
-                else
+
+                if (Directory.Exists(tempPath))
                 {
                     Directory.Delete(tempPath, true);
-                    Directory.CreateDirectory(tempPath);
                 }
+                Directory.CreateDirectory(tempPath);
 
 
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);

@@ -13,10 +13,10 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "build-helper.js");
 
             string hostApiFolder = Path.Combine(tempPath, "api");
-            if (Directory.Exists(hostApiFolder) == false)
-            {
-                Directory.CreateDirectory(hostApiFolder);
-            }
+
+            //Create the HostApi folder, if it doesnt already exist
+            Directory.CreateDirectory(hostApiFolder);
+
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
@@ -38,10 +38,10 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "process.js", "api.");
 
             string splashscreenFolder = Path.Combine(tempPath, "splashscreen");
-            if (Directory.Exists(splashscreenFolder) == false)
-            {
-                Directory.CreateDirectory(splashscreenFolder);
-            }
+
+            //Create SplashScreen folder, if it doesnt already exist
+            Directory.CreateDirectory(splashscreenFolder);
+
             EmbeddedFileHelper.DeployEmbeddedFile(splashscreenFolder, "index.html", "splashscreen.");
         }
     }

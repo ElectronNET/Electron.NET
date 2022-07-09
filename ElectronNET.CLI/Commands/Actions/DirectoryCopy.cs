@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ElectronNET.CLI.Commands.Actions
 {
@@ -18,49 +19,28 @@ namespace ElectronNET.CLI.Commands.Actions
             }
 
             DirectoryInfo[] dirs = dir.GetDirectories();
-            // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
-            else
-            {
-                DirectoryInfo targetDir = new DirectoryInfo(destDirName);
-                
-                foreach (FileInfo fileDel in targetDir.EnumerateFiles())
-                {
-                    fileDel.Delete();
-                }
-                foreach (DirectoryInfo dirDel in targetDir.EnumerateDirectories())
-                {
-                    dirDel.Delete(true);
-                }
-            }
 
+            // If the destination directory already exists, delete it and create a new one.
+            if (Directory.Exists(destDirName))
+                Directory.Delete(destDirName, true);
 
+            Directory.CreateDirectory(destDirName);
 
 
             // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            foreach (FileInfo file in dir.GetFiles())
             {
                 string temppath = Path.Combine(destDirName, file.Name);
                 file.CopyTo(temppath, false);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dirs)
-                {
-                    if (ignoredSubDirs.Contains(subdir.Name))
-                    {
-                        continue;
-                    }
+            if (!copySubDirs) return;
 
-                    string temppath = Path.Combine(destDirName, subdir.Name);
-                    Do(subdir.FullName, temppath, copySubDirs, ignoredSubDirs);
-                }
+            foreach (DirectoryInfo subdir in dirs.Where(s => !ignoredSubDirs.Contains(s.Name)))
+            {
+                string temppath = Path.Combine(destDirName, subdir.Name);
+                Do(subdir.FullName, temppath, copySubDirs, ignoredSubDirs);
             }
         }
     }
