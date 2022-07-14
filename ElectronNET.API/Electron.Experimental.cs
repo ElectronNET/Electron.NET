@@ -24,7 +24,7 @@ namespace ElectronNET.API
             /// <param name="clearCache"></param>
             /// <exception cref="DirectoryNotFoundException"></exception>
             /// <exception cref="Exception"></exception>
-            public static async Task StartElectronForDevelopment(int webPort, string projectPath = null, string[] extraElectronArguments = null, bool clearCache = false)
+            public static async Task<int> StartElectronForDevelopment(int webPort, string projectPath = null, string[] extraElectronArguments = null, bool clearCache = false)
             {
                 string aspCoreProjectPath;
 
@@ -123,6 +123,8 @@ namespace ElectronNET.API
 
                 BridgeSettings.InitializePorts(socketPort, webPort);
                 await Task.Delay(500);
+                
+                return socketPort;
             }
 
             /// <summary>
