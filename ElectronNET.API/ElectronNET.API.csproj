@@ -43,8 +43,10 @@ This package contains the API to access the "native" electron API.</Description>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
-    <PackageReference Include="SocketIOClient" Version="3.0.6" />
-    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="3.0.0" />
+    <!--<PackageReference Include="SocketIOClient" Version="3.0.6" />
+    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="3.0.0" />-->
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
   </ItemGroup>
 
