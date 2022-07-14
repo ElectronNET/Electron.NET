@@ -476,6 +476,13 @@ namespace ElectronNET.API
                                     Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
                                 };
 
+
+                                socket.OnReconnectFailed += (_, ex) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} failed to reconnect {0}", ex, socket.Id);
+                                };
+
                                 socket.OnReconnected += (_, __) =>
                                 {
                                     _connectedSocketEvent.Set();
@@ -490,8 +497,8 @@ namespace ElectronNET.API
 
                                 socket.OnError += (_, msg) =>
                                 {
-                                //_connectedSocketEvent.Reset();
-                                Log("ElectronNET socket {1} error: {0}...", msg, socket.Id);
+                                    //_connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} error: {0}...", msg, socket.Id);
                                 };
 
                                 _socket = socket;
@@ -530,7 +537,7 @@ namespace ElectronNET.API
         }
 
         internal static ILogger<App> Logger { private get; set; }
-        internal static string AuthKey { private get; set; }
+        internal static string AuthKey { get; set; } = null;
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {

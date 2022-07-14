@@ -9,7 +9,7 @@ const crypto = require('crypto');
 
 fixPath(); //For macOS and Linux packaged-apps, the path variable might be missing
 
-const auth = crypto.randomBytes(32).toString('hex');
+let auth = crypto.randomBytes(32).toString('hex');
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
@@ -25,12 +25,18 @@ let ignoreApiProcessClosed = false;
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
+let development = false;
+
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 };
 
 if (app.commandLine.hasSwitch('watch')) {
     watchable = true;
+};
+
+if (app.commandLine.hasSwitch('development')) {
+    development = true;
 };
 
 let currentBinPath = path.join(__dirname.replace('app.asar', ''), 'bin');
@@ -40,6 +46,10 @@ let manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
 if (watchable) {
     currentBinPath = path.join(__dirname, '../../'); // go to project directory
     manifestJsonFilePath = path.join(currentBinPath, manifestJsonFileName);
+}
+
+if (development) {
+    auth = app.commandLine.getSwitchValue("devauth");
 }
 
 //  handle macOS events for opening the app with a file, etc
@@ -136,19 +146,27 @@ app.on('ready', () => {
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
-    // Added default port as configurable for port restricted environments.
-    let defaultElectronPort = 8000;
-    if (manifestJsonFile.electronPort) {
-        defaultElectronPort = (manifestJsonFile.electronPort)
-        if (defaultElectronPort == 'random') {
-            defaultElectronPort = (Math.floor(Math.random() * 2000 + 8000)); //Use random port to reduce risk of race conditions between when we find a free port here, and when the app locks on the port
-        }
-    }
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
+
+    if (development) {
+        let port = parseInt(app.commandLine.getSwitchValue('devport'));
         try { console.log('Electron Socket IO Port: ' + port); } catch { }
         startSocketApiBridge(port);
-    });
+    } else {
+
+        // Added default port as configurable for port restricted environments.
+        let defaultElectronPort = 8000;
+        if (manifestJsonFile.electronPort) {
+            defaultElectronPort = (manifestJsonFile.electronPort)
+            if (defaultElectronPort == 'random') {
+                defaultElectronPort = (Math.floor(Math.random() * 2000 + 8000)); //Use random port to reduce risk of race conditions between when we find a free port here, and when the app locks on the port
+            }
+        }
+        // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
+        portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
+            try { console.log('Electron Socket IO Port: ' + port); } catch { }
+            startSocketApiBridge(port);
+        });
+    }
 });
 
 app.on('quit', async (event, exitCode) => {
@@ -268,8 +286,11 @@ function startSocketApiBridge(port) {
     server.on('listening', function () {
         try { console.log('Electron Socket started on port %s at %s', server.address().port, server.address().address); } catch { }
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
+
         if (watchable) {
             startAspCoreBackendWithWatch(port);
+        } else if (development) {
+            //Nothing else to do
         } else {
             startAspCoreBackend(port);
         }
@@ -283,7 +304,8 @@ function startSocketApiBridge(port) {
     let checkReconnectTimeout = 0;
     // @ts-ignore
     io.on('connection', (socket) => {
-
+        try { console.log('Socket ' + socket.id + ' connected from .NET'); } catch { }
+        
         isConnected = true;
         clearTimeout(checkReconnectTimeout);
 
@@ -311,7 +333,6 @@ function startSocketApiBridge(port) {
         });
 
         socket.on("auth", function (authKey) {
-
             if (authKey != auth) {
                 throw new Error("Invalid auth key");
             }

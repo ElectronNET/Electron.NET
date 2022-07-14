@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Runtime.Versioning;
 using System;
+using System.Collections.Generic;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// The Electron.NET API
     /// </summary>
-    public static class Electron
+    public static partial class Electron
     {
         private static ILoggerFactory loggerFactory;
 
@@ -17,7 +18,13 @@ namespace ElectronNET.API
         /// <exception cref="Exception"></exception>
         public static void ReadAuth()
         {
+            if (!string.IsNullOrEmpty(BridgeConnector.AuthKey))
+            {
+                throw new Exception($"Don't call ReadAuth twice or from with {nameof(Experimental)}.{nameof(Experimental.StartElectronForDevelopment)}");
+            }
+
             var line = Console.ReadLine();
+
             if(line.StartsWith("Auth="))
             {
                 BridgeConnector.AuthKey = line.Substring("Auth=".Length);
