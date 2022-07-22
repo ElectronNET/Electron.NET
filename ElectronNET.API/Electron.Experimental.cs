@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ElectronNET.API
 {
@@ -72,7 +73,6 @@ namespace ElectronNET.API
 
                 if (!runNpmInstall)
                 {
-
                     if (File.Exists(packagesPrevious))
                     {
                         if (File.ReadAllText(packagesPrevious) != File.ReadAllText(packagesJson))
