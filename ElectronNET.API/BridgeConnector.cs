@@ -270,10 +270,7 @@ namespace ElectronNET.API
                         {
                             if (_socket is null && HybridSupport.IsElectronActive)
                             {
-                                var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
-                                {
-                                    EIO = 3
-                                });
+                                var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}");
 
                                 socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
 
@@ -283,7 +280,7 @@ namespace ElectronNET.API
                                     Console.WriteLine("BridgeConnector connected!");
                                 };
 
-                                socket.ConnectAsync().Wait();
+                                socket.ConnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 _socket = socket;
                             }
@@ -300,6 +297,11 @@ namespace ElectronNET.API
         }
 
         internal static SocketIO GetSocket() => Socket;
+
+        internal static async Task StartSocket()
+        {
+            await Task.Run(GetSocket);
+        }
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {

@@ -14,13 +14,8 @@ namespace ElectronNET.API
         {
             lifetime.ApplicationStarted.Register(async () =>
             {
-                // wait till the socket is open before setting app to ready
-                while (!BridgeConnector.GetSocket().Connected)
-                {
-                    await Task.Delay(50).ConfigureAwait(false);
-                }
-                //while(BridgeConnector.  BridgeConnector.Socket.Io().ReadyState != Manager.ReadyStateEnum.OPEN) {
-                //}
+                // wait till the socket is open before setting app to ready 
+                await BridgeConnector.StartSocket();
 
                 App.Instance.IsReady = true;
                 Console.WriteLine("ASP.NET Core host has fully started.");

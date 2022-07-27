@@ -2,7 +2,7 @@
   "profiles": {
     "Electron.NET App": {
       "commandName": "Executable",
-      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\net5.0\\dotnet-electronize.exe",
+      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\net6.0\\dotnet-electronize.exe",
       "commandLineArgs": "start",
       "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
     }

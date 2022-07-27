@@ -204,8 +204,8 @@ function startSocketApiBridge(port) {
     // instead of 'require('socket.io')(port);' we need to use this workaround
     // otherwise the Windows Firewall will be triggered
     server = require('http').createServer();
-    io = require('socket.io')();
-    io.attach(server);
+    const { Server } = require('socket.io');
+    io = new Server(server);
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
@@ -383,11 +383,13 @@ function startAspCoreBackend(electronPort) {
         if (detachedProcess) {
             console.log('Detached from ASP.NET process');
             apiProcess.unref();
+
+            apiProcess.stderr.on('data', (data) => {
+                console.log(`stderr: ${data.toString()}`);
+            });
         }
 
-        apiProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data.toString()}`);
-        });
+        console.log("Finished startBackend");
     }
 }
 
