@@ -337,6 +337,57 @@ namespace ElectronNET.API
             }
         }
 
+        bool IAutoUpdater.AutoDownload
+        {
+            get => this.IsAutoDownloadEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            set => this.AutoDownload = value;
+        }
+        bool IAutoUpdater.AutoInstallOnAppQuit 
+        { 
+            get => this.IsAutoInstallOnAppQuitEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.AutoInstallOnAppQuit = value; 
+        }
+        bool IAutoUpdater.AllowPrerelease 
+        { 
+            get => this.IsAllowPrereleaseEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.AllowPrerelease = value; 
+        }
+        bool IAutoUpdater.FullChangelog 
+        { 
+            get => this.IsFullChangeLogEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.FullChangelog = value; 
+        }
+        bool IAutoUpdater.AllowDowngrade 
+        { 
+            get => this.IsAllowDowngradeEnabledAsync().ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.AllowDowngrade = value; 
+        }
+
+        /// <summary>
+        /// Gets the update config path
+        /// </summary>
+        public string UpdateConfigPath => this.GetUpdateConfigPathAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Gets the current version
+        /// </summary>
+        public Task<SemVer> CurrentVersionAsync => this.GetCurrentVersionAsync();
+
+        /// <summary>
+        /// Gets the updater channel
+        /// </summary>
+        public string Channel => this.GetChannelAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Gets the updater channel
+        /// </summary>
+        public Task<string> ChannelAsync => this.GetChannelAsync();
+
+        /// <summary>
+        /// Get the request headers
+        /// </summary>
+        public Task<Dictionary<string, string>> RequestHeadersAsync => this.GetRequestHeadersAsync();
+
         /// <summary>
         /// Asks the server whether there is an update.
         /// </summary>

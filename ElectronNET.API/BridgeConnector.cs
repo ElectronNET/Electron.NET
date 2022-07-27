@@ -299,6 +299,8 @@ namespace ElectronNET.API
             }
         }
 
+        internal static SocketIO GetSocket() => Socket;
+
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {
             public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
@@ -371,7 +373,8 @@ namespace ElectronNET.API
 
                     try
                     {
-                        taskCompletionSource.SetResult( ((JObject)value).ToObject<T>() );
+                        var json = value.GetValue().GetRawText();
+                        taskCompletionSource.SetResult(new JObject(json).ToObject<T>());
                     }
                     catch (Exception e)
                     {
@@ -405,7 +408,8 @@ namespace ElectronNET.API
 
                     try
                     {
-                        taskCompletionSource.SetResult(((JArray)value).ToObject<T>() );
+                        var json = value.GetValue().GetRawText();
+                        taskCompletionSource.SetResult(new JArray(json).ToObject<T>());
                     }
                     catch (Exception e)
                     {

@@ -1,5 +1,5 @@
 ﻿using ElectronNET.API.Interfaces;
-using Quobject.SocketIoClientDotNet.Client;
+using SocketIOClient;
 
 namespace ElectronNET.API
 {
@@ -11,6 +11,6 @@ namespace ElectronNET.API
         /// <summary>
         /// Socket used to communicate with main.js
         /// </summary>
-        public Socket Socket { get; internal set; }
+        public SocketIO Socket { get; internal set; }
     }
 }

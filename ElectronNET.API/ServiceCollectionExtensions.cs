@@ -31,7 +31,7 @@ namespace ElectronNET.API
                 .AddSingleton(provider => PowerMonitor.Instance)
                 .AddSingleton(provider => NativeTheme.Instance)
                 .AddSingleton(provider => Dock.Instance)
-                .AddSingleton(provider => new ApplicationSocket { Socket = BridgeConnector.Socket, })
+                .AddSingleton(provider => new ApplicationSocket { Socket = BridgeConnector.GetSocket(), })
                 // this set for proper dependency injection
                 .AddSingleton<IIpcMain>(_ => IpcMain.Instance)
                 .AddSingleton<IApp>(_ => App.Instance)

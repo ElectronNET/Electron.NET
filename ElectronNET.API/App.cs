@@ -1199,6 +1199,28 @@ namespace ElectronNET.API
             }
         }
 
+        string IApp.Name 
+        { 
+            get => this.NameAsync.ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.Name = value; 
+        }
+
+        /// <summary>
+        /// Get the app name
+        /// </summary>
+        public Task<string> NameAsync => this.GetNameAsync();
+
+        string IApp.UserAgentFallback 
+        { 
+            get => this.GetUserAgentFallbackAsync().ConfigureAwait(false).GetAwaiter().GetResult(); 
+            set => this.UserAgentFallback = value; 
+        }
+
+        /// <summary>
+        /// Get the app user agent
+        /// </summary>
+        public Task<string> UserAgentFallbackAsync => this.GetUserAgentFallbackAsync();
+
         /// <summary>
         /// A <see cref="string"/> which is the user agent string Electron will use as a global fallback.
         /// <para/>
