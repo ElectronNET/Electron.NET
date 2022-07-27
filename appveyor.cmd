@@ -19,10 +19,10 @@ cd ..
 
 echo "Restore & Build WebApp Demo"
 cd ElectronNet.WebApp
-dotnet restore ElectronNet.WebApp.NET5.csproj
-dotnet build ElectronNet.WebApp.NET5.csproj
+dotnet restore ElectronNet.WebApp.csproj
+dotnet build ElectronNet.WebApp.csproj
 
 echo "Invoke electronize build in WebApp Demo"
 
 echo "/target win (dev-build)"
-electronize build /target win /dotnet-project ElectronNet.WebApp.NET5.csproj /electron-params "--publish never"
+electronize build /target win /dotnet-project ElectronNet.WebApp.csproj /electron-params "--publish never"
