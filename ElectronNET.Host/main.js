@@ -388,8 +388,6 @@ function startAspCoreBackend(electronPort) {
                 console.log(`stderr: ${data.toString()}`);
             });
         }
-
-        console.log("Finished startBackend");
     }
 }
 
