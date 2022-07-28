@@ -3,10 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using System.Web;
 using ElectronNET.API.Interfaces;
 
 namespace ElectronNET.API
@@ -57,13 +55,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Off("showOpenDialogComplete" + guid);
 
-                var list = new List<string>();
-
-                foreach (var item in filePaths)
-                {
-                    list.Add(HttpUtility.UrlDecode(item));
-                }
-                taskCompletionSource.SetResult(list.ToArray());
+                taskCompletionSource.SetResult(filePaths);
             });
 
             BridgeConnector.Emit("showOpenDialog", browserWindow, options, guid);
