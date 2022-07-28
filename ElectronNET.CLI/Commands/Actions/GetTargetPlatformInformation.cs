@@ -60,7 +60,7 @@ namespace ElectronNET.CLI.Commands.Actions
                         netCorePublishRid = $"win-x{(Environment.Is64BitOperatingSystem ? "64" : "86")}";
                         electronPackerPlatform = "win";
                     }
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
                         if (RuntimeInformation.OSArchitecture.Equals(Architecture.Arm64) && Dotnet6Installed())
                         {
@@ -71,13 +71,14 @@ namespace ElectronNET.CLI.Commands.Actions
                             netCorePublishRid = "osx-arm64";
                             electronPackerPlatform = "mac";
                         }
-                        else{
+                        else
+                        {
                             //Intel Mac:
                             netCorePublishRid = "osx-x64";
                             electronPackerPlatform = "mac";
                         }
                     }
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     {
                         netCorePublishRid = "linux-x64";
                         electronPackerPlatform = "linux";

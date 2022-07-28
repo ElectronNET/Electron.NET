@@ -95,8 +95,6 @@ namespace ElectronNET.API.Interfaces
         /// </summary>
         string Name
         {
-            [Obsolete("Use the asynchronous version NameAsync instead")]
-            get;
             set;
         }
 
@@ -108,7 +106,7 @@ namespace ElectronNET.API.Interfaces
         /// should usually also specify a productName field, which is your application's full capitalized name, and
         /// which will be preferred over name by Electron.
         /// </summary>
-        Task<string> NameAsync { get; }
+        Task<string> GetNameAsync { get; }
 
         /// <summary>
         /// A <see cref="CommandLine"/> object that allows you to read and manipulate the command line arguments that Chromium uses.
@@ -125,8 +123,6 @@ namespace ElectronNET.API.Interfaces
         /// </summary>
         string UserAgentFallback
         {
-            [Obsolete("Use the asynchronous version UserAgentFallbackAsync instead")]
-            get;
             set;
         }
 
@@ -138,7 +134,7 @@ namespace ElectronNET.API.Interfaces
         /// custom value as early as possible in your app's initialization to ensure that your overridden value
         /// is used.
         /// </summary>
-        Task<string> UserAgentFallbackAsync { get; }
+        Task<string> GetUserAgentFallbackAsync { get; }
 
         /// <summary>
         /// Emitted when a MacOS user wants to open a file with the application. The open-file event is usually emitted

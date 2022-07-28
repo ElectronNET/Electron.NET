@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>dotnet-electronize</AssemblyName>
     <ToolCommandName>electronize</ToolCommandName>
-
     <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
@@ -65,6 +65,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\desktopCapturer.js" Link="ElectronHost\api\desktopCapturer.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />

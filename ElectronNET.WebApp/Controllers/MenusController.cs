@@ -70,9 +70,11 @@ namespace ElectronNET.WebApp.Controllers
                     {
                         Label = "App Menu Demo",
                         Click = async () => {
-                            var options = new MessageBoxOptions("This demo is for the Menu section, showing how to create a clickable menu item in the application menu.");
-                            options.Type = MessageBoxType.info;
-                            options.Title = "Application Menu Demo";
+                            var options = new MessageBoxOptions("This demo is for the Menu section, showing how to create a clickable menu item in the application menu.") 
+                                                {
+                                                    Type = MessageBoxType.info,
+                                                    Title = "Application Menu Demo" 
+                                                };
                             await Electron.Dialog.ShowMessageBoxAsync(options);
                         }
                     }

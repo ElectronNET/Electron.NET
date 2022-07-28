@@ -14,15 +14,15 @@
     "dependencies": {
         "dasherize": "^2.0.0",
         "electron-updater": "^4.6.5",
-        "image-size": "^1.0.0",
+        "image-size": "^1.0.1",
         "portscanner": "^2.2.0",
         "socket.io": "^4.4.1"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.18.0",
         "@typescript-eslint/parser": "^5.18.0",
-        "electron": "^18.0.2",
+        "electron": "^19.0.9",
         "eslint": "^8.12.0",
-        "typescript": "^4.6.3"
+        "typescript": "^4.7.4"
     }
 }

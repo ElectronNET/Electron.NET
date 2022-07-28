@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Web;
 using ElectronNET.API.Interfaces;
@@ -16,7 +17,7 @@ namespace ElectronNET.API
     public sealed class Dialog : IDialog
     {
         private static Dialog _dialog;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Dialog() { }
 
@@ -159,12 +160,12 @@ namespace ElectronNET.API
 
             });
 
-            if (browserWindow == null)
+            if (browserWindow is null)
             {
-                BridgeConnector.Emit("showMessageBox", messageBoxOptions, guid);
+                BridgeConnector.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
             } else
             {
-                BridgeConnector.Emit("showMessageBox", browserWindow , messageBoxOptions, guid);
+                BridgeConnector.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
             }
 
             return taskCompletionSource.Task;
@@ -192,6 +193,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task ShowCertificateTrustDialogAsync(CertificateTrustDialogOptions options)
         {
             return ShowCertificateTrustDialogAsync(null, options);
@@ -205,6 +208,8 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -220,5 +225,12 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
+
+        private static readonly JsonSerializer _jsonSerializer = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
     }
 }

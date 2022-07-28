@@ -9,8 +9,8 @@ namespace ElectronNET.API
     internal class Events
     {
         private static Events _events;
-        private static object _syncRoot = new object();
-        private TextInfo _ti = new CultureInfo("en-US", false).TextInfo;
+        private static readonly object _syncRoot = new();
+        private readonly TextInfo _ti = new CultureInfo("en-US", false).TextInfo;
         private Events()
         {
 

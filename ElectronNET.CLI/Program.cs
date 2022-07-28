@@ -42,7 +42,7 @@ namespace ElectronNET.CLI
                     command = new AddCommand(args.Skip(1).ToArray());
                     break;
                 case VersionCommand.COMMAND_NAME:
-                    command = new VersionCommand(args.Skip(1).ToArray());
+                    command = new VersionCommand();
                     break;
                 case "--help":
                 case "--h":
@@ -90,27 +90,27 @@ namespace ElectronNET.CLI
             Console.WriteLine("\t");
             Console.WriteLine("Commands to start the Electron Application:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{StartElectronCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {StartElectronCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{StartElectronCommand.COMMAND_NAME,-NAME_WIDTH} {StartElectronCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("Command to build the Electron Application:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{BuildCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {BuildCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{BuildCommand.COMMAND_NAME,-NAME_WIDTH} {BuildCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("Command to init the Electron Application:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{InitCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {InitCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{InitCommand.COMMAND_NAME,-NAME_WIDTH} {InitCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("Command to add a custom npm packages to the Electron Application:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{AddCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {AddCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{AddCommand.COMMAND_NAME,-NAME_WIDTH} {AddCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("Commands to see the current ElectronNET version number:");
             Console.WriteLine("\t");
-            Console.WriteLine($"\t{VersionCommand.COMMAND_NAME.PadRight(NAME_WIDTH)} {VersionCommand.COMMAND_DESCRIPTION}");
+            Console.WriteLine($"\t{VersionCommand.COMMAND_NAME,-NAME_WIDTH} {VersionCommand.COMMAND_DESCRIPTION}");
 
             Console.WriteLine("\t");
             Console.WriteLine("\t");
@@ -172,7 +172,7 @@ namespace ElectronNET.CLI
                 StringBuilder stringBuilder = new StringBuilder();
                 if (option.ShortSwitch != null)
                 {
-                    stringBuilder.Append($"{option.ShortSwitch.PadRight(6)} | ");
+                    stringBuilder.Append($"{option.ShortSwitch,-6} | ");
                 }
 
                 stringBuilder.Append($"{option.Switch}");
@@ -184,7 +184,7 @@ namespace ElectronNET.CLI
                 stringBuilder.Append(option.Description);
 
 
-                Console.WriteLine($"{new string(' ', INDENT * 2)}{stringBuilder.ToString()}");
+                Console.WriteLine($"{new string(' ', INDENT * 2)}{stringBuilder}");
             }
         }
 

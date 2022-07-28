@@ -20,14 +20,20 @@ namespace ElectronNET.CLI
                 if (arg.StartsWith("/"))
                 {
                     if (currentName != "")
+                    {
                         Arguments[currentName] = values.ToArray();
+                    }
                     values.Clear();
                     currentName = arg.Substring(1);
                 }
                 else if (currentName == "")
-                    Arguments[arg] = new string[0];
+                {
+                    Arguments[arg] = Array.Empty<string>();
+                }
                 else
+                {
                     values.Add(arg);
+                }
             }
             if (currentName != "")
                 Arguments[currentName] = values.ToArray();

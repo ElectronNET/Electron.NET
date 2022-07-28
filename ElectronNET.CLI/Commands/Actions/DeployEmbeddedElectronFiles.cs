@@ -30,6 +30,7 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "globalShortcut.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "shell.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "screen.js", "api.");
+            EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "desktopCapturer.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "clipboard.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "autoUpdater.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserView.js", "api.");

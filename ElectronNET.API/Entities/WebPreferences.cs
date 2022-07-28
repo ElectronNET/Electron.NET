@@ -172,6 +172,12 @@ namespace ElectronNET.API.Entities
         public bool Offscreen { get; set; }
 
         /// <summary>
+        /// Whether to enable built-in spellcheck
+        /// </summary>
+        [DefaultValue(true)]
+        public bool Spellcheck { get; set; } = true;
+
+        /// <summary>
         /// Whether to run Electron APIs and the specified preload script in a separate
         /// JavaScript context. Defaults to false. The context that the preload script runs
         /// in will still have full access to the document and window globals but it will
@@ -190,11 +196,6 @@ namespace ElectronNET.API.Entities
         public bool ContextIsolation { get; set; } = false;
 
         /// <summary>
-        /// Whether to use native window.open(). Defaults to false. This option is currently experimental.
-        /// </summary>
-        public bool NativeWindowOpen { get; set; }
-
-        /// <summary>
         /// Whether to enable the Webview. Defaults to the value of the nodeIntegration option. The
         /// preload script configured for the Webview will have node integration enabled
         /// when it is executed so you should ensure remote/untrusted content is not able to
@@ -209,9 +210,9 @@ namespace ElectronNET.API.Entities
         public bool WebviewTag { get; set; } = false;
 
         /// <summary>
-        /// Whether to enable the remote module. Defaults to false.
+        /// Make the web view transparent
         /// </summary>
         [DefaultValue(false)]
-        public bool EnableRemoteModule { get; set; } = false;
+        public bool Transparent { get; set; } = false;
     }
 }

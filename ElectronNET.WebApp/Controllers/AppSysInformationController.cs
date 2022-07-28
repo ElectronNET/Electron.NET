@@ -11,28 +11,34 @@ namespace ElectronNET.WebApp.Controllers
         {
             if(HybridSupport.IsElectronActive)
             {
-                Electron.IpcMain.On("app-info", async (args) =>
+                Electron.IpcMain.OnWithId("app-info", async (info) =>
                 {
                     string appPath = await Electron.App.GetAppPathAsync();
 
-                    var mainWindow = Electron.WindowManager.BrowserWindows.First();
-                    Electron.IpcMain.Send(mainWindow, "got-app-path", appPath);
+                    if (Electron.WindowManager.TryGetBrowserWindows(info.browserId, out var window))
+                    {
+                        Electron.IpcMain.Send(window, "got-app-path", appPath);
+                    }
                 });
 
-                Electron.IpcMain.On("sys-info", async (args) =>
+                Electron.IpcMain.OnWithId("sys-info", async (info) =>
                 {
                     string homePath = await Electron.App.GetPathAsync(PathName.Home);
 
-                    var mainWindow = Electron.WindowManager.BrowserWindows.First();
-                    Electron.IpcMain.Send(mainWindow, "got-sys-info", homePath);
+                    if (Electron.WindowManager.TryGetBrowserWindows(info.browserId, out var window))
+                    {
+                        Electron.IpcMain.Send(window, "got-sys-info", homePath);
+                    }
                 });
 
-                Electron.IpcMain.On("screen-info", async (args) =>
+                Electron.IpcMain.OnWithId("screen-info", async (info) =>
                 {
                     var display = await Electron.Screen.GetPrimaryDisplayAsync();
 
-                    var mainWindow = Electron.WindowManager.BrowserWindows.First();
-                    Electron.IpcMain.Send(mainWindow, "got-screen-info", display.Size);
+                    if (Electron.WindowManager.TryGetBrowserWindows(info.browserId, out var window))
+                    {
+                        Electron.IpcMain.Send(window, "got-screen-info", display.Size);
+                    }
                 });
             }
 

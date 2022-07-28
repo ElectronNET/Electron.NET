@@ -6,7 +6,7 @@ let electronSocket;
 export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('register-tray-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('click', (event, bounds) => {
                 electronSocket.emit('tray-click-event' + id, {eventArgs: (<any>event).__proto__, bounds: bounds });
             });
@@ -14,7 +14,7 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-right-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('right-click', (event, bounds) => {
                 electronSocket.emit('tray-right-click-event' + id, { eventArgs: (<any>event).__proto__, bounds: bounds });
             });
@@ -22,15 +22,18 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-double-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('double-click', (event, bounds) => {
-                electronSocket.emit('tray-double-click-event' + id, { eventArgs: (<any>event).__proto__, bounds: bounds });
+                electronSocket.emit('tray-double-click-event' + id, {
+                    eventArgs: (<any>event).__proto__,
+                    bounds: bounds
+                });
             });
         }
     });
 
     socket.on('register-tray-balloon-show', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-show', () => {
                 electronSocket.emit('tray-balloon-show-event' + id);
             });
@@ -38,7 +41,7 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-balloon-click', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-click', () => {
                 electronSocket.emit('tray-balloon-click-event' + id);
             });
@@ -46,7 +49,7 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-balloon-closed', (id) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on('balloon-closed', () => {
                 electronSocket.emit('tray-balloon-closed-event' + id);
             });
@@ -69,38 +72,38 @@ export = (socket: Socket) => {
     });
 
     socket.on('tray-destroy', () => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.destroy();
         }
     });
 
     socket.on('tray-setImage', (image) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setImage(image);
         }
     });
 
     socket.on('tray-setPressedImage', (image) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             const img = nativeImage.createFromPath(image);
             tray.value.setPressedImage(img);
         }
     });
 
     socket.on('tray-setToolTip', (toolTip) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setToolTip(toolTip);
         }
     });
 
     socket.on('tray-setTitle', (title) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.setTitle(title);
         }
     });
 
     socket.on('tray-displayBalloon', (options) => {
-        if (tray.value) {
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.displayBalloon(options);
         }
     });
@@ -113,7 +116,7 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-on-event', (eventName, listenerName) => {
-        if (tray.value){
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.on(eventName, (...args) => {
                 if (args.length > 1) {
                     electronSocket.emit(listenerName, args[1]);
@@ -125,7 +128,7 @@ export = (socket: Socket) => {
     });
 
     socket.on('register-tray-once-event', (eventName, listenerName) => {
-        if (tray.value){
+        if (tray.value && !tray.value.isDestroyed()) {
             tray.value.once(eventName, (...args) => {
                 if (args.length > 1) {
                     electronSocket.emit(listenerName, args[1]);
@@ -143,7 +146,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

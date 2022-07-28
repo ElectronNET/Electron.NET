@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Interfaces;
 
@@ -18,7 +20,7 @@ namespace ElectronNET.API
     public sealed class WindowManager : IWindowManager
     {
         private static WindowManager _windowManager;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal WindowManager() { }
 
@@ -64,8 +66,18 @@ namespace ElectronNET.API
         /// <value>
         /// The browser windows.
         /// </value>
-        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.AsReadOnly(); } }
-        private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
+        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.Values.ToList().AsReadOnly(); } }
+
+        /// <summary>
+        /// Get a browser window using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser window</param>
+        /// <param name="window">The window, if any</param>
+        /// <returns>True if it found the window</returns>
+        public bool TryGetBrowserWindows(int id, out BrowserWindow window) => _browserWindows.TryGetValue(id, out window);
+
+
+        private readonly ConcurrentDictionary<int, BrowserWindow> _browserWindows = new ();
 
         /// <summary>
         /// Gets the browser views.
@@ -73,8 +85,16 @@ namespace ElectronNET.API
         /// <value>
         /// The browser view.
         /// </value>
-        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.AsReadOnly(); } }
-        private List<BrowserView> _browserViews = new List<BrowserView>();
+        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.Values.ToList().AsReadOnly(); } }
+        private readonly ConcurrentDictionary<int, BrowserView> _browserViews = new ();
+
+        /// <summary>
+        /// Get a browser view using the ID
+        /// </summary>
+        /// <param name="id">The id of the browser view</param>
+        /// <param name="view">The view, if any</param>
+        /// <returns>True if it found the view</returns>
+        public bool TryGetBrowserViews(int id, out BrowserView view) => _browserViews.TryGetValue(id, out view);
 
         /// <summary>
         /// Creates the window asynchronous.
@@ -92,90 +112,92 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "/")
+        public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
+            BootstrapUpdateOpenIDsEvent();
+
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            BridgeConnector.On<int>("BrowserWindowCreated", (id) =>
-            {
-                BridgeConnector.Off("BrowserWindowCreated");
+            var guid = Guid.NewGuid().ToString();
 
-                BrowserWindow browserWindow = new BrowserWindow(id);
-                _browserWindows.Add(browserWindow);
+            BridgeConnector.Once<int>("BrowserWindowCreated" + guid, (id) =>
+            {
+                var browserWindow = new BrowserWindow(id);
+
+                _browserWindows[id] = browserWindow;
 
                 taskCompletionSource.SetResult(browserWindow);
             });
 
-            BridgeConnector.Off("BrowserWindowClosed");
-            BridgeConnector.On<int[]>("BrowserWindowClosed", (browserWindowIds) =>
+            if (string.Equals(loadUrl, "HTTP://LOCALHOST", StringComparison.InvariantCultureIgnoreCase))
             {
-                for (int index = 0; index < _browserWindows.Count; index++)
-                {
-                    if (!browserWindowIds.Contains(_browserWindows[index].Id))
-                    {
-                        _browserWindows.RemoveAt(index);
-                    }
-                }
-            });
-
-            if(!TryParseLoadUrl(loadUrl, out loadUrl)) 
-            { 
-                throw new ArgumentException($"Unable to parse {loadUrl}", nameof(loadUrl));
+                loadUrl = $"{loadUrl}:{BridgeSettings.WebPort}";
             }
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
-            if (isWindows10())
+            if (IsWindows10())
             {
-                options.Width = options.Width + 14;
-                options.Height = options.Height + 7;
+                options.Width += 14;
+                options.Height += 7;
             }
 
             if (options.X == -1 && options.Y == -1)
             {
-                options.X = 0;
+                options.X = 0; //This is manually removed by the browserWindows.js code before creating the window
                 options.Y = 0;
 
-                BridgeConnector.Emit("createBrowserWindow", options, loadUrl);
+                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _keepDefaultValuesSerializer), loadUrl);
             }
             else
             {
                 // Workaround Windows 10 / Electron Bug
                 // https://github.com/electron/electron/issues/4045
-                if (isWindows10())
+                if (IsWindows10())
                 {
-                    options.X = options.X - 7;
+                    options.X -= 7;
                 }
 
-                var ownjsonSerializer = new JsonSerializer()
+                BridgeConnector.Emit("createBrowserWindow", guid, JObject.FromObject(options, _keepDefaultValuesSerializer), loadUrl);
+            }
+
+            return await taskCompletionSource.Task;
+        }
+
+
+        private bool _hasClosedEvent = false;
+        private readonly object _hasClosedEventLock  = new();
+        private void BootstrapUpdateOpenIDsEvent()
+        {
+            if (!_hasClosedEvent)
+            {
+                lock(_hasClosedEventLock)
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
-                };
-
-                BridgeConnector.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
+                    if(!_hasClosedEvent)
+                    {
+                        BridgeConnector.On<int[]>("BrowserWindowUpdateOpenIDs", (browserWindowIdsStillOpen) =>
+                        {
+                            if (browserWindowIdsStillOpen.Any())
+                            {
+                                foreach (var id in _browserWindows.Keys.ToArray())
+                                {
+                                    if (!browserWindowIdsStillOpen.Contains(id)) _browserWindows.TryRemove(id, out _);
+                                }
+                            }
+                            else
+                            {
+                                _browserWindows.Clear();
+                            }
+                        });
+                        _hasClosedEvent = true;
+                    }
+                }    
             }
-
-            return taskCompletionSource.Task;
         }
 
-        
-        private bool TryParseLoadUrl(string loadUrl, out string parsedUrl) 
+        private bool IsWindows10()
         {
-            Uri BaseUri = new Uri($"http://localhost:{BridgeSettings.WebPort}");
-            if (Uri.TryCreate(loadUrl, UriKind.Absolute, out var url) ||
-                Uri.TryCreate(BaseUri, loadUrl, out url)) {
-                var uri = new UriBuilder(url.ToString());
-                parsedUrl = uri.ToString();
-                return true;
-            }
-            parsedUrl = loadUrl;
-            return false;
-        }
-
-        private bool isWindows10()
-        {
-            return RuntimeInformation.OSDescription.Contains("Windows 10");
+            return OperatingSystem.IsWindowsVersionAtLeast(10);
         }
 
         /// <summary>
@@ -196,30 +218,41 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
+        public async Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
+            var guid = Guid.NewGuid().ToString();
+
             var taskCompletionSource = new TaskCompletionSource<BrowserView>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            BridgeConnector.On<int>("BrowserViewCreated", (id) =>
+            BridgeConnector.Once<int>("BrowserViewCreated" + guid, (id) =>
             {
-                BridgeConnector.Off("BrowserViewCreated");
-
-                BrowserView browserView = new BrowserView(id);
-
-                _browserViews.Add(browserView);
-
+                var browserView = new BrowserView(id);
+                _browserViews[id] = browserView;
                 taskCompletionSource.SetResult(browserView);
             });
 
-            var keepDefaultValuesSerializer = new JsonSerializer()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Include
-            };
-            BridgeConnector.Emit("createBrowserView", JObject.FromObject(options, keepDefaultValuesSerializer));
+            BridgeConnector.Emit("createBrowserView", guid, JObject.FromObject(options, _keepDefaultValuesSerializer));
 
-            return taskCompletionSource.Task;
+            return await taskCompletionSource.Task;
         }
+
+
+        /// <summary>
+        /// Destroy all windows.
+        /// </summary>
+        /// <returns>Number of windows destroyed</returns>
+        public async Task<int> DestroyAllWindows()
+        {
+            var destroyed = await BridgeConnector.OnResult<int>("browserWindowDestroyAll", "browserWindowDestroyAll-completed");
+            _browserViews.Clear();
+            _browserWindows.Clear();
+            return destroyed;
+        }
+
+        private static readonly JsonSerializer _keepDefaultValuesSerializer = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
     }
 }

@@ -1,7 +1,8 @@
 "use strict";
 const electron_updater_1 = require("electron-updater");
+const electron_1 = require("electron");
 let electronSocket;
-module.exports = (socket) => {
+module.exports = (socket, app) => {
     electronSocket = socket;
     socket.on('register-autoUpdater-error-event', (id) => {
         electron_updater_1.autoUpdater.on('error', (error) => {
@@ -100,7 +101,29 @@ module.exports = (socket) => {
         });
     });
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
-        electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        console.log('running autoUpdaterQuitAndInstall');
+        app.removeAllListeners("window-all-closed");
+        const windows = electron_1.BrowserWindow.getAllWindows();
+        if (windows && windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.removeAllListeners('close');
+                    w.removeAllListeners('closed');
+                    w.destroy();
+                }
+                catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
+        //The call to quitAndInstall needs to happen after the windows 
+        //get a chance to close and release resources, so it must be done on a timeout
+        setTimeout(() => {
+            console.log('running autoUpdater.quitAndInstall');
+            console.log('isSilent:' + isSilent);
+            console.log('isForceRunAfter:' + isForceRunAfter);
+            electron_updater_1.autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        }, 100);
     });
     socket.on('autoUpdaterDownloadUpdate', async (guid) => {
         const downloadedPath = await electron_updater_1.autoUpdater.downloadUpdate();

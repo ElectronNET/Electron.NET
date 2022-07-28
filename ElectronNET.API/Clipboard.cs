@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using ElectronNET.API.Interfaces;
 
@@ -13,7 +14,7 @@ namespace ElectronNET.API
     public sealed class Clipboard : IClipboard
     {
         private static Clipboard _clipboard;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Clipboard() { }
 
@@ -94,6 +95,8 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")] 
         public Task<ReadBookmark> ReadBookmarkAsync() => BridgeConnector.OnResult<ReadBookmark>("clipboard-readBookmark", "clipboard-readBookmark-Completed");
 
         /// <summary>
@@ -106,6 +109,8 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         /// <param name="url"></param>
         /// <param name="type"></param>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
         public void WriteBookmark(string title, string url, string type = "")
         {
             BridgeConnector.Emit("clipboard-writeBookmark", title, url, type);
@@ -117,6 +122,7 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
+        [SupportedOSPlatform("macos")] 
         public Task<string> ReadFindTextAsync() => BridgeConnector.OnResult<string>("clipboard-readFindText", "clipboard-readFindText-Completed");
 
         /// <summary>
@@ -124,6 +130,7 @@ namespace ElectronNET.API
         /// synchronous IPC when called from the renderer process.
         /// </summary>
         /// <param name="text"></param>
+        [SupportedOSPlatform("macos")]
         public void WriteFindText(string text)
         {
             BridgeConnector.Emit("clipboard-writeFindText", text);
@@ -152,7 +159,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void Write(Data data, string type = "")
         {
-            BridgeConnector.Emit("clipboard-write", data, type);
+            BridgeConnector.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
         }
 
         /// <summary>
@@ -171,5 +178,12 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
         }
+
+        private static readonly JsonSerializer _jsonSerializer = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
     }
 }

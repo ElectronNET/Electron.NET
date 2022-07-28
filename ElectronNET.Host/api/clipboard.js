@@ -46,6 +46,9 @@ module.exports = (socket) => {
         electronSocket.emit('clipboard-availableFormats-Completed', formats);
     });
     socket.on('clipboard-write', (data, type) => {
+        if (data.hasOwnProperty("image")) {
+            data["image"] = deserializeImage(data["image"]);
+        }
         electron_1.clipboard.write(data, type);
     });
     socket.on('clipboard-readImage', (type) => {
@@ -54,14 +57,19 @@ module.exports = (socket) => {
     });
     socket.on('clipboard-writeImage', (data, type) => {
         const dataContent = JSON.parse(data);
+        const image = deserializeImage(dataContent);
+        electron_1.clipboard.writeImage(image, type);
+    });
+    function deserializeImage(data) {
         const image = electron_1.nativeImage.createEmpty();
-        for (const key in dataContent) {
+        // tslint:disable-next-line: forin
+        for (const key in data) {
             const scaleFactor = key;
             const bytes = data[key];
             const buffer = Buffer.from(bytes, 'base64');
             image.addRepresentation({ scaleFactor: +scaleFactor, buffer: buffer });
         }
-        electron_1.clipboard.writeImage(image, type);
-    });
+        return image;
+    }
 };
 //# sourceMappingURL=clipboard.js.map

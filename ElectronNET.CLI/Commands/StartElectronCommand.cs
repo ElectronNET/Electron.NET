@@ -15,7 +15,7 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_ARGUMENTS = "<Path> from ASP.NET Core Project.";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private string[] _args;
+        private readonly string[] _args;
 
         public StartElectronCommand(string[] args)
         {

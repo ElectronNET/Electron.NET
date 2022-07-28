@@ -1,7 +1,7 @@
 "use strict";
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
-const fs = require("fs");
+const fs = require('fs');
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -141,7 +141,11 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, { cookie: cookie, cause: cause, removed: removed });
+            electronSocket.emit('webContents-session-cookies-changed' + id, {
+                cookie: cookie,
+                cause: cause,
+                removed: removed
+            });
         });
     });
     socket.on('webContents-session-cookies-get', async (id, filter, guid) => {

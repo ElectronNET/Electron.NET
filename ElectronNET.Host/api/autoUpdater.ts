@@ -1,8 +1,10 @@
-import { Socket } from 'net';
-import { autoUpdater } from 'electron-updater';
+import {Socket} from 'net';
+import {autoUpdater} from 'electron-updater';
+import {BrowserWindow} from 'electron';
+
 let electronSocket;
 
-export = (socket: Socket) => {
+export = (socket: Socket, app: Electron.App) => {
     electronSocket = socket;
 
     socket.on('register-autoUpdater-error-event', (id) => {
@@ -128,7 +130,30 @@ export = (socket: Socket) => {
     });
 
     socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
-        autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        console.log('running autoUpdaterQuitAndInstall');
+
+        app.removeAllListeners("window-all-closed");
+        const windows = BrowserWindow.getAllWindows();
+        if (windows && windows.length) {
+            windows.forEach(w => {
+                try {
+                    w.removeAllListeners('close');
+                    w.removeAllListeners('closed');
+                    w.destroy();
+                } catch {
+                    //ignore, probably already destroyed
+                }
+            });
+        }
+
+        //The call to quitAndInstall needs to happen after the windows 
+        //get a chance to close and release resources, so it must be done on a timeout
+        setTimeout(() => {
+            console.log('running autoUpdater.quitAndInstall');
+            console.log('isSilent:' + isSilent);
+            console.log('isForceRunAfter:' + isForceRunAfter);
+            autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+        }, 100);
     });
 
     socket.on('autoUpdaterDownloadUpdate', async (guid) => {

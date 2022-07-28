@@ -28,7 +28,7 @@ namespace ElectronNET.API.Extensions
 
         public static MenuItem GetMenuItem(this List<MenuItem> menuItems, string id)
         {
-            MenuItem result = new MenuItem();
+            MenuItem result = new();
 
             foreach (var item in menuItems)
             {

@@ -1,0 +1,84 @@
+variables:
+  PackageVersion: 19.0.9.$(Build.BuildId)
+  projectAPI:  './ElectronNET.API/ElectronNET.API.csproj'
+  projectCLI:  './ElectronNET.CLI/ElectronNET.CLI.csproj'
+
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- checkout: self
+  submodules: true
+  fetchDepth: 10
+
+- task: NuGetToolInstaller@1
+
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 6.0.100
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'restore nuget'
+  inputs:
+    command: 'restore'
+    projects: '$(projectAPI)'
+    
+- task: DotNetCoreCLI@2
+  displayName: 'restore nuget'
+  inputs:
+    command: 'restore'
+    projects: '$(projectCLI)'
+
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(projectAPI)'
+    arguments: '--configuration Release --force /property:Version=$(PackageVersion)'
+    
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(projectCLI)'
+    arguments: '--configuration Release --force /property:Version=$(PackageVersion)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(projectAPI)'
+    configuration: 'Release'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion)'
+    arguments: -IncludeReferencedProjects
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(projectCLI)'
+    configuration: 'Release'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion)'
+
+
+
+- task: NuGetCommand@2
+  displayName: 'push API to nuget'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/h5.ElectronNET.API.$(PackageVersion).nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'nuget-curiosity'
+
+- task: NuGetCommand@2
+  displayName: 'push CLI to nuget'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/h5.ElectronNET.CLI.$(PackageVersion).nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'nuget-curiosity'

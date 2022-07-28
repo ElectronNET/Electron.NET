@@ -7,7 +7,7 @@ namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
-        private static ConcurrentDictionary<Process, bool> _activeProcess = new();
+        private static readonly ConcurrentDictionary<Process, bool> _activeProcess = new();
 
         public static void KillActive()
         {

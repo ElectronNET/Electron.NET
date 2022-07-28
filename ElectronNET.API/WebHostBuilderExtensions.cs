@@ -23,7 +23,7 @@ namespace ElectronNET.API
                 if (argument.ToUpper().Contains("ELECTRONPORT"))
                 {
                     BridgeSettings.SocketPort = argument.ToUpper().Replace("/ELECTRONPORT=", "");
-                    Console.WriteLine("Use Electron Port: " + BridgeSettings.SocketPort);
+                    BridgeConnector.Log("Use Electron Port: " + BridgeSettings.SocketPort);
                 }
                 else if (argument.ToUpper().Contains("ELECTRONWEBPORT"))
                 {

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
 using ElectronNET.API.Interfaces;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API
 {
@@ -14,7 +15,7 @@ namespace ElectronNET.API
     public sealed class Shell : IShell
     {
         private static Shell _shell;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Shell() { }
 
@@ -94,6 +95,7 @@ namespace ElectronNET.API
         /// <param name="url">Max 2081 characters on windows.</param>
         /// <param name="options">Controls the behavior of OpenExternal.</param>
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
+
         public Task<string> OpenExternalAsync(string url, OpenExternalOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -142,6 +144,7 @@ namespace ElectronNET.API
         /// <param name="operation">Default is <see cref="ShortcutLinkOperation.Create"/></param>
         /// <param name="options">Structure of a shortcut.</param>
         /// <returns>Whether the shortcut was created successfully.</returns>
+        [SupportedOSPlatform("windows")]
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
             return BridgeConnector.OnResult<bool>("shell-writeShortcutLink", "shell-writeShortcutLinkCompleted", shortcutPath, operation.GetDescription(), options);
@@ -153,6 +156,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="shortcutPath">The path tot the shortcut.</param>
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
+        [SupportedOSPlatform("windows")]
         public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
             return BridgeConnector.OnResult<ShortcutDetails>("shell-readShortcutLink", "shell-readShortcutLinkCompleted", shortcutPath);
