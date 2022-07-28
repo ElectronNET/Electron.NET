@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronNET.API.Interfaces;
+using ElectronNET.API;
 
 namespace ElectronNET.API
 {
@@ -17,14 +18,14 @@ namespace ElectronNET.API
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
-        public Task<bool> IsAutoDownloadEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoDownload-get", "autoUpdater-autoDownload-get-reply");
+        public Task<bool> IsAutoDownloadEnabledAsync => BridgeConnector.OnResult<bool>("autoUpdater-autoDownload-get", "autoUpdater-autoDownload-get-reply");
 
         /// <summary>
         /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
         /// 
         /// Applicable only on Windows and Linux.
         /// </summary>
-        public Task<bool> IsAutoInstallOnAppQuitEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-autoInstallOnAppQuit-get", "autoUpdater-autoInstallOnAppQuit-get-reply");
+        public Task<bool> IsAutoInstallOnAppQuitEnabledAsync => BridgeConnector.OnResult<bool>("autoUpdater-autoInstallOnAppQuit-get", "autoUpdater-autoInstallOnAppQuit-get-reply");
 
         /// <summary>
         /// *GitHub provider only.* Whether to allow update to pre-release versions. 
@@ -32,17 +33,16 @@ namespace ElectronNET.API
         /// 
         /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
         /// </summary>
-        public Task<bool> IsAllowPrereleaseEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowPrerelease-get", "autoUpdater-allowPrerelease-get-reply");
+        public Task<bool> IsAllowPrereleaseEnabledAsync => BridgeConnector.OnResult<bool>("autoUpdater-allowPrerelease-get", "autoUpdater-allowPrerelease-get-reply");
 
         /// <summary>
         /// *GitHub provider only.* 
         /// Get all release notes (from current version to latest), not just the latest (Default is false).
         /// </summary>
-        public Task<bool> IsFullChangeLogEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-fullChangelog-get", "autoUpdater-fullChangelog-get-reply");
+        public Task<bool> IsFullChangeLogEnabledAsync => BridgeConnector.OnResult<bool>("autoUpdater-fullChangelog-get", "autoUpdater-fullChangelog-get-reply");
 
-        public Task<bool> IsAllowDowngradeEnabledAsync() => BridgeConnector.OnResult<bool>("autoUpdater-allowDowngrade-get", "autoUpdater-allowDowngrade-get-reply");
+        public Task<bool> IsAllowDowngradeEnabledAsync => BridgeConnector.OnResult<bool>("autoUpdater-allowDowngrade-get", "autoUpdater-allowDowngrade-get-reply");
         
-
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
@@ -109,23 +109,23 @@ namespace ElectronNET.API
         /// <summary>
         /// For test only.
         /// </summary>
-        public Task<string> GetUpdateConfigPathAsync() => BridgeConnector.OnResult<string>("autoUpdater-updateConfigPath-get", "autoUpdater-updateConfigPath-get-reply");
+        public Task<string> GetUpdateConfigPathAsync => BridgeConnector.OnResult<string>("autoUpdater-updateConfigPath-get", "autoUpdater-updateConfigPath-get-reply");
 
         /// <summary>
         /// The current application version
         /// </summary>
-        public Task<SemVer> GetCurrentVersionAsync() => BridgeConnector.OnResult<SemVer>("autoUpdater-updateConcurrentVersionfigPath-get", "autoUpdater-currentVersion-get-reply");
+        public Task<SemVer> GetCurrentVersionAsync => BridgeConnector.OnResult<SemVer>("autoUpdater-updateConcurrentVersionfigPath-get", "autoUpdater-currentVersion-get-reply");
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
-        public Task<string> GetChannelAsync() => BridgeConnector.OnResult<string>("autoUpdater-channel-get", "autoUpdater-channel-get-reply");
+        public Task<string> GetChannelAsync => BridgeConnector.OnResult<string>("autoUpdater-channel-get", "autoUpdater-channel-get-reply");
 
         /// <summary>
         /// The request headers.
         /// </summary>
-        public Task<Dictionary<string, string>> GetRequestHeadersAsync() => BridgeConnector.OnResult<Dictionary<string, string>>("autoUpdater-requestHeaders-get", "autoUpdater-requestHeaders-get-reply");
+        public Task<Dictionary<string, string>> GetRequestHeadersAsync => BridgeConnector.OnResult<Dictionary<string, string>>("autoUpdater-requestHeaders-get", "autoUpdater-requestHeaders-get-reply");
 
         /// <summary>
         /// The request headers.
@@ -314,7 +314,7 @@ namespace ElectronNET.API
         private event Action<UpdateInfo> _updateDownloaded;
 
         private static AutoUpdater _autoUpdater;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal AutoUpdater() { }
 
@@ -427,6 +427,7 @@ namespace ElectronNET.API
         /// <param name="isForceRunAfter">Run the app after finish even on silent install. Not applicable for macOS. Ignored if `isSilent` is set to `false`.</param>
         public void QuitAndInstall(bool isSilent = false, bool isForceRunAfter = false)
         {
+            BridgeConnector.EmitSync("prepare-for-update");
             BridgeConnector.EmitSync("autoUpdaterQuitAndInstall", isSilent, isForceRunAfter);
         }
 

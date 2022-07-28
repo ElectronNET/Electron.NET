@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Nito.AsyncEx;
 using SocketIOClient;
-using SocketIOClient.JsonSerializer;
 using SocketIOClient.Newtonsoft.Json;
 
 namespace ElectronNET.API
@@ -46,7 +44,7 @@ namespace ElectronNET.API
                         return true; //Was added, so we need to also register the socket events
                     }
 
-                    if(_eventKeys.TryGetValue(key, out var existingEventKey) && existingEventKey == eventKey)
+                    if (_eventKeys.TryGetValue(key, out var existingEventKey) && existingEventKey == eventKey)
                     {
                         waitThisFirstAndThenTryAgain = null;
                         return false; //No need to register the socket events twice
@@ -86,26 +84,63 @@ namespace ElectronNET.API
 
         private static SocketIO _socket;
 
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
+
+        private static readonly SemaphoreSlim _socketSemaphoreEmit = new(1, 1);
+        private static readonly SemaphoreSlim _socketSemaphoreHandlers = new(1, 1);
+
+        private static AsyncManualResetEvent _connectedSocketEvent = new AsyncManualResetEvent();
+
+        private static Dictionary<string, Action<SocketIOResponse>> _eventHandlers = new();
+
+        private static Task<SocketIO> _waitForConnection
+        {
+            get
+            {
+                EnsureSocketTaskIsCreated();
+                return GetSocket();
+            }
+        }
+
+        private static async Task<SocketIO> GetSocket()
+        {
+            await _connectedSocketEvent.WaitAsync();
+            return _socket;
+        }
+
+        public static bool IsConnected => _waitForConnection is Task task && task.IsCompletedSuccessfully;
 
         public static void Emit(string eventString, params object[] args)
         {
             //We don't care about waiting for the event to be emitted, so this doesn't need to be async 
 
-            Task.Run(async () =>
+            Task.Run(() => EmitAsync(eventString, args));
+        }
+
+        private static async Task EmitAsync(string eventString, object[] args)
+        {
+            if (App.SocketDebug)
             {
-                if (App.SocketDebug)
-                {
-                    Console.WriteLine($"Sending event {eventString}");
-                }
+                Log("Sending event {0}", eventString);
+            }
 
-                await Socket.EmitAsync(eventString, args);
+            var socket = await _waitForConnection;
 
-                if (App.SocketDebug)
-                {
-                    Console.WriteLine($"Sent event {eventString}");
-                }
-            });
+            await _socketSemaphoreEmit.WaitAsync();
+
+            try
+            {
+                await socket.EmitAsync(eventString, args);
+            }
+            finally
+            {
+                _socketSemaphoreEmit.Release();
+            }
+
+            if (App.SocketDebug)
+            {
+                Log($"Sent event {eventString}");
+            }
         }
 
         /// <summary>
@@ -117,30 +152,128 @@ namespace ElectronNET.API
         {
             if (App.SocketDebug)
             {
-                Console.WriteLine($"Sending event {eventString}");
+                Log("Sending event {0}", eventString);
             }
 
-            Socket.EmitAsync(eventString, args).Wait();
+            Task.Run(async () =>
+            {
+                var socket = await _waitForConnection;
+                try
+                {
+                    await _socketSemaphoreEmit.WaitAsync();
+                    await socket.EmitAsync(eventString, args);
+                }
+                finally
+                {
+                    _socketSemaphoreEmit.Release();
+                }
+            }).Wait();
+
 
             if (App.SocketDebug)
             {
-                Console.WriteLine($"Sent event {eventString}");
+                Log("Sent event {0}", eventString);
             }
         }
 
         public static void Off(string eventString)
         {
-            Socket.Off(eventString);
+            EnsureSocketTaskIsCreated();
+
+            _socketSemaphoreHandlers.Wait();
+            try
+            {
+                if (_eventHandlers.ContainsKey(eventString))
+                {
+                    _eventHandlers.Remove(eventString);
+                }
+
+                _socket.Off(eventString);
+            }
+            finally
+            {
+                _socketSemaphoreHandlers.Release();
+            }
         }
 
         public static void On(string eventString, Action fn)
         {
-            Socket.On(eventString, _ => fn());
+            EnsureSocketTaskIsCreated();
+
+            _socketSemaphoreHandlers.Wait();
+            try
+            {
+                if (_eventHandlers.ContainsKey(eventString))
+                {
+                    _eventHandlers.Remove(eventString);
+                }
+
+                _eventHandlers.Add(eventString, _ =>
+                {
+                    try
+                    {
+                        fn();
+                    }
+                    catch (Exception E)
+                    {
+                        LogError(E, "Error running handler for event {0}", eventString);
+                    }
+                });
+
+                _socket.On(eventString, _eventHandlers[eventString]);
+            }
+            finally
+            {
+                _socketSemaphoreHandlers.Release();
+            }
         }
 
         public static void On<T>(string eventString, Action<T> fn)
         {
-            Socket.On(eventString, (o) => fn(o.GetValue<T>(0)));
+            EnsureSocketTaskIsCreated();
+
+            _socketSemaphoreHandlers.Wait();
+            try
+            {
+                if (_eventHandlers.ContainsKey(eventString))
+                {
+                    _eventHandlers.Remove(eventString);
+                }
+
+                _eventHandlers.Add(eventString, o =>
+                {
+                    try
+                    {
+                        fn(o.GetValue<T>(0));
+                    }
+                    catch (Exception E)
+                    {
+                        LogError(E, "Error running handler for event {0}", eventString);
+                    }
+                });
+
+                _socket.On(eventString, _eventHandlers[eventString]);
+            }
+            finally
+            {
+                _socketSemaphoreHandlers.Release();
+            }
+        }
+
+        private static void RehookHandlers(SocketIO newSocket)
+        {
+            _socketSemaphoreHandlers.Wait();
+            try
+            {
+                foreach (var kv in _eventHandlers)
+                {
+                    newSocket.On(kv.Key, kv.Value);
+                }
+            }
+            finally
+            {
+                _socketSemaphoreHandlers.Release();
+            }
         }
 
         public static void Once<T>(string eventString, Action<T> fn)
@@ -160,7 +293,7 @@ namespace ElectronNET.API
                                                    // this allow us to wait for previous events first before registering new ones
             {
                 var hash = new HashCode();
-                foreach(var obj in args)
+                foreach (var obj in args)
                 {
                     hash.Add(obj);
                 }
@@ -196,7 +329,7 @@ namespace ElectronNET.API
                         EventTasks<T>.DoneWith(completedEvent, eventKey, taskCompletionSource);
                     });
 
-                    Emit(triggerEvent, args);
+                    await EmitAsync(triggerEvent, args);
                 }
             }
 
@@ -257,165 +390,161 @@ namespace ElectronNET.API
 
             return await taskCompletionSource.Task;
         }
-        private static SocketIO Socket
-        {
-            get
-            {
-                if (_socket is null)
-                {
-                    if (HybridSupport.IsElectronActive)
-                    {
 
-                        lock (_syncRoot)
+        internal static void Log(string formatString, params object[] args)
+        {
+            if (Logger is object)
+            {
+                Logger.LogInformation(formatString, args);
+            }
+            else
+            {
+                Console.WriteLine(formatString, args);
+            }
+        }
+
+        internal static void LogError(Exception E, string formatString, params object[] args)
+        {
+            if (Logger is object)
+            {
+                Logger.LogError(E, formatString, args);
+            }
+            else
+            {
+                Console.WriteLine(formatString, args);
+                Console.WriteLine(E.ToString());
+            }
+        }
+
+        private static Thread _backgroundMonitorThread;
+
+        private static void EnsureSocketTaskIsCreated()
+        {
+            if (_socket is null)
+            {
+                if (string.IsNullOrWhiteSpace(AuthKey))
+                {
+                    throw new Exception("You must call Electron.ReadAuth() first thing on your main entry point.");
+                }
+
+                if (HybridSupport.IsElectronActive)
+                {
+                    lock (_syncRoot)
+                    {
+                        if (_socket is null)
                         {
-                            if (_socket is null && HybridSupport.IsElectronActive)
+                            if (HybridSupport.IsElectronActive)
                             {
                                 var socket = new SocketIO($"http://localhost:{BridgeSettings.SocketPort}", new SocketIOOptions()
                                 {
-                                    EIO = 3
+                                    EIO = 4,
+                                    Reconnection = true,
+                                    ReconnectionAttempts = int.MaxValue,
+                                    ReconnectionDelay = 500,
+                                    ReconnectionDelayMax = 2000,
+                                    RandomizationFactor = 0.5,
+                                    ConnectionTimeout = TimeSpan.FromSeconds(10),
+                                    Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
                                 });
 
-                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer(socket.Options.EIO);
+                                socket.JsonSerializer = new CamelCaseNewtonsoftJsonSerializer();
 
+                                _connectedSocketEvent.Reset();
 
                                 socket.OnConnected += (_, __) =>
                                 {
-                                    Console.WriteLine("BridgeConnector connected!");
+                                    Task.Run(async () =>
+                                    {
+                                        await socket.EmitAsync("auth", AuthKey);
+                                        _connectedSocketEvent.Set();
+                                        Log("ElectronNET socket {1} connected on port {0}!", BridgeSettings.SocketPort, socket.Id);
+                                    });
                                 };
 
-                                socket.ConnectAsync().Wait();
+                                socket.OnReconnectAttempt += (_, __) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} is trying to reconnect on port {0}...", BridgeSettings.SocketPort, socket.Id);
+                                };
+
+                                socket.OnReconnectError += (_, ex) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} failed to connect {0}", ex, socket.Id);
+                                };
+
+
+                                socket.OnReconnectFailed += (_, ex) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} failed to reconnect {0}", ex, socket.Id);
+                                };
+
+                                socket.OnReconnected += (_, __) =>
+                                {
+                                    _connectedSocketEvent.Set();
+                                    Log("ElectronNET socket {1} reconnected on port {0}...", BridgeSettings.SocketPort, socket.Id);
+                                };
+
+                                socket.OnDisconnected += (_, reason) =>
+                                {
+                                    _connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {2} disconnected with reason {0}, trying to reconnect on port {1}!", reason, BridgeSettings.SocketPort, socket.Id);
+                                };
+
+                                socket.OnError += (_, msg) =>
+                                {
+                                    //_connectedSocketEvent.Reset();
+                                    Log("ElectronNET socket {1} error: {0}...", msg, socket.Id);
+                                };
 
                                 _socket = socket;
+
+                                Task.Run(async () =>
+                                {
+                                    try
+                                    {
+                                        await socket.ConnectAsync();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.ToString());
+
+                                        if (!App.TryRaiseOnSocketConnectFail())
+                                        {
+                                            Environment.Exit(0xDEAD);
+                                        }
+                                    }
+                                });
+
+                                RehookHandlers(socket);
+                            }
+                            else
+                            {
+                                throw new Exception("Missing Socket Port");
                             }
                         }
                     }
-                    else
-                    {
-                        throw new Exception("Missing Socket Port");
-                    }
                 }
-
-                return _socket;
+                else
+                {
+                    throw new Exception("Missing Socket Port");
+                }
             }
         }
+
+        internal static ILogger<App> Logger { private get; set; }
+        internal static string AuthKey { get; set; } = null;
 
         private class CamelCaseNewtonsoftJsonSerializer : NewtonsoftJsonSerializer
         {
-            public CamelCaseNewtonsoftJsonSerializer(int eio) : base(eio)
+            public CamelCaseNewtonsoftJsonSerializer() : base()
             {
-            }
-
-            public override JsonSerializerSettings CreateOptions()
-            {
-                return new JsonSerializerSettings()
+                OptionsProvider = () => new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore,
-                    DefaultValueHandling = DefaultValueHandling.Ignore
                 };
-            }
-        }
-        public static async Task<T> GetValueOverSocketAsync<T>(string eventString, string eventCompletedString)
-        {
-            CancellationToken cancellationToken = new();
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<T>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On(eventCompletedString, (value) =>
-                {
-                    BridgeConnector.Socket.Off(eventCompletedString);
-
-                    if (value == null)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') returned null. Socket loop hang.");
-                        taskCompletionSource.SetCanceled();
-                        return;
-                    }
-
-                    try
-                    {
-                        taskCompletionSource.SetResult( new JValue(value).ToObject<T>() );
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') exception: {e.Message}. Socket loop hung.");
-                    }
-                });
-
-                await BridgeConnector.Socket.EmitAsync(eventString);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
-
-        public static async Task<T> GetObjectOverSocketAsync<T>(string eventString, string eventCompletedString)
-        {
-            CancellationToken cancellationToken = new();
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<T>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On(eventCompletedString, (value) =>
-                {
-                    BridgeConnector.Socket.Off(eventCompletedString);
-
-                    if (value == null)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') returned null. Socket loop hang.");
-                        taskCompletionSource.SetCanceled();
-                        return;
-                    }
-
-                    try
-                    {
-                        taskCompletionSource.SetResult( ((JObject)value).ToObject<T>() );
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') exception: {e.Message}. Socket loop hung.");
-                    }
-                });
-
-                await BridgeConnector.Socket.EmitAsync(eventString);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
-
-        public static async Task<T> GetArrayOverSocketAsync<T>(string eventString, string eventCompletedString)
-        {
-            CancellationToken cancellationToken = new();
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var taskCompletionSource = new TaskCompletionSource<T>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
-            {
-                BridgeConnector.Socket.On(eventCompletedString, (value) =>
-                {
-                    BridgeConnector.Socket.Off(eventCompletedString);
-                    if (value == null)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') returned null. Socket loop hang.");
-                        taskCompletionSource.SetCanceled();
-                        return;
-                    }
-
-                    try
-                    {
-                        taskCompletionSource.SetResult(((JArray)value).ToObject<T>() );
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"ERROR: BridgeConnector (event: '{eventString}') exception: {e.Message}. Socket loop hung.");
-                    }
-                });
-
-                await BridgeConnector.Socket.EmitAsync(eventString);
-
-                return await taskCompletionSource.Task.ConfigureAwait(false);
             }
         }
     }

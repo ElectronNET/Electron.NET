@@ -16,7 +16,7 @@ namespace ElectronNET.API
     public sealed class Notification : INotification
     {
         private static Notification _notification;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Notification() { }
 
@@ -39,7 +39,7 @@ namespace ElectronNET.API
             }
         }
 
-        private static List<NotificationOptions> _notificationOptions = new List<NotificationOptions>();
+        private static readonly List<NotificationOptions> _notificationOptions = new();
 
         /// <summary>
         /// Create OS desktop notifications
@@ -49,7 +49,7 @@ namespace ElectronNET.API
         {
             GenerateIDsForDefinedActions(notificationOptions);
 
-            BridgeConnector.Emit("createNotification", notificationOptions);
+            BridgeConnector.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
         }
 
         private static void GenerateIDsForDefinedActions(NotificationOptions notificationOptions)
@@ -135,5 +135,12 @@ namespace ElectronNET.API
 
             return taskCompletionSource.Task;
         }
+
+        private static readonly JsonSerializer _jsonSerializer = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
     }
 }

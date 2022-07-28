@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Quobject.SocketIoClientDotNet.Client;
 
 namespace ElectronNET.API
 {
@@ -13,15 +11,11 @@ namespace ElectronNET.API
     {
         public LifetimeServiceHost(IHostApplicationLifetime lifetime)
         {
-            lifetime.ApplicationStarted.Register(async () =>
+            lifetime.ApplicationStarted.Register(() =>
             {
-                // wait till the socket is open before setting app to ready
-                while(BridgeConnector.Socket.Io().ReadyState != Manager.ReadyStateEnum.OPEN) {
-                    await Task.Delay(50).ConfigureAwait(false);
-                }
-
                 App.Instance.IsReady = true;
-                Console.WriteLine("ASP.NET Core host has fully started.");
+
+                BridgeConnector.Log("ASP.NET Core host has fully started.");
             });
         }
 

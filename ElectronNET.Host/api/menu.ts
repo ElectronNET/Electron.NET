@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { Menu, BrowserWindow } from 'electron';
+import {Socket} from 'net';
+import {BrowserWindow, Menu} from 'electron';
+
 const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 let electronSocket;
 
@@ -33,7 +34,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id, browserWindowId); };
+                item.click = () => {
+                    callback(item.id, browserWindowId);
+                };
             }
         });
     }
@@ -64,7 +67,9 @@ export = (socket: Socket) => {
             }
 
             if ('id' in item && item.id) {
-                item.click = () => { callback(item.id); };
+                item.click = () => {
+                    callback(item.id);
+                };
             }
         });
     }

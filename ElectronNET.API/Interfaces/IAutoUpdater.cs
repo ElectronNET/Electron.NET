@@ -13,14 +13,26 @@ namespace ElectronNET.API.Interfaces
         /// <summary>
         /// Whether to automatically download an update when it is found. (Default is true)
         /// </summary>
-        bool AutoDownload { get; set; }
+        bool AutoDownload { set; }
+
+        /// <summary>
+        /// Whether to automatically download an update when it is found. (Default is true)
+        /// </summary>
+        Task<bool> IsAutoDownloadEnabledAsync { get; }
 
         /// <summary>
         /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
         /// 
         /// Applicable only on Windows and Linux.
         /// </summary>
-        bool AutoInstallOnAppQuit { get; set; }
+        bool AutoInstallOnAppQuit { set; }
+
+        /// <summary>
+        /// Whether to automatically install a downloaded update on app quit (if `QuitAndInstall` was not called before).
+        /// 
+        /// Applicable only on Windows and Linux.
+        /// </summary>
+        Task<bool> IsAutoInstallOnAppQuitEnabledAsync { get; }
 
         /// <summary>
         /// *GitHub provider only.* Whether to allow update to pre-release versions. 
@@ -28,47 +40,57 @@ namespace ElectronNET.API.Interfaces
         /// 
         /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
         /// </summary>
-        bool AllowPrerelease { get; set; }
+        bool AllowPrerelease { set; }
+
+        /// <summary>
+        /// *GitHub provider only.* Whether to allow update to pre-release versions. 
+        /// Defaults to "true" if application version contains prerelease components (e.g. "0.12.1-alpha.1", here "alpha" is a prerelease component), otherwise "false".
+        /// 
+        /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
+        /// </summary>
+        Task<bool> IsAllowPrereleaseEnabledAsync { get; }
 
         /// <summary>
         /// *GitHub provider only.* 
         /// Get all release notes (from current version to latest), not just the latest (Default is false).
         /// </summary>
-        bool FullChangelog { get; set; }
+        bool FullChangelog { set; }
+
+        /// <summary>
+        /// *GitHub provider only.* 
+        /// Get all release notes (from current version to latest), not just the latest (Default is false).
+        /// </summary>
+        Task<bool> IsFullChangeLogEnabledAsync { get; }
 
         /// <summary>
         /// Whether to allow version downgrade (when a user from the beta channel wants to go back to the stable channel).
         /// Taken in account only if channel differs (pre-release version component in terms of semantic versioning).
         /// Default is false.
         /// </summary>
-        bool AllowDowngrade { get; set; }
+        bool AllowDowngrade { set; }
+
+        Task<bool> IsAllowDowngradeEnabledAsync { get; }
 
         /// <summary>
         /// For test only.
         /// </summary>
-        string UpdateConfigPath { get; }
+        Task<string> GetUpdateConfigPathAsync { get; }
 
         /// <summary>
         /// The current application version
         /// </summary>
-        Task<SemVer> CurrentVersionAsync { get; }
+        Task<SemVer> GetCurrentVersionAsync { get; }
 
         /// <summary>
         /// Get the update channel. Not applicable for GitHub. 
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
-        string Channel { get; }
-
-        /// <summary>
-        /// Get the update channel. Not applicable for GitHub. 
-        /// Doesn’t return channel from the update configuration, only if was previously set.
-        /// </summary>
-        Task<string> ChannelAsync { get; }
+        Task<string> GetChannelAsync { get; }
 
         /// <summary>
         /// The request headers.
         /// </summary>
-        Task<Dictionary<string, string>> RequestHeadersAsync { get; }
+        Task<Dictionary<string, string>> GetRequestHeadersAsync { get; }
 
         /// <summary>
         /// The request headers.

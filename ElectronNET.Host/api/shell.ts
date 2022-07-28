@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { shell } from 'electron';
+import {Socket} from 'net';
+import {shell} from 'electron';
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -39,7 +40,7 @@ export = (socket: Socket) => {
             await shell.trashItem(fullPath);
             success = true;
         } catch (error) {
-            success = false;    
+            success = false;
         }
 
         electronSocket.emit('shell-trashItem-completed', success);

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace ElectronNET.WebApp
 {
@@ -43,11 +44,11 @@ namespace ElectronNET.WebApp
 
             if (HybridSupport.IsElectronActive)
             {
-                Electron.App.Ready += () => ElectronBootstrap();
+                Task.Run(() => ElectronBootstrap());
             }
         }
 
-        public async void ElectronBootstrap()
+        public async Task ElectronBootstrap()
         {
             //AddDevelopmentTests();
 

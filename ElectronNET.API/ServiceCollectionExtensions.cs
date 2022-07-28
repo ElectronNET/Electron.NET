@@ -31,7 +31,6 @@ namespace ElectronNET.API
                 .AddSingleton(provider => PowerMonitor.Instance)
                 .AddSingleton(provider => NativeTheme.Instance)
                 .AddSingleton(provider => Dock.Instance)
-                .AddSingleton(provider => new ApplicationSocket { Socket = BridgeConnector.Socket, })
                 // this set for proper dependency injection
                 .AddSingleton<IIpcMain>(_ => IpcMain.Instance)
                 .AddSingleton<IApp>(_ => App.Instance)
@@ -48,8 +47,6 @@ namespace ElectronNET.API
                 .AddSingleton<IHostHook>(_ => HostHook.Instance)
                 .AddSingleton<IPowerMonitor>(_ => PowerMonitor.Instance)
                 .AddSingleton<INativeTheme>(_ => NativeTheme.Instance)
-                .AddSingleton<IDock>(_ => Dock.Instance)
-                .AddSingleton<IProcess>(_ => Process.Instance)
-                .AddSingleton<IApplicationSocket>(provider => provider.GetService<ApplicationSocket>());
+                .AddSingleton<IDock>(_ => Dock.Instance);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System;
+
+namespace ElectronNET.API.Entities
 {
     public class JumpListSettings
     {
@@ -13,6 +15,6 @@
         /// in the Jump List. These items must not be re-added to the Jump List in the next call to <see cref="App.SetJumpList"/>, Windows will
         /// not display any custom category that contains any of the removed items.
         /// </summary>
-        public JumpListItem[] RemovedItems { get; set; } = new JumpListItem[0];
+        public JumpListItem[] RemovedItems { get; set; } = Array.Empty<JumpListItem>();
     }
 }

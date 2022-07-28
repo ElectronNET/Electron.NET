@@ -1,4 +1,7 @@
 ﻿using ElectronNET.API.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API
 {
@@ -46,16 +49,26 @@ namespace ElectronNET.API
         /// <summary>
         /// Message to display above text fields.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string Message { get; set; }
 
         /// <summary>
         /// Custom label for the text displayed in front of the filename text field.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string NameFieldLabel { get; set; }
 
         /// <summary>
         /// Show the tags input box, defaults to true.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool ShowsTagField { get; set; }
+
+        /// <summary>
+        /// Contains which features the dialog should use. The following values are supported:
+        /// 'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'
+        /// </summary>
+        [JsonProperty("properties", ItemConverterType = typeof(StringEnumConverter))]
+        public SaveDialogProperty[] Properties { get; set; }
     }
 }

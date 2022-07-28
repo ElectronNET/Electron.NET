@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
 
@@ -9,6 +10,8 @@ namespace ElectronNET.CLI.Commands
 {
     public class BuildCommand : ICommand
     {
+        private const string _defaultElectronVersion = "19.0.9";
+
         public const string COMMAND_NAME = "build";
         public const string COMMAND_DESCRIPTION = "Build your Electron Application.";
         public static string COMMAND_ARGUMENTS = "Needed: '/target' with params 'win/osx/linux' to build for a typical app or use 'custom' and specify .NET Core build config & electron build config" + Environment.NewLine +
@@ -32,7 +35,7 @@ namespace ElectronNET.CLI.Commands
 
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-        private string[] _args;
+        private readonly string[] _args;
 
         public BuildCommand(string[] args)
         {
@@ -193,21 +196,45 @@ namespace ElectronNET.CLI.Commands
 
                 
                 string electronArch = "x64";
-                //Somewhat janky fix for Apple Silicon:
-                if (platformInfo.NetCorePublishRid == "osx-arm64")
+
+                if (platformInfo.NetCorePublishRid == "osx-arm64") //Apple Silicon Mac
                 {
-                    electronArch = "arm64";
+                    electronArch = "arm64"; 
                 }
+                
                 if (parser.Arguments.ContainsKey(_paramElectronArch))
                 {
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
-                string electronVersion = "13.1.5";
+                var electronVersion = "";
                 if (parser.Arguments.ContainsKey(_paramElectronVersion))
                 {
                     electronVersion = parser.Arguments[_paramElectronVersion][0];
                 }
+                else
+                {
+                    //try getting version from project
+                    foreach(var projectFile in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csproj"))
+                    {
+                        var projectXML = File.ReadAllText(projectFile);
+                        var match = Regex.Match(projectXML, @"<PackageReference\s+Include=""h5\.ElectronNET\.API""\s+Version=""([0-9\.]+)""\s+\/>");
+                        if (match.Success)
+                        {
+                            var candidate = match.Groups[1].Value;
+                            var majorMinorRevision = string.Join(".",candidate.Split(new char[] { '.' }).Take(3));
+                            electronVersion = majorMinorRevision;
+                            Console.WriteLine($"Found electron version {majorMinorRevision} in project file {projectFile}");
+                            break;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(electronVersion))
+                {
+                    electronVersion = _defaultElectronVersion;
+                }
+
 
                 string electronParams = "";
                 if (parser.Arguments.ContainsKey(_paramElectronParams))

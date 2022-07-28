@@ -28,4 +28,11 @@ namespace ElectronNET.API.Entities
         /// </summary>
         customButtonsOnHover
     }
+
+    public class TitleBarOverlayConfig
+    {
+        public string color { get; set; }
+        public string symbolColor { get; set; }
+        public int height { get; set; }
+    }
 }

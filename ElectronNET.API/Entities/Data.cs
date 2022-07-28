@@ -34,5 +34,7 @@
         /// The title of the url at text.
         /// </summary>
         public string Bookmark { get; set; }
+        
+        public NativeImage? Image { get; set; }
     }
 }

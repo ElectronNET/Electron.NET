@@ -15,7 +15,7 @@ namespace ElectronNET.API
     public sealed class IpcMain : IIpcMain
     {
         private static IpcMain _ipcMain;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal IpcMain() { }
 
@@ -38,6 +38,8 @@ namespace ElectronNET.API
             }
         }
 
+        public static bool IsConnected => BridgeConnector.IsConnected;
+
         /// <summary>
         ///  Listens to channel, when a new message arrives listener would be called with 
         ///  listener(event, args...).
@@ -48,11 +50,11 @@ namespace ElectronNET.API
         {
             BridgeConnector.Emit("registerIpcMainChannel", channel);
             BridgeConnector.Off(channel);
-            BridgeConnector.On<object[]>(channel, (args) => 
+            BridgeConnector.On<object[]>(channel, (args) =>
             {
                 var objectArray = FormatArguments(args);
 
-                if(objectArray.Count == 1)
+                if (objectArray.Count == 1)
                 {
                     listener(objectArray.First());
                 }
@@ -61,6 +63,38 @@ namespace ElectronNET.API
                     listener(objectArray);
                 }
             });
+        }
+
+        /// <summary>
+        ///  Listens to channel, when a new message arrives listener would be called with 
+        ///  listener(event, args...). This listner will keep the window event sender id
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void OnWithId(string channel, Action<(int browserId, int webContentId, object arguments)> listener)
+        {
+            BridgeConnector.Emit("registerIpcMainChannelWithId", channel);
+            BridgeConnector.Off(channel);
+            BridgeConnector.On<ArgsAndIds>(channel, (data) =>
+            {
+                var objectArray = FormatArguments(data.args);
+
+                if (objectArray.Count == 1)
+                {
+                    listener((data.id, data.wcId, objectArray.First()));
+                }
+                else
+                {
+                    listener((data.id, data.wcId, objectArray));
+                }
+            });
+        }
+
+        private class ArgsAndIds
+        {
+            public int  id { get; set; }
+            public int wcId { get; set; }
+            public object[] args { get; set; }
         }
 
         private List<object> FormatArguments(object[] objectArray)
@@ -106,7 +140,7 @@ namespace ElectronNET.API
         public void Once(string channel, Action<object> listener)
         {
             BridgeConnector.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.On<object[]>(channel, (args) =>
+            BridgeConnector.Once<object[]>(channel, (args) =>
             {
                 var objectArray = FormatArguments(args);
 
@@ -141,32 +175,29 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            var objectsWithCorrectSerialization = new List<object>
+            {
+                browserWindow.Id,
+                channel
+            };
 
             foreach (var parameterObject in data)
             {
                 if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
-                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                    objectsWithCorrectSerialization.Add(JArray.FromObject(parameterObject, _jsonSerializer));
+                } 
+                else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
-                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                    objectsWithCorrectSerialization.Add(JObject.FromObject(parameterObject, _jsonSerializer));
+                } 
+                else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
-                    objects.Add(parameterObject);
+                    objectsWithCorrectSerialization.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
-            {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
-            }
-            else
-            {
-                BridgeConnector.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
-            }
+            BridgeConnector.Emit("sendToIpcRenderer", objectsWithCorrectSerialization.ToArray());
         }
 
         /// <summary>
@@ -180,9 +211,9 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserView browserView, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            List<JObject> jobjects = new();
+            List<JArray> jarrays = new();
+            List<object> objects = new();
 
             foreach (var parameterObject in data)
             {
@@ -229,7 +260,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("console-stderr", text);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

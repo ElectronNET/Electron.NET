@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
@@ -13,10 +14,11 @@ namespace ElectronNET.API
     /// <summary>
     /// Control your app in the macOS dock.
     /// </summary>
+    [SupportedOSPlatform("macos")]
     public sealed class Dock : IDock
     {
         private static Dock _dock;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Dock()
         {
@@ -131,7 +133,7 @@ namespace ElectronNET.API
         /// The menu items.
         /// </value>
         public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Sets the application's dock menu.
@@ -164,7 +166,7 @@ namespace ElectronNET.API
             BridgeConnector.Emit("dock-setIcon", image);
         }
 
-        private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+        private static readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore

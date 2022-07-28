@@ -1,7 +1,8 @@
-import { Socket } from 'net';
-import { BrowserWindow, BrowserView } from 'electron';
-import { browserViewMediateService } from './browserView';
-import * as fs from 'fs';
+import {Socket} from 'net';
+import {BrowserView, BrowserWindow} from 'electron';
+import {browserViewMediateService} from './browserView';
+
+const fs = require('fs');
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -181,7 +182,11 @@ export = (socket: Socket) => {
 
         browserWindow.webContents.session.cookies.removeAllListeners('changed');
         browserWindow.webContents.session.cookies.on('changed', (event, cookie, cause, removed) => {
-            electronSocket.emit('webContents-session-cookies-changed' + id, { cookie: cookie, cause: cause, removed: removed });
+            electronSocket.emit('webContents-session-cookies-changed' + id, {
+                cookie: cookie,
+                cause: cause,
+                removed: removed
+            });
         });
     });
 
@@ -263,7 +268,7 @@ export = (socket: Socket) => {
 
     socket.on('webContents-session-loadExtension', async (id, path, allowFileAccess = false) => {
         const browserWindow = getWindowById(id);
-        const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
+        const extension = await browserWindow.webContents.session.loadExtension(path, {allowFileAccess: allowFileAccess});
 
         electronSocket.emit('webContents-session-loadExtension-completed' + id, extension);
     });

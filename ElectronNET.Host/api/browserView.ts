@@ -1,5 +1,6 @@
-import { Socket } from 'net';
-import { BrowserView } from 'electron';
+import {Socket} from 'net';
+import {BrowserView} from 'electron';
+
 const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
 let browserView: BrowserView, electronSocket;
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
@@ -7,9 +8,9 @@ const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCrede
 const browserViewApi = (socket: Socket) => {
     electronSocket = socket;
 
-    socket.on('createBrowserView', (options) => {
+    socket.on('createBrowserView', (guid, options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
-            options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
+            options = {...options, webPreferences: {nodeIntegration: true, contextIsolation: false}};
         }
 
         browserView = new BrowserView(options);
@@ -25,7 +26,7 @@ const browserViewApi = (socket: Socket) => {
 
         browserViews.push(browserView);
 
-        electronSocket.emit('BrowserViewCreated', browserView['id']);
+        electronSocket.emit('BrowserViewCreated' + guid, browserView['id']);
     });
 
     socket.on('browserView-getBounds', (id) => {
@@ -71,4 +72,4 @@ function getBrowserViewById(id: number) {
     }
 }
 
-export { browserViewApi, browserViewMediateService };
+export {browserViewApi, browserViewMediateService};

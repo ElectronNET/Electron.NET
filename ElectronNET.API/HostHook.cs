@@ -17,8 +17,8 @@ namespace ElectronNET.API
     public sealed class HostHook : IHostHook
     {
         private static HostHook _electronHostHook;
-        private static object _syncRoot = new object();
-        string oneCallguid = Guid.NewGuid().ToString();
+        private static readonly object _syncRoot = new();
+        readonly string oneCallguid = Guid.NewGuid().ToString();
 
         internal HostHook() { }
 

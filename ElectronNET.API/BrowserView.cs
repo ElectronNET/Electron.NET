@@ -33,6 +33,10 @@ namespace ElectronNET.API
         /// </summary>
         public Task<Rectangle> GetBoundsAsync() => BridgeConnector.OnResult<Rectangle>("browserView-getBounds", "browserView-getBounds-reply" + Id, Id);
 
+        /// <summary>
+        /// Set the bounds of the current view inside the window
+        /// </summary>
+        /// <param name="value"></param>
         public void SetBounds(Rectangle value)
         {
             BridgeConnector.Emit("browserView-setBounds", Id, value);

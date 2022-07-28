@@ -1,23 +1,30 @@
 "use strict";
 let isQuitWindowAllClosed = true, electronSocket;
 let appWindowAllClosedEventId;
-module.exports = (socket, app) => {
+module.exports = (socket, app, firstTime) => {
     electronSocket = socket;
-    // By default, quit when all windows are closed
-    app.on('window-all-closed', () => {
-        // On macOS it is common for applications and their menu bar
-        // to stay active until the user quits explicitly with Cmd + Q
-        if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
-            app.quit();
-        }
-        else if (appWindowAllClosedEventId) {
-            // If the user is on macOS
-            // - OR -
-            // If the user has indicated NOT to quit when all windows are closed,
-            // emit the event.
-            electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
-        }
-    });
+    if (firstTime) {
+        // By default, quit when all windows are closed
+        app.on('window-all-closed', () => {
+            // On macOS it is common for applications and their menu bar
+            // to stay active until the user quits explicitly with Cmd + Q
+            if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
+                app.quit();
+            }
+            else if (appWindowAllClosedEventId) {
+                // If the user is on macOS
+                // - OR -
+                // If the user has indicated NOT to quit when all windows are closed,
+                // emit the event.
+                electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
+            }
+        });
+        app.on('activate', () => {
+            // On macOS it's common to re-create a window in the app when the
+            // dock icon is clicked and there are no other windows open.
+            electronSocket.emit('app-activate');
+        });
+    }
     socket.on('quit-app-window-all-closed-event', (quit) => {
         isQuitWindowAllClosed = quit;
     });

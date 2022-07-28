@@ -15,7 +15,10 @@ module.exports = (socket) => {
     });
     socket.on('register-screen-display-metrics-changed', (id) => {
         electron_1.screen.on('display-metrics-changed', (event, display, changedMetrics) => {
-            electronSocket.emit('screen-display-metrics-changed-event' + id, { display: display, changedMetrics: changedMetrics });
+            electronSocket.emit('screen-display-metrics-changed-event' + id, {
+                display: display,
+                changedMetrics: changedMetrics
+            });
         });
     });
     socket.on('screen-getCursorScreenPoint', () => {
@@ -35,11 +38,23 @@ module.exports = (socket) => {
         electronSocket.emit('screen-getAllDisplaysCompleted', display);
     });
     socket.on('screen-getDisplayNearestPoint', (point) => {
-        const display = electron_1.screen.getDisplayNearestPoint(point);
+        let display;
+        try {
+            display = electron_1.screen.getDisplayNearestPoint(point);
+        }
+        catch {
+            display = electron_1.screen.getPrimaryDisplay();
+        }
         electronSocket.emit('screen-getDisplayNearestPointCompleted', display);
     });
     socket.on('screen-getDisplayMatching', (rectangle) => {
-        const display = electron_1.screen.getDisplayMatching(rectangle);
+        let display;
+        try {
+            display = electron_1.screen.getDisplayMatching(rectangle);
+        }
+        catch {
+            display = electron_1.screen.getPrimaryDisplay();
+        }
         electronSocket.emit('screen-getDisplayMatchingCompleted', display);
     });
 };

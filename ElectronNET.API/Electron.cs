@@ -1,10 +1,51 @@
-﻿namespace ElectronNET.API
+﻿using Microsoft.Extensions.Logging;
+using System.Runtime.Versioning;
+using System;
+using System.Collections.Generic;
+
+namespace ElectronNET.API
 {
     /// <summary>
     /// The Electron.NET API
     /// </summary>
-    public static class Electron
+    public static partial class Electron
     {
+        private static ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// Reads the auth key from the command line. This method must be called first thing.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        public static void ReadAuth()
+        {
+            if (!string.IsNullOrEmpty(BridgeConnector.AuthKey))
+            {
+                throw new Exception($"Don't call ReadAuth twice or from with {nameof(Experimental)}.{nameof(Experimental.StartElectronForDevelopment)}");
+            }
+
+            var line = Console.ReadLine();
+
+            if(line.StartsWith("Auth="))
+            {
+                BridgeConnector.AuthKey = line.Substring("Auth=".Length);
+            }
+            else
+            {
+                throw new Exception("The call to Electron.ReadAuth must be the first thing your app entry point does");
+            }
+        }
+
+        /// <summary>
+        /// Sets the logger factory to be used by Electron, if any
+        /// </summary>
+        public static ILoggerFactory LoggerFactory
+        {
+            private get => loggerFactory; set
+            {
+                loggerFactory = value;
+                BridgeConnector.Logger = value.CreateLogger<App>();
+            }
+        }
         /// <summary>
         /// Communicate asynchronously from the main process to renderer processes.
         /// </summary>
@@ -61,6 +102,11 @@
         public static Screen Screen { get { return Screen.Instance; } }
 
         /// <summary>
+        /// Access information about media sources that can be used to capture audio and video from the desktop using the navigator.mediaDevices.getUserMedia API.
+        /// </summary>
+        public static DesktopCapturer DesktopCapturer { get { return DesktopCapturer.Instance; } }
+
+        /// <summary>
         /// Perform copy and paste operations on the system clipboard.
         /// </summary>
         public static Clipboard Clipboard { get { return Clipboard.Instance; } }
@@ -87,11 +133,7 @@
         /// <summary>
         /// Control your app in the macOS dock.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public static Dock Dock { get { return Dock.Instance; } }
-
-        /// <summary>
-        /// Electeon extensions to the Nodejs process object.
-        /// </summary>
-        public static Process Process { get { return Process.Instance; } }
     }
 }

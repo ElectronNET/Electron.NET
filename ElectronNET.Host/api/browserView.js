@@ -7,7 +7,7 @@ let browserView, electronSocket;
 const proxyToCredentialsMap = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []);
 const browserViewApi = (socket) => {
     electronSocket = socket;
-    socket.on('createBrowserView', (options) => {
+    socket.on('createBrowserView', (guid, options) => {
         if (!hasOwnChildreen(options, 'webPreferences', 'nodeIntegration')) {
             options = { ...options, webPreferences: { nodeIntegration: true, contextIsolation: false } };
         }
@@ -20,7 +20,7 @@ const browserViewApi = (socket) => {
             proxyToCredentialsMap[options.proxy] = options.proxyCredentials;
         }
         browserViews.push(browserView);
-        electronSocket.emit('BrowserViewCreated', browserView['id']);
+        electronSocket.emit('BrowserViewCreated' + guid, browserView['id']);
     });
     socket.on('browserView-getBounds', (id) => {
         const bounds = getBrowserViewById(id).getBounds();

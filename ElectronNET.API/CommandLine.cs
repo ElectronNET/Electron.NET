@@ -8,7 +8,7 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class CommandLine
     {
-        internal CommandLine() { }
+        private CommandLine() { }
 
         internal static CommandLine Instance
         {
@@ -31,7 +31,7 @@ namespace ElectronNET.API
 
         private static CommandLine _commandLine;
 
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         /// <summary>
         /// Append a switch (with optional value) to Chromium's command line.
