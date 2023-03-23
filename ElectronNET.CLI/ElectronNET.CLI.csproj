@@ -68,6 +68,8 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\browserView.js" Link="ElectronHost\api\browserView.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\powerMonitor.js" Link="ElectronHost\api\powerMonitor.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\api\nativeTheme.js" Link="ElectronHost\api\nativeTheme.js" />
+    <EmbeddedResource Include="..\ElectronNET.Host\.vscode\launch.json" Link="ElectronHost\.vscode\launch.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\.vscode\tasks.json" Link="ElectronHost\.vscode\tasks.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">

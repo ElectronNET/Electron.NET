@@ -10,11 +10,20 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "package.json");
             EmbeddedFileHelper.DeployEmbeddedFile(tempPath, "build-helper.js");
 
+            string vscodeFolder = Path.Combine(tempPath, ".vscode");
+            if (Directory.Exists(vscodeFolder) == false)
+            {
+                Directory.CreateDirectory(vscodeFolder);
+            }
+            EmbeddedFileHelper.DeployEmbeddedFile(vscodeFolder, "launch.json", ".vscode.");
+            EmbeddedFileHelper.DeployEmbeddedFile(vscodeFolder, "tasks.json", ".vscode.");
+
             string hostApiFolder = Path.Combine(tempPath, "api");
             if (Directory.Exists(hostApiFolder) == false)
             {
                 Directory.CreateDirectory(hostApiFolder);
             }
+
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "ipc.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "app.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserWindows.js", "api.");
