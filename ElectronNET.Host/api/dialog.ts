@@ -1,6 +1,6 @@
 import { Socket } from 'net';
 import { BrowserWindow, dialog } from 'electron';
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
     electronSocket = socket;

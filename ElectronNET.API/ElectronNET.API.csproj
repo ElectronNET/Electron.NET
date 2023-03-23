@@ -4,7 +4,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
-    <Authors>Gregor Biswanger, Robert Muehsig</Authors>
+    <Authors>Gregor Biswanger, Florian Rappl</Authors>
     <Company />
     <Product>Electron.NET</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -37,7 +37,9 @@ This package contains the API to access the "native" electron API.</Description>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SocketIoClientDotNet" Version="1.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SocketIOClient" Version="3.0.8" />
+    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="3.0.7" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
       <PrivateAssets>all</PrivateAssets>

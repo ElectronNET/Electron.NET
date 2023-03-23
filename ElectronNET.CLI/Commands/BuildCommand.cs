@@ -198,7 +198,7 @@ namespace ElectronNET.CLI.Commands
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=13.1.5 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=23.1.3 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

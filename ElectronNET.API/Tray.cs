@@ -23,7 +23,7 @@ namespace ElectronNET.API
             {
                 if (_click == null)
                 {
-                    BridgeConnector.Socket.On("tray-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.Socket.On<dynamic>("tray-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -55,7 +55,7 @@ namespace ElectronNET.API
             {
                 if (_rightClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-right-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.Socket.On<dynamic>("tray-right-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -87,7 +87,7 @@ namespace ElectronNET.API
             {
                 if (_doubleClick == null)
                 {
-                    BridgeConnector.Socket.On("tray-double-click-event" + GetHashCode(), (result) =>
+                    BridgeConnector.Socket.On<dynamic>("tray-double-click-event" + GetHashCode(), (result) =>
                     {
                         var args = ((JArray)result).ToObject<object[]>();
                         var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
@@ -182,7 +182,7 @@ namespace ElectronNET.API
                     {
                         _balloonClosed();
                     });
-
+                    
                     BridgeConnector.Socket.Emit("register-tray-balloon-closed", GetHashCode());
                 }
                 _balloonClosed += value;
@@ -201,7 +201,7 @@ namespace ElectronNET.API
         // TODO: Implement macOS Events
 
         private static Tray _tray;
-        private static object _syncRoot = new object();
+        private static readonly object _syncRoot = new();
 
         internal Tray() { }
 
@@ -230,17 +230,18 @@ namespace ElectronNET.API
         /// <value>
         /// The menu items.
         /// </value>
-        public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
-        private List<MenuItem> _items = new List<MenuItem>();
+        public IReadOnlyCollection<MenuItem> MenuItems => _items.AsReadOnly();
+
+        private readonly List<MenuItem> _items = new();
 
         /// <summary>
         /// Shows the Traybar.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="menuItem">The menu item.</param>
-        public void Show(string image, MenuItem menuItem)
+        public async Task Show(string image, MenuItem menuItem)
         {
-            Show(image, new MenuItem[] { menuItem });
+            await Show(image, new MenuItem[] { menuItem });
         }
 
         /// <summary>
@@ -248,17 +249,17 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="menuItems">The menu items.</param>
-        public void Show(string image, MenuItem[] menuItems)
+        public async Task Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            await BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
             _items.Clear();
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("trayMenuItemClicked");
-            BridgeConnector.Socket.On("trayMenuItemClicked", (id) =>
+            BridgeConnector.Socket.On<string>("trayMenuItemClicked", (id) =>
             {
-                MenuItem menuItem = _items.GetMenuItem(id.ToString());
+                MenuItem menuItem = _items.GetMenuItem(id);
                 menuItem?.Click();
             });
         }
@@ -267,17 +268,17 @@ namespace ElectronNET.API
         /// Shows the Traybar (empty).
         /// </summary>
         /// <param name="image">The image.</param>
-        public void Show(string image)
+        public async Task Show(string image)
         {
-            BridgeConnector.Socket.Emit("create-tray", image);
+            await BridgeConnector.Socket.Emit("create-tray", image);
         }
 
         /// <summary>
         /// Destroys the tray icon immediately.
         /// </summary>
-        public void Destroy()
+        public async Task Destroy()
         {
-            BridgeConnector.Socket.Emit("tray-destroy");
+            await BridgeConnector.Socket.Emit("tray-destroy");
             _items.Clear();
         }
 
@@ -285,68 +286,68 @@ namespace ElectronNET.API
         /// Sets the image associated with this tray icon.
         /// </summary>
         /// <param name="image"></param>
-        public void SetImage(string image)
+        public async Task SetImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setImage", image);
+            await BridgeConnector.Socket.Emit("tray-setImage", image);
         }
 
         /// <summary>
         /// Sets the image associated with this tray icon when pressed on macOS.
         /// </summary>
         /// <param name="image"></param>
-        public void SetPressedImage(string image)
+        public async Task SetPressedImage(string image)
         {
-            BridgeConnector.Socket.Emit("tray-setPressedImage", image);
+            await BridgeConnector.Socket.Emit("tray-setPressedImage", image);
         }
 
         /// <summary>
         /// Sets the hover text for this tray icon.
         /// </summary>
         /// <param name="toolTip"></param>
-        public void SetToolTip(string toolTip)
+        public async Task SetToolTip(string toolTip)
         {
-            BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
+            await BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
         }
 
         /// <summary>
         /// macOS: Sets the title displayed aside of the tray icon in the status bar.
         /// </summary>
         /// <param name="title"></param>
-        public void SetTitle(string title)
+        public async Task SetTitle(string title)
         {
-            BridgeConnector.Socket.Emit("tray-setTitle", title);
+            await BridgeConnector.Socket.Emit("tray-setTitle", title);
         }
 
         /// <summary>
         /// Windows: Displays a tray balloon.
         /// </summary>
         /// <param name="options"></param>
-        public void DisplayBalloon(DisplayBalloonOptions options)
+        public async Task DisplayBalloon(DisplayBalloonOptions options)
         {
-            BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+            await BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>
         /// Whether the tray icon is destroyed.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsDestroyedAsync()
+        public async Task<bool> IsDestroyedAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("tray-isDestroyedCompleted", (isDestroyed) =>
+            BridgeConnector.Socket.On<bool>("tray-isDestroyedCompleted", (isDestroyed) =>
             {
                 BridgeConnector.Socket.Off("tray-isDestroyedCompleted");
 
-                taskCompletionSource.SetResult((bool)isDestroyed);
+                taskCompletionSource.SetResult(isDestroyed);
             });
 
-            BridgeConnector.Socket.Emit("tray-isDestroyed");
+            await BridgeConnector.Socket.Emit("tray-isDestroyed");
 
-            return taskCompletionSource.Task;
+            return await taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
@@ -357,29 +358,29 @@ namespace ElectronNET.API
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public void On(string eventName, Action action)
+            => Events.Instance.On(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public async Task On<T>(string eventName, Action<T> action)
+            => await Events.Instance.On(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public void Once(string eventName, Action action)
+            => Events.Instance.Once(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public async Task Once<T>(string eventName, Action<T> action)
+            => await Events.Instance.Once(ModuleName, eventName, action);
     }
 }

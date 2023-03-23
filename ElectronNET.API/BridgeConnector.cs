@@ -1,38 +1,27 @@
-﻿using Quobject.SocketIoClientDotNet.Client;
-using System;
-
-namespace ElectronNET.API
+﻿namespace ElectronNET.API
 {
     internal static class BridgeConnector
     {
-        private static Socket _socket;
-        private static object _syncRoot = new object();
+        private static SocketIoFacade _socket;
+        private static readonly object SyncRoot = new();
 
-        public static Socket Socket
+        public static SocketIoFacade Socket
         {
             get
             {
-                if(_socket == null && HybridSupport.IsElectronActive)
+                if (_socket == null)
                 {
-                    lock (_syncRoot)
+                    lock (SyncRoot)
                     {
-                        if (_socket == null && HybridSupport.IsElectronActive)
+                        if (_socket == null)
                         {
-                            _socket = IO.Socket("http://localhost:" + BridgeSettings.SocketPort);
-                            _socket.On(Socket.EVENT_CONNECT, () =>
-                            {
-                                Console.WriteLine("BridgeConnector connected!");
-                            });
-                        }
-                    }
-                }
-                else if(_socket == null && !HybridSupport.IsElectronActive)
-                {
-                    lock (_syncRoot)
-                    {
-                        if (_socket == null && !HybridSupport.IsElectronActive)
-                        {
-                            _socket = IO.Socket(new Uri("http://localhost"), new IO.Options { AutoConnect = false });
+
+                            string socketUrl = HybridSupport.IsElectronActive
+                                ? $"http://localhost:{BridgeSettings.SocketPort}"
+                                : "http://localhost";
+
+                            _socket = new SocketIoFacade(socketUrl);
+                            _socket.Connect();
                         }
                     }
                 }

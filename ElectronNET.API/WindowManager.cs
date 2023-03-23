@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace ElectronNET.API
     public sealed class WindowManager
     {
         private static WindowManager _windowManager;
-        private static object _syncRoot = new object();
+        private static readonly object SyncRoot = new();
 
         internal WindowManager() { }
 
@@ -26,7 +27,7 @@ namespace ElectronNET.API
             {
                 if (_windowManager == null)
                 {
-                    lock (_syncRoot)
+                    lock (SyncRoot)
                     {
                         if (_windowManager == null)
                         {
@@ -47,7 +48,7 @@ namespace ElectronNET.API
         /// </value>
         public bool IsQuitOnWindowAllClosed
         {
-            get { return _isQuitOnWindowAllClosed; }
+            get => _isQuitOnWindowAllClosed;
             set
             {
                 BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
@@ -62,8 +63,9 @@ namespace ElectronNET.API
         /// <value>
         /// The browser windows.
         /// </value>
-        public IReadOnlyCollection<BrowserWindow> BrowserWindows { get { return _browserWindows.AsReadOnly(); } }
-        private List<BrowserWindow> _browserWindows = new List<BrowserWindow>();
+        public IReadOnlyCollection<BrowserWindow> BrowserWindows => _browserWindows.AsReadOnly();
+
+        private readonly List<BrowserWindow> _browserWindows = new();
 
         /// <summary>
         /// Gets the browser views.
@@ -71,8 +73,9 @@ namespace ElectronNET.API
         /// <value>
         /// The browser view.
         /// </value>
-        public IReadOnlyCollection<BrowserView> BrowserViews { get { return _browserViews.AsReadOnly(); } }
-        private List<BrowserView> _browserViews = new List<BrowserView>();
+        public IReadOnlyCollection<BrowserView> BrowserViews => _browserViews.AsReadOnly();
+
+        private readonly List<BrowserView> _browserViews = new();
 
         /// <summary>
         /// Creates the window asynchronous.
@@ -90,7 +93,7 @@ namespace ElectronNET.API
         /// <param name="options">The options.</param>
         /// <param name="loadUrl">The load URL.</param>
         /// <returns></returns>
-        public Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
+        public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
 
@@ -98,16 +101,18 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("BrowserWindowCreated");
 
-                string windowId = id.ToString();
-                BrowserWindow browserWindow = new BrowserWindow(int.Parse(windowId));
+                var browserWindowId = int.Parse(id.ToString()!);
+
+                var browserWindow = new BrowserWindow(browserWindowId);
                 _browserWindows.Add(browserWindow);
 
                 taskCompletionSource.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.Off("BrowserWindowClosed");
-            BridgeConnector.Socket.On("BrowserWindowClosed", (ids) =>
+            BridgeConnector.Socket.On<object>("BrowserWindowClosed", (ids) =>
             {
+                BridgeConnector.Socket.Off("BrowserWindowClosed");
+
                 var browserWindowIds = ((JArray)ids).ToObject<int[]>();
 
                 for (int index = 0; index < _browserWindows.Count; index++)
@@ -126,10 +131,10 @@ namespace ElectronNET.API
 
             // Workaround Windows 10 / Electron Bug
             // https://github.com/electron/electron/issues/4045
-            if (isWindows10())
+            if (IsWindows10())
             {
-                options.Width = options.Width + 14;
-                options.Height = options.Height + 7;
+                options.Width += 14;
+                options.Height += 7;
             }
 
             if (options.X == -1 && options.Y == -1)
@@ -137,15 +142,15 @@ namespace ElectronNET.API
                 options.X = 0;
                 options.Y = 0;
 
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
+                await BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, _jsonSerializer), loadUrl);
             }
             else
             {
                 // Workaround Windows 10 / Electron Bug
                 // https://github.com/electron/electron/issues/4045
-                if (isWindows10())
+                if (IsWindows10())
                 {
-                    options.X = options.X - 7;
+                    options.X -= 7;
                 }
 
                 var ownjsonSerializer = new JsonSerializer()
@@ -153,13 +158,13 @@ namespace ElectronNET.API
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     NullValueHandling = NullValueHandling.Ignore
                 };
-                BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
+                await BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl);
             }
 
-            return taskCompletionSource.Task;
+            return await taskCompletionSource.Task;
         }
 
-        private bool isWindows10()
+        private bool IsWindows10()
         {
             return RuntimeInformation.OSDescription.Contains("Windows 10");
         }
@@ -182,7 +187,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
+        public async Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserView>();
 
@@ -203,12 +208,12 @@ namespace ElectronNET.API
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };
-            BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
+            await BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
 
-            return taskCompletionSource.Task;
+            return await taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
+        private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore,

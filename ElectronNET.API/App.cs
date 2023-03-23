@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ElectronNET.API
 {
@@ -1614,29 +1615,29 @@ namespace ElectronNET.API
         /// Subscribe to an unmapped event on the <see cref="App"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public void On(string eventName, Action action)
+            => Events.Instance.On(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void On(string eventName, Action<object> fn)
-            => Events.Instance.On(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public async Task On(string eventName, Action<object> action)
+            => await Events.Instance.On(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public void Once(string eventName, Action action)
+            => Events.Instance.Once(ModuleName, eventName, action);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="fn">The handler</param>
-        public void Once(string eventName, Action<object> fn)
-            => Events.Instance.Once(ModuleName, eventName, fn);
+        /// <param name="action">The handler</param>
+        public async Task Once(string eventName, Action<object> action)
+            => await Events.Instance.Once(ModuleName, eventName, action);
     }
 }

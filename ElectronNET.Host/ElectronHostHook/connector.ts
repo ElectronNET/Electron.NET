@@ -1,5 +1,7 @@
+import { Socket } from 'socket.io';
+
 export class Connector {
-    constructor(private socket: SocketIO.Socket,
+    constructor(private socket: Socket,
         // @ts-ignore
         public app: Electron.App) { }
 

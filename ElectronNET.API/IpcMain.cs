@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -43,9 +44,9 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="channel">Channelname.</param>
         /// <param name="listener">Callback Method.</param>
-        public void On(string channel, Action<object> listener)
+        public async Task On(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
+            await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
             BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On(channel, (args) => 
             {

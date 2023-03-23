@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using Quobject.EngineIoClientDotNet.ComponentEmitter;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -10,12 +10,11 @@ namespace ElectronNET.API
     internal class Events
     {
         private static Events _events;
-        private static object _syncRoot = new object();
-        private TextInfo _ti = new CultureInfo("en-US", false).TextInfo;
+        private static readonly object SyncRoot = new();
+        private readonly TextInfo _textInfo = new CultureInfo("en-US", false).TextInfo;
+        
         private Events()
-        {
-
-        }
+        {}
 
         public static Events Instance
         {
@@ -23,7 +22,7 @@ namespace ElectronNET.API
             {
                 if (_events == null)
                 {
-                    lock (_syncRoot)
+                    lock (SyncRoot)
                     {
                         if (_events == null)
                         {
@@ -41,32 +40,24 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
-        public void On(string moduleName, string eventName, Action fn)
-            => On(moduleName, eventName, new ListenerImpl(fn));
+        /// <param name="action">The event handler</param>
+        public void On(string moduleName, string eventName, Action action)
+            => On(moduleName, eventName, action);
+
 
         /// <summary>
         /// Subscribe to an unmapped electron event.
         /// </summary>
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
-        public void On(string moduleName, string eventName, Action<object> fn)
-            => On(moduleName, eventName, new ListenerImpl(fn));
-
-        /// <summary>
-        /// Subscribe to an unmapped electron event.
-        /// </summary>
-        /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
-        /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
-        private void On(string moduleName, string eventName, IListener fn)
+        /// <param name="action">The event handler</param>
+        public async Task On<T>(string moduleName, string eventName, Action<T> action)
         {
-            var listener = $"{moduleName}{_ti.ToTitleCase(eventName)}Completed";
+            var listener = $"{moduleName}{_textInfo.ToTitleCase(eventName)}Completed";
             var subscriber = $"register-{moduleName}-on-event";
-            
-            BridgeConnector.Socket.On(listener, fn);
-            BridgeConnector.Socket.Emit(subscriber, eventName, listener);
+
+            BridgeConnector.Socket.On(listener, action);
+            await BridgeConnector.Socket.Emit(subscriber, eventName, listener);
         }
 
         /// <summary>
@@ -75,30 +66,22 @@ namespace ElectronNET.API
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
         /// <param name="fn">The event handler</param>
-        public void Once(string moduleName, string eventName, Action fn)
-            => Once(moduleName, eventName, new ListenerImpl(fn));
+        public void Once(string moduleName, string eventName, Action action)
+            => Once(moduleName, eventName, action);
+
 
         /// <summary>
         /// Subscribe to an unmapped electron event.
         /// </summary>
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
-        public void Once(string moduleName, string eventName, Action<object> fn)
-            => Once(moduleName, eventName, new ListenerImpl(fn));
-
-        /// <summary>
-        /// Subscribe to an unmapped electron event.
-        /// </summary>
-        /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
-        /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
-        private void Once(string moduleName, string eventName, IListener fn)
+        /// <param name="action">The event handler</param>
+        public async Task Once<T>(string moduleName, string eventName, Action<T> action)
         {
-            var listener = $"{moduleName}{_ti.ToTitleCase(eventName)}Completed";
+            var listener = $"{moduleName}{_textInfo.ToTitleCase(eventName)}Completed";
             var subscriber = $"register-{moduleName}-once-event";
-            BridgeConnector.Socket.Once(listener, fn);
-            BridgeConnector.Socket.Emit(subscriber, eventName, listener);
+            BridgeConnector.Socket.Once(listener, action);
+            await BridgeConnector.Socket.Emit(subscriber, eventName, listener);
         }
 
     }
