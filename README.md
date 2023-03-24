@@ -9,9 +9,9 @@ AppVeyor (Win/Linux): [![Build status](https://ci.appveyor.com/api/projects/stat
 
 Travis-CI (Win/macOS/Linux): [![Build Status](https://travis-ci.org/ElectronNET/Electron.NET.svg?branch=master)](https://travis-ci.org/ElectronNET/Electron.NET)
 
-Build cross platform desktop apps with .NET 5 and ASP.NET NET Core (Razor Pages, MVC), Blazor. 
+Build cross platform desktop apps with .NET 6 and Blazor, ASP.NET Core (Razor Pages, MVC). 
 
-Electron.NET is a __wrapper__ around a "normal" Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
+Electron.NET is a __wrapper__ around a native Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
 The CLI extensions hosts our toolset to build and start Electron.NET applications.
 
@@ -26,11 +26,11 @@ Well... there are lots of different approaches how to get a X-plat desktop app r
 
 ## 🛠 Requirements to run:
 
-The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET 5, so our minimum base OS is the same as [.NET 5](https://github.com/dotnet/core/blob/master/release-notes/5.0/5.0-supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET 6, so our minimum base OS is the same as [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md).
 
 Also you should have installed:
 
-* npm [contained in nodejs](https://nodejs.org)
+* npm [contained in nodejs (at least Version 16.17.1)](https://nodejs.org)
 
 ## 💬 Community
 
@@ -49,6 +49,35 @@ To activate and communicate with the "native" (sort of native...) Electron API i
 ````
 PM> Install-Package ElectronNET.API
 ````
+
+## Minimal-API
+You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension and open the Electron Window: 
+### Program.cs
+
+```csharp	
+using ElectronNET.API;
+using ElectronNET.API.Entities;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseElectron(args);
+
+// Is optional, but you can use the Electron.NET API-Classes directly with DI (relevant if you wont more encoupled code)
+builder.Services.AddElectron();
+
+var app = builder.Build();
+
+...
+
+await app.StartAsync();
+
+// Open the Electron-Window here
+Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+
+app.WaitForShutdown();
+```
+
+## Conventional
+
 ### Program.cs
 
 You start Electron.NET up with an `UseElectron` WebHostBuilder-Extension. 
@@ -152,10 +181,19 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note
 > macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
+  
+## 🔄 Update
+
+After an update to the latest Electron.API package, an update to the latest Electron.CLI is always required. In addition, always update the CLI via NuGet:
+
+```
+dotnet tool update ElectronNET.CLI -g
+```
 
 ## 👨‍💻 Authors
 
 * **Gregor Biswanger** - (Microsoft MVP, Intel Black Belt and Intel Software Innovator) is a freelance lecturer, consultant, trainer, author and speaker. He is a consultant for large and medium-sized companies, organizations and agencies for software architecture, web- and cross-platform development. You can find Gregor often on the road attending or speaking at international conferences. - [Cross-Platform-Blog](http://www.cross-platform-blog.com) - Twitter [@BFreakout](https://www.twitter.com/BFreakout)  
+* **Dr. Florian Rappl** - Software Developer - from Munich, Germany. Microsoft MVP & Web Geek. - [Florian Rappl](https://florianrappl.de) - Twitter [@florianrappl](https://twitter.com/florianrappl)
 * **Robert Muehsig** - Software Developer - from Dresden, Germany, now living & working in Switzerland. Microsoft MVP & Web Geek. - [codeinside Blog](https://blog.codeinside.eu) - Twitter [@robert0muehsig](https://twitter.com/robert0muehsig)  
   
 See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
@@ -185,7 +223,9 @@ We do this open source work in our free time. If you'd like us to invest more ti
 MIT-licensed
 
 **Enjoy!**
-
+  
+    
+    
 ## 📝 Important notes
 
 ### ElectronNET.API & ElectronNET.CLI Version 9.31.2
