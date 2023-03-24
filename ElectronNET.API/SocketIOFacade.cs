@@ -77,7 +77,7 @@ internal class SocketIoFacade
         _socket.On(eventName, (socketIoResponse) =>
         {
             _socket.Off(eventName);
-            action(socketIoResponse.GetValue<T>());
+            Task.Run(() => action(socketIoResponse.GetValue<T>()));
         });
     }
 
