@@ -1,5 +1,22 @@
 # Not released
 
+# 23.6.2
+
+# Released
+
+# 23.6.1
+
+ElectronNET.CLI:
+
+* New Feature: Upgrade to .NET 6 support
+
+ElectronNET.API:
+
+* New Feature: Native Electron 23.2.0 support, but not all new API features included (we search contributors) 
+* New Feature: Upgrade to .NET 6 support
+* New Feature: Changed Web-Socket .NET Library to [SocketIOClient](https://github.com/doghappy/socket.io-client-csharp)
+* Breaking Changes: We removed deprecated API events/methods from ElectronNET.API [(More Details)](https://www.electronjs.org/docs/latest/breaking-changes)
+
 # 13.5.1
 
 ElectronNET.CLI:
@@ -24,9 +41,6 @@ ElectronNET.API:
 * New Feature: Add PostData to LoadURLOptions to allow http-posts in LoadURL calls (thanks [Funkrusha](https://github.com/Funkrusha)) [\#547](https://github.com/ElectronNET/Electron.NET/pull/547)  
 * Fixed bug: Fix splash screen interaction causing crashes, ghost dragging, and resizable behavior #540 (thanks [MiniguyBrendan](https://github.com/MiniguyBrendan)) [\#540](https://github.com/ElectronNET/Electron.NET/pull/540)  
 * Fixed bug: Vibrancy serialization fix (thanks [tantumalice](https://github.com/tantumalice)) [\#573](https://github.com/ElectronNET/Electron.NET/pull/573)  
-
-
-# Released
 
 # 11.5.1
 

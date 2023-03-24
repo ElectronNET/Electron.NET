@@ -1,16 +1,18 @@
 {
-    "version": "0.1.0",
-    "command": "dotnet",
-    "isShellCommand": true,
-    "args": [],
-    "tasks": [
-        {
-            "taskName": "build",
-            "args": [
-                "${workspaceRoot}/ElectronNET.CLI/ElectronNET.CLI.csproj"
-            ],
-            "isBuildCommand": true,
-            "problemMatcher": "$msCompile"
-        }
-    ]
+  "version": "2.0.0",
+  "command": "dotnet",
+  "args": [],
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["build", "${workspaceRoot}/ElectronNET.CLI/ElectronNET.CLI.csproj"],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "_id": "build",
+        "isDefault": false
+      }
+    }
+  ]
 }
