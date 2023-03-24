@@ -19,6 +19,15 @@ module.exports = (socket) => {
             electronSocket.emit('webContents-didFinishLoad' + id);
         });
     });
+    socket.on('register-webContents-input-event', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('input-event');
+        browserWindow.webContents.on('input-event', (_, eventArgs) => {
+            if (eventArgs.type !== 'char') {
+                electronSocket.emit('webContents-input-event' + id, eventArgs);
+            }
+        });
+    });
     socket.on('webContentsOpenDevTools', (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
@@ -166,9 +175,12 @@ module.exports = (socket) => {
     });
     socket.on('webContents-loadURL', (id, url, options) => {
         const browserWindow = getWindowById(id);
-        browserWindow.webContents.loadURL(url, options).then(() => {
+        browserWindow.webContents
+            .loadURL(url, options)
+            .then(() => {
             electronSocket.emit('webContents-loadURL-complete' + id);
-        }).catch((error) => {
+        })
+            .catch((error) => {
             console.error(error);
             electronSocket.emit('webContents-loadURL-error' + id, error);
         });
@@ -198,7 +210,7 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         const extensionsList = browserWindow.webContents.session.getAllExtensions();
         const chromeExtensionInfo = [];
-        Object.keys(extensionsList).forEach(key => {
+        Object.keys(extensionsList).forEach((key) => {
             chromeExtensionInfo.push(extensionsList[key]);
         });
         electronSocket.emit('webContents-session-getAllExtensions-completed', chromeExtensionInfo);

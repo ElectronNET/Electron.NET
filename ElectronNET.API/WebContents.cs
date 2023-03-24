@@ -84,6 +84,36 @@ namespace ElectronNET.API
 
         private event Action _didFinishLoad;
 
+        /// <summary>
+        /// Emitted when an input event is sent to the WebContents.
+        /// </summary>
+        public event Action<InputEvent> InputEvent
+        {
+            add
+            {
+                if (_inputEvent == null)
+                {
+                    BridgeConnector.Socket.On("webContents-input-event" + Id, (eventArgs) =>
+                    {
+                        var inputEvent = ((JObject)eventArgs).ToObject<InputEvent>();
+                        _inputEvent(inputEvent);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-webContents-input-event", Id);
+                }
+                _inputEvent += value;
+            }
+            remove
+            {
+                _inputEvent -= value;
+
+                if (_inputEvent == null)
+                    BridgeConnector.Socket.Off("webContents-input-event" + Id);
+            }
+        }
+
+        private event Action<InputEvent> _inputEvent;
+
         internal WebContents(int id)
         {
             Id = id;

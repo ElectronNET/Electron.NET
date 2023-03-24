@@ -167,24 +167,6 @@ export = (socket: Socket, app: Electron.App) => {
         });
     });
 
-    socket.on('register-browserWindow-scroll-touch-begin', (id) => {
-        getWindowById(id).on('scroll-touch-begin', () => {
-            electronSocket.emit('browserWindow-scroll-touch-begin' + id);
-        });
-    });
-
-    socket.on('register-browserWindow-scroll-touch-end', (id) => {
-        getWindowById(id).on('scroll-touch-end', () => {
-            electronSocket.emit('browserWindow-scroll-touch-end' + id);
-        });
-    });
-
-    socket.on('register-browserWindow-scroll-touch-edge', (id) => {
-        getWindowById(id).on('scroll-touch-edge', () => {
-            electronSocket.emit('browserWindow-scroll-touch-edge' + id);
-        });
-    });
-
     socket.on('register-browserWindow-swipe', (id) => {
         getWindowById(id).on('swipe', (event, direction) => {
             electronSocket.emit('browserWindow-swipe' + id, direction);
