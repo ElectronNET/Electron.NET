@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageOutputPath>..\artifacts</PackageOutputPath>
+    <PackageOutputPath>..\..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.API</PackageId>
     <Authors>Gregor Biswanger, Florian Rappl</Authors>
     <Company />
@@ -15,7 +15,7 @@ This package contains the API to access the "native" electron API.</Description>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
-    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <Version>99.0.0.0</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

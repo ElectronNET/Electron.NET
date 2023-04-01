@@ -30,17 +30,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "Electro
 		SlnRelativePath = "ElectronNET.Host\"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2914CCF7-27C2-42AE-849A-2F0C1BC7CDFA}"
-	ProjectSection(SolutionItems) = preProject
-		buildAll.cmd = buildAll.cmd
-		buildAll.sh = buildAll.sh
-		buildReleaseNuGetPackages.cmd = buildReleaseNuGetPackages.cmd
-		Changelog.md = Changelog.md
-		README.md = README.md
-		start.cmd = start.cmd
-		start.sh = start.sh
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

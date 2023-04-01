@@ -6,7 +6,7 @@
     <ToolCommandName>electronize</ToolCommandName>
     <PackageType>DotnetCliTool</PackageType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageOutputPath>..\artifacts</PackageOutputPath>
+    <PackageOutputPath>..\..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
     <!-- Version 99 is just set for local development stuff to avoid a conflict with "real" packages on NuGet.org -->
     <Version>99.0.0.0</Version>
@@ -23,7 +23,7 @@
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>electron aspnetcore</PackageTags>
-    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/master/Changelog.md</PackageReleaseNotes>
+    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
     <StartupObject>
