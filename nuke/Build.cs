@@ -52,7 +52,6 @@ class Build : NukeBuild
 
     GitHubActions GitHubActions => GitHubActions.Instance;
 
-    // Note: The ChangeLogTasks from Nuke itself look buggy. So using the Cake source code.
     IReadOnlyList<ReleaseNotes> ChangeLog { get; set; }
 
     ReleaseNotes LatestReleaseNotes { get; set; }
@@ -165,6 +164,69 @@ class Build : NukeBuild
                     .SetSymbolPackageFormat("snupkg")
                 );
             });
+        });
+
+    Target CompileSample => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName / $"{DemoTargetLibName}.csproj";
+            DotNetBuild(s => s.SetProjectFile(sample).SetConfiguration(Configuration));
+        });
+
+    Target ElectronizeGenericTargetSample => _ => _
+        .DependsOn(CompileSample)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName;
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var args = "build /target custom win7-x86;win /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--publish never\"";
+
+            DotNet($"run --project {cli} -- {args}", sample);
+        });
+
+    Target ElectronizeWindowsTargetSample => _ => _
+        .DependsOn(CompileSample)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName;
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var args = "build /target win /electron-params \"--publish never\"";
+
+            DotNet($"run --project {cli} -- {args}", sample);
+        });
+
+    Target ElectronizeCustomWin7TargetSample => _ => _
+        .DependsOn(CompileSample)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName;
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var args = "build /target custom win7-x86;win /electron-params \"--publish never\"";
+
+            DotNet($"run --project {cli} -- {args}", sample);
+        });
+
+    Target ElectronizeMacOsTargetSample => _ => _
+        .DependsOn(CompileSample)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName;
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var args = "build /target osx /electron-params \"--publish never\"";
+
+            DotNet($"run --project {cli} -- {args}", sample);
+        });
+
+    Target ElectronizeLinuxTargetSample => _ => _
+        .DependsOn(CompileSample)
+        .Executes(() =>
+        {
+            var sample = SourceDirectory / DemoTargetLibName;
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var args = "build /target linux /electron-params \"--publish never\"";
+
+            DotNet($"run --project {cli} -- {args}", sample);
         });
 
     Target PublishPackages => _ => _
