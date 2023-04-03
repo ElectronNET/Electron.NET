@@ -1,3 +1,19 @@
+# 23.6.2
+
+ElectronNET.API:
+
+* Fixed escaping of URL #735 @cosmo0
+* Changed `ZoomFactor` type #754 @Yuvix25
+
+ElectronNET.CLI:
+
+* (none)
+
+Infrastructure:
+
+* Changed build system to NUKE #757 @FlorianRappl
+* Updated target framework for host project #753 @r-pankevicius 
+
 # 23.6.1
 
 ElectronNET.CLI:
