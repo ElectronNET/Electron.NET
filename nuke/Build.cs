@@ -130,6 +130,7 @@ class Build : NukeBuild
             {
                 DotNetBuild(s => s
                     .SetProjectFile(project)
+                    .SetVersion(Version)
                     .SetConfiguration(Configuration)
                     .EnableNoRestore());
             });
@@ -162,6 +163,7 @@ class Build : NukeBuild
                     .SetOutputDirectory(ResultDirectory)
                     .SetIncludeSymbols(true)
                     .SetSymbolPackageFormat("snupkg")
+                    .EnableNoRestore()
                 );
             });
         });
