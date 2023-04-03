@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.CLI", "Electron
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "ElectronNET.Host\", "{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_56840"
 		Debug.AspNetCompiler.PhysicalPath = "ElectronNET.Host\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56840\"
@@ -28,17 +28,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "Electro
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "56840"
 		SlnRelativePath = "ElectronNET.Host\"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2914CCF7-27C2-42AE-849A-2F0C1BC7CDFA}"
-	ProjectSection(SolutionItems) = preProject
-		buildAll.cmd = buildAll.cmd
-		buildAll.sh = buildAll.sh
-		buildReleaseNuGetPackages.cmd = buildReleaseNuGetPackages.cmd
-		Changelog.md = Changelog.md
-		README.md = README.md
-		start.cmd = start.cmd
-		start.sh = start.sh
 	EndProjectSection
 EndProject
 Global

@@ -11,7 +11,7 @@ let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let powerMonitor;
 let splashScreen, hostHook;
-let mainWindowId, nativeTheme;
+let nativeTheme;
 let dock;
 let launchFile;
 let launchUrl;

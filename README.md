@@ -1,6 +1,6 @@
 [![Electron.NET Logo](https://github.com/ElectronNET/Electron.NET/raw/main/assets/images/electron.net-logo.png)](https://github.com/ElectronNET/Electron.NET)
 
-[![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net) [![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Build status](https://ci.appveyor.com/api/projects/status/q95h4xt14papwi05/branch/main?svg=true)](https://ci.appveyor.com/project/robertmuehsig/electron-net/branch/main)
+[![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net) [![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Build status](https://github.com/ElectronNET/Electron.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/ElectronNET/Electron.NET/actions/workflows/ci.yml)
 
 Build cross platform desktop apps with .NET 6 and Blazor, ASP.NET Core (Razor Pages, MVC). 
 
@@ -30,11 +30,13 @@ Also you should have installed:
 
 Besides the chat on Gitter and the issues [discussed here](https://github.com/ElectronNET/Electron.NET/issues) you can also use [StackOverflow](https://stackoverflow.com/questions/tagged/electron.net) with the tag `electron.net`.
 
+If you want to sponsor the further maintenance and development of this project [see the donate section](#🙏-donate).
+
 ## 👩‍🏫 Usage
 
 To activate and communicate with the "native" (sort of native...) Electron API include the [ElectronNET.API NuGet package](https://www.nuget.org/packages/ElectronNET.API/) in your ASP.NET Core app.
 
-```
+```ps1
 PM> Install-Package ElectronNET.API
 ```
 
@@ -198,7 +200,7 @@ Please make sure all commits are properly documented.
 
 This video provides an introduction to development for Electron.NET: [Electron.NET - Contributing Getting Started](https://youtu.be/Po-saU_Z6Ws)  
   
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the buildAll scripts (.cmd for Windows, the other for macOS/Linux).
+This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the build scripts (.cmd or .ps1 for Windows, the .sh for macOS/Linux).
 
 If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
 
