@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Electron App",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-            "program": "${workspaceFolder}/main.js",
+            "program": "${workspaceFolder}/dist/main.js",
             "sourceMaps": true,
             "args": [
                 "--test=true",
@@ -20,7 +20,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch build-helper",
-            "program": "${workspaceFolder}/build-helper.js",
+            "program": "${workspaceFolder}/dist/build-helper.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],

@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "esModuleInterop": true,
         "target": "ES2019",
         "sourceMap": true,
         "skipLibCheck": true
     },
     "exclude": [
-        "node_modules",
-        "ElectronHostHook"
+        "node_modules"
     ]
 }

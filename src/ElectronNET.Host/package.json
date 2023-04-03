@@ -1,27 +1,30 @@
 {
-  "name": "electron.net.host",
+  "name": "@electronnet/host",
   "version": "1.0.0",
   "description": "Electron-Host for Electron.NET.",
   "repository": {
     "url": "https://github.com/ElectronNET/Electron.NET"
   },
-  "main": "main.js",
+  "main": "dist/main.js",
   "author": "Gregor Biswanger, Florian Rappl",
   "license": "MIT",
   "scripts": {
-    "start": "tsc -p ."
+    "start": "npm run build:main && npm run build:build-helper",
+    "build:main": "esbuild src/main.ts --external:electron --platform=node --target=es2020 --bundle --outdir=dist",
+    "build:build-helper": "esbuild src/build-helper.ts --external:electron --platform=node --target=es2020 --bundle --outdir=dist"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "@types/dasherize": "^2.0.0",
+    "@types/node": "^18.15.5",
+    "@types/portscanner": "^2.1.1",
     "dasherize": "^2.0.0",
+    "electron": "^23.2.0",
     "electron-updater": "^5.3.0",
+    "esbuild": "^0.17.15",
     "image-size": "^1.0.2",
     "portscanner": "^2.2.0",
-    "socket.io": "^4.6.1"
-  },
-  "devDependencies": {
-    "@types/node": "^18.15.5",
-    "electron": "^23.2.0",
-    "tslint": "^6.1.3",
+    "socket.io": "^4.6.1",
     "typescript": "^5.0.2"
   }
 }
