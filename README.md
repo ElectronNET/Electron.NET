@@ -30,7 +30,7 @@ Also you should have installed:
 
 Besides the chat on Gitter and the issues [discussed here](https://github.com/ElectronNET/Electron.NET/issues) you can also use [StackOverflow](https://stackoverflow.com/questions/tagged/electron.net) with the tag `electron.net`.
 
-If you want to sponsor the further maintenance and development of this project [see the donate section](#🙏-donate).
+If you want to sponsor the further maintenance and development of this project [see the donate section](#-donate).
 
 ## 👩‍🏫 Usage
 
@@ -173,11 +173,15 @@ The end result should be an electron app under your __/bin/desktop__ folder.
 
 ### Note
 
-> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
+> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)).
+
+Consequently, macOS builds can be produced on either Linux or macOS machines.
   
 ## 🔄 Update
 
-After an update to the latest Electron.API package, an update to the latest Electron.CLI is always required. In addition, always update the CLI via NuGet:
+After an update to the latest Electron.API package, an update to the latest Electron.CLI is always required.
+
+In addition, always update the CLI via NuGet:
 
 ```sh
 dotnet tool update ElectronNET.CLI -g
@@ -193,7 +197,8 @@ See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/
   
 ## 🙋‍♀️🙋‍♂ Contributing
 
-Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
+Feel free to submit a pull request if you find any bugs. To see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
+
 Please make sure all commits are properly documented.
 
 ## 🧪 Working with this Repo
