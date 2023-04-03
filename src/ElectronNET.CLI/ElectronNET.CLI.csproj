@@ -5,7 +5,6 @@
     <AssemblyName>dotnet-electronize</AssemblyName>
     <ToolCommandName>electronize</ToolCommandName>
     <PackageType>DotnetCliTool</PackageType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\..\artifacts</PackageOutputPath>
     <PackageId>ElectronNET.CLI</PackageId>
     <!-- Version 99 is just set for local development stuff to avoid a conflict with "real" packages on NuGet.org -->

@@ -61,6 +61,17 @@ class Build : NukeBuild
 
     string Version { get; set; }
 
+    AbsolutePath[] Projects
+    {
+        get
+        {
+            var api = SourceDirectory / ApiTargetLibName / $"{ApiTargetLibName}.csproj";
+            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
+            var projects = new[] { api, cli };
+            return projects;    
+        }        
+    }
+
     protected override void OnBuildInitialized()
     {
         var parser = new ReleaseNotesParser();
@@ -105,40 +116,45 @@ class Build : NukeBuild
     Target Restore => _ => _
         .Executes(() =>
         {
-            DotNetRestore(s => s
-                .SetProjectFile(Solution));
+            Projects.ForEach(project =>
+            {
+                DotNetRestore(s => s
+                    .SetProjectFile(project));
+            });
         });
 
     Target Compile => _ => _
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore());
+            Projects.ForEach(project =>
+            {
+                DotNetBuild(s => s
+                    .SetProjectFile(project)
+                    .SetConfiguration(Configuration)
+                    .EnableNoRestore());
+            });
         });
 
     Target RunUnitTests => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            DotNetTest(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .EnableNoBuild());
+            Projects.ForEach(project =>
+            {
+                DotNetTest(s => s
+                    .SetProjectFile(project)
+                    .SetConfiguration(Configuration)
+                    .EnableNoRestore()
+                    .EnableNoBuild());
+            });
         });
 
     Target CreatePackages => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var api = SourceDirectory / ApiTargetLibName / $"{ApiTargetLibName}.csproj";
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var projects = new[] { api, cli };
-
-            projects.ForEach(project =>
+            Projects.ForEach(project =>
             {
                 DotNetPack(s => s
                     .SetProject(project)
