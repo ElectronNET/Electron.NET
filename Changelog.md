@@ -1,26 +1,26 @@
 # 23.6.2
 
-ElectronNET.API:
+## ElectronNET.API
 
-* Fixed escaping of URL #735 @cosmo0
-* Changed `ZoomFactor` type #754 @Yuvix25
+* Fixed escaping of URL (#735) @cosmo0
+* Changed `ZoomFactor` type from `int` to `double` (#754) @Yuvix25
 
-ElectronNET.CLI:
+## ElectronNET.CLI
 
 * (none)
 
-Infrastructure:
+## Infrastructure
 
 * Changed build system to NUKE #757 @FlorianRappl
 * Updated target framework for host project #753 @r-pankevicius 
 
 # 23.6.1
 
-ElectronNET.CLI:
+## ElectronNET.CLI
 
 * New Feature: Upgrade to .NET 6 support
 
-ElectronNET.API:
+## ElectronNET.API
 
 * New Feature: Native Electron 23.2.0 support, but not all new API features included (we search contributors) 
 * New Feature: Upgrade to .NET 6 support

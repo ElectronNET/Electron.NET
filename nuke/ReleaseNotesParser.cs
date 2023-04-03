@@ -85,6 +85,7 @@ public sealed class ReleaseNotesParser
 
             // Parse content.
             var notes = new List<string>();
+            
             while (true)
             {
                 // Sanity checks.
@@ -93,13 +94,14 @@ public sealed class ReleaseNotesParser
                     break;
                 }
 
-                if (lines[lineIndex].StartsWith("#", StringComparison.OrdinalIgnoreCase))
+                if (lines[lineIndex].StartsWith("# ", StringComparison.OrdinalIgnoreCase))
                 {
                     break;
                 }
 
                 // Get the current line.
-                var line = (lines[lineIndex] ?? string.Empty).Trim('*').Trim();
+                var line = (lines[lineIndex] ?? string.Empty).Trim();
+
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     notes.Add(line);
@@ -127,7 +129,8 @@ public sealed class ReleaseNotesParser
             }
 
             // Trim the current line.
-            var line = (lines[lineIndex] ?? string.Empty).Trim('*', ' ');
+            var line = (lines[lineIndex] ?? string.Empty);
+
             if (string.IsNullOrWhiteSpace(line))
             {
                 lineIndex++;
@@ -137,6 +140,7 @@ public sealed class ReleaseNotesParser
             // Parse header.
             var semVer = SemVersion.Zero;
             var version = SemVersion.TryParse(lines[lineIndex], out semVer);
+
             if (!version)
             {
                 throw new BuildAbortedException("Could not parse version from release notes header.");
