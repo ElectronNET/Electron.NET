@@ -55,12 +55,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
 
                 var result = ((JArray)filePaths).ToObject<string[]>();
-                var list = new List<string>();
-                foreach (var item in result)
-                {
-                    list.Add(HttpUtility.UrlDecode(item));
-                }
-                taskCompletionSource.SetResult(list.ToArray());
+                taskCompletionSource.SetResult(result);
             });
 
 
