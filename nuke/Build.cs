@@ -94,11 +94,11 @@ class Build : NukeBuild
 
             if (ScheduledTargets.Contains(Default))
             {
-                Version = $"{Version}-ci-{buildNumber}";
+                Version = $"{Version}-ci.{buildNumber}";
             }
             else if (ScheduledTargets.Contains(PrePublish))
             {
-                Version = $"{Version}-alpha-{buildNumber}";
+                Version = $"{Version}-alpha.{buildNumber}";
             }
         }
 
