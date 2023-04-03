@@ -56,7 +56,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The default zoom factor of the page, 3.0 represents 300%. Default is 1.0.
         /// </summary>
-        public int ZoomFactor { get; set; }
+        public double ZoomFactor { get; set; }
 
         /// <summary>
         /// Enables JavaScript support. Default is true.
