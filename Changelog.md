@@ -1,9 +1,3 @@
-# Not released
-
-# 23.6.2
-
-# Released
-
 # 23.6.1
 
 ElectronNET.CLI:

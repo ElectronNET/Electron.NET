@@ -263,3 +263,6 @@ __pycache__/
 
 # Mac Only settings file
 .DS_Store
+
+# Nuke build tool
+.nuke/temp
