@@ -5,7 +5,7 @@ import { resolve } from "path";
 const manifestFileName = process.argv[2];
 const cwd = process.cwd();
 
-const manifestFilePath = resolve(cwd, ".bin", manifestFileName);
+const manifestFilePath = resolve(cwd, "bin", manifestFileName);
 const manifestFile = require(manifestFilePath);
 const builderConfiguration = { ...manifestFile.build };
 
