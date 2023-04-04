@@ -30,7 +30,7 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostDistFolder, "build-helper.js", "dist.");
             EmbeddedFileHelper.DeployEmbeddedFile(vscodeFolder, "launch.json", ".vscode.");
             EmbeddedFileHelper.DeployEmbeddedFile(vscodeFolder, "tasks.json", ".vscode.");
-            EmbeddedFileHelper.DeployEmbeddedFile(splashscreenFolder, "index.html", "splashscreen.");
+            EmbeddedFileHelper.DeployEmbeddedFile(splashscreenFolder, "index.html", "splashscreen.");            
         }
     }
 }

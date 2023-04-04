@@ -1,0 +1,11 @@
+{
+  "name": "electron-net",
+  "version": "1.0.0",
+  "description": "Host for Electron.NET.",
+  "main": "dist/main.js",
+  "author": "Gregor Biswanger, Florian Rappl",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^23.2.0"
+  }
+}

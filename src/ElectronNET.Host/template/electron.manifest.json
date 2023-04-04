@@ -10,7 +10,7 @@
   "build": {
     "appId": "com.{{executable}}.app",
     "productName": "{{executable}}",
-    "copyright": "Copyright © 2020",
+    "copyright": "Copyright © 2023",
     "buildVersion": "1.0.0",
     "compression": "maximum",
     "directories": {

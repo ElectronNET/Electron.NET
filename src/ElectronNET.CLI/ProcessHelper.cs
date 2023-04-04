@@ -30,7 +30,7 @@ namespace ElectronNET.CLI
                 var hookSource = Path.Combine(electronhosthookDir, "index.ts");
                 var hookTarget = Path.Combine(root, "dist", "host-hook.js");
                 Console.WriteLine("Bundle ElectronHostHook ...");
-                CmdExecute($"npm start --outfile={hookTarget}", electronhosthookDir);
+                CmdExecute($"npm start -- --outfile={hookTarget}", electronhosthookDir);
             }
         }
 
@@ -38,7 +38,7 @@ namespace ElectronNET.CLI
         {
             using (Process cmd = new Process())
             {
-                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
                 if (isWindows)
                 {

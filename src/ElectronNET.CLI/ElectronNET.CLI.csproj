@@ -39,8 +39,8 @@
     <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\package.json" Link="ElectronHost\package.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\template\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\template\package.json" Link="ElectronHost\package.json" />
     <EmbeddedResource Include="..\ElectronNET.Host\dist\main.js" Link="ElectronHost\dist\main.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\dist\build-helper.js" Link="ElectronHost\dist\build-helper.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\splashscreen\index.html" Link="ElectronHost\splashscreen\index.html" />

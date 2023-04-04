@@ -13,8 +13,7 @@
     "build:main": "esbuild src/main.ts --external:electron --platform=node --target=es2020 --bundle --outdir=dist",
     "build:build-helper": "esbuild src/build-helper.ts --external:electron --platform=node --target=es2020 --bundle --outdir=dist"
   },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "@types/dasherize": "^2.0.0",
     "@types/node": "^18.15.5",
     "@types/portscanner": "^2.1.1",

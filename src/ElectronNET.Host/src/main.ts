@@ -47,7 +47,7 @@ const watchable = app.commandLine.hasSwitch("watch");
 // if watch is enabled lets change the path
 const currentBinPath = watchable
   ? resolve(__dirname, "../../")
-  : resolve(__dirname.replace("app.asar", ""), "bin");
+  : resolve(__dirname, "../../", "bin");
 
 const hostHookScriptFilePath = resolve(__dirname, "host-hook.js");
 const manifestJsonFilePath = resolve(currentBinPath, manifestJsonFileName);
