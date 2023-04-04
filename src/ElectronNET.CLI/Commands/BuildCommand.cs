@@ -51,15 +51,18 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                Console.WriteLine("Build Electron Application...");
+                var parser = new SimpleCommandLineParser();
 
-                SimpleCommandLineParser parser = new SimpleCommandLineParser();
+                Console.WriteLine("Build Electron Application...");
                 parser.Parse(_args);
 
                 //This version will be shared between the dotnet publish and electron-builder commands
-                string version = null;
+                var version = string.Empty;
+
                 if (parser.Arguments.ContainsKey(_paramVersion))
+                {
                     version = parser.Arguments[_paramVersion][0];
+                }
 
                 if (!parser.Arguments.ContainsKey(_paramTarget))
                 {
@@ -69,23 +72,24 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 var desiredPlatform = parser.Arguments[_paramTarget][0];
-                string specifiedFromCustom = string.Empty;
+                var specifiedFromCustom = string.Empty;
+                
                 if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
                 {
                     specifiedFromCustom = parser.Arguments[_paramTarget][1];
                 }
 
-                string configuration = "Release";
+                var configuration = "Release";
+
                 if (parser.Arguments.ContainsKey(_paramDotNetConfig))
                 {
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
                 var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
-
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
 
-                string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
+                var tempPath = Path.Combine(Directory.GetCurrentDirectory(), "obj", "desktop", desiredPlatform);
 
                 if (Directory.Exists(tempPath) == false)
                 {
@@ -97,17 +101,13 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
-                string tempBinPath = Path.Combine(tempPath, "bin");
+                var tempBinPath = Path.Combine(tempPath, "bin");
+                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");                
 
-                Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
-                
                 var dotNetPublishFlags = GetDotNetPublishFlags(parser);
-
-                var command =
-                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
+                var command = $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
                 
                 // output the command 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -132,33 +132,16 @@ namespace ElectronNET.CLI.Commands
                     File.Copy(parser.Arguments[_paramPackageJson][0], Path.Combine(tempPath, "package.json"), true);
                 }
 
-                var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
-
-                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
-                    Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
+                ProcessHelper.CheckNodeModules(tempPath, parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson));
 
                 Console.WriteLine("ElectronHostHook handling started...");
-
-                string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
-
-                if (Directory.Exists(electronhosthookDir))
-                {
-                    string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
-
-                    Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install", hosthookDir);
-
-                    // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"npx tsc -p . --sourceMap false", hosthookDir);
-                }
+                ProcessHelper.BundleHostHook(tempPath);
 
                 Console.WriteLine("Build Electron Desktop Application...");
 
                 // Specifying an absolute path supercedes a relative path
-                string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+                var buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
+
                 if (parser.Arguments.ContainsKey(_paramAbsoluteOutput))
                 {
                     buildPath = parser.Arguments[_paramAbsoluteOutput][0];
@@ -170,13 +153,15 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("Executing electron magic in this directory: " + buildPath);
 
-                string electronArch = "x64";
+                var electronArch = "x64";
+
                 if (parser.Arguments.ContainsKey(_paramElectronArch))
                 {
                     electronArch = parser.Arguments[_paramElectronArch][0];
                 }
 
-                string electronParams = "";
+                var electronParams = string.Empty;
+
                 if (parser.Arguments.ContainsKey(_paramElectronParams))
                 {
                     electronParams = parser.Arguments[_paramElectronParams][0];
@@ -185,7 +170,7 @@ namespace ElectronNET.CLI.Commands
                 // ToDo: Make the same thing easer with native c# - we can save a tmp file in production code :)
                 Console.WriteLine("Create electron-builder configuration file...");
 
-                string manifestFileName = "electron.manifest.json";
+                var manifestFileName = "electron.manifest.json";
 
                 if (parser.Arguments.ContainsKey(_manifest))
                 {
@@ -194,14 +179,13 @@ namespace ElectronNET.CLI.Commands
 
                 ProcessHelper.CmdExecute(
                     string.IsNullOrWhiteSpace(version)
-                        ? $"node build-helper.js {manifestFileName}"
-                        : $"node build-helper.js {manifestFileName} {version}", tempPath);
+                        ? $"node dist/build-helper.js {manifestFileName}"
+                        : $"node dist/build-helper.js {manifestFileName} {version}", tempPath);
 
-                Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
+                Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform} ...");
                 ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=23.2.0 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
-
                 return true;
             });
         }
@@ -216,21 +200,28 @@ namespace ElectronNET.CLI.Commands
 
             if (parser.Arguments.ContainsKey(_paramVersion))
             {
-                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:Version=") && !key.StartsWith("property:Version=")))
+                if (parser.Arguments.Keys.All(key => !key.StartsWith("p:Version=") && !key.StartsWith("property:Version=")))
+                {
                     dotNetPublishFlags.Add("/p:Version", parser.Arguments[_paramVersion][0]);
-                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:ProductVersion=") && !key.StartsWith("property:ProductVersion=")))
+                }
+
+                if (parser.Arguments.Keys.All(key => !key.StartsWith("p:ProductVersion=") && !key.StartsWith("property:ProductVersion=")))
+                {
                     dotNetPublishFlags.Add("/p:ProductVersion", parser.Arguments[_paramVersion][0]);
+                }
             }
 
             foreach (var parm in parser.Arguments.Keys.Where(key => key.StartsWith("p:") || key.StartsWith("property:")))
             {
                 var split = parm.IndexOf('=');
+
                 if (split < 0)
                 {
                     continue;
                 }
 
                 var key = $"/{parm.Substring(0, split)}";
+
                 // normalize the key
                 if (key.StartsWith("/property:"))
                 {

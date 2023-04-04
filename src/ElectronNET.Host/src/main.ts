@@ -307,14 +307,28 @@ function startSocketApiBridge(port: number) {
       }
     });
 
-    try {
-      if (isModuleAvailable(hostHookScriptFilePath) && hostHook === undefined) {
+    if (isModuleAvailable(hostHookScriptFilePath) && hostHook === undefined) {
+      try {
         const { HookService } = require(hostHookScriptFilePath);
+
+        if (typeof HookService !== "function") {
+          throw new Error(
+            'The host hook needs to export a class "HookService" from the module.'
+          );
+        }
+
         hostHook = new HookService(socket, app);
+
+        if (typeof hostHook.onHostReady !== "function") {
+          throw new Error(
+            'The exported host hook class needs to have a function "onHostReady".'
+          );
+        }
+
         hostHook.onHostReady();
+      } catch (error) {
+        console.error(error.message);
       }
-    } catch (error) {
-      console.error(error.message);
     }
   });
 }

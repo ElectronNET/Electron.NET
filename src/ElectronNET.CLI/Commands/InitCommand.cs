@@ -32,11 +32,12 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                string aspCoreProjectPath = "";
+                var aspCoreProjectPath = "";
 
                 if (_parser.Arguments.ContainsKey(_aspCoreProjectPath))
                 {
-                    string projectPath = _parser.Arguments[_aspCoreProjectPath].First();
+                    var projectPath = _parser.Arguments[_aspCoreProjectPath].First();
+
                     if (Directory.Exists(projectPath))
                     {
                         aspCoreProjectPath = projectPath;
@@ -49,7 +50,7 @@ namespace ElectronNET.CLI.Commands
 
                 var currentDirectory = aspCoreProjectPath;
 
-                if(_parser.Arguments.ContainsKey(_manifest))
+                if (_parser.Arguments.ContainsKey(_manifest))
                 {
                     ConfigName = "electron.manifest." + _parser.Arguments[_manifest].First() + ".json";
                     Console.WriteLine($"Adding your custom {ConfigName} config file to your project...");
@@ -72,20 +73,26 @@ namespace ElectronNET.CLI.Commands
 
                 // search .csproj/.fsproj (.csproj has higher precedence)
                 Console.WriteLine($"Search your .csproj/fsproj to add the needed {ConfigName}...");
+                
                 var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly)
                     .Union(Directory.EnumerateFiles(currentDirectory, "*.fsproj", SearchOption.TopDirectoryOnly))
                     .FirstOrDefault();
 
                 // update config file with the name of the csproj/fsproj
                 // ToDo: If the csproj/fsproj name != application name, this will fail
-                string text = File.ReadAllText(targetFilePath);
-                text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
+                var text = File
+                    .ReadAllText(targetFilePath)
+                    .Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
+
                 File.WriteAllText(targetFilePath, text);
 
                 var extension = Path.GetExtension(projectFile);
                 Console.WriteLine($"Found your {extension}: {projectFile} - check for existing config or update it.");
 
-                if (!EditProjectFile(projectFile)) return false;
+                if (!EditProjectFile(projectFile)) 
+                {
+                    return false;
+                }
 
                 // search launchSettings.json
                 Console.WriteLine($"Search your .launchSettings to add our electron debug profile...");
@@ -112,22 +119,22 @@ namespace ElectronNET.CLI.Commands
                 return;
             }
 
-            string launchSettingText = File.ReadAllText(launchSettingFile);
+            var launchSettingText = File.ReadAllText(launchSettingFile);
 
             if(_parser.Arguments.ContainsKey(_manifest))
             {
-                string manifestName = _parser.Arguments[_manifest].First();
+                var manifestName = _parser.Arguments[_manifest].First();
 
-                if(launchSettingText.Contains("start /manifest " + ConfigName) == false)
+                if (launchSettingText.Contains("start /manifest " + ConfigName) == false)
                 {
-                    StringBuilder debugProfileBuilder = new StringBuilder();
-                    debugProfileBuilder.AppendLine("profiles\": {");
-                    debugProfileBuilder.AppendLine("    \"Electron.NET App - " + manifestName + "\": {");
-                    debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
-                    debugProfileBuilder.AppendLine("      \"executablePath\": \"electronize\",");
-                    debugProfileBuilder.AppendLine("      \"commandLineArgs\": \"start /manifest " + ConfigName + "\",");
-                    debugProfileBuilder.AppendLine("      \"workingDirectory\": \".\"");
-                    debugProfileBuilder.AppendLine("    },");
+                    var debugProfileBuilder = new StringBuilder()
+                        .AppendLine("profiles\": {")
+                        .AppendLine("    \"Electron.NET App - " + manifestName + "\": {")
+                        .AppendLine("      \"commandName\": \"Executable\",")
+                        .AppendLine("      \"executablePath\": \"electronize\",")
+                        .AppendLine("      \"commandLineArgs\": \"start /manifest " + ConfigName + "\",")
+                        .AppendLine("      \"workingDirectory\": \".\"")
+                        .AppendLine("    },");
 
                     launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
                     File.WriteAllText(launchSettingFile, launchSettingText);
@@ -141,14 +148,14 @@ namespace ElectronNET.CLI.Commands
             } 
             else if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false)
             {
-                StringBuilder debugProfileBuilder = new StringBuilder();
-                debugProfileBuilder.AppendLine("profiles\": {");
-                debugProfileBuilder.AppendLine("    \"Electron.NET App\": {");
-                debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
-                debugProfileBuilder.AppendLine("      \"executablePath\": \"electronize\",");
-                debugProfileBuilder.AppendLine("      \"commandLineArgs\": \"start\",");
-                debugProfileBuilder.AppendLine("      \"workingDirectory\": \".\"");
-                debugProfileBuilder.AppendLine("    },");
+                var debugProfileBuilder = new StringBuilder()
+                    .AppendLine("profiles\": {")
+                    .AppendLine("    \"Electron.NET App\": {")
+                    .AppendLine("      \"commandName\": \"Executable\",")
+                    .AppendLine("      \"executablePath\": \"electronize\",")
+                    .AppendLine("      \"commandLineArgs\": \"start\",")
+                    .AppendLine("      \"workingDirectory\": \".\"")
+                    .AppendLine("    },");
 
                 launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
                 File.WriteAllText(launchSettingFile, launchSettingText);
@@ -166,8 +173,8 @@ namespace ElectronNET.CLI.Commands
             using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 var xmlDocument = XDocument.Load(stream);
-
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
+
                 if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
                 {
                     Console.WriteLine(
@@ -183,11 +190,11 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine($"{ConfigName} will be added to csproj/fsproj.");
 
-                string itemGroupXmlString = "<ItemGroup>" +
-                                            "<Content Update=\"" + ConfigName + "\">" +
-                                            "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
-                                            "</Content>" +
-                                            "</ItemGroup>";
+                var itemGroupXmlString = "<ItemGroup>" +
+                                         "<Content Update=\"" + ConfigName + "\">" +
+                                         "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
+                                         "</Content>" +
+                                         "</ItemGroup>";
 
                 var newItemGroupForConfig = XElement.Parse(itemGroupXmlString);
                 xmlDocument.Root.Add(newItemGroupForConfig);
@@ -200,11 +207,11 @@ namespace ElectronNET.CLI.Commands
                     OmitXmlDeclaration = true,
                     Indent = true
                 };
+
                 using (XmlWriter xw = XmlWriter.Create(stream, xws))
                 {
                     xmlDocument.Save(xw);
                 }
-
             }
 
             Console.WriteLine($"{ConfigName} added in csproj/fsproj!");

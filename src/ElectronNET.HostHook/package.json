@@ -5,12 +5,10 @@
   "repository": {
     "url": "https://github.com/ElectronNET/Electron.NET"
   },
-  "main": "dist/index.js",
   "author": "Gregor Biswanger, Florian Rappl",
   "license": "MIT",
   "scripts": {
-    "start": "npm run build:main",
-    "build:main": "esbuild src/index.ts --external:electron --platform=node --target=es2020 --bundle --outfile=dist/host-hook.js"
+    "start": "esbuild index.ts --external:electron --platform=node --target=es2020 --bundle"
   },
   "keywords": [],
   "devDependencies": {

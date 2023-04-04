@@ -9,13 +9,12 @@ namespace ElectronNET.CLI.Commands.Actions
         {
             public string NetCorePublishRid { get; set; }
             public string ElectronPackerPlatform { get; set; }
-
         }
 
         public static GetTargetPlatformInformationResult Do(string desiredPlatform, string specifiedPlatfromFromCustom)
         {
-            string netCorePublishRid = string.Empty;
-            string electronPackerPlatform = string.Empty;
+            var netCorePublishRid = string.Empty;
+            var electronPackerPlatform = string.Empty;
 
             switch (desiredPlatform)
             {
@@ -60,7 +59,7 @@ namespace ElectronNET.CLI.Commands.Actions
                     break;
             }
 
-            return new GetTargetPlatformInformationResult()
+            return new GetTargetPlatformInformationResult
             {
                 ElectronPackerPlatform = electronPackerPlatform,
                 NetCorePublishRid = netCorePublishRid

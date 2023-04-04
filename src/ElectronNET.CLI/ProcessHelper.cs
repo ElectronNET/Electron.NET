@@ -1,11 +1,37 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ElectronNET.CLI
 {
     public class ProcessHelper
     {
+        public static void CheckNodeModules(string tempPath, bool force = false)
+        {
+            var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+
+            if (!Directory.Exists(nodeModulesDirPath) || force)
+            {
+                Console.WriteLine("Starting npm install ...");
+                ProcessHelper.CmdExecute("npm install", tempPath);
+            }
+        }
+
+        public static void BundleHostHook(string tempPath)
+        {
+            var electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
+
+            if (Directory.Exists(electronhosthookDir))
+            {
+                // TODO: should be more complex, i.e., look at package.json, determine "source" or "main" and resolve it
+                var hookSource = Path.Combine(electronhosthookDir, "index.ts");
+                var hookTarget = Path.Combine(tempPath, "dist", "host-hook.js");
+                Console.WriteLine("Bundle ElectronHostHook ...");
+                CmdExecute($"npm start --outfile={hookTarget}", electronhosthookDir);
+            }
+        }
+
         public static int CmdExecute(string command, string workingDirectoryPath, bool output = true, bool waitForExit = true)
         {
             using (Process cmd = new Process())

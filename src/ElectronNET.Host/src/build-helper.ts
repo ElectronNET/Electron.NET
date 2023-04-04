@@ -3,8 +3,9 @@ import { writeFile, existsSync } from "fs";
 import { resolve } from "path";
 
 const manifestFileName = process.argv[2];
+const cwd = process.cwd();
 
-const manifestFilePath = resolve(__dirname, ".bin", manifestFileName);
+const manifestFilePath = resolve(cwd, ".bin", manifestFileName);
 const manifestFile = require(manifestFilePath);
 const builderConfiguration = { ...manifestFile.build };
 
@@ -19,7 +20,7 @@ if (process.argv.length > 3) {
 }
 
 if (builderConfiguration.hasOwnProperty("buildVersion")) {
-  const packageJsonPath = resolve(__dirname, "package.json");
+  const packageJsonPath = resolve(cwd, "package.json");
   const packageJson = require(packageJsonPath);
   packageJson.name = dasherize(manifestFile.name || "electron-net");
   packageJson.author = manifestFile.author || "";
@@ -32,7 +33,7 @@ if (builderConfiguration.hasOwnProperty("buildVersion")) {
     logError
   );
 
-  const packageLockJsonPath = resolve(__dirname, "package-lock.json");
+  const packageLockJsonPath = resolve(cwd, "package-lock.json");
 
   if (existsSync(packageLockJsonPath)) {
     const packageLockJson = require(packageLockJsonPath);

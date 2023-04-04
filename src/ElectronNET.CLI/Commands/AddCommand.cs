@@ -15,7 +15,6 @@ namespace ElectronNET.CLI.Commands
         public const string COMMAND_ARGUMENTS = "hosthook";
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
-
         private string[] _args;
 
         public AddCommand(string[] args)
@@ -41,15 +40,21 @@ namespace ElectronNET.CLI.Commands
 
                 // Maybe ToDo: Adding the possiblity to specify a path (like we did in the InitCommand, but this would require a better command args parser)
                 var currentDirectory = Directory.GetCurrentDirectory();
-                var hostDistFolder = Path.Combine(currentDirectory, "dist");
+                var hostFolder = Path.Combine(currentDirectory, "ElectronHostHook");
                 
-                if (!Directory.Exists(hostDistFolder))
+                if (!Directory.Exists(hostFolder))
                 {
-                    Directory.CreateDirectory(hostDistFolder);
+                    Directory.CreateDirectory(hostFolder);
                 }
 
                 // Deploy related files
-                EmbeddedFileHelper.DeployEmbeddedFile(hostDistFolder, "host-hook.js", "dist.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostFolder, "package.json", "hook.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostFolder, "tsconfig.json", "hook.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostFolder, ".gitignore", "hook.");
+                EmbeddedFileHelper.DeployEmbeddedFile(hostFolder, "index.ts", "hook.");
+
+                Console.WriteLine($"Installing the dependencies ...");
+                ProcessHelper.CheckNodeModules(hostFolder);
 
                 // search .csproj or .fsproj (.csproj has higher precedence)
                 Console.WriteLine($"Search your .csproj/.fsproj to add configure CopyToPublishDirectory to 'Never'");
@@ -82,16 +87,15 @@ namespace ElectronNET.CLI.Commands
 
                 if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
                 {
-                    Console.WriteLine(
-                        $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
+                    Console.WriteLine($"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
                     return false;
                 }
 
                 var itemGroupXmlString = "<ItemGroup>" +
-                                                "<Content Update=\"ElectronHostHook\\**\\*.*\">" +
-                                                    "<CopyToPublishDirectory>Never</CopyToPublishDirectory>" +
-                                                "</Content>" +
-                                            "</ItemGroup>";
+                                            "<Content Update=\"ElectronHostHook\\**\\*.*\">" +
+                                               "<CopyToPublishDirectory>Never</CopyToPublishDirectory>" +
+                                            "</Content>" +
+                                         "</ItemGroup>";
 
                 var newItemGroupForConfig = XElement.Parse(itemGroupXmlString);
                 xmlDocument.Root.Add(newItemGroupForConfig);
@@ -109,7 +113,6 @@ namespace ElectronNET.CLI.Commands
                 {
                     xmlDocument.Save(xw);
                 }
-
             }
 
             Console.WriteLine($"Publish setting added in csproj/fsproj!");

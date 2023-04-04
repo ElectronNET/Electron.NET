@@ -35,16 +35,16 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                Console.WriteLine("Start Electron Desktop Application...");
+                var parser = new SimpleCommandLineParser();
+                var aspCoreProjectPath = string.Empty;
 
-                SimpleCommandLineParser parser = new SimpleCommandLineParser();
+                Console.WriteLine("Start Electron Desktop Application ...");
                 parser.Parse(_args);
-
-                string aspCoreProjectPath = "";
 
                 if (parser.Arguments.ContainsKey(_aspCoreProjectPath))
                 {
-                    string projectPath = parser.Arguments[_aspCoreProjectPath].First();
+                    var projectPath = parser.Arguments[_aspCoreProjectPath].First();
+
                     if (Directory.Exists(projectPath))
                     {
                         aspCoreProjectPath = projectPath;
@@ -55,16 +55,17 @@ namespace ElectronNET.CLI.Commands
                     aspCoreProjectPath = Directory.GetCurrentDirectory();
                 }
 
-                string tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
-                if (Directory.Exists(tempPath) == false)
+                var tempPath = Path.Combine(aspCoreProjectPath, "obj", "Host");
+
+                if (!Directory.Exists(tempPath))
                 {
                     Directory.CreateDirectory(tempPath);
                 }
 
-                string tempBinPath = Path.Combine(tempPath, "bin");
+                var tempBinPath = Path.Combine(tempPath, "bin");
                 var resultCode = 0;
+                var publishReadyToRun = "/p:PublishReadyToRun=";
 
-                string publishReadyToRun = "/p:PublishReadyToRun=";
                 if (parser.Arguments.ContainsKey(_paramPublishReadyToRun))
                 {
                     publishReadyToRun += parser.Arguments[_paramPublishReadyToRun][0];
@@ -74,7 +75,8 @@ namespace ElectronNET.CLI.Commands
                     publishReadyToRun += "true";
                 }
 
-                string publishSingleFile = "/p:PublishSingleFile=";
+                var publishSingleFile = "/p:PublishSingleFile=";
+
                 if (parser.Arguments.ContainsKey(_paramPublishSingleFile))
                 {
                     publishSingleFile += parser.Arguments[_paramPublishSingleFile][0];
@@ -88,18 +90,22 @@ namespace ElectronNET.CLI.Commands
                 // Format is the same as the build command.
                 // If target is not specified, autodetect it.
                 var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
+
                 if (parser.Arguments.ContainsKey(_paramTarget))
                 {
                     var desiredPlatform = parser.Arguments[_paramTarget][0];
-                    string specifiedFromCustom = string.Empty;
+                    var specifiedFromCustom = string.Empty;
+
                     if (desiredPlatform == "custom" && parser.Arguments[_paramTarget].Length > 1)
                     {
                         specifiedFromCustom = parser.Arguments[_paramTarget][1];
                     }
+
                     platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
                 }
 
-                string configuration = "Debug";
+                var configuration = "Debug";
+
                 if (parser.Arguments.ContainsKey(_paramDotNetConfig))
                 {
                     configuration = parser.Arguments[_paramDotNetConfig][0];
@@ -117,31 +123,12 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
+                ProcessHelper.CheckNodeModules(tempPath);
 
-                var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+                Console.WriteLine("ElectronHostHook handling started ...");
+                ProcessHelper.BundleHostHook(tempPath);
 
-                Console.WriteLine("node_modules missing in: " + nodeModulesDirPath);
-
-                Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install", tempPath);
-
-                Console.WriteLine("ElectronHostHook handling started...");
-
-                string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
-
-                if (Directory.Exists(electronhosthookDir))
-                {
-                    string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
-
-                    Console.WriteLine("Start npm install for typescript & hosthooks...");
-                    ProcessHelper.CmdExecute("npm install", hosthookDir);
-
-                    // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"npx tsc -p ../../ElectronHostHook", tempPath);
-                }
-
-                string arguments = "";
+                var arguments = string.Empty;
 
                 if (parser.Arguments.ContainsKey(_arguments))
                 {
@@ -163,19 +150,18 @@ namespace ElectronNET.CLI.Commands
                     arguments += " --watch=true";
                 }
 
-                string path = Path.Combine(tempPath, "node_modules", ".bin");
-                bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                var path = Path.Combine(tempPath, "node_modules", ".bin");
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
                 if (isWindows)
                 {
                     Console.WriteLine("Invoke electron.cmd - in dir: " + path);
-                    ProcessHelper.CmdExecute(@"electron.cmd ""..\..\main.js"" " + arguments, path);
-
+                    ProcessHelper.CmdExecute(@"electron.cmd ""..\..\dist\main.js"" " + arguments, path);
                 }
                 else
                 {
                     Console.WriteLine("Invoke electron - in dir: " + path);
-                    ProcessHelper.CmdExecute(@"./electron ""../../main.js"" " + arguments, path);
+                    ProcessHelper.CmdExecute(@"./electron ""../../dist/main.js"" " + arguments, path);
                 }
 
                 return true;

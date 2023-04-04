@@ -1,15 +1,15 @@
-import { Socket } from "socket.io";
 import { App } from "electron";
+import { Socket } from "socket.io";
 
-export class Connector {
+export class HookService {
   constructor(private socket: Socket, public app: App) {}
 
-  on(key: string, javaScriptCode: Function): void {
-    this.socket.on(key, (...args: any[]) => {
+  private on(key: string, cb: (...args: Array<any>) => void): void {
+    this.socket.on(key, (...args: Array<any>) => {
       const id: string = args.pop();
 
       try {
-        javaScriptCode(...args, (data) => {
+        cb(...args, (data) => {
           if (data) {
             this.socket.emit(`${key}Complete${id}`, data);
           }
@@ -18,5 +18,9 @@ export class Connector {
         this.socket.emit(`${key}Error${id}`, `Host Hook Exception`, error);
       }
     });
+  }
+
+  onHostReady(): void {
+    // execute your own JavaScript Host logic here
   }
 }

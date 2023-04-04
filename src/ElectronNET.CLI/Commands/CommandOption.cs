@@ -43,8 +43,11 @@
             get
             {
                 var key = this.Switch;
+
                 if (key.StartsWith("--"))
+                {
                     key = key.Substring(2);
+                }
 
                 return key;
             }
