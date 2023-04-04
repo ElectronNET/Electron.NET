@@ -1,22 +1,23 @@
 {
-  "name": "electron-host-hook",
+  "name": "@electronnet/host",
   "version": "1.0.0",
   "description": "Connector for Electron.NET projects.",
   "repository": {
     "url": "https://github.com/ElectronNET/Electron.NET"
   },
-  "main": "index.js",
+  "author": "Gregor Biswanger, Florian Rappl",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "esbuild index.ts --external:electron --platform=node --target=es2020 --bundle"
   },
   "keywords": [],
-  "author": "Gregor Biswanger",
-  "license": "MIT",
-  "devDependencies": {
-    "socket.io": "^4.6.1",
-    "typescript": "^5.0.2"
-  },
   "dependencies": {
     "exceljs": "^1.10.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.17.15",
+    "electron": "^23.2.0",
+    "socket.io": "^4.6.1",
+    "typescript": "^5.0.2"
   }
 }
