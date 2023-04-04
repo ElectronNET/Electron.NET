@@ -43,11 +43,14 @@ const manifestJsonFileName = app.commandLine.hasSwitch("manifest")
   : "electron.manifest.json";
 
 const watchable = app.commandLine.hasSwitch("watch");
+const isAsar = __dirname.includes("app.asar");
 
 // if watch is enabled lets change the path
 const currentBinPath = watchable
-  ? resolve(__dirname, "../../")
-  : resolve(__dirname, "../../", "bin");
+  ? resolve(__dirname, "../../..")
+  : isAsar
+  ? resolve(__dirname, "../../bin")
+  : resolve(__dirname, "../bin");
 
 const hostHookScriptFilePath = resolve(__dirname, "host-hook.js");
 const manifestJsonFilePath = resolve(currentBinPath, manifestJsonFileName);
@@ -160,9 +163,11 @@ function isSplashScreenEnabled() {
 }
 
 function startSplashScreen() {
+  const file = manifestJsonFile.splashscreen.imageFile;
+
   const imageFile = resolve(
     currentBinPath,
-    manifestJsonFile.splashscreen.imageFile
+    file.startsWith("/") ? file.substring(1) : file
   );
 
   imageSize(imageFile, (error, dimensions) => {
@@ -192,7 +197,7 @@ function startSplashScreen() {
     });
 
     const loadSplashscreenUrl =
-      resolve(__dirname, "splashscreen", "index.html") +
+      resolve(__dirname, "..", "splashscreen", "index.html") +
       "?imgPath=" +
       imageFile;
 
