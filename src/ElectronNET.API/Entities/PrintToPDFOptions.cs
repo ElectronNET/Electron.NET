@@ -1,7 +1,7 @@
 ﻿namespace ElectronNET.API.Entities;
 
 /// <summary>
-/// 
+/// The DTO for the print to PDF dialog options.
 /// </summary>
 public class PrintToPDFOptions
 {
@@ -59,5 +59,8 @@ public class PrintToPDFOptions
     /// </summary>
     public bool PreferCSSPageSize { get; set; } = false;
 
+    /// <summary>
+    /// The margins to use for the print page.
+    /// </summary>
     public Margins Margins { get; set; }
 }

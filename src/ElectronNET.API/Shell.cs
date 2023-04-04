@@ -49,7 +49,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Off("shell-showItemInFolderCompleted");
             });
 
-            BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
+            BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -70,7 +70,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((string) errorMessage);
             });
 
-            BridgeConnector.Socket.Emit("shell-openPath", path);
+            BridgeConnector.Socket.Emit("shell-openPath", path).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -106,11 +106,11 @@ namespace ElectronNET.API
 
             if (options == null)
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url);
+                BridgeConnector.Socket.Emit("shell-openExternal", url).FireAndForget();
             }
             else
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
+                BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
             }
 
             return taskCompletionSource.Task;
@@ -132,7 +132,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
+            BridgeConnector.Socket.Emit("shell-trashItem", fullPath).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -142,7 +142,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Beep()
         {
-            BridgeConnector.Socket.Emit("shell-beep");
+            BridgeConnector.Socket.Emit("shell-beep").FireAndForget();
         }
 
         /// <summary>
@@ -163,8 +163,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool) success);
             });
 
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
-
+            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer)).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -188,8 +187,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(details);
             });
 
-            BridgeConnector.Socket.Emit("shell-readShortcutLink", shortcutPath);
-
+            BridgeConnector.Socket.Emit("shell-readShortcutLink", shortcutPath).FireAndForget();
             return taskCompletionSource.Task;
         }
 

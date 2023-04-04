@@ -58,7 +58,7 @@ namespace ElectronNET.API
                     }
                 });
 
-                BridgeConnector.Socket.Emit("globalShortcut-register", accelerator);
+                BridgeConnector.Socket.Emit("globalShortcut-register", accelerator).FireAndForget();
             }
         }
 
@@ -79,7 +79,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isRegistered);
             });
 
-            BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);
+            BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -90,7 +90,7 @@ namespace ElectronNET.API
         public void Unregister(string accelerator)
         {
             _shortcuts.Remove(accelerator);
-            BridgeConnector.Socket.Emit("globalShortcut-unregister", accelerator);
+            BridgeConnector.Socket.Emit("globalShortcut-unregister", accelerator).FireAndForget();
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace ElectronNET.API
         public void UnregisterAll()
         {
             _shortcuts.Clear();
-            BridgeConnector.Socket.Emit("globalShortcut-unregisterAll");
+            BridgeConnector.Socket.Emit("globalShortcut-unregisterAll").FireAndForget();
         }
     }
 }

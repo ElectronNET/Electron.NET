@@ -48,7 +48,7 @@ namespace ElectronNET.API
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<string[]>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("showOpenDialogComplete" + guid, (filePaths) =>
             {
@@ -59,10 +59,7 @@ namespace ElectronNET.API
             });
 
 
-            BridgeConnector.Socket.Emit("showOpenDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer), guid);
-
+            BridgeConnector.Socket.Emit("showOpenDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer), guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -75,7 +72,7 @@ namespace ElectronNET.API
         public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("showSaveDialogComplete" + guid, (filename) =>
             {
@@ -84,11 +81,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(filename.ToString());
             });
 
-            BridgeConnector.Socket.Emit("showSaveDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
-
+            BridgeConnector.Socket.Emit("showSaveDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer), guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -162,13 +155,11 @@ namespace ElectronNET.API
 
             if (browserWindow == null)
             {
-                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
-            } else
+                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid).FireAndForget();
+            }
+            else
             {
-                BridgeConnector.Socket.Emit("showMessageBox", 
-                    JObject.FromObject(browserWindow, _jsonSerializer),
-                    JObject.FromObject(messageBoxOptions, _jsonSerializer),
-                    guid);
+                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(messageBoxOptions, _jsonSerializer), guid).FireAndForget();
             }
 
             return taskCompletionSource.Task;
@@ -186,7 +177,7 @@ namespace ElectronNET.API
         /// <param name="content">The text content to display in the error box.</param>
         public void ShowErrorBox(string title, string content)
         {
-            BridgeConnector.Socket.Emit("showErrorBox", title, content);
+            BridgeConnector.Socket.Emit("showErrorBox", title, content).FireAndForget();
         }
 
         /// <summary>
@@ -212,7 +203,7 @@ namespace ElectronNET.API
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("showCertificateTrustDialogComplete" + guid, () =>
             {
@@ -220,11 +211,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("showCertificateTrustDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
-                guid);
-
+            BridgeConnector.Socket.Emit("showCertificateTrustDialog", JObject.FromObject(browserWindow, _jsonSerializer), JObject.FromObject(options, _jsonSerializer), guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 

@@ -39,8 +39,9 @@ public class BrowserWindow
                     _readyToShow();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-ready-to-show", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-ready-to-show", Id).FireAndForget();
             }
+
             _readyToShow += value;
         }
         remove
@@ -48,7 +49,9 @@ public class BrowserWindow
             _readyToShow -= value;
 
             if (_readyToShow == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-ready-to-show" + Id);
+            }
         }
     }
 
@@ -68,7 +71,7 @@ public class BrowserWindow
                     _pageTitleUpdated(title.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-page-title-updated", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-page-title-updated", Id).FireAndForget();
             }
             _pageTitleUpdated += value;
         }
@@ -77,7 +80,9 @@ public class BrowserWindow
             _pageTitleUpdated -= value;
 
             if (_pageTitleUpdated == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-page-title-updated" + Id);
+            }
         }
     }
 
@@ -97,7 +102,7 @@ public class BrowserWindow
                     _close();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-close", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-close", Id).FireAndForget();
             }
             _close += value;
         }
@@ -106,7 +111,9 @@ public class BrowserWindow
             _close -= value;
 
             if (_close == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-close" + Id);
+            }
         }
     }
 
@@ -128,7 +135,7 @@ public class BrowserWindow
                     _closed();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-closed", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-closed", Id).FireAndForget();
             }
             _closed += value;
         }
@@ -137,7 +144,9 @@ public class BrowserWindow
             _closed -= value;
 
             if (_closed == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-closed" + Id);
+            }
         }
     }
 
@@ -157,7 +166,7 @@ public class BrowserWindow
                     _sessionEnd();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-session-end", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-session-end", Id).FireAndForget();
             }
             _sessionEnd += value;
         }
@@ -166,7 +175,9 @@ public class BrowserWindow
             _sessionEnd -= value;
 
             if (_sessionEnd == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-session-end" + Id);
+            }
         }
     }
 
@@ -186,7 +197,7 @@ public class BrowserWindow
                     _unresponsive();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-unresponsive", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-unresponsive", Id).FireAndForget();
             }
             _unresponsive += value;
         }
@@ -195,7 +206,9 @@ public class BrowserWindow
             _unresponsive -= value;
 
             if (_unresponsive == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-unresponsive" + Id);
+            }
         }
     }
 
@@ -215,7 +228,7 @@ public class BrowserWindow
                     _responsive();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-responsive", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-responsive", Id).FireAndForget();
             }
             _responsive += value;
         }
@@ -224,7 +237,9 @@ public class BrowserWindow
             _responsive -= value;
 
             if (_responsive == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-responsive" + Id);
+            }
         }
     }
 
@@ -244,7 +259,7 @@ public class BrowserWindow
                     _blur();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-blur", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-blur", Id).FireAndForget();
             }
             _blur += value;
         }
@@ -253,7 +268,9 @@ public class BrowserWindow
             _blur -= value;
 
             if (_blur == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-blur" + Id);
+            }
         }
     }
 
@@ -273,7 +290,7 @@ public class BrowserWindow
                     _focus();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-focus", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-focus", Id).FireAndForget();
             }
             _focus += value;
         }
@@ -282,7 +299,9 @@ public class BrowserWindow
             _focus -= value;
 
             if (_focus == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-focus" + Id);
+            }
         }
     }
 
@@ -302,7 +321,7 @@ public class BrowserWindow
                     _show();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-show", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-show", Id).FireAndForget();
             }
             _show += value;
         }
@@ -311,7 +330,9 @@ public class BrowserWindow
             _show -= value;
 
             if (_show == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-show" + Id);
+            }
         }
     }
 
@@ -331,7 +352,7 @@ public class BrowserWindow
                     _hide();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-hide", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-hide", Id).FireAndForget();
             }
             _hide += value;
         }
@@ -340,7 +361,9 @@ public class BrowserWindow
             _hide -= value;
 
             if (_hide == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-hide" + Id);
+            }
         }
     }
 
@@ -360,7 +383,7 @@ public class BrowserWindow
                     _maximize();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-maximize", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-maximize", Id).FireAndForget();
             }
             _maximize += value;
         }
@@ -369,7 +392,9 @@ public class BrowserWindow
             _maximize -= value;
 
             if (_maximize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-maximize" + Id);
+            }
         }
     }
 
@@ -389,7 +414,7 @@ public class BrowserWindow
                     _unmaximize();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-unmaximize", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-unmaximize", Id).FireAndForget();
             }
             _unmaximize += value;
         }
@@ -398,7 +423,9 @@ public class BrowserWindow
             _unmaximize -= value;
 
             if (_unmaximize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-unmaximize" + Id);
+            }
         }
     }
 
@@ -418,7 +445,7 @@ public class BrowserWindow
                     _minimize();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-minimize", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-minimize", Id).FireAndForget();
             }
             _minimize += value;
         }
@@ -427,7 +454,9 @@ public class BrowserWindow
             _minimize -= value;
 
             if (_minimize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-minimize" + Id);
+            }
         }
     }
 
@@ -447,7 +476,7 @@ public class BrowserWindow
                     _restore();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-restore", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-restore", Id).FireAndForget();
             }
             _restore += value;
         }
@@ -456,7 +485,9 @@ public class BrowserWindow
             _restore -= value;
 
             if (_restore == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-restore" + Id);
+            }
         }
     }
 
@@ -476,7 +507,7 @@ public class BrowserWindow
                     _resize();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-resize", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-resize", Id).FireAndForget();
             }
             _resize += value;
         }
@@ -485,7 +516,9 @@ public class BrowserWindow
             _resize -= value;
 
             if (_resize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-resize" + Id);
+            }
         }
     }
 
@@ -507,7 +540,7 @@ public class BrowserWindow
                     _move();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-move", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-move", Id).FireAndForget();
             }
             _move += value;
         }
@@ -516,7 +549,9 @@ public class BrowserWindow
             _move -= value;
 
             if (_move == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-move" + Id);
+            }
         }
     }
 
@@ -536,7 +571,7 @@ public class BrowserWindow
                     _moved();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-moved", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-moved", Id).FireAndForget();
             }
             _moved += value;
         }
@@ -545,7 +580,9 @@ public class BrowserWindow
             _moved -= value;
 
             if (_moved == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-moved" + Id);
+            }
         }
     }
 
@@ -565,7 +602,7 @@ public class BrowserWindow
                     _enterFullScreen();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-enter-full-screen", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-enter-full-screen", Id).FireAndForget();
             }
             _enterFullScreen += value;
         }
@@ -574,7 +611,9 @@ public class BrowserWindow
             _enterFullScreen -= value;
 
             if (_enterFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-enter-full-screen" + Id);
+            }
         }
     }
 
@@ -594,7 +633,7 @@ public class BrowserWindow
                     _leaveFullScreen();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-leave-full-screen", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-leave-full-screen", Id).FireAndForget();
             }
             _leaveFullScreen += value;
         }
@@ -603,7 +642,9 @@ public class BrowserWindow
             _leaveFullScreen -= value;
 
             if (_leaveFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-leave-full-screen" + Id);
+            }
         }
     }
 
@@ -623,7 +664,7 @@ public class BrowserWindow
                     _enterHtmlFullScreen();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-enter-html-full-screen", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-enter-html-full-screen", Id).FireAndForget();
             }
             _enterHtmlFullScreen += value;
         }
@@ -632,7 +673,9 @@ public class BrowserWindow
             _enterHtmlFullScreen -= value;
 
             if (_enterHtmlFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-enter-html-full-screen" + Id);
+            }
         }
     }
 
@@ -652,7 +695,7 @@ public class BrowserWindow
                     _leaveHtmlFullScreen();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-leave-html-full-screen", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-leave-html-full-screen", Id).FireAndForget();
             }
             _leaveHtmlFullScreen += value;
         }
@@ -661,7 +704,9 @@ public class BrowserWindow
             _leaveHtmlFullScreen -= value;
 
             if (_leaveHtmlFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-leave-html-full-screen" + Id);
+            }
         }
     }
 
@@ -687,7 +732,7 @@ public class BrowserWindow
                     _appCommand(command.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-app-command", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-app-command", Id).FireAndForget();
             }
             _appCommand += value;
         }
@@ -696,7 +741,9 @@ public class BrowserWindow
             _appCommand -= value;
 
             if (_appCommand == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-app-command" + Id);
+            }
         }
     }
 
@@ -716,7 +763,7 @@ public class BrowserWindow
                     _swipe(direction.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-swipe", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-swipe", Id).FireAndForget();
             }
             _swipe += value;
         }
@@ -725,7 +772,9 @@ public class BrowserWindow
             _swipe -= value;
 
             if (_swipe == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-swipe" + Id);
+            }
         }
     }
 
@@ -745,7 +794,7 @@ public class BrowserWindow
                     _sheetBegin();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-sheet-begin", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-sheet-begin", Id).FireAndForget();
             }
             _sheetBegin += value;
         }
@@ -754,7 +803,9 @@ public class BrowserWindow
             _sheetBegin -= value;
 
             if (_sheetBegin == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-sheet-begin" + Id);
+            }
         }
     }
 
@@ -774,7 +825,7 @@ public class BrowserWindow
                     _sheetEnd();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-sheet-end", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-sheet-end", Id).FireAndForget();
             }
             _sheetEnd += value;
         }
@@ -783,7 +834,9 @@ public class BrowserWindow
             _sheetEnd -= value;
 
             if (_sheetEnd == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-sheet-end" + Id);
+            }
         }
     }
 
@@ -803,7 +856,7 @@ public class BrowserWindow
                     _newWindowForTab();
                 });
 
-                BridgeConnector.Socket.Emit("register-browserWindow-new-window-for-tab", Id);
+                BridgeConnector.Socket.Emit("register-browserWindow-new-window-for-tab", Id).FireAndForget();
             }
             _newWindowForTab += value;
         }
@@ -812,7 +865,9 @@ public class BrowserWindow
             _newWindowForTab -= value;
 
             if (_newWindowForTab == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-new-window-for-tab" + Id);
+            }
         }
     }
 
@@ -830,7 +885,7 @@ public class BrowserWindow
     /// </summary>
     public void Destroy()
     {
-        BridgeConnector.Socket.Emit("browserWindowDestroy", Id);
+        BridgeConnector.Socket.Emit("browserWindowDestroy", Id).FireAndForget();
     }
 
     /// <summary>
@@ -839,7 +894,7 @@ public class BrowserWindow
     /// </summary>
     public void Close()
     {
-        BridgeConnector.Socket.Emit("browserWindowClose", Id);
+        BridgeConnector.Socket.Emit("browserWindowClose", Id).FireAndForget();
     }
 
     /// <summary>
@@ -847,7 +902,7 @@ public class BrowserWindow
     /// </summary>
     public void Focus()
     {
-        BridgeConnector.Socket.Emit("browserWindowFocus", Id);
+        BridgeConnector.Socket.Emit("browserWindowFocus", Id).FireAndForget();
     }
 
     /// <summary>
@@ -855,7 +910,7 @@ public class BrowserWindow
     /// </summary>
     public void Blur()
     {
-        BridgeConnector.Socket.Emit("browserWindowBlur", Id);
+        BridgeConnector.Socket.Emit("browserWindowBlur", Id).FireAndForget();
     }
 
     /// <summary>
@@ -872,7 +927,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isFocused);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsFocused", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsFocused", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -891,7 +946,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isDestroyed);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsDestroyed", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsDestroyed", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -901,7 +956,7 @@ public class BrowserWindow
     /// </summary>
     public void Show()
     {
-        BridgeConnector.Socket.Emit("browserWindowShow", Id);
+        BridgeConnector.Socket.Emit("browserWindowShow", Id).FireAndForget();
     }
 
     /// <summary>
@@ -909,7 +964,7 @@ public class BrowserWindow
     /// </summary>
     public void ShowInactive()
     {
-        BridgeConnector.Socket.Emit("browserWindowShowInactive", Id);
+        BridgeConnector.Socket.Emit("browserWindowShowInactive", Id).FireAndForget();
     }
 
     /// <summary>
@@ -917,7 +972,7 @@ public class BrowserWindow
     /// </summary>
     public void Hide()
     {
-        BridgeConnector.Socket.Emit("browserWindowHide", Id);
+        BridgeConnector.Socket.Emit("browserWindowHide", Id).FireAndForget();
     }
 
     /// <summary>
@@ -934,7 +989,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isVisible);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsVisible", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsVisible", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -953,7 +1008,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isModal);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsModal", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsModal", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -963,7 +1018,7 @@ public class BrowserWindow
     /// </summary>
     public void Maximize()
     {
-        BridgeConnector.Socket.Emit("browserWindowMaximize", Id);
+        BridgeConnector.Socket.Emit("browserWindowMaximize", Id).FireAndForget();
     }
 
     /// <summary>
@@ -971,7 +1026,7 @@ public class BrowserWindow
     /// </summary>
     public void Unmaximize()
     {
-        BridgeConnector.Socket.Emit("browserWindowUnmaximize", Id);
+        BridgeConnector.Socket.Emit("browserWindowUnmaximize", Id).FireAndForget();
     }
 
     /// <summary>
@@ -988,7 +1043,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isMaximized);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMaximized", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMaximized", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -998,7 +1053,7 @@ public class BrowserWindow
     /// </summary>
     public void Minimize()
     {
-        BridgeConnector.Socket.Emit("browserWindowMinimize", Id);
+        BridgeConnector.Socket.Emit("browserWindowMinimize", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1006,7 +1061,7 @@ public class BrowserWindow
     /// </summary>
     public void Restore()
     {
-        BridgeConnector.Socket.Emit("browserWindowRestore", Id);
+        BridgeConnector.Socket.Emit("browserWindowRestore", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1023,7 +1078,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isMinimized);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMinimized", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMinimized", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1033,7 +1088,7 @@ public class BrowserWindow
     /// </summary>
     public void SetFullScreen(bool flag)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetFullScreen", Id, flag);
+        BridgeConnector.Socket.Emit("browserWindowSetFullScreen", Id, flag).FireAndForget();
     }
 
     /// <summary>
@@ -1050,7 +1105,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isFullScreen);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsFullScreen", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsFullScreen", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1071,7 +1126,7 @@ public class BrowserWindow
     /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
     public void SetAspectRatio(int aspectRatio, Size extraSize)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -1082,7 +1137,7 @@ public class BrowserWindow
     /// file to open.</param>
     public void PreviewFile(string path)
     {
-        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path);
+        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path).FireAndForget();
     }
 
     /// <summary>
@@ -1095,7 +1150,7 @@ public class BrowserWindow
     /// purely visual and does not affect the content type of the file. Defaults to path.</param>
     public void PreviewFile(string path, string displayname)
     {
-        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path, displayname);
+        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path, displayname).FireAndForget();
     }
 
     /// <summary>
@@ -1103,7 +1158,7 @@ public class BrowserWindow
     /// </summary>
     public void CloseFilePreview()
     {
-        BridgeConnector.Socket.Emit("browserWindowCloseFilePreview", Id);
+        BridgeConnector.Socket.Emit("browserWindowCloseFilePreview", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1112,7 +1167,7 @@ public class BrowserWindow
     /// <param name="bounds"></param>
     public void SetBounds(Rectangle bounds)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -1122,7 +1177,7 @@ public class BrowserWindow
     /// <param name="animate"></param>
     public void SetBounds(Rectangle bounds, bool animate)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate).FireAndForget();
     }
 
     /// <summary>
@@ -1139,7 +1194,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JObject)getBounds).ToObject<Rectangle>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetBounds", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetBounds", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1150,7 +1205,7 @@ public class BrowserWindow
     /// <param name="bounds"></param>
     public void SetContentBounds(Rectangle bounds)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -1160,7 +1215,7 @@ public class BrowserWindow
     /// <param name="animate"></param>
     public void SetContentBounds(Rectangle bounds, bool animate)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
+        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate).FireAndForget();
     }
 
     /// <summary>
@@ -1177,7 +1232,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JObject)getContentBounds).ToObject<Rectangle>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetContentBounds", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetContentBounds", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1189,7 +1244,7 @@ public class BrowserWindow
     /// <param name="height"></param>
     public void SetSize(int width, int height)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height);
+        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height).FireAndForget();
     }
 
     /// <summary>
@@ -1200,7 +1255,7 @@ public class BrowserWindow
     /// <param name="animate"></param>
     public void SetSize(int width, int height, bool animate)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height, animate);
+        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height, animate).FireAndForget();
     }
 
     /// <summary>
@@ -1217,7 +1272,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetSize", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetSize", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1229,7 +1284,7 @@ public class BrowserWindow
     /// <param name="height"></param>
     public void SetContentSize(int width, int height)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height);
+        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height).FireAndForget();
     }
 
     /// <summary>
@@ -1240,7 +1295,7 @@ public class BrowserWindow
     /// <param name="animate"></param>
     public void SetContentSize(int width, int height, bool animate)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height, animate);
+        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height, animate).FireAndForget();
     }
 
     /// <summary>
@@ -1257,7 +1312,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetContentSize", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetContentSize", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1269,7 +1324,7 @@ public class BrowserWindow
     /// <param name="height"></param>
     public void SetMinimumSize(int width, int height)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMinimumSize", Id, width, height);
+        BridgeConnector.Socket.Emit("browserWindowSetMinimumSize", Id, width, height).FireAndForget();
     }
 
     /// <summary>
@@ -1286,7 +1341,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetMinimumSize", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetMinimumSize", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1298,7 +1353,7 @@ public class BrowserWindow
     /// <param name="height"></param>
     public void SetMaximumSize(int width, int height)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMaximumSize", Id, width, height);
+        BridgeConnector.Socket.Emit("browserWindowSetMaximumSize", Id, width, height).FireAndForget();
     }
 
     /// <summary>
@@ -1315,7 +1370,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetMaximumSize", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetMaximumSize", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1326,7 +1381,7 @@ public class BrowserWindow
     /// <param name="resizable"></param>
     public void SetResizable(bool resizable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetResizable", Id, resizable);
+        BridgeConnector.Socket.Emit("browserWindowSetResizable", Id, resizable).FireAndForget();
     }
 
     /// <summary>
@@ -1343,7 +1398,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)resizable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsResizable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsResizable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1354,7 +1409,7 @@ public class BrowserWindow
     /// <param name="movable"></param>
     public void SetMovable(bool movable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMovable", Id, movable);
+        BridgeConnector.Socket.Emit("browserWindowSetMovable", Id, movable).FireAndForget();
     }
 
     /// <summary>
@@ -1373,7 +1428,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)movable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMovable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMovable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1384,7 +1439,7 @@ public class BrowserWindow
     /// <param name="minimizable"></param>
     public void SetMinimizable(bool minimizable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMinimizable", Id, minimizable);
+        BridgeConnector.Socket.Emit("browserWindowSetMinimizable", Id, minimizable).FireAndForget();
     }
 
     /// <summary>
@@ -1403,7 +1458,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)minimizable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMinimizable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMinimizable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1414,7 +1469,7 @@ public class BrowserWindow
     /// <param name="maximizable"></param>
     public void SetMaximizable(bool maximizable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMaximizable", Id, maximizable);
+        BridgeConnector.Socket.Emit("browserWindowSetMaximizable", Id, maximizable).FireAndForget();
     }
 
     /// <summary>
@@ -1433,7 +1488,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)maximizable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMaximizable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMaximizable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1444,7 +1499,7 @@ public class BrowserWindow
     /// <param name="fullscreenable"></param>
     public void SetFullScreenable(bool fullscreenable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetFullScreenable", Id, fullscreenable);
+        BridgeConnector.Socket.Emit("browserWindowSetFullScreenable", Id, fullscreenable).FireAndForget();
     }
 
     /// <summary>
@@ -1461,7 +1516,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)fullscreenable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsFullScreenable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsFullScreenable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1472,7 +1527,7 @@ public class BrowserWindow
     /// <param name="closable"></param>
     public void SetClosable(bool closable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetClosable", Id, closable);
+        BridgeConnector.Socket.Emit("browserWindowSetClosable", Id, closable).FireAndForget();
     }
 
     /// <summary>
@@ -1491,7 +1546,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)closable);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsClosable", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsClosable", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1504,7 +1559,7 @@ public class BrowserWindow
     /// <param name="flag"></param>
     public void SetAlwaysOnTop(bool flag)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag);
+        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag).FireAndForget();
     }
 
     /// <summary>
@@ -1518,7 +1573,7 @@ public class BrowserWindow
     /// See the macOS docs</param>
     public void SetAlwaysOnTop(bool flag, OnTopLevel level)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
+        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription()).FireAndForget();
     }
 
     /// <summary>
@@ -1534,7 +1589,7 @@ public class BrowserWindow
     /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
     public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
+        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel).FireAndForget();
     }
 
     /// <summary>
@@ -1551,7 +1606,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isAlwaysOnTop);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsAlwaysOnTop", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsAlwaysOnTop", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1561,7 +1616,7 @@ public class BrowserWindow
     /// </summary>
     public void Center()
     {
-        BridgeConnector.Socket.Emit("browserWindowCenter", Id);
+        BridgeConnector.Socket.Emit("browserWindowCenter", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1578,7 +1633,7 @@ public class BrowserWindow
             x = x - 7;
         }
 
-        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y);
+        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y).FireAndForget();
     }
 
     /// <summary>
@@ -1596,7 +1651,7 @@ public class BrowserWindow
             x = x - 7;
         }
 
-        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate);
+        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate).FireAndForget();
     }
 
     private bool isWindows10()
@@ -1618,7 +1673,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(((JArray)position).ToObject<int[]>());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetPosition", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetPosition", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1629,7 +1684,7 @@ public class BrowserWindow
     /// <param name="title"></param>
     public void SetTitle(string title)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetTitle", Id, title);
+        BridgeConnector.Socket.Emit("browserWindowSetTitle", Id, title).FireAndForget();
     }
 
     /// <summary>
@@ -1648,7 +1703,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(title.ToString());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetTitle", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetTitle", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1661,7 +1716,7 @@ public class BrowserWindow
     /// <param name="offsetY"></param>
     public void SetSheetOffset(float offsetY)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY);
+        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY).FireAndForget();
     }
 
     /// <summary>
@@ -1673,7 +1728,7 @@ public class BrowserWindow
     /// <param name="offsetX"></param>
     public void SetSheetOffset(float offsetY, float offsetX)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY, offsetX);
+        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY, offsetX).FireAndForget();
     }
 
     /// <summary>
@@ -1682,7 +1737,7 @@ public class BrowserWindow
     /// <param name="flag"></param>
     public void FlashFrame(bool flag)
     {
-        BridgeConnector.Socket.Emit("browserWindowFlashFrame", Id, flag);
+        BridgeConnector.Socket.Emit("browserWindowFlashFrame", Id, flag).FireAndForget();
     }
 
     /// <summary>
@@ -1691,7 +1746,7 @@ public class BrowserWindow
     /// <param name="skip"></param>
     public void SetSkipTaskbar(bool skip)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetSkipTaskbar", Id, skip);
+        BridgeConnector.Socket.Emit("browserWindowSetSkipTaskbar", Id, skip).FireAndForget();
     }
 
     /// <summary>
@@ -1700,7 +1755,7 @@ public class BrowserWindow
     /// <param name="flag"></param>
     public void SetKiosk(bool flag)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetKiosk", Id, flag);
+        BridgeConnector.Socket.Emit("browserWindowSetKiosk", Id, flag).FireAndForget();
     }
 
     /// <summary>
@@ -1717,7 +1772,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isKiosk);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsKiosk", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsKiosk", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1736,7 +1791,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(nativeWindowHandle.ToString());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetNativeWindowHandle", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetNativeWindowHandle", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1748,7 +1803,7 @@ public class BrowserWindow
     /// <param name="filename"></param>
     public void SetRepresentedFilename(string filename)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetRepresentedFilename", Id, filename);
+        BridgeConnector.Socket.Emit("browserWindowSetRepresentedFilename", Id, filename).FireAndForget();
     }
 
     /// <summary>
@@ -1765,7 +1820,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(pathname.ToString());
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetRepresentedFilename", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetRepresentedFilename", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1777,7 +1832,7 @@ public class BrowserWindow
     /// <param name="edited"></param>
     public void SetDocumentEdited(bool edited)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetDocumentEdited", Id, edited);
+        BridgeConnector.Socket.Emit("browserWindowSetDocumentEdited", Id, edited).FireAndForget();
     }
 
     /// <summary>
@@ -1794,7 +1849,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)edited);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsDocumentEdited", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsDocumentEdited", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1804,7 +1859,7 @@ public class BrowserWindow
     /// </summary>
     public void FocusOnWebView()
     {
-        BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id);
+        BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1812,7 +1867,7 @@ public class BrowserWindow
     /// </summary>
     public void BlurWebView()
     {
-        BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id);
+        BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1822,7 +1877,7 @@ public class BrowserWindow
     /// <param name="url"></param>
     public void LoadURL(string url)
     {
-        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url);
+        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url).FireAndForget();
     }
 
     /// <summary>
@@ -1833,7 +1888,7 @@ public class BrowserWindow
     /// <param name="options"></param>
     public void LoadURL(string url, LoadURLOptions options)
     {
-        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -1841,7 +1896,7 @@ public class BrowserWindow
     /// </summary>
     public void Reload()
     {
-        BridgeConnector.Socket.Emit("browserWindowReload", Id);
+        BridgeConnector.Socket.Emit("browserWindowReload", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1850,7 +1905,8 @@ public class BrowserWindow
     /// <value>
     /// The menu items.
     /// </value>
-    public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
+    public IReadOnlyCollection<MenuItem> MenuItems => _items.AsReadOnly();
+
     private List<MenuItem> _items = new List<MenuItem>();
 
     /// <summary>
@@ -1861,7 +1917,7 @@ public class BrowserWindow
     public void SetMenu(MenuItem[] menuItems)
     {
         menuItems.AddMenuItemsId();
-        BridgeConnector.Socket.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer)).FireAndForget();
         _items.AddRange(menuItems);
 
         BridgeConnector.Socket.Off("windowMenuItemClicked");
@@ -1876,7 +1932,7 @@ public class BrowserWindow
     /// </summary>
     public void RemoveMenu()
     {
-        BridgeConnector.Socket.Emit("browserWindowRemoveMenu", Id);
+        BridgeConnector.Socket.Emit("browserWindowRemoveMenu", Id).FireAndForget();
     }
 
     /// <summary>
@@ -1892,7 +1948,7 @@ public class BrowserWindow
     /// <param name="progress"></param>
     public void SetProgressBar(double progress)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress);
+        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress).FireAndForget();
     }
 
     /// <summary>
@@ -1909,7 +1965,7 @@ public class BrowserWindow
     /// <param name="progressBarOptions"></param>
     public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -1918,7 +1974,7 @@ public class BrowserWindow
     /// <param name="hasShadow"></param>
     public void SetHasShadow(bool hasShadow)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetHasShadow", Id, hasShadow);
+        BridgeConnector.Socket.Emit("browserWindowSetHasShadow", Id, hasShadow).FireAndForget();
     }
 
     /// <summary>
@@ -1937,7 +1993,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)hasShadow);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowHasShadow", Id);
+        BridgeConnector.Socket.Emit("browserWindowHasShadow", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -1974,7 +2030,7 @@ public class BrowserWindow
         });
 
         thumbarButtons.AddThumbarButtonsId();
-        BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer)).FireAndForget();
         _thumbarButtons.Clear();
         _thumbarButtons.AddRange(thumbarButtons);
 
@@ -1995,7 +2051,7 @@ public class BrowserWindow
     /// <param name="rectangle"></param>
     public void SetThumbnailClip(Rectangle rectangle)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetThumbnailClip", Id, rectangle);
+        BridgeConnector.Socket.Emit("browserWindowSetThumbnailClip", Id, rectangle).FireAndForget();
     }
 
     /// <summary>
@@ -2004,7 +2060,7 @@ public class BrowserWindow
     /// <param name="tooltip"></param>
     public void SetThumbnailToolTip(string tooltip)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetThumbnailToolTip", Id, tooltip);
+        BridgeConnector.Socket.Emit("browserWindowSetThumbnailToolTip", Id, tooltip).FireAndForget();
     }
 
     /// <summary>
@@ -2016,7 +2072,7 @@ public class BrowserWindow
     /// <param name="options"></param>
     public void SetAppDetails(AppDetailsOptions options)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -2024,7 +2080,7 @@ public class BrowserWindow
     /// </summary>
     public void ShowDefinitionForSelection()
     {
-        BridgeConnector.Socket.Emit("browserWindowShowDefinitionForSelection", Id);
+        BridgeConnector.Socket.Emit("browserWindowShowDefinitionForSelection", Id).FireAndForget();
     }
 
     /// <summary>
@@ -2036,7 +2092,7 @@ public class BrowserWindow
     /// <param name="hide"></param>
     public void SetAutoHideMenuBar(bool hide)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAutoHideMenuBar", Id, hide);
+        BridgeConnector.Socket.Emit("browserWindowSetAutoHideMenuBar", Id, hide).FireAndForget();
     }
 
     /// <summary>
@@ -2053,7 +2109,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isMenuBarAutoHide);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMenuBarAutoHide", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMenuBarAutoHide", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -2065,7 +2121,7 @@ public class BrowserWindow
     /// <param name="visible"></param>
     public void SetMenuBarVisibility(bool visible)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetMenuBarVisibility", Id, visible);
+        BridgeConnector.Socket.Emit("browserWindowSetMenuBarVisibility", Id, visible).FireAndForget();
     }
 
     /// <summary>
@@ -2082,7 +2138,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isMenuBarVisible);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsMenuBarVisible", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsMenuBarVisible", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -2095,7 +2151,7 @@ public class BrowserWindow
     /// <param name="visible"></param>
     public void SetVisibleOnAllWorkspaces(bool visible)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetVisibleOnAllWorkspaces", Id, visible);
+        BridgeConnector.Socket.Emit("browserWindowSetVisibleOnAllWorkspaces", Id, visible).FireAndForget();
     }
 
     /// <summary>
@@ -2114,7 +2170,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult((bool)isVisibleOnAllWorkspaces);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowIsVisibleOnAllWorkspaces", Id);
+        BridgeConnector.Socket.Emit("browserWindowIsVisibleOnAllWorkspaces", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -2128,7 +2184,7 @@ public class BrowserWindow
     /// <param name="ignore"></param>
     public void SetIgnoreMouseEvents(bool ignore)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetIgnoreMouseEvents", Id, ignore);
+        BridgeConnector.Socket.Emit("browserWindowSetIgnoreMouseEvents", Id, ignore).FireAndForget();
     }
 
     /// <summary>
@@ -2140,7 +2196,7 @@ public class BrowserWindow
     /// <param name="enable"></param>
     public void SetContentProtection(bool enable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable);
+        BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable).FireAndForget();
     }
 
     /// <summary>
@@ -2149,7 +2205,7 @@ public class BrowserWindow
     /// <param name="focusable"></param>
     public void SetFocusable(bool focusable)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetFocusable", Id, focusable);
+        BridgeConnector.Socket.Emit("browserWindowSetFocusable", Id, focusable).FireAndForget();
     }
 
     /// <summary>
@@ -2159,7 +2215,7 @@ public class BrowserWindow
     /// <param name="parent"></param>
     public void SetParentWindow(BrowserWindow parent)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -2178,7 +2234,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(browserWindow);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetParentWindow", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetParentWindow", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -2206,7 +2262,7 @@ public class BrowserWindow
             taskCompletionSource.SetResult(browserWindows);
         });
 
-        BridgeConnector.Socket.Emit("browserWindowGetChildWindows", Id);
+        BridgeConnector.Socket.Emit("browserWindowGetChildWindows", Id).FireAndForget();
 
         return taskCompletionSource.Task;
     }
@@ -2217,7 +2273,7 @@ public class BrowserWindow
     /// <param name="autoHide"></param>
     public void SetAutoHideCursor(bool autoHide)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetAutoHideCursor", Id, autoHide);
+        BridgeConnector.Socket.Emit("browserWindowSetAutoHideCursor", Id, autoHide).FireAndForget();
     }
 
     /// <summary>
@@ -2229,7 +2285,7 @@ public class BrowserWindow
     /// See the macOS documentation for more details.</param>
     public void SetVibrancy(Vibrancy type)
     {
-        BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
+        BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription()).FireAndForget();
     }
 
     /// <summary>
@@ -2245,7 +2301,7 @@ public class BrowserWindow
     /// <param name="browserView"></param>
     public void SetBrowserView(BrowserView browserView)
     {
-        BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
+        BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id).FireAndForget();
     }
 
     private readonly JsonSerializer _jsonSerializer = new()

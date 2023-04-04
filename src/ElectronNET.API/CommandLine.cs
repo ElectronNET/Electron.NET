@@ -43,7 +43,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendSwitch(string the_switch, string value = "")
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", the_switch, value);
+            BridgeConnector.Socket.Emit("appCommandLineAppendSwitch", the_switch, value).FireAndForget();
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ElectronNET.API
         /// </remarks>
         public void AppendArgument(string value)
         {
-            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value);
+            BridgeConnector.Socket.Emit("appCommandLineAppendArgument", value).FireAndForget();
         }
 
         /// <summary>
@@ -69,8 +69,8 @@ namespace ElectronNET.API
         public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken)) 
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<bool>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appCommandLineHasSwitchCompleted", (result) =>
@@ -79,8 +79,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool)result);
                 });
 
-                BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName);
-
+                BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName).FireAndForget();
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
         }
@@ -97,8 +96,8 @@ namespace ElectronNET.API
         public async Task<string> GetSwitchValueAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<string>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appCommandLineGetSwitchValueCompleted", (result) =>
@@ -107,8 +106,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((string)result);
                 });
 
-                BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName);
-
+                BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName).FireAndForget();
                 return await taskCompletionSource.Task.ConfigureAwait(false);
             }
         }

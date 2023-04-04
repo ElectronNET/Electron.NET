@@ -53,7 +53,7 @@ namespace ElectronNET.API
                 Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
             });
 
-            BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
+            BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid).FireAndForget();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ElectronNET.API
         public Task<T> CallAsync<T>(string socketEventName, params dynamic[] arguments)
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
             {
@@ -113,8 +113,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(data);
             });
 
-            BridgeConnector.Socket.Emit(socketEventName, arguments, guid);
-
+            BridgeConnector.Socket.Emit(socketEventName, arguments, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 

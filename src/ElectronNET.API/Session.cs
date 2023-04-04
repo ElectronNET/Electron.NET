@@ -37,7 +37,7 @@ namespace ElectronNET.API
         /// <param name="domains">A comma-separated list of servers for which integrated authentication is enabled.</param>
         public void AllowNTLMCredentialsForDomains(string domains)
         {
-            BridgeConnector.Socket.Emit("webContents-session-allowNTLMCredentialsForDomains", Id, domains);
+            BridgeConnector.Socket.Emit("webContents-session-allowNTLMCredentialsForDomains", Id, domains).FireAndForget();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ElectronNET.API
         public Task ClearAuthCacheAsync(RemovePassword options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearAuthCache-completed" + guid, () =>
             {
@@ -56,7 +56,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, JObject.FromObject(options, _jsonSerializer), guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -67,7 +67,7 @@ namespace ElectronNET.API
         public Task ClearAuthCacheAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearAuthCache-completed" + guid, () =>
             {
@@ -75,7 +75,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -87,7 +87,7 @@ namespace ElectronNET.API
         public Task ClearCacheAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearCache-completed" + guid, () =>
             {
@@ -95,7 +95,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearCache", Id, guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearCache", Id, guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -107,7 +107,7 @@ namespace ElectronNET.API
         public Task ClearHostResolverCacheAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearHostResolverCache-completed" + guid, () =>
             {
@@ -115,7 +115,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearHostResolverCache", Id, guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearHostResolverCache", Id, guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -127,7 +127,7 @@ namespace ElectronNET.API
         public Task ClearStorageDataAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearStorageData-completed" + guid, () =>
             {
@@ -135,7 +135,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearStorageData", Id, guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearStorageData", Id, guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -148,7 +148,7 @@ namespace ElectronNET.API
         public Task ClearStorageDataAsync(ClearStorageDataOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-clearStorageData-options-completed" + guid, () =>
             {
@@ -156,7 +156,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearStorageData-options", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearStorageData-options", Id, JObject.FromObject(options, _jsonSerializer), guid).FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -171,7 +171,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void CreateInterruptedDownload(CreateInterruptedDownloadOptions options)
         {
-            BridgeConnector.Socket.Emit("webContents-session-createInterruptedDownload", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-session-createInterruptedDownload", Id, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace ElectronNET.API
         /// </summary>
         public void DisableNetworkEmulation()
         {
-            BridgeConnector.Socket.Emit("webContents-session-disableNetworkEmulation", Id);
+            BridgeConnector.Socket.Emit("webContents-session-disableNetworkEmulation", Id).FireAndForget();
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void EnableNetworkEmulation(EnableNetworkEmulationOptions options)
         {
-            BridgeConnector.Socket.Emit("webContents-session-enableNetworkEmulation", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-session-enableNetworkEmulation", Id, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace ElectronNET.API
         /// </summary>
         public void FlushStorageData()
         {
-            BridgeConnector.Socket.Emit("webContents-session-flushStorageData", Id);
+            BridgeConnector.Socket.Emit("webContents-session-flushStorageData", Id).FireAndForget();
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace ElectronNET.API
         public Task<int[]> GetBlobDataAsync(string identifier)
         {
             var taskCompletionSource = new TaskCompletionSource<int[]>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-getBlobData-completed" + guid, (buffer) =>
             {
@@ -218,8 +218,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(result);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-getBlobData", Id, identifier, guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-getBlobData", Id, identifier, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -230,7 +229,7 @@ namespace ElectronNET.API
         public Task<int> GetCacheSizeAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-getCacheSize-completed" + guid, (size) =>
             {
@@ -238,8 +237,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((int)size);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-getCacheSize", Id, guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-getCacheSize", Id, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -250,7 +248,7 @@ namespace ElectronNET.API
         public Task<string[]> GetPreloadsAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<string[]>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-getPreloads-completed" + guid, (preloads) =>
             {
@@ -259,8 +257,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(result);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-getPreloads", Id, guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-getPreloads", Id, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -271,7 +268,7 @@ namespace ElectronNET.API
         public Task<string> GetUserAgent()
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-getUserAgent-completed" + guid, (userAgent) =>
             {
@@ -279,8 +276,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(userAgent.ToString());
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-getUserAgent", Id, guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-getUserAgent", Id, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -293,7 +289,7 @@ namespace ElectronNET.API
         public Task<string> ResolveProxyAsync(string url)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-resolveProxy-completed" + guid, (proxy) =>
             {
@@ -301,8 +297,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(proxy.ToString());
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-resolveProxy", Id, url, guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-resolveProxy", Id, url, guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -313,7 +308,7 @@ namespace ElectronNET.API
         /// <param name="path"></param>
         public void SetDownloadPath(string path)
         {
-            BridgeConnector.Socket.Emit("webContents-session-setDownloadPath", Id, path);
+            BridgeConnector.Socket.Emit("webContents-session-setDownloadPath", Id, path).FireAndForget();
         }
 
         /// <summary>
@@ -323,7 +318,7 @@ namespace ElectronNET.API
         /// <param name="preloads"></param>
         public void SetPreloads(string[] preloads)
         {
-            BridgeConnector.Socket.Emit("webContents-session-setPreloads", Id, preloads);
+            BridgeConnector.Socket.Emit("webContents-session-setPreloads", Id, preloads).FireAndForget();
         }
 
         /// <summary>
@@ -335,7 +330,7 @@ namespace ElectronNET.API
         public Task SetProxyAsync(ProxyConfig config)
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("webContents-session-setProxy-completed" + guid, () =>
             {
@@ -343,8 +338,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-setProxy", Id, JObject.FromObject(config, _jsonSerializer), guid);
-
+            BridgeConnector.Socket.Emit("webContents-session-setProxy", Id, JObject.FromObject(config, _jsonSerializer), guid).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -356,7 +350,7 @@ namespace ElectronNET.API
         /// <param name="userAgent"></param>
         public void SetUserAgent(string userAgent)
         {
-            BridgeConnector.Socket.Emit("webContents-session-setUserAgent", Id, userAgent);
+            BridgeConnector.Socket.Emit("webContents-session-setUserAgent", Id, userAgent).FireAndForget();
         }
 
         /// <summary>
@@ -372,7 +366,7 @@ namespace ElectronNET.API
         /// example "en-US,fr,de,ko,zh-CN,ja".</param>
         public void SetUserAgent(string userAgent, string acceptLanguages)
         {
-            BridgeConnector.Socket.Emit("webContents-session-setUserAgent", Id, userAgent, acceptLanguages);
+            BridgeConnector.Socket.Emit("webContents-session-setUserAgent", Id, userAgent, acceptLanguages).FireAndForget();
         }
 
         /// <summary>
@@ -392,8 +386,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(chromeExtensionInfos);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-getAllExtensions", Id);
-
+            BridgeConnector.Socket.Emit("webContents-session-getAllExtensions", Id).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -404,7 +397,7 @@ namespace ElectronNET.API
         /// <param name="name">Name of the Chrome extension to remove</param>
         public void RemoveExtension(string name)
         {
-            BridgeConnector.Socket.Emit("webContents-session-removeExtension", Id, name);
+            BridgeConnector.Socket.Emit("webContents-session-removeExtension", Id, name).FireAndForget();
         }
 
         /// <summary>
@@ -445,8 +438,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)extension).ToObject<Extension>());
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess);
-
+            BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess).FireAndForget();
             return taskCompletionSource.Task;
         }
 

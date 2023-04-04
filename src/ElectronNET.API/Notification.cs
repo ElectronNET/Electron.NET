@@ -48,7 +48,7 @@ namespace ElectronNET.API
         {
             GenerateIDsForDefinedActions(notificationOptions);
 
-            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer)).FireAndForget();
         }
 
         private static void GenerateIDsForDefinedActions(NotificationOptions notificationOptions)
@@ -132,7 +132,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)isSupported);
             });
 
-            BridgeConnector.Socket.Emit("notificationIsSupported");
+            BridgeConnector.Socket.Emit("notificationIsSupported").FireAndForget();
 
             return taskCompletionSource.Task;
         }

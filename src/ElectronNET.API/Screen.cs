@@ -26,7 +26,7 @@ namespace ElectronNET.API
                         _onDisplayAdded(((JObject)display).ToObject<Display>());
                     });
 
-                    BridgeConnector.Socket.Emit("register-screen-display-added", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-screen-display-added", GetHashCode()).FireAndForget();
                 }
                 _onDisplayAdded += value;
             }
@@ -35,7 +35,9 @@ namespace ElectronNET.API
                 _onDisplayAdded -= value;
 
                 if (_onDisplayAdded == null)
+                {
                     BridgeConnector.Socket.Off("screen-display-added-event" + GetHashCode());
+                }
             }
         }
 
@@ -55,7 +57,7 @@ namespace ElectronNET.API
                         _onDisplayRemoved(((JObject)display).ToObject<Display>());
                     });
 
-                    BridgeConnector.Socket.Emit("register-screen-display-removed", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-screen-display-removed", GetHashCode()).FireAndForget();
                 }
                 _onDisplayRemoved += value;
             }
@@ -64,7 +66,9 @@ namespace ElectronNET.API
                 _onDisplayRemoved -= value;
 
                 if (_onDisplayRemoved == null)
+                {
                     BridgeConnector.Socket.Off("screen-display-removed-event" + GetHashCode());
+                }
             }
         }
 
@@ -89,7 +93,7 @@ namespace ElectronNET.API
                         _onDisplayMetricsChanged(display, metrics);
                     });
 
-                    BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode()).FireAndForget();
                 }
                 _onDisplayMetricsChanged += value;
             }
@@ -98,13 +102,16 @@ namespace ElectronNET.API
                 _onDisplayMetricsChanged -= value;
 
                 if (_onDisplayMetricsChanged == null)
+                {
                     BridgeConnector.Socket.Off("screen-display-metrics-changed-event" + GetHashCode());
+                }
             }
         }
 
         private event Action<Display, string[]> _onDisplayMetricsChanged;
 
         private static Screen _screen;
+
         private static object _syncRoot = new object();
 
         internal Screen() { }
@@ -143,8 +150,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)point).ToObject<Point>());
             });
 
-            BridgeConnector.Socket.Emit("screen-getCursorScreenPoint");
-
+            BridgeConnector.Socket.Emit("screen-getCursorScreenPoint").FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -163,8 +169,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(int.Parse(height.ToString()));
             });
 
-            BridgeConnector.Socket.Emit("screen-getMenuBarHeight");
-
+            BridgeConnector.Socket.Emit("screen-getMenuBarHeight").FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -183,8 +188,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
             });
 
-            BridgeConnector.Socket.Emit("screen-getPrimaryDisplay");
-
+            BridgeConnector.Socket.Emit("screen-getPrimaryDisplay").FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -203,8 +207,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JArray)displays).ToObject<Display[]>());
             });
 
-            BridgeConnector.Socket.Emit("screen-getAllDisplays");
-
+            BridgeConnector.Socket.Emit("screen-getAllDisplays").FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -223,8 +226,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
             });
 
-            BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", JObject.FromObject(point, _jsonSerializer));
-
+            BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", JObject.FromObject(point, _jsonSerializer)).FireAndForget();
             return taskCompletionSource.Task;
         }
 
@@ -244,8 +246,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
             });
 
-            BridgeConnector.Socket.Emit("screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer));
-
+            BridgeConnector.Socket.Emit("screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer)).FireAndForget();
             return taskCompletionSource.Task;
         }
 

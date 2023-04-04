@@ -58,7 +58,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer)).FireAndForget();
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("menuItemClicked");
@@ -75,6 +75,7 @@ namespace ElectronNET.API
         /// The context menu items.
         /// </value>
         public IReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>> ContextMenuItems { get; internal set; }
+
         private Dictionary<int, List<MenuItem>> _contextMenuItems = new Dictionary<int, List<MenuItem>>();
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer)).FireAndForget();
 
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
             {
@@ -113,7 +114,7 @@ namespace ElectronNET.API
         /// <param name="browserWindow">The browser window.</param>
         public void ContextMenuPopup(BrowserWindow browserWindow)
         {
-            BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id);
+            BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id).FireAndForget();
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

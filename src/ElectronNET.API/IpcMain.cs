@@ -90,10 +90,11 @@ namespace ElectronNET.API
         /// <param name="listener"></param>
         public void OnSync(string channel, Func<object, object> listener)
         {
-            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
+            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel).FireAndForget();
             BridgeConnector.Socket.On(channel, (args) => {
-                List<object> objectArray = FormatArguments(args);
+                var objectArray = FormatArguments(args);
                 object parameter;
+
                 if (objectArray.Count == 1)
                 {
                     parameter = objectArray.First();
@@ -104,7 +105,7 @@ namespace ElectronNET.API
                 }
 
                 var result = listener(parameter);
-                BridgeConnector.Socket.Emit(channel + "Sync", result);
+                BridgeConnector.Socket.Emit(channel + "Sync", result).FireAndForget();
             });
         }
 
@@ -116,10 +117,10 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public void Once(string channel, Action<object> listener)
         {
-            BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
+            BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel).FireAndForget();
             BridgeConnector.Socket.On(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
+                var objectArray = FormatArguments(args);
 
                 if (objectArray.Count == 1)
                 {
@@ -138,7 +139,7 @@ namespace ElectronNET.API
         /// <param name="channel">Channelname.</param>
         public void RemoveAllListeners(string channel)
         {
-            BridgeConnector.Socket.Emit("removeAllListenersIpcMainChannel", channel);
+            BridgeConnector.Socket.Emit("removeAllListenersIpcMainChannel", channel).FireAndForget();
         }
 
         /// <summary>
@@ -152,31 +153,33 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            var jobjects = new List<JObject>();
+            var jarrays = new List<JArray>();
+            var objects = new List<object>();
 
             foreach (var parameterObject in data)
             {
                 if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
                     jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
                     jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
                     objects.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray()).FireAndForget();
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
+                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data).FireAndForget();
             }
         }
 
@@ -191,9 +194,9 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserView browserView, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
+            var jobjects = new List<JObject>();
+            var jarrays = new List<JArray>();
+            var objects = new List<object>();
 
             foreach (var parameterObject in data)
             {
@@ -209,13 +212,13 @@ namespace ElectronNET.API
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
+                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray()).FireAndForget();
             }
             else
             {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
+                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data).FireAndForget();
             }
         }
 

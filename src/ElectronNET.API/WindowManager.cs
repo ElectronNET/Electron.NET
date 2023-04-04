@@ -51,7 +51,7 @@ namespace ElectronNET.API
             get => _isQuitOnWindowAllClosed;
             set
             {
-                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
+                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value).FireAndForget();
                 _isQuitOnWindowAllClosed = value;
             }
         }
@@ -115,7 +115,7 @@ namespace ElectronNET.API
 
                 var browserWindowIds = ((JArray)ids).ToObject<int[]>();
 
-                for (int index = 0; index < _browserWindows.Count; index++)
+                for (var index = 0; index < _browserWindows.Count; index++)
                 {
                     if (!browserWindowIds.Contains(_browserWindows[index].Id))
                     {
@@ -195,7 +195,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("BrowserViewCreated");
 
-                string browserViewId = id.ToString();
+                var browserViewId = id.ToString();
                 BrowserView browserView = new BrowserView(int.Parse(browserViewId));
 
                 _browserViews.Add(browserView);
@@ -208,8 +208,8 @@ namespace ElectronNET.API
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };
-            await BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
 
+            await BridgeConnector.Socket.Emit("createBrowserView", JObject.FromObject(options, ownjsonSerializer));
             return await taskCompletionSource.Task;
         }
 

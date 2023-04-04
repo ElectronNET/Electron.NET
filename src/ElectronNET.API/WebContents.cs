@@ -39,8 +39,9 @@ public class WebContents
                     _crashed((bool)killed);
                 });
 
-                BridgeConnector.Socket.Emit("register-webContents-crashed", Id);
+                BridgeConnector.Socket.Emit("register-webContents-crashed", Id).FireAndForget();
             }
+
             _crashed += value;
         }
         remove
@@ -48,7 +49,9 @@ public class WebContents
             _crashed -= value;
 
             if (_crashed == null)
+            {
                 BridgeConnector.Socket.Off("webContents-crashed" + Id);
+            }
         }
     }
 
@@ -69,7 +72,7 @@ public class WebContents
                     _didFinishLoad();
                 });
 
-                BridgeConnector.Socket.Emit("register-webContents-didFinishLoad", Id);
+                BridgeConnector.Socket.Emit("register-webContents-didFinishLoad", Id).FireAndForget();
             }
             _didFinishLoad += value;
         }
@@ -78,7 +81,9 @@ public class WebContents
             _didFinishLoad -= value;
 
             if (_didFinishLoad == null)
+            {
                 BridgeConnector.Socket.Off("webContents-didFinishLoad" + Id);
+            }
         }
     }
 
@@ -99,7 +104,7 @@ public class WebContents
                     _inputEvent(inputEvent);
                 });
 
-                BridgeConnector.Socket.Emit("register-webContents-input-event", Id);
+                BridgeConnector.Socket.Emit("register-webContents-input-event", Id).FireAndForget();
             }
             _inputEvent += value;
         }
@@ -108,7 +113,9 @@ public class WebContents
             _inputEvent -= value;
 
             if (_inputEvent == null)
+            {
                 BridgeConnector.Socket.Off("webContents-input-event" + Id);
+            }
         }
     }
 
@@ -125,7 +132,7 @@ public class WebContents
     /// </summary>
     public void OpenDevTools()
     {
-        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id);
+        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id).FireAndForget();
     }
 
     /// <summary>
@@ -134,7 +141,7 @@ public class WebContents
     /// <param name="openDevToolsOptions"></param>
     public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
     {
-        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
+        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer)).FireAndForget();
     }
 
     /// <summary>
@@ -152,8 +159,7 @@ public class WebContents
             taskCompletionSource.SetResult(((Newtonsoft.Json.Linq.JArray)printers).ToObject<PrinterInfo[]>());
         });
 
-        BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
-
+        BridgeConnector.Socket.Emit("webContents-getPrinters", Id).FireAndForget();
         return taskCompletionSource.Task;
     }
 
@@ -174,11 +180,11 @@ public class WebContents
 
         if(options == null)
         {
-            BridgeConnector.Socket.Emit("webContents-print", Id, "");
+            BridgeConnector.Socket.Emit("webContents-print", Id, "").FireAndForget();
         }
         else
         {
-            BridgeConnector.Socket.Emit("webContents-print", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-print", Id, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         }
 
         return taskCompletionSource.Task;
@@ -205,11 +211,11 @@ public class WebContents
 
         if(options == null)
         {
-            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, "", path);
+            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, "", path).FireAndForget();
         }
         else
         {
-            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
+            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path).FireAndForget();
         }
 
         return taskCompletionSource.Task;
@@ -223,16 +229,15 @@ public class WebContents
     public Task<string> GetUrl()
     {
         var taskCompletionSource = new TaskCompletionSource<string>();
-
         var eventString = "webContents-getUrl" + Id;
+
         BridgeConnector.Socket.On(eventString, (url) =>
         {
             BridgeConnector.Socket.Off(eventString);
             taskCompletionSource.SetResult((string)url);
         });
 
-        BridgeConnector.Socket.Emit("webContents-getUrl", Id);
-
+        BridgeConnector.Socket.Emit("webContents-getUrl", Id).FireAndForget();
         return taskCompletionSource.Task;
     }
 
@@ -283,8 +288,7 @@ public class WebContents
             taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));
         });
 
-        BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
-
+        BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         return taskCompletionSource.Task;
     }
 
@@ -297,7 +301,7 @@ public class WebContents
     /// <param name="path">Absolute path to the CSS file location</param>
     public void InsertCSS(bool isBrowserWindow, string path)
     {
-        BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
+        BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path).FireAndForget();
     }
 
     private readonly JsonSerializer _jsonSerializer = new()

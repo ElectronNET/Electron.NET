@@ -65,7 +65,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
+        /// <param name="action">The event handler</param>
         public void Once(string moduleName, string eventName, Action action)
             => Once(moduleName, eventName, action);
 

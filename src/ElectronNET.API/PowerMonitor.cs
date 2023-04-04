@@ -22,7 +22,7 @@ namespace ElectronNET.API
                         _lockScreen();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-lock-screen");
+                    BridgeConnector.Socket.Emit("register-pm-lock-screen").FireAndForget();
                 }
                 _lockScreen += value;
             }
@@ -31,7 +31,9 @@ namespace ElectronNET.API
                 _lockScreen -= value;
 
                 if (_lockScreen == null)
+                {
                     BridgeConnector.Socket.Off("pm-lock-screen");
+                }
             }
         }
 
@@ -51,7 +53,7 @@ namespace ElectronNET.API
                         _unlockScreen();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-unlock-screen");
+                    BridgeConnector.Socket.Emit("register-pm-unlock-screen").FireAndForget();
                 }
                 _unlockScreen += value;
             }
@@ -60,7 +62,9 @@ namespace ElectronNET.API
                 _unlockScreen -= value;
 
                 if (_unlockScreen == null)
+                {
                     BridgeConnector.Socket.Off("pm-unlock-screen");
+                }
             }
         }
 
@@ -80,7 +84,7 @@ namespace ElectronNET.API
                         _suspend();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-suspend");
+                    BridgeConnector.Socket.Emit("register-pm-suspend").FireAndForget();
                 }
                 _suspend += value;
             }
@@ -89,7 +93,9 @@ namespace ElectronNET.API
                 _suspend -= value;
 
                 if (_suspend == null)
+                {
                     BridgeConnector.Socket.Off("pm-suspend");
+                }
             }
         }
 
@@ -109,7 +115,7 @@ namespace ElectronNET.API
                         _resume();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-resume");
+                    BridgeConnector.Socket.Emit("register-pm-resume").FireAndForget();
                 }
                 _resume += value;
             }
@@ -118,7 +124,9 @@ namespace ElectronNET.API
                 _resume -= value;
 
                 if (_resume == null)
+                {
                     BridgeConnector.Socket.Off("pm-resume");
+                }
             }
         }
 
@@ -138,7 +146,7 @@ namespace ElectronNET.API
                         _onAC();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-on-ac");
+                    BridgeConnector.Socket.Emit("register-pm-on-ac").FireAndForget();
                 }
                 _onAC += value;
             }
@@ -147,7 +155,9 @@ namespace ElectronNET.API
                 _onAC -= value;
 
                 if (_onAC == null)
+                {
                     BridgeConnector.Socket.Off("pm-on-ac");
+                }
             }
         }
 
@@ -167,7 +177,7 @@ namespace ElectronNET.API
                         _onBattery();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-on-battery");
+                    BridgeConnector.Socket.Emit("register-pm-on-battery").FireAndForget();
                 }
                 _onBattery += value;
             }
@@ -176,7 +186,9 @@ namespace ElectronNET.API
                 _onBattery -= value;
 
                 if (_onBattery == null)
+                {
                     BridgeConnector.Socket.Off("pm-on-battery");
+                }
             }
         }
 
@@ -200,7 +212,7 @@ namespace ElectronNET.API
                         _shutdown();
                     });
 
-                    BridgeConnector.Socket.Emit("register-pm-shutdown");
+                    BridgeConnector.Socket.Emit("register-pm-shutdown").FireAndForget();
                 }
                 _shutdown += value;
             }
@@ -209,7 +221,9 @@ namespace ElectronNET.API
                 _shutdown -= value;
 
                 if (_shutdown == null)
+                {
                     BridgeConnector.Socket.Off("pm-on-shutdown");
+                }
             }
         }
 

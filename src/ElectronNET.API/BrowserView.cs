@@ -45,14 +45,14 @@ namespace ElectronNET.API
                         taskCompletionSource.SetResult((Rectangle)result);
                     });
 
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
+                    BridgeConnector.Socket.Emit("browserView-getBounds", Id).FireAndForget();
 
                     return taskCompletionSource.Task;
                 }).Result;
             }
             set
             {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
+                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer)).FireAndForget();
             }
         }
 
@@ -74,7 +74,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace ElectronNET.API
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
         public void SetBackgroundColor(string color)
         {
-            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
+            BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color).FireAndForget();
         }
 
         private JsonSerializer _jsonSerializer = new JsonSerializer()

@@ -94,7 +94,7 @@ namespace ElectronNET.API
         {
             var themeSource = themeSourceMode.GetDescription();
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
+            BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource).FireAndForget();
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(themeSourceValue);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
+            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get").FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -134,7 +134,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)shouldUseDarkColors);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
+            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors").FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -153,7 +153,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
+            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors").FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -172,7 +172,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
             });
 
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");
+            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme").FireAndForget();
 
             return taskCompletionSource.Task;
         }
@@ -192,7 +192,7 @@ namespace ElectronNET.API
                         _updated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode()).FireAndForget();
                 }
                 _updated += value;
             }

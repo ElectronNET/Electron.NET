@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
-using static System.Collections.Specialized.BitVector32;
 
 namespace ElectronNET.API
 {
@@ -39,7 +38,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode()).FireAndForget();
                 }
                 _windowAllClosed += value;
             }
@@ -111,7 +110,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode()).FireAndForget();
                 }
                 _beforeQuit += value;
             }
@@ -162,7 +161,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode()).FireAndForget();
                 }
                 _willQuit += value;
             }
@@ -171,7 +170,9 @@ namespace ElectronNET.API
                 _willQuit -= value;
 
                 if (_willQuit == null)
+                {
                     BridgeConnector.Socket.Off("app-will-quit" + GetHashCode());
+                }
             }
         }
 
@@ -190,14 +191,14 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-will-quit" + GetHashCode() + "quitting", async () =>
                     {
-                        if(_willQuit == null)
+                        if (_willQuit == null)
                         {
                             await _quitting();
                             Exit();
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
+                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting").FireAndForget();
                 }
                 _quitting += value;
             }
@@ -206,7 +207,9 @@ namespace ElectronNET.API
                 _quitting -= value;
 
                 if (_quitting == null)
+                {
                     BridgeConnector.Socket.Off("app-will-quit" + GetHashCode() + "quitting");
+                }
             }
         }
 
@@ -226,7 +229,7 @@ namespace ElectronNET.API
                         _browserWindowBlur();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event", GetHashCode()).FireAndForget();
                 }
                 _browserWindowBlur += value;
             }
@@ -235,7 +238,9 @@ namespace ElectronNET.API
                 _browserWindowBlur -= value;
 
                 if (_browserWindowBlur == null)
+                {
                     BridgeConnector.Socket.Off("app-browser-window-blur" + GetHashCode());
+                }
             }
         }
 
@@ -255,7 +260,7 @@ namespace ElectronNET.API
                         _browserWindowFocus();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event", GetHashCode()).FireAndForget();
                 }
                 _browserWindowFocus += value;
             }
@@ -264,7 +269,9 @@ namespace ElectronNET.API
                 _browserWindowFocus -= value;
 
                 if (_browserWindowFocus == null)
+                {
                     BridgeConnector.Socket.Off("app-browser-window-focus" + GetHashCode());
+                }
             }
         }
 
@@ -284,7 +291,7 @@ namespace ElectronNET.API
                         _browserWindowCreated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event", GetHashCode()).FireAndForget();
                 }
                 _browserWindowCreated += value;
             }
@@ -293,7 +300,9 @@ namespace ElectronNET.API
                 _browserWindowCreated -= value;
 
                 if (_browserWindowCreated == null)
+                {
                     BridgeConnector.Socket.Off("app-browser-window-created" + GetHashCode());
+                }
             }
         }
 
@@ -313,7 +322,7 @@ namespace ElectronNET.API
                         _webContentsCreated();
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event", GetHashCode()).FireAndForget();
                 }
                 _webContentsCreated += value;
             }
@@ -322,7 +331,9 @@ namespace ElectronNET.API
                 _webContentsCreated -= value;
 
                 if (_webContentsCreated == null)
+                {
                     BridgeConnector.Socket.Off("app-web-contents-created" + GetHashCode());
+                }
             }
         }
 
@@ -344,7 +355,7 @@ namespace ElectronNET.API
                         _accessibilitySupportChanged((bool)state);
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event", GetHashCode()).FireAndForget();
                 }
                 _accessibilitySupportChanged += value;
             }
@@ -353,7 +364,9 @@ namespace ElectronNET.API
                 _accessibilitySupportChanged -= value;
 
                 if (_accessibilitySupportChanged == null)
+                {
                     BridgeConnector.Socket.Off("app-accessibility-support-changed" + GetHashCode());
+                }
             }
         }
 
@@ -391,7 +404,7 @@ namespace ElectronNET.API
             {
                 _isReady = value;
 
-                if(value)
+                if (value)
                 {
                     _ready?.Invoke();
                 }
@@ -417,7 +430,7 @@ namespace ElectronNET.API
                         _openFile(file.ToString());
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-open-file-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-open-file-event", GetHashCode()).FireAndForget();
                 }
                 _openFile += value;
             }
@@ -426,7 +439,9 @@ namespace ElectronNET.API
                 _openFile -= value;
 
                 if (_openFile == null)
+                {
                     BridgeConnector.Socket.Off("app-open-file" + GetHashCode());
+                }
             }
         }
 
@@ -448,7 +463,7 @@ namespace ElectronNET.API
                         _openUrl(url.ToString());
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-open-url-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-open-url-event", GetHashCode()).FireAndForget();
                 }
                 _openUrl += value;
             }
@@ -457,7 +472,9 @@ namespace ElectronNET.API
                 _openUrl -= value;
 
                 if (_openUrl == null)
+                {
                     BridgeConnector.Socket.Off("app-open-url" + GetHashCode());
+                }
             }
         }
 
@@ -480,7 +497,7 @@ namespace ElectronNET.API
             }
             set
             {
-                BridgeConnector.Socket.Emit("appSetName", value);
+                BridgeConnector.Socket.Emit("appSetName", value).FireAndForget();
             }
         }
 
@@ -506,7 +523,7 @@ namespace ElectronNET.API
                         taskCompletionSource.SetResult((string)result);
                     });
 
-                    BridgeConnector.Socket.Emit("appGetName");
+                    BridgeConnector.Socket.Emit("appGetName").FireAndForget();
 
                     return taskCompletionSource.Task;
                 });
@@ -539,6 +556,7 @@ namespace ElectronNET.API
         }
 
         private static App _app;
+
         private static object _syncRoot = new object();
 
         private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
@@ -554,7 +572,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Quit()
         {
-            BridgeConnector.Socket.Emit("appQuit");
+            BridgeConnector.Socket.Emit("appQuit").FireAndForget();
         }
 
         /// <summary>
@@ -564,7 +582,7 @@ namespace ElectronNET.API
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
         public void Exit(int exitCode = 0)
         {
-            BridgeConnector.Socket.Emit("appExit", exitCode);
+            BridgeConnector.Socket.Emit("appExit", exitCode).FireAndForget();
         }
 
         /// <summary>
@@ -579,7 +597,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Relaunch()
         {
-            BridgeConnector.Socket.Emit("appRelaunch");
+            BridgeConnector.Socket.Emit("appRelaunch").FireAndForget();
         }
 
         /// <summary>
@@ -597,7 +615,7 @@ namespace ElectronNET.API
         /// <param name="relaunchOptions">Options for the relaunch.</param>
         public void Relaunch(RelaunchOptions relaunchOptions)
         {
-            BridgeConnector.Socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -606,7 +624,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus()
         {
-            BridgeConnector.Socket.Emit("appFocus");
+            BridgeConnector.Socket.Emit("appFocus").FireAndForget();
         }
 
         /// <summary>
@@ -617,7 +635,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus(FocusOptions focusOptions)
         {
-            BridgeConnector.Socket.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -625,7 +643,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Hide()
         {
-            BridgeConnector.Socket.Emit("appHide");
+            BridgeConnector.Socket.Emit("appHide").FireAndForget();
         }
 
         /// <summary>
@@ -633,7 +651,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Show()
         {
-            BridgeConnector.Socket.Emit("appShow");
+            BridgeConnector.Socket.Emit("appShow").FireAndForget();
         }
 
         /// <summary>
@@ -644,7 +662,8 @@ namespace ElectronNET.API
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+
+            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appGetAppPathCompleted", (path) =>
                 {
@@ -652,7 +671,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(path.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("appGetAppPath");
+                BridgeConnector.Socket.Emit("appGetAppPath").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -669,7 +688,7 @@ namespace ElectronNET.API
         /// <param name="path">A custom path for your logs. Must be absolute.</param>
         public void SetAppLogsPath(string path)
         {
-            BridgeConnector.Socket.Emit("appSetAppLogsPath", path);
+            BridgeConnector.Socket.Emit("appSetAppLogsPath", path).FireAndForget();
         }
 
         /// <summary>
@@ -685,7 +704,8 @@ namespace ElectronNET.API
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+
+            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appGetPathCompleted", (path) =>
                 {
@@ -694,7 +714,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(path.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("appGetPath", pathName.GetDescription());
+                BridgeConnector.Socket.Emit("appGetPath", pathName.GetDescription()).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -715,7 +735,7 @@ namespace ElectronNET.API
         /// </summary>
         public void SetPath(PathName name, string path)
         {
-            BridgeConnector.Socket.Emit("appSetPath", name.GetDescription(), path);
+            BridgeConnector.Socket.Emit("appSetPath", name.GetDescription(), path).FireAndForget();
         }
 
         /// <summary>
@@ -728,7 +748,7 @@ namespace ElectronNET.API
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appGetVersionCompleted", (version) =>
                 {
@@ -736,7 +756,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(version.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("appGetVersion");
+                BridgeConnector.Socket.Emit("appGetVersion").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -764,7 +784,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(local.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("appGetLocale");
+                BridgeConnector.Socket.Emit("appGetLocale").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -778,7 +798,7 @@ namespace ElectronNET.API
         /// <param name="path">Path to add.</param>
         public void AddRecentDocument(string path)
         {
-            BridgeConnector.Socket.Emit("appAddRecentDocument", path);
+            BridgeConnector.Socket.Emit("appAddRecentDocument", path).FireAndForget();
         }
 
         /// <summary>
@@ -786,7 +806,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ClearRecentDocuments()
         {
-            BridgeConnector.Socket.Emit("appClearRecentDocuments");
+            BridgeConnector.Socket.Emit("appClearRecentDocuments").FireAndForget();
         }
 
         /// <summary>
@@ -890,7 +910,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) success);
                 });
 
-                BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
+                BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -944,7 +964,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) success);
                 });
 
-                BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
+                BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1016,7 +1036,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) success);
                 });
 
-                BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
+                BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1044,7 +1064,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) success);
                 });
 
-                BridgeConnector.Socket.Emit("appSetUserTasks", JArray.FromObject(userTasks, _jsonSerializer));
+                BridgeConnector.Socket.Emit("appSetUserTasks", JArray.FromObject(userTasks, _jsonSerializer)).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1069,7 +1089,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(JObject.Parse(jumpListSettings.ToString()).ToObject<JumpListSettings>());
                 });
 
-                BridgeConnector.Socket.Emit("appGetJumpListSettings");
+                BridgeConnector.Socket.Emit("appGetJumpListSettings").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1094,7 +1114,7 @@ namespace ElectronNET.API
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
         public void SetJumpList(JumpListCategory[] categories)
         {
-            BridgeConnector.Socket.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -1141,7 +1161,7 @@ namespace ElectronNET.API
                     newInstanceOpened(args, workingDirectory);
                 });
 
-                BridgeConnector.Socket.Emit("appRequestSingleInstanceLock");
+                BridgeConnector.Socket.Emit("appRequestSingleInstanceLock").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1154,7 +1174,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ReleaseSingleInstanceLock()
         {
-            BridgeConnector.Socket.Emit("appReleaseSingleInstanceLock");
+            BridgeConnector.Socket.Emit("appReleaseSingleInstanceLock").FireAndForget();
         }
 
         /// <summary>
@@ -1176,7 +1196,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) hasLock);
                 });
 
-                BridgeConnector.Socket.Emit("appHasSingleInstanceLock");
+                BridgeConnector.Socket.Emit("appHasSingleInstanceLock").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1209,7 +1229,7 @@ namespace ElectronNET.API
         /// </param>
         public void SetUserActivity(string type, object userInfo, string webpageUrl)
         {
-            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo, webpageUrl);
+            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo, webpageUrl).FireAndForget();
         }
 
         /// <summary>
@@ -1229,7 +1249,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(activityType.ToString());
                 });
 
-                BridgeConnector.Socket.Emit("appGetCurrentActivityType");
+                BridgeConnector.Socket.Emit("appGetCurrentActivityType").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1241,7 +1261,7 @@ namespace ElectronNET.API
         /// </summary>
         public void InvalidateCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appInvalidateCurrentActivity");
+            BridgeConnector.Socket.Emit("appInvalidateCurrentActivity").FireAndForget();
         }
 
         /// <summary>
@@ -1249,7 +1269,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ResignCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appResignCurrentActivity");
+            BridgeConnector.Socket.Emit("appResignCurrentActivity").FireAndForget();
         }
 
         /// <summary>
@@ -1258,7 +1278,7 @@ namespace ElectronNET.API
         /// <param name="id">Model Id.</param>
         public void SetAppUserModelId(string id)
         {
-            BridgeConnector.Socket.Emit("appSetAppUserModelId", id);
+            BridgeConnector.Socket.Emit("appSetAppUserModelId", id).FireAndForget();
         }
 
         /// TODO: Check new parameter which is a function [App.ImportCertificate]
@@ -1283,7 +1303,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((int) result);
                 });
 
-                BridgeConnector.Socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
+                BridgeConnector.Socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer)).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1313,7 +1333,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(processMetrics);
                 });
 
-                BridgeConnector.Socket.Emit("appGetAppMetrics");
+                BridgeConnector.Socket.Emit("appGetAppMetrics").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1341,7 +1361,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult(gpuFeatureStatus);
                 });
 
-                BridgeConnector.Socket.Emit("appGetGpuFeatureStatus");
+                BridgeConnector.Socket.Emit("appGetGpuFeatureStatus").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1361,8 +1381,8 @@ namespace ElectronNET.API
         public async Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<bool>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appSetBadgeCountCompleted", (success) =>
@@ -1371,7 +1391,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool) success);
                 });
 
-                BridgeConnector.Socket.Emit("appSetBadgeCount", count);
+                BridgeConnector.Socket.Emit("appSetBadgeCount", count).FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1385,8 +1405,8 @@ namespace ElectronNET.API
         public async Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<int>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appGetBadgeCountCompleted", (count) =>
@@ -1395,7 +1415,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((int)count);
                 });
 
-                BridgeConnector.Socket.Emit("appGetBadgeCount");
+                BridgeConnector.Socket.Emit("appGetBadgeCount").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1414,8 +1434,8 @@ namespace ElectronNET.API
         public async Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<bool>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appIsUnityRunningCompleted", (isUnityRunning) =>
@@ -1424,7 +1444,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool)isUnityRunning);
                 });
 
-                BridgeConnector.Socket.Emit("appIsUnityRunning");
+                BridgeConnector.Socket.Emit("appIsUnityRunning").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1464,11 +1484,11 @@ namespace ElectronNET.API
 
                 if (options == null)
                 {
-                    BridgeConnector.Socket.Emit("appGetLoginItemSettings");
+                    BridgeConnector.Socket.Emit("appGetLoginItemSettings").FireAndForget();
                 }
                 else
                 {
-                    BridgeConnector.Socket.Emit("appGetLoginItemSettings", JObject.FromObject(options, _jsonSerializer));
+                    BridgeConnector.Socket.Emit("appGetLoginItemSettings", JObject.FromObject(options, _jsonSerializer)).FireAndForget();
                 }
 
                 return await taskCompletionSource.Task
@@ -1484,7 +1504,7 @@ namespace ElectronNET.API
         /// <param name="loginSettings"></param>
         public void SetLoginItemSettings(LoginSettings loginSettings)
         {
-            BridgeConnector.Socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -1496,8 +1516,8 @@ namespace ElectronNET.API
         public async Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
             var taskCompletionSource = new TaskCompletionSource<bool>();
+
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appIsAccessibilitySupportEnabledCompleted", (isAccessibilitySupportEnabled) =>
@@ -1506,7 +1526,7 @@ namespace ElectronNET.API
                     taskCompletionSource.SetResult((bool)isAccessibilitySupportEnabled);
                 });
 
-                BridgeConnector.Socket.Emit("appIsAccessibilitySupportEnabled");
+                BridgeConnector.Socket.Emit("appIsAccessibilitySupportEnabled").FireAndForget();
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -1525,7 +1545,7 @@ namespace ElectronNET.API
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
         public void SetAccessibilitySupportEnabled(bool enabled)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", enabled);
+            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", enabled).FireAndForget();
         }
 
         /// <summary>
@@ -1534,7 +1554,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ShowAboutPanel()
         {
-            BridgeConnector.Socket.Emit("appShowAboutPanel");
+            BridgeConnector.Socket.Emit("appShowAboutPanel").FireAndForget();
         }
 
         /// <summary>
@@ -1550,7 +1570,7 @@ namespace ElectronNET.API
         /// <param name="options">About panel options.</param>
         public void SetAboutPanelOptions(AboutPanelOptions options)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer)).FireAndForget();
         }
 
         /// <summary>
@@ -1570,7 +1590,7 @@ namespace ElectronNET.API
             }
             set
             {
-                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value);
+                BridgeConnector.Socket.Emit("appSetUserAgentFallback", value).FireAndForget();
             }
         }
 
@@ -1596,8 +1616,7 @@ namespace ElectronNET.API
                         taskCompletionSource.SetResult((string)result);
                     });
 
-                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
-
+                    BridgeConnector.Socket.Emit("appGetUserAgentFallback").FireAndForget();
                     return taskCompletionSource.Task;
                 });
             }
