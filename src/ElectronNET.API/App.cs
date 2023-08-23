@@ -1525,7 +1525,7 @@ namespace ElectronNET.API
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
         public void SetAccessibilitySupportEnabled(bool enabled)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", enabled);
+            BridgeConnector.Socket.Emit("appSetAccessibilitySupportEnabled", enabled);
         }
 
         /// <summary>
