@@ -286,6 +286,7 @@ function startAspCoreBackend(electronPort) {
     console.log('ASP.NET Core Port: ' + aspCoreBackendPort);
     loadURL = `http://localhost:${aspCoreBackendPort}`;
     const parameters = [
+      'run',
       getEnvironmentParameter(),
       `/electronPort=${electronPort}`,
       `/electronWebPort=${aspCoreBackendPort}`,
