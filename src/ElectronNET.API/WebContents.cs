@@ -245,6 +245,37 @@ public class WebContents
     }
 
     /// <summary>
+    /// Evaluates script code in page.
+    /// </summary>
+    /// <param name="code">The code to execute.</param>
+    /// <param name="userGesture">if set to <c>true</c> simulate a user gesture.</param>
+    /// <returns>The result of the executed code.</returns>
+    /// <remarks>
+    /// <para>
+    /// In the browser window some HTML APIs like `requestFullScreen` can only be
+    /// invoked by a gesture from the user. Setting `userGesture` to `true` will remove
+    /// this limitation.
+    /// </para>
+    /// <para>
+    /// Code execution will be suspended until web page stop loading.
+    /// </para>
+    /// </remarks>
+    public Task<object> ExecuteJavaScriptAsync(string code, bool userGesture = false)
+    {
+        var taskCompletionSource = new TaskCompletionSource<object>();
+
+        BridgeConnector.Socket.On("webContents-executeJavaScript-completed", (result) =>
+        {
+            BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
+            taskCompletionSource.SetResult(result);
+        });
+
+        BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
+
+        return taskCompletionSource.Task;
+    }
+
+    /// <summary>
     /// Is used to get the Url of the loaded page.
     /// It's usefull if a web-server redirects you and you need to know where it redirects. For instance, It's useful in case of Implicit Authorization.
     /// </summary>

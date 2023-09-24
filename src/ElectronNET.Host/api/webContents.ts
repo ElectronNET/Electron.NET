@@ -74,6 +74,11 @@ export = (socket: Socket) => {
     });
   });
 
+  socket.on('webContents-executeJavaScript', async (id, code, userGesture = false) => {
+    const result = await getWindowById(id).webContents.executeJavaScript(code, userGesture);
+    electronSocket.emit('webContents-executeJavaScript-completed', result);
+  });
+
   socket.on('webContents-getUrl', function (id) {
     const browserWindow = getWindowById(id);
     electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
