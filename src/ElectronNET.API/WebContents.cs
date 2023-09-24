@@ -114,6 +114,35 @@ public class WebContents
 
     private event Action<InputEvent> _inputEvent;
 
+    /// <summary>
+    /// Emitted when the document in the top-level frame is loaded.
+    /// </summary>
+    public event Action OnDomReady
+    {
+        add
+        {
+            if (_domReady == null)
+            {
+                BridgeConnector.Socket.On("webContents-domReady" + Id, () =>
+                    {
+                        _domReady();
+                    });
+
+                BridgeConnector.Socket.Emit("register-webContents-domReady", Id);
+            }
+            _domReady += value;
+        }
+        remove
+        {
+            _domReady -= value;
+
+            if (_domReady == null)
+                BridgeConnector.Socket.Off("webContents-domReady" + Id);
+        }
+    }
+
+    private event Action _domReady;
+
     internal WebContents(int id)
     {
         Id = id;

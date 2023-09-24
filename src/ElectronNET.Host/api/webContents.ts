@@ -35,6 +35,15 @@ export = (socket: Socket) => {
     });
   });
 
+  socket.on('register-webContents-domReady', (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners('dom-ready');
+    browserWindow.webContents.on('dom-ready', () => {
+        electronSocket.emit('webContents-domReady' + id);
+    });
+  });
+
   socket.on('webContentsOpenDevTools', (id, options) => {
     if (options) {
       getWindowById(id).webContents.openDevTools(options);
