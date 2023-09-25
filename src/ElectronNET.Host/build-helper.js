@@ -1,15 +1,12 @@
-const manifestFileName = process.argv[2];
-// @ts-ignore
-const manifestFile = require('./bin/' + manifestFileName);
+const manifestFile = require('./bin/' + process.argv[2]);
 const dasherize = require('dasherize');
-const fs = require('fs');
+const fs = require('node:fs');
 
 const builderConfiguration = { ...manifestFile.build };
 if(process.argv.length > 3) {
     builderConfiguration.buildVersion = process.argv[3];
 }
 if(builderConfiguration.hasOwnProperty('buildVersion')) {
-    // @ts-ignore
     const packageJson = require('./package');
     packageJson.name = dasherize(manifestFile.name || 'electron-net');
     packageJson.author = manifestFile.author || '';
@@ -21,9 +18,8 @@ if(builderConfiguration.hasOwnProperty('buildVersion')) {
             console.log(error.message);
         }
     });
-    
+
     try {
-        // @ts-ignore
         const packageLockJson = require('./package-lock');
         packageLockJson.name = dasherize(manifestFile.name || 'electron-net');
         packageLockJson.author = manifestFile.author || '';

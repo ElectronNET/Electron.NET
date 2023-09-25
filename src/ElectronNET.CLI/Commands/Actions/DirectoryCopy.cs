@@ -37,9 +37,6 @@ namespace ElectronNET.CLI.Commands.Actions
                 }
             }
 
-
-
-
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files)

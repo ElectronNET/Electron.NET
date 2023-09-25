@@ -97,7 +97,6 @@ namespace ElectronNET.CLI.Commands
                     Directory.CreateDirectory(tempPath);
                 }
 
-
                 Console.WriteLine("Executing dotnet publish in this directory: " + tempPath);
 
                 string tempBinPath = Path.Combine(tempPath, "bin");
@@ -122,7 +121,10 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-                DeployEmbeddedElectronFiles.Do(tempPath);
+                string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
+
+                DeployEmbeddedElectronFiles.Do(tempPath, true);
+
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
                 if (parser.Arguments.ContainsKey(_paramPackageJson))
@@ -132,28 +134,16 @@ namespace ElectronNET.CLI.Commands
                     File.Copy(parser.Arguments[_paramPackageJson][0], Path.Combine(tempPath, "package.json"), true);
                 }
 
-                var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
-
-                if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
-                    Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
-
                 Console.WriteLine("ElectronHostHook handling started...");
-
-                string electronhosthookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
 
                 if (Directory.Exists(electronhosthookDir))
                 {
                     string hosthookDir = Path.Combine(tempPath, "ElectronHostHook");
                     DirectoryCopy.Do(electronhosthookDir, hosthookDir, true, new List<string>() { "node_modules" });
-
-                    Console.WriteLine("Start npm install for hosthooks...");
-                    ProcessHelper.CmdExecute("npm install", hosthookDir);
-
-                    // ToDo: Not sure if this runs under linux/macos
-                    ProcessHelper.CmdExecute(@"npx tsc -p . --sourceMap false", hosthookDir);
                 }
+
+                Console.WriteLine("Start npm install...");
+                ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                 Console.WriteLine("Build Electron Desktop Application...");
 
