@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function nativeThemeApi(socket: Socket) {
     electronSocket = socket;
 
     socket.on('nativeTheme-shouldUseDarkColors', () => {
@@ -39,4 +39,4 @@ export = (socket: Socket) => {
             electronSocket.emit('nativeTheme-updated' + id);
         });
     });
-};
+}

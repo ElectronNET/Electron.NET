@@ -2,7 +2,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket, app: Electron.App) => {
+export function commandLineApi(socket: Socket, app: Electron.App) {
     electronSocket = socket;
 
     socket.on('appCommandLineAppendSwitch', (the_switch: string, value: string) => {
@@ -22,4 +22,4 @@ export = (socket: Socket, app: Electron.App) => {
         const value = app.commandLine.getSwitchValue(the_switch);
         electronSocket.emit('appCommandLineGetSwitchValueCompleted', value);
     });
-};
+}

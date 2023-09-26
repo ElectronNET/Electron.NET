@@ -8,19 +8,18 @@
     "main": "main.js",
     "author": "Gregor Biswanger, Florian Rappl",
     "license": "MIT",
+    "workspaces": [
+        "ElectronHostAPI",
+        "ElectronHostHook"
+    ],
     "scripts": {
         "prepare": "npm --prefix ElectronHostAPI run build --if-present && npm --prefix ElectronHostHook run build --if-present"
     },
     "dependencies": {
-        "@electron-host/api": "file:./ElectronHostAPI",
-        "@electron-host/hook": "file:./ElectronHostHook",
-        "dasherize": "^2.0.0",
+        "dasherize": "^2.0",
         "electron": "^26.2",
-        "image-size": "^1.0.2",
-        "portscanner": "^2.2.0",
-        "socket.io": "^4.6.1"
-    },
-    "devDependencies": {
-        "@types/node": "^20.6"
+        "image-size": "^1.0",
+        "portscanner": "^2.2",
+        "socket.io": "^4.6"
     }
 }

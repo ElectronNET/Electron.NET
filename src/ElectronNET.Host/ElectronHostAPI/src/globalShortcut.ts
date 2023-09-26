@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function globalShortcutApi(socket: Socket) {
     electronSocket = socket;
     socket.on('globalShortcut-register', (accelerator) => {
         globalShortcut.register(accelerator, () => {
@@ -26,4 +26,4 @@ export = (socket: Socket) => {
             globalShortcut.unregisterAll();
         } catch (error) { }
     });
-};
+}

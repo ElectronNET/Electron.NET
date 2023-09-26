@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function powerMonitorApi(socket: Socket) {
     electronSocket = socket;
     socket.on('register-pm-lock-screen', () => {
         powerMonitor.on('lock-screen', () => {
@@ -40,4 +40,4 @@ export = (socket: Socket) => {
             electronSocket.emit('pm-shutdown');
         });
     });
-};
+}

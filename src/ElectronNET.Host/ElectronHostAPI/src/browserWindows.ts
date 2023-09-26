@@ -9,7 +9,7 @@ let readyToShowWindowsIds: number[] = [];
 let window, lastOptions, electronSocket;
 let mainWindowURL;
 
-export = (socket: Socket, app: Electron.App) => {
+export function browserWindowApi(socket: Socket, app: Electron.App){
     electronSocket = socket;
 
     app.on('login', (event, webContents, request, authInfo, callback) => {
@@ -767,4 +767,4 @@ export = (socket: Socket, app: Electron.App) => {
             }
         }
     }
-};
+}

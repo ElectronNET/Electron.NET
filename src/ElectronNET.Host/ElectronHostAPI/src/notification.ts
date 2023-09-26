@@ -4,7 +4,7 @@ import { Socket } from 'node:net';
 const notifications: Electron.Notification[] = (global['notifications'] = global['notifications'] || []) as Electron.Notification[];
 let electronSocket;
 
-export = (socket: Socket) => {
+export function notificationApi(socket: Socket) {
     electronSocket = socket;
     socket.on('createNotification', (options) => {
         const notification = new Notification(options);
@@ -56,4 +56,4 @@ export = (socket: Socket) => {
         const isSupported = Notification.isSupported;
         electronSocket.emit('notificationIsSupportedComplete', isSupported);
     });
-};
+}

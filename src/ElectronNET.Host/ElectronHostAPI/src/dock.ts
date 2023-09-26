@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function dockApi (socket: Socket) {
     electronSocket = socket;
 
     socket.on('dock-bounce', (type) => {

@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function screenApi(socket: Socket) {
     electronSocket = socket;
     socket.on('register-screen-display-added', (id) => {
         screen.on('display-added', (event, display) => {
@@ -52,4 +52,4 @@ export = (socket: Socket) => {
         const display = screen.getDisplayMatching(rectangle);
         electronSocket.emit('screen-getDisplayMatchingCompleted', display);
     });
-};
+}

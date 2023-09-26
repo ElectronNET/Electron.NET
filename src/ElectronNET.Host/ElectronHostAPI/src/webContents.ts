@@ -5,7 +5,7 @@ import { browserViewMediateService } from './browserView';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function webContentsApi(socket: Socket) {
     electronSocket = socket;
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
@@ -286,4 +286,4 @@ export = (socket: Socket) => {
     function getWindowById(id: number): Electron.BrowserWindow | Electron.BrowserView {
         return id >= 1000 ? browserViewMediateService(id - 1000) : BrowserWindow.fromId(id);
     }
-};
+}

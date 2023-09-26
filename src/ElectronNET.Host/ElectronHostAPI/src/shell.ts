@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function shellApi(socket: Socket) {
     electronSocket = socket;
     socket.on('shell-showItemInFolder', (fullPath) => {
         shell.showItemInFolder(fullPath);
@@ -61,4 +61,4 @@ export = (socket: Socket) => {
 
         electronSocket.emit('shell-readShortcutLinkCompleted', shortcutDetails);
     });
-};
+}

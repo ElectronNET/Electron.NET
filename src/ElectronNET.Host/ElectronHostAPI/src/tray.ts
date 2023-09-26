@@ -4,7 +4,7 @@ import { Socket } from 'node:net';
 const tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { value: null });
 let electronSocket;
 
-export = (socket: Socket) => {
+export function trayApi(socket: Socket) {
     electronSocket = socket;
     socket.on('register-tray-click', (id) => {
         if (tray.value) {
@@ -150,4 +150,4 @@ export = (socket: Socket) => {
             }
         });
     }
-};
+}

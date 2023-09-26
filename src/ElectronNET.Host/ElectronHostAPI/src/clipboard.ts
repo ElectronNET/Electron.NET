@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function clipboardApi(socket: Socket) {
     electronSocket = socket;
     socket.on('clipboard-readText', (type) => {
         const text = clipboard.readText(type);
@@ -82,4 +82,4 @@ export = (socket: Socket) => {
 
         clipboard.writeImage(image, type);
     });
-};
+}

@@ -8,9 +8,9 @@ let io, server, apiProcess, loadURL, splashScreen, hostHook;
 let launchFile, launchUrl;
 
 // APIs
-let appApi, autoUpdater, browserView, browserWindows, clipboard, commandLine, dialogApi, dock,
-    globalShortcut, ipc, menu, nativeTheme, notification, powerMonitor, screen, shellApi, tray,
-    webContents
+let appApi, autoUpdaterApi, browserViewApi, browserWindowsApi, clipboardApi, commandLineApi,
+    dialogApi, dockApi, globalShortcutApi, ipcApi, menuApi, nativeThemeApi, notificationApi,
+    powerMonitorApi, screenApi, shellApi, trayApi, webContentsApi
 
 let manifestJsonFileName = 'electron.manifest.json';
 let watchable = false;
@@ -180,24 +180,26 @@ function startSocketApiBridge(port) {
 
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
-        if (appApi === undefined) appApi = require('@electron-host/api/app')(socket, app);
-        if (browserWindows === undefined) browserWindows = require('@electron-host/api/browserWindows')(socket, app);
-        if (commandLine === undefined) commandLine = require('@electron-host/api/commandLine')(socket, app);
-        if (autoUpdater === undefined) autoUpdater = require('@electron-host/api/autoUpdater')(socket);
-        if (ipc === undefined) ipc = require('@electron-host/api/ipc')(socket);
-        if (menu === undefined) menu = require('@electron-host/api/menu')(socket);
-        if (dialogApi === undefined) dialogApi = require('@electron-host/api/dialog')(socket);
-        if (notification === undefined) notification = require('@electron-host/api/notification')(socket);
-        if (tray === undefined) tray = require('@electron-host/api/tray')(socket);
-        if (webContents === undefined) webContents = require('@electron-host/api/webContents')(socket);
-        if (globalShortcut === undefined) globalShortcut = require('@electron-host/api/globalShortcut')(socket);
-        if (shellApi === undefined) shellApi = require('@electron-host/api/shell')(socket);
-        if (screen === undefined) screen = require('@electron-host/api/screen')(socket);
-        if (clipboard === undefined) clipboard = require('@electron-host/api/clipboard')(socket);
-        if (browserView === undefined) browserView = require('@electron-host/api/browserView').browserViewApi(socket);
-        if (powerMonitor === undefined) powerMonitor = require('@electron-host/api/powerMonitor')(socket);
-        if (nativeTheme === undefined) nativeTheme = require('@electron-host/api/nativeTheme')(socket);
-        if (dock === undefined) dock = require('@electron-host/api/dock')(socket);
+        const API = require('@electron-host/api');
+
+        if (appApi === undefined) appApi = API.appApi(socket, app);
+        if (browserWindowsApi === undefined) browserWindowsApi = API.browserWindowApi(socket, app);
+        if (commandLineApi === undefined) commandLineApi = API.commandLineApi(socket, app);
+        if (autoUpdaterApi === undefined) autoUpdaterApi = API.autoUpdaterApi(socket);
+        if (ipcApi === undefined) ipcApi = API.ipcApi(socket);
+        if (menuApi === undefined) menuApi = API.menuApi(socket);
+        if (dialogApi === undefined) dialogApi = API.dialogApi(socket);
+        if (notificationApi === undefined) notificationApi = API.notificationApi(socket);
+        if (trayApi === undefined) trayApi = API.trayApi(socket);
+        if (webContentsApi === undefined) webContentsApi = API.webContentsApi(socket);
+        if (globalShortcutApi === undefined) globalShortcutApi = API.globalShortcutApi(socket);
+        if (shellApi === undefined) shellApi = API.shellApi(socket);
+        if (screenApi === undefined) screenApi = API.screenApi(socket);
+        if (clipboardApi === undefined) clipboardApi = API.clipboardApi(socket);
+        if (browserViewApi === undefined) browserViewApi = API.browserViewApi(socket);
+        if (powerMonitorApi === undefined) powerMonitorApi = API.powerMonitorApi(socket);
+        if (nativeThemeApi === undefined) nativeThemeApi = API.nativeThemeApi(socket);
+        if (dockApi === undefined) dockApi = API.dockApi(socket);
 
         socket.on('register-app-open-file-event', (id) => {
             global['electronsocket'] = socket;

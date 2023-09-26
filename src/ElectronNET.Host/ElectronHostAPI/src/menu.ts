@@ -4,7 +4,7 @@ import { Socket } from 'node:net';
 const contextMenuItems = (global['contextMenuItems'] = global['contextMenuItems'] || []);
 let electronSocket;
 
-export = (socket: Socket) => {
+export function menuApi(socket: Socket) {
     electronSocket = socket;
     socket.on('menu-setContextMenu', (browserWindowId, menuItems) => {
         const menu = Menu.buildFromTemplate(menuItems);
@@ -73,4 +73,4 @@ export = (socket: Socket) => {
             }
         });
     }
-};
+}

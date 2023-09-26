@@ -1,9 +1,7 @@
 {
-    "name": "electron-host-api",
+    "name": "@electron-host/api",
     "version": "1.0.0",
-    "exports": {
-        "*": "./dist/*"
-    },
+    "main": "dist/index.js",
     "scripts": {
         "build": "tsc"
     },

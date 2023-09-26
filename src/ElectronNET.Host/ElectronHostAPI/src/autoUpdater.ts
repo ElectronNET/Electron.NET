@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function autoUpdaterApi(socket: Socket) {
     electronSocket = socket;
 
     socket.on('register-autoUpdater-error-event', (id) => {
@@ -141,4 +141,4 @@ export = (socket: Socket) => {
         const feedUrl = await autoUpdater.getFeedURL();
         electronSocket.emit('autoUpdaterGetFeedURLComplete' + guid, feedUrl || '');
     });
-};
+}

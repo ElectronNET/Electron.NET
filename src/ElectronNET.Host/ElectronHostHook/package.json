@@ -1,5 +1,5 @@
 {
-    "name": "electron-host-hook",
+    "name": "@electron-host/hook",
     "version": "1.0.0",
     "description": "Connector for Electron.NET projects.",
     "keywords": [],
@@ -9,9 +9,6 @@
         "url": "https://github.com/ElectronNET/Electron.NET"
     },
     "main": "dist/index.js",
-    "exports": {
-        ".": "./dist/*"
-    },
     "scripts": {
         "build": "tsc"
     },

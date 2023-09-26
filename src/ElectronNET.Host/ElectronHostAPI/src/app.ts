@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 let isQuitWindowAllClosed = true, appWindowAllClosedEventId;
 let electronSocket;
 
-export = (socket: Socket, app: Electron.App) => {
+export function appApi(socket: Socket, app: Electron.App) {
     electronSocket = socket;
 
     // By default, quit when all windows are closed
@@ -310,4 +310,4 @@ export = (socket: Socket, app: Electron.App) => {
             }
         });
     });
-};
+}

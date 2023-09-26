@@ -5,7 +5,7 @@ const browserViews: BrowserView[] = (global['browserViews'] = global['browserVie
 const proxyToCredentialsMap: { [proxy: string]: string } = (global['proxyToCredentialsMap'] = global['proxyToCredentialsMap'] || []) as { [proxy: string]: string };
 let browserView: BrowserView, electronSocket;
 
-const browserViewApi = (socket: Socket) => {
+export function browserViewApi(socket: Socket) {
     electronSocket = socket;
 
     socket.on('createBrowserView', (options) => {
@@ -57,11 +57,11 @@ const browserViewApi = (socket: Socket) => {
 
         return true;
     }
-};
+}
 
-const browserViewMediateService = (browserViewId: number): BrowserView => {
+export function browserViewMediateService(browserViewId: number): BrowserView {
     return getBrowserViewById(browserViewId);
-};
+}
 
 function getBrowserViewById(id: number) {
     for (let index = 0; index < browserViews.length; index++) {
@@ -71,5 +71,3 @@ function getBrowserViewById(id: number) {
         }
     }
 }
-
-export { browserViewApi, browserViewMediateService };

@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket: Socket;
 
-export = (socket: Socket) => {
+export function dialogApi(socket: Socket) {
     electronSocket = socket;
     socket.on('showMessageBox', async (browserWindow, options, guid) => {
         if ('id' in browserWindow) {
@@ -43,4 +43,4 @@ export = (socket: Socket) => {
 
         electronSocket.emit('showCertificateTrustDialogComplete' + guid);
     });
-};
+}

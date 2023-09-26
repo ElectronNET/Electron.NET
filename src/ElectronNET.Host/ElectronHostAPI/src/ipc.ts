@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 
 let electronSocket;
 
-export = (socket: Socket) => {
+export function ipcApi(socket: Socket) {
     electronSocket = socket;
     socket.on('registerIpcMainChannel', (channel) => {
         ipcMain.on(channel, (event, args) => {
@@ -55,4 +55,4 @@ export = (socket: Socket) => {
             view.webContents.send(channel, ...data);
         }
     });
-};
+}
