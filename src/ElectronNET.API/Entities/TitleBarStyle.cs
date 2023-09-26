@@ -1,31 +1,30 @@
 ﻿using Newtonsoft.Json;
 
-namespace ElectronNET.API.Entities
+namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum TitleBarStyle
 {
     /// <summary>
-    /// 
+    /// The default style
     /// </summary>
-    public enum TitleBarStyle
-    {
-        /// <summary>
-        /// The default style
-        /// </summary>
-        [JsonProperty("default")]
-        defaultStyle,
+    [JsonProperty("default")]
+    defaultStyle,
 
-        /// <summary>
-        /// The hidden
-        /// </summary>
-        hidden,
+    /// <summary>
+    /// The hidden
+    /// </summary>
+    hidden,
 
-        /// <summary>
-        /// The hidden inset
-        /// </summary>
-        hiddenInset,
+    /// <summary>
+    /// The hidden inset
+    /// </summary>
+    hiddenInset,
 
-        /// <summary>
-        /// The custom buttons on hover
-        /// </summary>
-        customButtonsOnHover
-    }
+    /// <summary>
+    /// The custom buttons on hover
+    /// </summary>
+    customButtonsOnHover
 }

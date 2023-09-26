@@ -1,242 +1,238 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ElectronNET.API
+namespace ElectronNET.API;
+
+/// <summary>
+/// Monitor power state changes..
+/// </summary>
+public sealed class PowerMonitor
 {
     /// <summary>
-    /// Monitor power state changes..
+    /// Emitted when the system is about to lock the screen. 
     /// </summary>
-    public sealed class PowerMonitor
+    public event Action OnLockScreen
     {
-        /// <summary>
-        /// Emitted when the system is about to lock the screen. 
-        /// </summary>
-        public event Action OnLockScreen
+        add
         {
-            add
+            if (_lockScreen == null)
             {
-                if (_lockScreen == null)
+                BridgeConnector.Socket.On("pm-lock-screen" , () =>
                 {
-                    BridgeConnector.Socket.On("pm-lock-screen" , () =>
-                    {
-                        _lockScreen();
-                    });
+                    _lockScreen();
+                });
 
-                    BridgeConnector.Socket.Emit("register-pm-lock-screen");
-                }
-                _lockScreen += value;
+                BridgeConnector.Socket.Emit("register-pm-lock-screen");
             }
-            remove
-            {
-                _lockScreen -= value;
-
-                if (_lockScreen == null)
-                    BridgeConnector.Socket.Off("pm-lock-screen");
-            }
+            _lockScreen += value;
         }
-
-        private event Action _lockScreen;
-
-        /// <summary>
-        /// Emitted when the system is about to unlock the screen. 
-        /// </summary>
-        public event Action OnUnLockScreen
+        remove
         {
-            add
-            {
-                if (_unlockScreen == null)
-                {
-                    BridgeConnector.Socket.On("pm-unlock-screen", () =>
-                    {
-                        _unlockScreen();
-                    });
+            _lockScreen -= value;
 
-                    BridgeConnector.Socket.Emit("register-pm-unlock-screen");
-                }
-                _unlockScreen += value;
-            }
-            remove
-            {
-                _unlockScreen -= value;
-
-                if (_unlockScreen == null)
-                    BridgeConnector.Socket.Off("pm-unlock-screen");
-            }
+            if (_lockScreen == null)
+                BridgeConnector.Socket.Off("pm-lock-screen");
         }
+    }
 
-        private event Action _unlockScreen;
+    private event Action _lockScreen;
 
-        /// <summary>
-        /// Emitted when the system is suspending.
-        /// </summary>
-        public event Action OnSuspend
+    /// <summary>
+    /// Emitted when the system is about to unlock the screen. 
+    /// </summary>
+    public event Action OnUnLockScreen
+    {
+        add
         {
-            add
+            if (_unlockScreen == null)
             {
-                if (_suspend == null)
+                BridgeConnector.Socket.On("pm-unlock-screen", () =>
                 {
-                    BridgeConnector.Socket.On("pm-suspend", () =>
-                    {
-                        _suspend();
-                    });
+                    _unlockScreen();
+                });
 
-                    BridgeConnector.Socket.Emit("register-pm-suspend");
-                }
-                _suspend += value;
+                BridgeConnector.Socket.Emit("register-pm-unlock-screen");
             }
-            remove
-            {
-                _suspend -= value;
-
-                if (_suspend == null)
-                    BridgeConnector.Socket.Off("pm-suspend");
-            }
+            _unlockScreen += value;
         }
-
-        private event Action _suspend;
-
-        /// <summary>
-        /// Emitted when system is resuming.
-        /// </summary>
-        public event Action OnResume
+        remove
         {
-            add
-            {
-                if (_resume == null)
-                {
-                    BridgeConnector.Socket.On("pm-resume", () =>
-                    {
-                        _resume();
-                    });
+            _unlockScreen -= value;
 
-                    BridgeConnector.Socket.Emit("register-pm-resume");
-                }
-                _resume += value;
-            }
-            remove
-            {
-                _resume -= value;
-
-                if (_resume == null)
-                    BridgeConnector.Socket.Off("pm-resume");
-            }
+            if (_unlockScreen == null)
+                BridgeConnector.Socket.Off("pm-unlock-screen");
         }
+    }
 
-        private event Action _resume;
+    private event Action _unlockScreen;
 
-        /// <summary>
-        /// Emitted when the system changes to AC power.
-        /// </summary>
-        public event Action OnAC
+    /// <summary>
+    /// Emitted when the system is suspending.
+    /// </summary>
+    public event Action OnSuspend
+    {
+        add
         {
-            add
+            if (_suspend == null)
             {
-                if (_onAC == null)
+                BridgeConnector.Socket.On("pm-suspend", () =>
                 {
-                    BridgeConnector.Socket.On("pm-on-ac", () =>
-                    {
-                        _onAC();
-                    });
+                    _suspend();
+                });
 
-                    BridgeConnector.Socket.Emit("register-pm-on-ac");
-                }
-                _onAC += value;
+                BridgeConnector.Socket.Emit("register-pm-suspend");
             }
-            remove
-            {
-                _onAC -= value;
-
-                if (_onAC == null)
-                    BridgeConnector.Socket.Off("pm-on-ac");
-            }
+            _suspend += value;
         }
-
-        private event Action _onAC;
-
-        /// <summary>
-        /// Emitted when system changes to battery power.
-        /// </summary>
-        public event Action OnBattery
+        remove
         {
-            add
-            {
-                if (_onBattery == null)
-                {
-                    BridgeConnector.Socket.On("pm-on-battery", () =>
-                    {
-                        _onBattery();
-                    });
+            _suspend -= value;
 
-                    BridgeConnector.Socket.Emit("register-pm-on-battery");
-                }
-                _onBattery += value;
-            }
-            remove
-            {
-                _onBattery -= value;
-
-                if (_onBattery == null)
-                    BridgeConnector.Socket.Off("pm-on-battery");
-            }
+            if (_suspend == null)
+                BridgeConnector.Socket.Off("pm-suspend");
         }
+    }
 
-        private event Action _onBattery;
+    private event Action _suspend;
 
-
-        /// <summary>
-        /// Emitted when the system is about to reboot or shut down. If the event handler
-        /// invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
-        /// order for the app to exit cleanly.If `e.preventDefault()` is called, the app
-        /// should exit as soon as possible by calling something like `app.quit()`.
-        /// </summary>
-        public event Action OnShutdown
+    /// <summary>
+    /// Emitted when system is resuming.
+    /// </summary>
+    public event Action OnResume
+    {
+        add
         {
-            add
+            if (_resume == null)
             {
-                if (_shutdown == null)
+                BridgeConnector.Socket.On("pm-resume", () =>
                 {
-                    BridgeConnector.Socket.On("pm-shutdown", () =>
-                    {
-                        _shutdown();
-                    });
+                    _resume();
+                });
 
-                    BridgeConnector.Socket.Emit("register-pm-shutdown");
-                }
-                _shutdown += value;
+                BridgeConnector.Socket.Emit("register-pm-resume");
             }
-            remove
-            {
-                _shutdown -= value;
-
-                if (_shutdown == null)
-                    BridgeConnector.Socket.Off("pm-on-shutdown");
-            }
+            _resume += value;
         }
-
-        private event Action _shutdown;
-
-        private static PowerMonitor _powerMonitor;
-        private static object _syncRoot = new object();
-
-        internal PowerMonitor() { }
-
-        internal static PowerMonitor Instance
+        remove
         {
-            get
-            {
-                if (_powerMonitor == null)
-                {
-                    lock (_syncRoot)
-                    {
-                        if (_powerMonitor == null)
-                        {
-                            _powerMonitor = new PowerMonitor();
-                        }
-                    }
-                }
+            _resume -= value;
 
-                return _powerMonitor;
+            if (_resume == null)
+                BridgeConnector.Socket.Off("pm-resume");
+        }
+    }
+
+    private event Action _resume;
+
+    /// <summary>
+    /// Emitted when the system changes to AC power.
+    /// </summary>
+    public event Action OnAC
+    {
+        add
+        {
+            if (_onAC == null)
+            {
+                BridgeConnector.Socket.On("pm-on-ac", () =>
+                {
+                    _onAC();
+                });
+
+                BridgeConnector.Socket.Emit("register-pm-on-ac");
             }
+            _onAC += value;
+        }
+        remove
+        {
+            _onAC -= value;
+
+            if (_onAC == null)
+                BridgeConnector.Socket.Off("pm-on-ac");
+        }
+    }
+
+    private event Action _onAC;
+
+    /// <summary>
+    /// Emitted when system changes to battery power.
+    /// </summary>
+    public event Action OnBattery
+    {
+        add
+        {
+            if (_onBattery == null)
+            {
+                BridgeConnector.Socket.On("pm-on-battery", () =>
+                {
+                    _onBattery();
+                });
+
+                BridgeConnector.Socket.Emit("register-pm-on-battery");
+            }
+            _onBattery += value;
+        }
+        remove
+        {
+            _onBattery -= value;
+
+            if (_onBattery == null)
+                BridgeConnector.Socket.Off("pm-on-battery");
+        }
+    }
+
+    private event Action _onBattery;
+
+
+    /// <summary>
+    /// Emitted when the system is about to reboot or shut down. If the event handler
+    /// invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
+    /// order for the app to exit cleanly.If `e.preventDefault()` is called, the app
+    /// should exit as soon as possible by calling something like `app.quit()`.
+    /// </summary>
+    public event Action OnShutdown
+    {
+        add
+        {
+            if (_shutdown == null)
+            {
+                BridgeConnector.Socket.On("pm-shutdown", () =>
+                {
+                    _shutdown();
+                });
+
+                BridgeConnector.Socket.Emit("register-pm-shutdown");
+            }
+            _shutdown += value;
+        }
+        remove
+        {
+            _shutdown -= value;
+
+            if (_shutdown == null)
+                BridgeConnector.Socket.Off("pm-on-shutdown");
+        }
+    }
+
+    private event Action _shutdown;
+
+    private static PowerMonitor _powerMonitor;
+    private static object _syncRoot = new object();
+
+    internal PowerMonitor() { }
+
+    internal static PowerMonitor Instance
+    {
+        get
+        {
+            if (_powerMonitor == null)
+            {
+                lock (_syncRoot)
+                {
+                    _powerMonitor ??= new PowerMonitor();
+                }
+            }
+
+            return _powerMonitor;
         }
     }
 }

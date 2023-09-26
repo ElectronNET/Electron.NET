@@ -1,33 +1,32 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum ProgressBarMode
 {
     /// <summary>
-    /// 
+    /// The none
     /// </summary>
-    public enum ProgressBarMode
-    {
-        /// <summary>
-        /// The none
-        /// </summary>
-        none,
+    none,
 
-        /// <summary>
-        /// The normal
-        /// </summary>
-        normal,
+    /// <summary>
+    /// The normal
+    /// </summary>
+    normal,
 
-        /// <summary>
-        /// The indeterminate
-        /// </summary>
-        indeterminate,
+    /// <summary>
+    /// The indeterminate
+    /// </summary>
+    indeterminate,
 
-        /// <summary>
-        /// The error
-        /// </summary>
-        error,
+    /// <summary>
+    /// The error
+    /// </summary>
+    error,
 
-        /// <summary>
-        /// The paused
-        /// </summary>
-        paused
-    }
+    /// <summary>
+    /// The paused
+    /// </summary>
+    paused
 }

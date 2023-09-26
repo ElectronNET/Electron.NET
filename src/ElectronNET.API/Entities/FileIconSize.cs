@@ -1,23 +1,22 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum FileIconSize
 {
     /// <summary>
-    /// 
+    /// The small
     /// </summary>
-    public enum FileIconSize
-    {
-        /// <summary>
-        /// The small
-        /// </summary>
-        small,
+    small,
 
-        /// <summary>
-        /// The normal
-        /// </summary>
-        normal,
+    /// <summary>
+    /// The normal
+    /// </summary>
+    normal,
 
-        /// <summary>
-        /// The large
-        /// </summary>
-        large
-    }
+    /// <summary>
+    /// The large
+    /// </summary>
+    large
 }

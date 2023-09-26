@@ -1,28 +1,27 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum Scheme
 {
     /// <summary>
     /// 
     /// </summary>
-    public enum Scheme
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        basic,
+    basic,
 
-        /// <summary>
-        /// 
-        /// </summary>
-        digest,
+    /// <summary>
+    /// 
+    /// </summary>
+    digest,
 
-        /// <summary>
-        /// 
-        /// </summary>
-        ntlm,
+    /// <summary>
+    /// 
+    /// </summary>
+    ntlm,
 
-        /// <summary>
-        /// 
-        /// </summary>
-        negotiate
-    }
+    /// <summary>
+    /// 
+    /// </summary>
+    negotiate
 }

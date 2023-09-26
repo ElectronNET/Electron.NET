@@ -2,38 +2,37 @@
 using System;
 using System.Collections.Generic;
 
-namespace ElectronNET.API.Extensions
+namespace ElectronNET.API.Extensions;
+
+internal static class ThumbarButtonExtensions
 {
-    internal static class ThumbarButtonExtensions
+    public static ThumbarButton[] AddThumbarButtonsId(this ThumbarButton[] thumbarButtons)
     {
-        public static ThumbarButton[] AddThumbarButtonsId(this ThumbarButton[] thumbarButtons)
+        for (int index = 0; index < thumbarButtons.Length; index++)
         {
-            for (int index = 0; index < thumbarButtons.Length; index++)
+            var thumbarButton = thumbarButtons[index];
+
+            if (string.IsNullOrEmpty(thumbarButton.Id))
             {
-                var thumbarButton = thumbarButtons[index];
-
-                if (string.IsNullOrEmpty(thumbarButton.Id))
-                {
-                    thumbarButton.Id = Guid.NewGuid().ToString();
-                }
+                thumbarButton.Id = Guid.NewGuid().ToString();
             }
-
-            return thumbarButtons;
         }
 
-        public static ThumbarButton GetThumbarButton(this List<ThumbarButton> thumbarButtons, string id)
+        return thumbarButtons;
+    }
+
+    public static ThumbarButton GetThumbarButton(this List<ThumbarButton> thumbarButtons, string id)
+    {
+        ThumbarButton result = new ThumbarButton("");
+
+        foreach (var item in thumbarButtons)
         {
-            ThumbarButton result = new ThumbarButton("");
-
-            foreach (var item in thumbarButtons)
+            if (item.Id == id)
             {
-                if (item.Id == id)
-                {
-                    result = item;
-                }
+                result = item;
             }
-
-            return result;
         }
+
+        return result;
     }
 }

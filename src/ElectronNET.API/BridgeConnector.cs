@@ -1,33 +1,32 @@
-﻿namespace ElectronNET.API
+﻿namespace ElectronNET.API;
+
+internal static class BridgeConnector
 {
-    internal static class BridgeConnector
+    private static SocketIoFacade _socket;
+    private static readonly object SyncRoot = new();
+
+    public static SocketIoFacade Socket
     {
-        private static SocketIoFacade _socket;
-        private static readonly object SyncRoot = new();
-
-        public static SocketIoFacade Socket
+        get
         {
-            get
+            if (_socket == null)
             {
-                if (_socket == null)
+                lock (SyncRoot)
                 {
-                    lock (SyncRoot)
+                    if (_socket == null)
                     {
-                        if (_socket == null)
-                        {
 
-                            string socketUrl = HybridSupport.IsElectronActive
-                                ? $"http://localhost:{BridgeSettings.SocketPort}"
-                                : "http://localhost";
+                        var socketUrl = HybridSupport.IsElectronActive
+                            ? $"http://localhost:{BridgeSettings.SocketPort}"
+                            : "http://localhost";
 
-                            _socket = new SocketIoFacade(socketUrl);
-                            _socket.Connect();
-                        }
+                        _socket = new SocketIoFacade(socketUrl);
+                        _socket.Connect();
                     }
                 }
-
-                return _socket;
             }
+
+            return _socket;
         }
     }
 }

@@ -1,28 +1,27 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum JumpListCategoryType
 {
     /// <summary>
-    /// 
+    /// The tasks
     /// </summary>
-    public enum JumpListCategoryType
-    {
-        /// <summary>
-        /// The tasks
-        /// </summary>
-        tasks,
+    tasks,
 
-        /// <summary>
-        /// The frequent
-        /// </summary>
-        frequent,
+    /// <summary>
+    /// The frequent
+    /// </summary>
+    frequent,
 
-        /// <summary>
-        /// The recent
-        /// </summary>
-        recent,
+    /// <summary>
+    /// The recent
+    /// </summary>
+    recent,
 
-        /// <summary>
-        /// The custom
-        /// </summary>
-        custom
-    }
+    /// <summary>
+    /// The custom
+    /// </summary>
+    custom
 }

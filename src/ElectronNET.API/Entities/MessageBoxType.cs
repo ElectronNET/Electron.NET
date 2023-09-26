@@ -1,33 +1,32 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum MessageBoxType
 {
     /// <summary>
-    /// 
+    /// The none
     /// </summary>
-    public enum MessageBoxType
-    {
-        /// <summary>
-        /// The none
-        /// </summary>
-        none,
+    none,
 
-        /// <summary>
-        /// The information
-        /// </summary>
-        info,
+    /// <summary>
+    /// The information
+    /// </summary>
+    info,
 
-        /// <summary>
-        /// The error
-        /// </summary>
-        error,
+    /// <summary>
+    /// The error
+    /// </summary>
+    error,
 
-        /// <summary>
-        /// The question
-        /// </summary>
-        question,
+    /// <summary>
+    /// The question
+    /// </summary>
+    question,
 
-        /// <summary>
-        /// The warning
-        /// </summary>
-        warning
-    }
+    /// <summary>
+    /// The warning
+    /// </summary>
+    warning
 }

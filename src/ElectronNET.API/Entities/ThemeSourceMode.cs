@@ -1,28 +1,27 @@
 ﻿using System.ComponentModel;
 
-namespace ElectronNET.API.Entities
+namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// Defines the ThemeSourceMode enumeration.
+/// </summary>
+public enum ThemeSourceMode
 {
     /// <summary>
-    /// Defines the ThemeSourceMode enumeration.
+    /// Operating system default.
     /// </summary>
-    public enum ThemeSourceMode
-    {
-        /// <summary>
-        /// Operating system default.
-        /// </summary>
-        [Description("system")]
-        System,
+    [Description("system")]
+    System,
 
-        /// <summary>
-        /// Light theme.
-        /// </summary>
-        [Description("light")]
-        Light,
+    /// <summary>
+    /// Light theme.
+    /// </summary>
+    [Description("light")]
+    Light,
 
-        /// <summary>
-        /// Dark theme.
-        /// </summary>
-        [Description("dark")]
-        Dark
-    }
+    /// <summary>
+    /// Dark theme.
+    /// </summary>
+    [Description("dark")]
+    Dark
 }

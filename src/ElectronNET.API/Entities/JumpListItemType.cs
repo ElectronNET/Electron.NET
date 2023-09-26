@@ -1,23 +1,22 @@
-﻿namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities;
+
+/// <summary>
+/// 
+/// </summary>
+public enum JumpListItemType
 {
     /// <summary>
-    /// 
+    /// The task
     /// </summary>
-    public enum JumpListItemType
-    {
-        /// <summary>
-        /// The task
-        /// </summary>
-        task,
+    task,
 
-        /// <summary>
-        /// The separator
-        /// </summary>
-        separator,
+    /// <summary>
+    /// The separator
+    /// </summary>
+    separator,
 
-        /// <summary>
-        /// The file
-        /// </summary>
-        file
-    }
+    /// <summary>
+    /// The file
+    /// </summary>
+    file
 }
