@@ -1,0 +1,16 @@
+{
+    "name": "@electron-host/api",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "electron": "^26.2",
+        "electron-updater": "^6.1"
+    },
+    "devDependencies": {
+        "@types/node": "^20.6",
+        "typescript": "^5.2"
+    }
+}
