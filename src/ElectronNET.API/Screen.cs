@@ -246,6 +246,46 @@ public sealed class Screen
         return taskCompletionSource.Task;
     }
 
+    /// <summary>
+    /// Converts a screen physical point to a screen DIP point. The DPI scale
+    /// is performed relative to the display containing the physical point.
+    /// </summary>
+    public Task<Point> ScreenToDipPoint(Point point)
+    {
+        var taskCompletionSource = new TaskCompletionSource<Point>();
+
+        BridgeConnector.Socket.On("screen-screenToDipPointCompleted", (dipPoint) =>
+        {
+            BridgeConnector.Socket.Off("screen-screenToDipPointCompleted");
+
+            taskCompletionSource.SetResult(((JObject)dipPoint).ToObject<Point>());
+        });
+
+        BridgeConnector.Socket.Emit("screen-screenToDipPoint", JObject.FromObject(point, _jsonSerializer));
+
+        return taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    /// Converts a screen DIP point to a screen physical point. The DPI scale is
+    /// performed relative to the display containing the DIP point.
+    /// </summary>
+    public Task<Point> DipToScreenPoint(Point point)
+    {
+        var taskCompletionSource = new TaskCompletionSource<Point>();
+
+        BridgeConnector.Socket.On("screen-dipToScreenPointCompleted", (screenPoint) =>
+        {
+            BridgeConnector.Socket.Off("screen-dipToScreenPointCompleted");
+
+            taskCompletionSource.SetResult(((JObject)screenPoint).ToObject<Point>());
+        });
+
+        BridgeConnector.Socket.Emit("screen-dipToScreenPoint", JObject.FromObject(point, _jsonSerializer));
+
+        return taskCompletionSource.Task;
+    }
+
     private JsonSerializer _jsonSerializer = new JsonSerializer()
     {
         ContractResolver = new CamelCasePropertyNamesContractResolver(),

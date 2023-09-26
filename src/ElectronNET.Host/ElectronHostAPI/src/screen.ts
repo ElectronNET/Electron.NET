@@ -52,4 +52,14 @@ export function screenApi(socket: Socket) {
         const display = screen.getDisplayMatching(rectangle);
         electronSocket.emit('screen-getDisplayMatchingCompleted', display);
     });
+
+    socket.on('screen-screenToDipPoint', (point) => {
+        const dipPoint = screen.screenToDipPoint(point);
+        electronSocket.emit('screen-screenToDipPointCompleted', dipPoint);
+    });
+
+    socket.on('screen-dipToScreenPoint', (point) => {
+        const screenPoint = screen.dipToScreenPoint(point);
+        electronSocket.emit('screen-dipToScreenPointCompleted', screenPoint);
+    });
 }
