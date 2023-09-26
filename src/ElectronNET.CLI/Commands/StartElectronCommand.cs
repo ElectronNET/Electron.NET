@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
 
@@ -91,6 +92,21 @@ namespace ElectronNET.CLI.Commands
                 {
                     string hostHookDir = Path.Combine(tempPath, "ElectronHostHook");
                     DirectoryCopy.Do(hostHookFolders.First(), hostHookDir, true, new List<string>() { "node_modules" });
+
+                    string package = Path.Combine(hostHookDir, "package.json");
+
+                    var jsonText = File.ReadAllText(package);
+
+                    JsonDocument jsonDoc = JsonDocument.Parse(jsonText);
+                    JsonElement root = jsonDoc.RootElement;
+
+                    var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonText);
+
+                    packageJson["name"] = "@electron-host/hook";
+
+                    string output = JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true });
+
+                    File.WriteAllText(package, output);
                 }
 
                 Console.WriteLine("Start npm install...");

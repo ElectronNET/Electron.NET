@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
 
@@ -20,7 +22,6 @@ namespace ElectronNET.CLI.Commands
                                                  "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
                                                  "Optional: '/absolute-path to specify and absolute path for output." + Environment.NewLine +
                                                  "Optional: '/package-json' to specify a custom package.json file." + Environment.NewLine +
-                                                 "Optional: '/install-modules' to force node module install. Implied by '/package-json'" + Environment.NewLine +
                                                  "Optional: '/Version' to specify the version that should be applied to both the `dotnet publish` and `electron-builder` commands. Implied by '/Version'" + Environment.NewLine +
                                                  "Optional: '/p:[property]' or '/property:[property]' to pass in dotnet publish properties.  Example: '/property:Version=1.0.0' to override the FileVersion" + Environment.NewLine +
                                                  "Full example for a 32bit debug build with electron prune: build /target custom win7-x86;win32 /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--prune=true \"";
@@ -38,7 +39,6 @@ namespace ElectronNET.CLI.Commands
         private string _paramOutputDirectory = "relative-path";
         private string _paramAbsoluteOutput = "absolute-path";
         private string _paramPackageJson = "package-json";
-        private string _paramForceNodeInstall = "install-modules";
         private string _manifest = "manifest";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
         private string _paramPublishSingleFile = "PublishSingleFile";
@@ -81,7 +81,25 @@ namespace ElectronNET.CLI.Commands
                 }
                 else
                 {
-                    Directory.Delete(tempPath, true);
+                    try
+                    {
+                        Directory.Delete(tempPath, true);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // Attempt to reset directory permissions and try again.
+                        var di = new DirectoryInfo(tempPath);
+                        di.Attributes &= ~FileAttributes.ReadOnly;
+                        foreach (var dir in di.GetDirectories())
+                        {
+                            dir.Attributes &= ~FileAttributes.ReadOnly;
+                        }
+                        foreach (var file in di.GetFiles())
+                        {
+                            file.Attributes &= ~FileAttributes.ReadOnly;
+                        }
+                        Directory.Delete(tempPath, true);
+                    }
                     Directory.CreateDirectory(tempPath);
                 }
 
@@ -90,12 +108,12 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
-                
+
                 Dictionary<string, string> dotNetPublishFlags = GetDotNetPublishFlags(_parser);
 
                 string command =
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
-                
+
                 // output the command 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(command);
@@ -109,11 +127,9 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-                var electronHostHookDir = Path.Combine(Directory.GetCurrentDirectory(), "ElectronHostHook");
+                string[] hostHookFolders = Directory.GetDirectories(Directory.GetCurrentDirectory(), "ElectronHostHook", SearchOption.AllDirectories);
 
-                DeployEmbeddedElectronFiles.Do(tempPath, true);
-
-                var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
+                DeployEmbeddedElectronFiles.Do(tempPath, hostHookFolders.Length > 0);
 
                 if (_parser.Arguments.TryGetValue(_paramPackageJson, out string[] packageData))
                 {
@@ -124,14 +140,29 @@ namespace ElectronNET.CLI.Commands
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
-                if (Directory.Exists(electronHostHookDir))
+                if (hostHookFolders.Length > 0)
                 {
                     string hostHookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(electronHostHookDir, hostHookDir, true, new List<string>() { "node_modules" });
+                    DirectoryCopy.Do(hostHookFolders.First(), hostHookDir, true, new List<string>() { "node_modules" });
+
+                    string package = Path.Combine(hostHookDir, "package.json");
+
+                    var jsonText = File.ReadAllText(package);
+
+                    JsonDocument jsonDoc = JsonDocument.Parse(jsonText);
+                    JsonElement root = jsonDoc.RootElement;
+
+                    var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonText);
+
+                    packageJson["name"] = "@electron-host/hook";
+
+                    string output = JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true });
+
+                    File.WriteAllText(package, output);
                 }
 
                 Console.WriteLine("Start npm install...");
-                ProcessHelper.CmdExecute("npm install --production", tempPath);
+                ProcessHelper.CmdExecute("npm install", tempPath);
 
                 Console.WriteLine("Build Electron Desktop Application...");
 
@@ -153,10 +184,8 @@ namespace ElectronNET.CLI.Commands
 
                 string manifestFileName = _parser.Arguments.TryGetValue(_manifest, out string[] manifestData) ? manifestData.First() : "electron.manifest.json";
 
-                ProcessHelper.CmdExecute(
-                    string.IsNullOrWhiteSpace(version)
-                        ? $"node build-helper.js {manifestFileName}"
-                        : $"node build-helper.js {manifestFileName} {version}", tempPath);
+                if (!ProcessManifest(tempPath, manifestFileName, version))
+                    throw new Exception("Fail to update manifest.");
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
                 ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=26.2.0 {electronParams}", tempPath);
@@ -177,9 +206,9 @@ namespace ElectronNET.CLI.Commands
 
             if (parser.Arguments.ContainsKey(_paramVersion))
             {
-                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:Version=") && !key.StartsWith("property:Version=")))
+                if (parser.Arguments.Keys.All(key => !key.StartsWith("p:Version=") && !key.StartsWith("property:Version=")))
                     dotNetPublishFlags.Add("/p:Version", parser.Arguments[_paramVersion][0]);
-                if(parser.Arguments.Keys.All(key => !key.StartsWith("p:ProductVersion=") && !key.StartsWith("property:ProductVersion=")))
+                if (parser.Arguments.Keys.All(key => !key.StartsWith("p:ProductVersion=") && !key.StartsWith("property:ProductVersion=")))
                     dotNetPublishFlags.Add("/p:ProductVersion", parser.Arguments[_paramVersion][0]);
             }
 
@@ -199,6 +228,55 @@ namespace ElectronNET.CLI.Commands
             }
 
             return dotNetPublishFlags;
+        }
+
+        private bool ProcessManifest(string basePath, string manifestFileName, string buildVersion)
+        {
+            var manifestFilePath = Path.Combine(basePath, "bin", manifestFileName);
+            var manifestFile = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(manifestFilePath));
+
+            if (manifestFile.TryGetValue("build", out var rawBuilderConfiguration))
+            {
+                var builderConfiguration = JsonSerializer.Deserialize<Dictionary<string, object>>((JsonElement)rawBuilderConfiguration);
+                if (!string.IsNullOrWhiteSpace(buildVersion))
+                    builderConfiguration["buildVersion"] = buildVersion;
+
+                UpdateJsonFile(Path.Combine(basePath, "package.json"), manifestFile, builderConfiguration);
+                if (File.Exists(Path.Combine(basePath, "package-lock.json")))
+                {
+                    UpdateJsonFile(Path.Combine(basePath, "package-lock.json"), manifestFile, builderConfiguration);
+                }
+
+                var builderConfigurationString = JsonSerializer.Serialize(builderConfiguration, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(Path.Combine(basePath, "bin", "electron-builder.json"), builderConfigurationString);
+
+                var manifestContent = JsonSerializer.Serialize(manifestFile, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(Path.Combine(basePath, "bin", "electron.manifest.json"), manifestContent);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void UpdateJsonFile(string filePath, Dictionary<string, object> manifestFile, Dictionary<string, object> builderConfiguration)
+        {
+            var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(filePath));
+
+            packageJson["name"] = manifestFile.GetValueOrDefault("name", "electron-net").ToString().ToDashCase();
+            packageJson["author"] = manifestFile.GetValueOrDefault("author", string.Empty);
+            packageJson["version"] = builderConfiguration["buildVersion"]; // Must be exist
+            packageJson["description"] = manifestFile.GetValueOrDefault("description", "");
+
+            File.WriteAllText(filePath, JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
+
+    public static class StringExtensions
+    {
+        public static string ToDashCase(this string input)
+        {
+            return Regex.Replace(input, @"([a-z])([A-Z])", "$1-$2").ToLower();
         }
     }
 }
