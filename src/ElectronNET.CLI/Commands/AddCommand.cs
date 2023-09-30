@@ -61,8 +61,8 @@ namespace ElectronNET.CLI.Commands
                 Directory.CreateDirectory(targetFilePath);
 
                 // Deploy related files
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "index.ts", "ElectronHostHook.");
-                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "connector.ts", "ElectronHostHook.");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "index.ts", "ElectronHostHook.src.");
+                EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "connector.ts", "ElectronHostHook.src.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "package.json", "ElectronHostHook.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, "tsconfig.json", "ElectronHostHook.");
                 EmbeddedFileHelper.DeployEmbeddedFile(targetFilePath, ".gitignore", "ElectronHostHook.");
@@ -71,9 +71,7 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", targetFilePath);
 
-                // run typescript compiler
-                // ToDo: Not sure if this runs under linux/macos
-                ProcessHelper.CmdExecute(@"npx tsc -p ../../", targetFilePath);
+                ProcessHelper.CmdExecute("npm run build", targetFilePath);
 
                 // search .csproj or .fsproj (.csproj has higher precedence)
                 Console.WriteLine($"Search your .csproj/.fsproj to add configure CopyToPublishDirectory to 'Never'");

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ElectronNET.CLI.Commands.Actions;
@@ -32,17 +34,17 @@ namespace ElectronNET.CLI.Commands
 
         public BuildCommand(string[] args) => _parser.Parse(args);
 
-        private string _paramTarget = "target";
-        private string _paramDotNetConfig = "dotnet-configuration";
-        private string _paramElectronArch = "electron-arch";
-        private string _paramElectronParams = "electron-params";
-        private string _paramOutputDirectory = "relative-path";
-        private string _paramAbsoluteOutput = "absolute-path";
-        private string _paramPackageJson = "package-json";
-        private string _manifest = "manifest";
-        private string _paramPublishReadyToRun = "PublishReadyToRun";
-        private string _paramPublishSingleFile = "PublishSingleFile";
-        private string _paramVersion = "Version";
+        private static string _paramTarget = "target";
+        private static string _paramDotNetConfig = "dotnet-configuration";
+        private static string _paramElectronArch = "electron-arch";
+        private static string _paramElectronParams = "electron-params";
+        private static string _paramOutputDirectory = "relative-path";
+        private static string _paramAbsoluteOutput = "absolute-path";
+        private static string _paramPackageJson = "package-json";
+        private static string _manifest = "manifest";
+        private static string _paramPublishReadyToRun = "PublishReadyToRun";
+        private static string _paramPublishSingleFile = "PublishSingleFile";
+        private static string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
         {
@@ -63,9 +65,7 @@ namespace ElectronNET.CLI.Commands
                 var desiredPlatform = _parser.Arguments[_paramTarget][0];
                 string specifiedFromCustom = string.Empty;
                 if (desiredPlatform == "custom" && _parser.Arguments[_paramTarget].Length > 1)
-                {
                     specifiedFromCustom = _parser.Arguments[_paramTarget][1];
-                }
 
                 string configuration = _parser.Arguments.TryGetValue(_paramDotNetConfig, out string[] configData) ? configData[0] : "Release";
 
@@ -81,25 +81,7 @@ namespace ElectronNET.CLI.Commands
                 }
                 else
                 {
-                    try
-                    {
-                        Directory.Delete(tempPath, true);
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        // Attempt to reset directory permissions and try again.
-                        var di = new DirectoryInfo(tempPath);
-                        di.Attributes &= ~FileAttributes.ReadOnly;
-                        foreach (var dir in di.GetDirectories())
-                        {
-                            dir.Attributes &= ~FileAttributes.ReadOnly;
-                        }
-                        foreach (var file in di.GetFiles())
-                        {
-                            file.Attributes &= ~FileAttributes.ReadOnly;
-                        }
-                        Directory.Delete(tempPath, true);
-                    }
+                    DirectoryDelete.Do(tempPath);
                     Directory.CreateDirectory(tempPath);
                 }
 
@@ -127,53 +109,24 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-                string[] hostHookFolders = Directory.GetDirectories(Directory.GetCurrentDirectory(), "ElectronHostHook", SearchOption.AllDirectories);
+                var hostHookPath = Directory.GetDirectories(Directory.GetCurrentDirectory(), "ElectronHostHook", SearchOption.AllDirectories).FirstOrDefault();
 
-                DeployEmbeddedElectronFiles.Do(tempPath, hostHookFolders.Length > 0);
+                DeployEmbeddedElectronFiles.Do(tempPath, !string.IsNullOrEmpty(hostHookPath));
 
-                if (_parser.Arguments.TryGetValue(_paramPackageJson, out string[] packageData))
-                {
-                    Console.WriteLine("Copying custom package.json.");
-
-                    File.Copy(packageData[0], Path.Combine(tempPath, "package.json"), true);
-                }
-
-                Console.WriteLine("ElectronHostHook handling started...");
-
-                if (hostHookFolders.Length > 0)
-                {
-                    string hostHookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(hostHookFolders.First(), hostHookDir, true, new List<string>() { "node_modules" });
-
-                    string package = Path.Combine(hostHookDir, "package.json");
-
-                    var jsonText = File.ReadAllText(package);
-
-                    JsonDocument jsonDoc = JsonDocument.Parse(jsonText);
-                    JsonElement root = jsonDoc.RootElement;
-
-                    var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonText);
-
-                    packageJson["name"] = "@electron-host/hook";
-
-                    string output = JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true });
-
-                    File.WriteAllText(package, output);
-                }
+                ParsePackageJson(_parser,tempPath, hostHookPath);
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
 
                 Console.WriteLine("Build Electron Desktop Application...");
 
-                // Specifying an absolute path supercedes a relative path
                 string buildPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "desktop");
                 if (_parser.Arguments.TryGetValue(_paramAbsoluteOutput, out string[] outputPathData))
                     buildPath = outputPathData[0];
                 else if (_parser.Arguments.TryGetValue(_paramOutputDirectory, out string[] outputDirectoryData))
                     buildPath = Path.Combine(Directory.GetCurrentDirectory(), outputDirectoryData[0]);
 
-                Console.WriteLine("Executing electron magic in this directory: " + buildPath);
+                Console.WriteLine("Executing electron-build logic in this directory: " + buildPath);
 
                 string electronArch = _parser.Arguments.TryGetValue(_paramElectronArch, out string[] archData) ? archData[0] : "x64";
 
@@ -196,7 +149,34 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        private Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
+        private static void ParsePackageJson(SimpleCommandLineParser parser, string basePath, string hostHookPath)
+        {
+            if (parser.Arguments.TryGetValue(_paramPackageJson, out string[] packageData))
+            {
+                Console.WriteLine("Copying custom package.json.");
+
+                File.Copy(packageData[0], Path.Combine(basePath, "package.json"), true);
+            }
+            else
+            {
+                string masterPackagePath = Path.Combine(basePath, "package.json");
+
+                var masterJson = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(masterPackagePath));
+                masterJson.Remove("workspaces");
+
+                var masterScripts = masterJson["scripts"].Deserialize<Dictionary<string, string>>();
+                masterScripts["preinstall:api"] = "cd ElectronHostAPI && npm install && npm run build --if-present";
+                masterScripts["preinstall:hook"] = "cd ElectronHostHook && npm install && npm run build --if-present";
+                masterScripts["preinstall"] = "npm run preinstall:api && npm run preinstall:hook";
+                masterJson["scripts"] = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(masterScripts));
+
+                File.WriteAllText(masterPackagePath, JsonSerializer.Serialize(masterJson, new JsonSerializerOptions { WriteIndented = true }));
+            }
+
+            DeployElectronHostHook.Do(basePath, hostHookPath);
+        }
+
+        private static Dictionary<string, string> GetDotNetPublishFlags(SimpleCommandLineParser parser)
         {
             var dotNetPublishFlags = new Dictionary<string, string>
             {
@@ -217,7 +197,7 @@ namespace ElectronNET.CLI.Commands
                 var split = param.IndexOf('=');
                 if (split < 0) continue;
 
-                var key = $"/{param.Substring(0, split)}";
+                var key = $"/{param[..split]}";
                 // normalize the key
                 if (key.StartsWith("/property:"))
                     key = key.Replace("/property:", "/p:");
@@ -230,24 +210,47 @@ namespace ElectronNET.CLI.Commands
             return dotNetPublishFlags;
         }
 
-        private bool ProcessManifest(string basePath, string manifestFileName, string buildVersion)
+        private static bool ProcessManifest(string basePath, string manifestFileName, string buildVersion)
         {
             var manifestFilePath = Path.Combine(basePath, "bin", manifestFileName);
-            var manifestFile = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(manifestFilePath));
+            var manifestFile = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(manifestFilePath));
 
-            if (manifestFile.TryGetValue("build", out var rawBuilderConfiguration))
+            if (manifestFile.TryGetValue("build", out var builderConfigurationData))
             {
-                var builderConfiguration = JsonSerializer.Deserialize<Dictionary<string, object>>((JsonElement)rawBuilderConfiguration);
+                var builderConfigurationJson = builderConfigurationData.Deserialize<Dictionary<string, JsonElement>>();
                 if (!string.IsNullOrWhiteSpace(buildVersion))
-                    builderConfiguration["buildVersion"] = buildVersion;
+                    builderConfigurationJson["buildVersion"] = JsonSerializer.SerializeToElement(buildVersion);
 
-                UpdateJsonFile(Path.Combine(basePath, "package.json"), manifestFile, builderConfiguration);
-                if (File.Exists(Path.Combine(basePath, "package-lock.json")))
+                if (builderConfigurationJson.TryGetValue("files", out var filesData))
                 {
-                    UpdateJsonFile(Path.Combine(basePath, "package-lock.json"), manifestFile, builderConfiguration);
+                    var filesJson = filesData.Deserialize<List<object>>();
+                    bool electronHostAPIExists = filesJson.OfType<FileSet>().Any(fs => fs.From.Contains("ElectronHostAPI"));
+                    bool electronHostHookExists = filesJson.OfType<FileSet>().Any(fs => fs.From.Contains("ElectronHostHook"));
+
+                    if (!electronHostAPIExists)
+                        filesJson.Add(new FileSet
+                        {
+                            From = "./ElectronHostAPI/node_modules",
+                            To = "ElectronHostAPI/node_modules",
+                            Filter = new List<string> { "**/*" }
+                        });
+
+                    if (!electronHostHookExists)
+                        filesJson.Add(new FileSet
+                        {
+                            From = "./ElectronHostHook/node_modules",
+                            To = "ElectronHostHook/node_modules",
+                            Filter = new List<string> { "**/*" }
+                        });
+
+                    builderConfigurationJson["files"] = JsonSerializer.SerializeToElement(filesJson);
                 }
 
-                var builderConfigurationString = JsonSerializer.Serialize(builderConfiguration, new JsonSerializerOptions { WriteIndented = true });
+                UpdateJsonFile(Path.Combine(basePath, "package.json"), manifestFile, builderConfigurationJson);
+                if (File.Exists(Path.Combine(basePath, "package-lock.json")))
+                    UpdateJsonFile(Path.Combine(basePath, "package-lock.json"), manifestFile, builderConfigurationJson);
+
+                var builderConfigurationString = JsonSerializer.Serialize(builderConfigurationJson, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(Path.Combine(basePath, "bin", "electron-builder.json"), builderConfigurationString);
 
                 var manifestContent = JsonSerializer.Serialize(manifestFile, new JsonSerializerOptions { WriteIndented = true });
@@ -259,17 +262,39 @@ namespace ElectronNET.CLI.Commands
             return false;
         }
 
-        private static void UpdateJsonFile(string filePath, Dictionary<string, object> manifestFile, Dictionary<string, object> builderConfiguration)
+        private static void UpdateJsonFile(string filePath, Dictionary<string, JsonElement> manifestFile, Dictionary<string, JsonElement> builderConfiguration)
         {
-            var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(File.ReadAllText(filePath));
+            var packageJson = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(filePath));
 
-            packageJson["name"] = manifestFile.GetValueOrDefault("name", "electron-net").ToString().ToDashCase();
-            packageJson["author"] = manifestFile.GetValueOrDefault("author", string.Empty);
+            packageJson["name"] =
+                JsonSerializer.SerializeToElement(manifestFile.TryGetValue("name", out var nameData)
+                    ? nameData.GetRawText().ToDashCase()
+                    : "electron-net");
+            packageJson["author"] =
+                JsonSerializer.SerializeToElement(manifestFile.TryGetValue("author", out var authorData)
+                    ? authorData.GetRawText()
+                    : string.Empty);
+            packageJson["description"] =
+                JsonSerializer.SerializeToElement(manifestFile.TryGetValue("description", out var descriptionData)
+                    ? descriptionData.GetRawText()
+                    : string.Empty);
+
             packageJson["version"] = builderConfiguration["buildVersion"]; // Must be exist
-            packageJson["description"] = manifestFile.GetValueOrDefault("description", "");
 
             File.WriteAllText(filePath, JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true }));
         }
+    }
+
+    public class FileSet
+    {
+        [JsonPropertyName("from")]
+        public string From { get; set; }
+
+        [JsonPropertyName("to")]
+        public string To { get; set; }
+
+        [JsonPropertyName("filter")]
+        public List<string> Filter { get; set; }
     }
 
     public static class StringExtensions

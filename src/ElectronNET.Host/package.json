@@ -13,15 +13,15 @@
         "ElectronHostHook"
     ],
     "scripts": {
-        "prepare": "npm --prefix ElectronHostAPI run build --if-present && npm --prefix ElectronHostHook run build --if-present"
+        "preinstall": "npm --prefix ElectronHostAPI run build --if-present && npm --prefix ElectronHostHook run build --if-present"
     },
     "dependencies": {
-        "electron": "^26.2",
         "image-size": "^1.0",
         "portscanner": "^2.2",
         "socket.io": "^4.6"
     },
     "devDependencies": {
-        "electron-builder": "^24.6"
+        "electron": "^26.2",
+        "electron-builder": "^24.7"
     }
 }

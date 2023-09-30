@@ -161,11 +161,14 @@ function startSocketApiBridge(port) {
     app['mainWindow'] = null;
 
     io.on('connection', (socket) => {
+        const hostHookModulePath = join(__dirname, 'ElectronHostHook'),
+              apiModulePath = join(__dirname, 'ElectronHostAPI');
+
         socket.on('disconnect', function (reason) {
             console.log('Got disconnect! Reason: ' + reason);
             try {
                 if (hostHook) {
-                    delete require.cache[require.resolve("@electron-host/hook")];
+                    delete require.cache[require.resolve(hostHookModulePath)];
                     hostHook = undefined;
                 }
             } catch (error) {
@@ -180,26 +183,32 @@ function startSocketApiBridge(port) {
 
         console.log('ASP.NET Core Application connected...', 'global.electronsocket', global['electronsocket'].id, new Date());
 
-        const API = require('@electron-host/api');
+        try {
+            if (isModuleAvailable(apiModulePath)) {
+                const API = require(apiModulePath);
 
-        if (appApi === undefined) appApi = API.appApi(socket, app);
-        if (browserWindowsApi === undefined) browserWindowsApi = API.browserWindowApi(socket, app);
-        if (commandLineApi === undefined) commandLineApi = API.commandLineApi(socket, app);
-        if (autoUpdaterApi === undefined) autoUpdaterApi = API.autoUpdaterApi(socket);
-        if (ipcApi === undefined) ipcApi = API.ipcApi(socket);
-        if (menuApi === undefined) menuApi = API.menuApi(socket);
-        if (dialogApi === undefined) dialogApi = API.dialogApi(socket);
-        if (notificationApi === undefined) notificationApi = API.notificationApi(socket);
-        if (trayApi === undefined) trayApi = API.trayApi(socket);
-        if (webContentsApi === undefined) webContentsApi = API.webContentsApi(socket);
-        if (globalShortcutApi === undefined) globalShortcutApi = API.globalShortcutApi(socket);
-        if (shellApi === undefined) shellApi = API.shellApi(socket);
-        if (screenApi === undefined) screenApi = API.screenApi(socket);
-        if (clipboardApi === undefined) clipboardApi = API.clipboardApi(socket);
-        if (browserViewApi === undefined) browserViewApi = API.browserViewApi(socket);
-        if (powerMonitorApi === undefined) powerMonitorApi = API.powerMonitorApi(socket);
-        if (nativeThemeApi === undefined) nativeThemeApi = API.nativeThemeApi(socket);
-        if (dockApi === undefined) dockApi = API.dockApi(socket);
+                if (appApi === undefined) appApi = API.appApi(socket, app);
+                if (browserWindowsApi === undefined) browserWindowsApi = API.browserWindowApi(socket, app);
+                if (commandLineApi === undefined) commandLineApi = API.commandLineApi(socket, app);
+                if (autoUpdaterApi === undefined) autoUpdaterApi = API.autoUpdaterApi(socket);
+                if (ipcApi === undefined) ipcApi = API.ipcApi(socket);
+                if (menuApi === undefined) menuApi = API.menuApi(socket);
+                if (dialogApi === undefined) dialogApi = API.dialogApi(socket);
+                if (notificationApi === undefined) notificationApi = API.notificationApi(socket);
+                if (trayApi === undefined) trayApi = API.trayApi(socket);
+                if (webContentsApi === undefined) webContentsApi = API.webContentsApi(socket);
+                if (globalShortcutApi === undefined) globalShortcutApi = API.globalShortcutApi(socket);
+                if (shellApi === undefined) shellApi = API.shellApi(socket);
+                if (screenApi === undefined) screenApi = API.screenApi(socket);
+                if (clipboardApi === undefined) clipboardApi = API.clipboardApi(socket);
+                if (browserViewApi === undefined) browserViewApi = API.browserViewApi(socket);
+                if (powerMonitorApi === undefined) powerMonitorApi = API.powerMonitorApi(socket);
+                if (nativeThemeApi === undefined) nativeThemeApi = API.nativeThemeApi(socket);
+                if (dockApi === undefined) dockApi = API.dockApi(socket);
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
 
         socket.on('register-app-open-file-event', (id) => {
             global['electronsocket'] = socket;
@@ -226,9 +235,8 @@ function startSocketApiBridge(port) {
         });
 
         try {
-            const { HookService } = require("@electron-host/hook");
-
-            if (hostHook === undefined) {
+            if (isModuleAvailable(hostHookModulePath) && hostHook === undefined) {
+                const { HookService } = require(hostHookModulePath);
                 hostHook = new HookService(socket, app);
                 hostHook.onHostReady();
             }
@@ -236,6 +244,14 @@ function startSocketApiBridge(port) {
             console.error(error.message);
         }
     });
+}
+
+function isModuleAvailable(name) {
+    try {
+        require.resolve(name);
+        return true;
+    } catch (e) {}
+    return false;
 }
 
 function startAspCoreBackend(electronPort) {

@@ -59,7 +59,7 @@ namespace ElectronNET.CLI.Commands
                 // If target is specified as a command line argument, use it.
                 // Format is the same as the build command.
                 // If target is not specified, autodetect it.
-                GetTargetPlatformInformation.GetTargetPlatformInformationResult platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
+                var platformInfo = GetTargetPlatformInformation.Do(string.Empty, string.Empty);
                 if (_parser.Arguments.ContainsKey(_paramTarget))
                 {
                     string desiredPlatform = _parser.Arguments[_paramTarget][0];
@@ -82,32 +82,11 @@ namespace ElectronNET.CLI.Commands
                     return false;
                 }
 
-                Console.WriteLine("ElectronHostHook handling started...");
+                var hostHookPath = Directory.GetDirectories(aspCoreProjectPath, "ElectronHostHook", SearchOption.AllDirectories).FirstOrDefault();
 
-                string[] hostHookFolders = Directory.GetDirectories(aspCoreProjectPath, "ElectronHostHook", SearchOption.AllDirectories);
+                DeployEmbeddedElectronFiles.Do(tempPath, !string.IsNullOrEmpty(hostHookPath));
 
-                DeployEmbeddedElectronFiles.Do(tempPath, hostHookFolders.Length > 0);
-
-                if (hostHookFolders.Length > 0)
-                {
-                    string hostHookDir = Path.Combine(tempPath, "ElectronHostHook");
-                    DirectoryCopy.Do(hostHookFolders.First(), hostHookDir, true, new List<string>() { "node_modules" });
-
-                    string package = Path.Combine(hostHookDir, "package.json");
-
-                    var jsonText = File.ReadAllText(package);
-
-                    JsonDocument jsonDoc = JsonDocument.Parse(jsonText);
-                    JsonElement root = jsonDoc.RootElement;
-
-                    var packageJson = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonText);
-
-                    packageJson["name"] = "@electron-host/hook";
-
-                    string output = JsonSerializer.Serialize(packageJson, new JsonSerializerOptions { WriteIndented = true });
-
-                    File.WriteAllText(package, output);
-                }
+                DeployElectronHostHook.Do(tempPath, hostHookPath);
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);

@@ -42,6 +42,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\**\*.*" Exclude="**\node_modules\**\*">
       <Link>ElectronHost\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </EmbeddedResource>
+    <EmbeddedResource Remove="..\ElectronNET.Host\electron.manifest.json" />
     <EmbeddedResource Remove="..\ElectronNET.Host\.gitignore" />
     <EmbeddedResource Remove="..\ElectronNET.Host\.vscode\**" />
     <EmbeddedResource Remove="..\ElectronNET.Host\.idea\**" />

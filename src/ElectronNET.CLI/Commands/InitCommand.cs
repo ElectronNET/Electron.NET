@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -17,13 +17,9 @@ namespace ElectronNET.CLI.Commands
         public static IList<CommandOption> CommandOptions { get; set; } = new List<CommandOption>();
 
         private static SimpleCommandLineParser _parser = new SimpleCommandLineParser();
-        private static string ConfigName = "electron.manifest.json";
         private const string DefaultConfigFileName = "electron.manifest.json";
 
-        public InitCommand(string[] args)
-        {
-            _parser.Parse(args);
-        }
+        public InitCommand(string[] args) => _parser.Parse(args);
 
         private static string _aspCoreProjectPath = "project-path";
         private static string _manifest = "manifest";
@@ -32,34 +28,22 @@ namespace ElectronNET.CLI.Commands
         {
             return Task.Run(() =>
             {
-                string aspCoreProjectPath = "";
+                var currentDirectory = GetProjectPath(_aspCoreProjectPath);
 
-                if (_parser.Arguments.ContainsKey(_aspCoreProjectPath))
-                {
-                    string projectPath = _parser.Arguments[_aspCoreProjectPath].First();
-                    if (Directory.Exists(projectPath))
-                    {
-                        aspCoreProjectPath = projectPath;
-                    }
-                }
-                else
-                {
-                    aspCoreProjectPath = Directory.GetCurrentDirectory();
-                }
+                if (string.IsNullOrEmpty(currentDirectory)) return false;
 
-                var currentDirectory = aspCoreProjectPath;
-
-                if(_parser.Arguments.ContainsKey(_manifest))
+                var configName = "electron.manifest.json";
+                if (_parser.Arguments.TryGetValue(_manifest, out var manifestData))
                 {
-                    ConfigName = "electron.manifest." + _parser.Arguments[_manifest].First() + ".json";
-                    Console.WriteLine($"Adding your custom {ConfigName} config file to your project...");
+                    configName = $"electron.manifest.{manifestData.First()}.json";
+                    Console.WriteLine($"Adding your custom {configName} config file to your project...");
                 }
                 else
                 {
                     Console.WriteLine("Adding our config file to your project...");
                 }
 
-                var targetFilePath = Path.Combine(currentDirectory, ConfigName);
+                var targetFilePath = Path.Combine(currentDirectory, configName);
 
                 if (File.Exists(targetFilePath))
                 {
@@ -68,29 +52,28 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 // Deploy config file
-                EmbeddedFileHelper.DeployEmbeddedFileToTargetFile(currentDirectory, DefaultConfigFileName, ConfigName);
+                EmbeddedFileHelper.DeployEmbeddedFileToTargetFile(currentDirectory, DefaultConfigFileName, configName);
 
                 // search .csproj/.fsproj (.csproj has higher precedence)
-                Console.WriteLine($"Search your .csproj/fsproj to add the needed {ConfigName}...");
+                Console.WriteLine($"Search your .csproj/fsproj to add the needed {configName}...");
                 var projectFile = Directory.EnumerateFiles(currentDirectory, "*.csproj", SearchOption.TopDirectoryOnly)
                     .Union(Directory.EnumerateFiles(currentDirectory, "*.fsproj", SearchOption.TopDirectoryOnly))
                     .FirstOrDefault();
 
                 // update config file with the name of the csproj/fsproj
                 // ToDo: If the csproj/fsproj name != application name, this will fail
-                string text = File.ReadAllText(targetFilePath);
+                var text = File.ReadAllText(targetFilePath);
                 text = text.Replace("{{executable}}", Path.GetFileNameWithoutExtension(projectFile));
                 File.WriteAllText(targetFilePath, text);
 
-                var extension = Path.GetExtension(projectFile);
-                Console.WriteLine($"Found your {extension}: {projectFile} - check for existing config or update it.");
+                Console.WriteLine($"Found your {Path.GetExtension(projectFile)}: {projectFile} - check for existing config or update it.");
 
-                if (!EditProjectFile(projectFile)) return false;
+                if (!EditProjectFile(projectFile, configName)) return false;
 
                 // search launchSettings.json
                 Console.WriteLine($"Search your .launchSettings to add our electron debug profile...");
 
-                EditLaunchSettings(currentDirectory);
+                if (!EditLaunchSettings(currentDirectory, configName)) return false;
 
                 Console.WriteLine($"Everything done - happy electronizing!");
 
@@ -98,93 +81,116 @@ namespace ElectronNET.CLI.Commands
             });
         }
 
-        private static void EditLaunchSettings(string currentDirectory)
+        private static string GetProjectPath(string projectPathData)
         {
-            // super stupid implementation, but because there is no nativ way to parse json
-            // and cli extensions and other nuget packages are buggy 
-            // this is should solve the problem for 80% of the users
-            // for the other 20% we might fail... 
-            var launchSettingFile = Path.Combine(currentDirectory, "Properties", "launchSettings.json");
+            var aspCoreProjectPath = Directory.GetCurrentDirectory();
 
-            if (File.Exists(launchSettingFile) == false)
+            if (_parser.Arguments.TryGetValue(projectPathData, out var argument))
             {
-                Console.WriteLine("launchSettings.json not found - do nothing.");
-                return;
-            }
-
-            string launchSettingText = File.ReadAllText(launchSettingFile);
-
-            if(_parser.Arguments.ContainsKey(_manifest))
-            {
-                string manifestName = _parser.Arguments[_manifest].First();
-
-                if(launchSettingText.Contains("start /manifest " + ConfigName) == false)
+                var directoryInfo = new DirectoryInfo(argument.First());
+                if (!directoryInfo.Exists)
                 {
-                    StringBuilder debugProfileBuilder = new StringBuilder();
-                    debugProfileBuilder.AppendLine("profiles\": {");
-                    debugProfileBuilder.AppendLine("    \"Electron.NET App - " + manifestName + "\": {");
-                    debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
-                    debugProfileBuilder.AppendLine("      \"executablePath\": \"electronize\",");
-                    debugProfileBuilder.AppendLine("      \"commandLineArgs\": \"start /manifest " + ConfigName + "\",");
-                    debugProfileBuilder.AppendLine("      \"workingDirectory\": \".\"");
-                    debugProfileBuilder.AppendLine("    },");
+                    // Create project if project not exist
+                    if (directoryInfo.Parent != null)
+                    {
+                        Directory.CreateDirectory(directoryInfo.Parent.FullName);
+                        ProcessHelper.CmdExecute($"dotnet new webapp -o {directoryInfo.Name}", directoryInfo.Parent.FullName);
 
-                    launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
-                    File.WriteAllText(launchSettingFile, launchSettingText);
+                        return directoryInfo.FullName;
+                    }
 
-                    Console.WriteLine($"Debug profile added!");
+                    Console.WriteLine("Unable to resolve directory");
+
+                    return string.Empty;
                 }
-                else
-                {
-                    Console.WriteLine($"Debug profile already existing");
-                }
-            } 
-            else if (launchSettingText.Contains("\"executablePath\": \"electronize\"") == false)
-            {
-                StringBuilder debugProfileBuilder = new StringBuilder();
-                debugProfileBuilder.AppendLine("profiles\": {");
-                debugProfileBuilder.AppendLine("    \"Electron.NET App\": {");
-                debugProfileBuilder.AppendLine("      \"commandName\": \"Executable\",");
-                debugProfileBuilder.AppendLine("      \"executablePath\": \"electronize\",");
-                debugProfileBuilder.AppendLine("      \"commandLineArgs\": \"start\",");
-                debugProfileBuilder.AppendLine("      \"workingDirectory\": \".\"");
-                debugProfileBuilder.AppendLine("    },");
-
-                launchSettingText = launchSettingText.Replace("profiles\": {", debugProfileBuilder.ToString());
-                File.WriteAllText(launchSettingFile, launchSettingText);
-
-                Console.WriteLine($"Debug profile added!");
             }
-            else
-            {
-                Console.WriteLine($"Debug profile already existing");
-            }
+            
+            return CheckASPProject(aspCoreProjectPath) ? aspCoreProjectPath : string.Empty;
         }
 
-        private static bool EditProjectFile(string projectFile)
+        private static bool CheckASPProject(string projectFile)
         {
-            using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            try
             {
+                using var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
                 var xmlDocument = XDocument.Load(stream);
 
                 var projectElement = xmlDocument.Descendants("Project").FirstOrDefault();
                 if (projectElement == null || projectElement.Attribute("Sdk")?.Value != "Microsoft.NET.Sdk.Web")
                 {
-                    Console.WriteLine(
-                        $"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
+                    Console.WriteLine($"Project file is not a compatible type of 'Microsoft.NET.Sdk.Web'. Your project: {projectElement?.Attribute("Sdk")?.Value}");
                     return false;
                 }
 
-                if (xmlDocument.ToString().Contains($"Content Update=\"{ConfigName}\""))
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        private static bool EditLaunchSettings(string currentDirectory, string configName)
+        {
+            var launchSettingFile = Path.Combine(currentDirectory, "Properties", "launchSettings.json");
+
+            if (File.Exists(launchSettingFile) == false)
+            {
+                Console.WriteLine("launchSettings.json not found - do nothing.");
+                return false;
+            }
+
+            var launchSettingText = File.ReadAllText(launchSettingFile);
+            var launchSettingJson = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(launchSettingText);
+
+            var profileName = _parser.Arguments.TryGetValue(_manifest, out var manifestData)
+                ? $"Electron.NET App - {manifestData.First()}"
+                : "Electron.NET App";
+
+            var isProfilesExist = launchSettingJson.TryGetValue("profiles", out var profilesData);
+            var profileJson = profilesData.Deserialize<Dictionary<string, JsonElement>>();
+            var isProfileExist = profileJson.TryGetValue(profileName, out var profileData);
+
+            if (isProfilesExist && isProfileExist)
+            {
+                Console.WriteLine($"Debug profile already existing");
+                return false;
+            }
+
+            var profileConfigData = profileData.Deserialize<Dictionary<string, string>>();
+            profileConfigData["commandName"] = "Executable";
+            profileConfigData["commandName"] = "Executable";
+            profileConfigData["executablePath"] = "electronize";
+            profileConfigData["commandLineArgs"] = _parser.Arguments.TryGetValue(_manifest, out _) ? $"start /manifest {configName}" : "start";
+            profileConfigData["workingDirectory"] = ".";
+            profileJson[profileName] = JsonSerializer.SerializeToElement(profileConfigData);
+            launchSettingJson["profiles"] = JsonSerializer.SerializeToElement(profileJson);
+
+            File.WriteAllText(launchSettingFile, JsonSerializer.Serialize(launchSettingJson, new JsonSerializerOptions { WriteIndented = true }));
+
+            Console.WriteLine($"Debug profile added!");
+
+            return true;
+        }
+
+        private static bool EditProjectFile(string projectFile, string configName)
+        {
+            using (var stream = File.Open(projectFile, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                var xmlDocument = XDocument.Load(stream);
+                
+                if (xmlDocument.ToString().Contains($"Content Update=\"{configName}\""))
                 {
-                    Console.WriteLine($"{ConfigName} already in csproj/fsproj.");
+                    Console.WriteLine($"{configName} already in csproj/fsproj.");
                     return false;
                 }
 
-                Console.WriteLine($"{ConfigName} will be added to csproj/fsproj.");
+                Console.WriteLine($"{configName} will be added to csproj/fsproj.");
 
                 string itemGroupXmlString = "<ItemGroup>" +
-                                            "<Content Update=\"" + ConfigName + "\">" +
+                                            "<Content Update=\"" + configName + "\">" +
                                             "<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>" +
                                             "</Content>" +
                                             "</ItemGroup>";
@@ -200,14 +206,14 @@ namespace ElectronNET.CLI.Commands
                     OmitXmlDeclaration = true,
                     Indent = true
                 };
-                using (XmlWriter xw = XmlWriter.Create(stream, xws))
+                using (var xw = XmlWriter.Create(stream, xws))
                 {
                     xmlDocument.Save(xw);
                 }
-
             }
 
-            Console.WriteLine($"{ConfigName} added in csproj/fsproj!");
+            Console.WriteLine($"{configName} added in csproj/fsproj!");
+
             return true;
         }
     }

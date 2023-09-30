@@ -6,11 +6,11 @@
         "build": "tsc"
     },
     "dependencies": {
-        "electron": "^26.2",
         "electron-updater": "^6.1"
     },
     "devDependencies": {
         "@types/node": "^20.6",
+        "electron": "^26.2",
         "typescript": "^5.2"
     }
 }
