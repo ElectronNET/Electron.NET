@@ -64,13 +64,6 @@ if (manifestJsonFile.singleInstance || manifestJsonFile.aspCoreBackendPort) {
 }
 
 app.on('ready', () => {
-    // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
-    // https://github.com/electron/electron/issues/23757
-    protocol.registerFileProtocol('file', (request, callback) => {
-        const pathname = request.url.replace('file:///', '');
-        callback(pathname);
-    });
-
     if (isSplashScreenEnabled()) {
         startSplashScreen();
     }
@@ -127,8 +120,9 @@ function startSplashScreen() {
 
         app.once('browser-window-created', () => splashScreen.destroy());
 
-        const loadSplashscreenUrl = join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
-        splashScreen.loadURL('file://' + loadSplashscreenUrl);
+        splashScreen.loadFile(join(__dirname, 'splashscreen', 'index.html'), {
+            search: `imgPath=${imageFile}`
+        });
 
         splashScreen.once('closed', () => splashScreen = null);
     });
