@@ -39,36 +39,13 @@
     <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\ElectronNET.Host\electron.manifest.json" Link="ElectronHost\electron.manifest.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\package.json" Link="ElectronHost\package.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\main.js" Link="ElectronHost\main.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\build-helper.js" Link="ElectronHost\build-helper.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\ipc.js" Link="ElectronHost\api\ipc.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\index.ts" Link="ElectronHost\ElectronHostHook\index.ts" />
-    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\connector.ts" Link="ElectronHost\ElectronHostHook\connector.ts" />
-    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\tsconfig.json" Link="ElectronHost\ElectronHostHook\tsconfig.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\package.json" Link="ElectronHost\ElectronHostHook\package.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\ElectronHostHook\.gitignore" Link="ElectronHost\ElectronHostHook\.gitignore" />
-    <EmbeddedResource Include="..\ElectronNET.Host\splashscreen\index.html" Link="ElectronHost\splashscreen\index.html" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\app.js" Link="ElectronHost\api\app.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\browserWindows.js" Link="ElectronHost\api\browserWindows.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\commandLine.js" Link="ElectronHost\api\commandLine.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\dialog.js" Link="ElectronHost\api\dialog.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\dock.js" Link="ElectronHost\api\dock.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\menu.js" Link="ElectronHost\api\menu.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\notification.js" Link="ElectronHost\api\notification.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\tray.js" Link="ElectronHost\api\tray.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\globalShortcut.js" Link="ElectronHost\api\globalShortcut.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\screen.js" Link="ElectronHost\api\screen.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\shell.js" Link="ElectronHost\api\shell.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\webContents.js" Link="ElectronHost\api\webContents.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\clipboard.js" Link="ElectronHost\api\clipboard.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\autoUpdater.js" Link="ElectronHost\api\autoUpdater.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\browserView.js" Link="ElectronHost\api\browserView.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\powerMonitor.js" Link="ElectronHost\api\powerMonitor.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\api\nativeTheme.js" Link="ElectronHost\api\nativeTheme.js" />
-    <EmbeddedResource Include="..\ElectronNET.Host\.vscode\launch.json" Link="ElectronHost\.vscode\launch.json" />
-    <EmbeddedResource Include="..\ElectronNET.Host\.vscode\tasks.json" Link="ElectronHost\.vscode\tasks.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\**\*.*" Exclude="**\node_modules\**\*">
+      <Link>ElectronHost\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Remove="..\ElectronNET.Host\electron.manifest.json" />
+    <EmbeddedResource Remove="..\ElectronNET.Host\.gitignore" />
+    <EmbeddedResource Remove="..\ElectronNET.Host\.vscode\**" />
+    <EmbeddedResource Remove="..\ElectronNET.Host\.idea\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
