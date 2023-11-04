@@ -48,7 +48,7 @@ namespace ElectronNET.CLI.Commands.Actions
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-                        netCorePublishRid = "osx-x64";
+                        netCorePublishRid = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "osx-arm64" : "osx-x64";
                         electronPackerPlatform = "mac";
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
