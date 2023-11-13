@@ -115,17 +115,10 @@ function isSplashScreenEnabled() {
 
 function startSplashScreen() {
   let imageFile = path.join(currentBinPath, manifestJsonFile.splashscreen.imageFile);
-  imageSize(imageFile, (error, dimensions) => {
-    if (error) {
-      console.log(`load splashscreen error:`);
-      console.error(error);
-
-      throw new Error(error.message);
-    }
-
+  const startWindow = (width, height) => {
     splashScreen = new BrowserWindow({
-      width: dimensions.width,
-      height: dimensions.height,
+      width: width,
+      height: height,
       transparent: true,
       center: true,
       frame: false,
@@ -143,10 +136,25 @@ function startSplashScreen() {
 
     const loadSplashscreenUrl = path.join(__dirname, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
     splashScreen.loadURL('file://' + loadSplashscreenUrl);
-
     splashScreen.once('closed', () => {
       splashScreen = null;
     });
+  }
+
+  if (manifestJsonFile.splashscreen.width && manifestJsonFile.splashscreen.height) {
+    startWindow(manifestJsonFile.splashscreen.width, manifestJsonFile.splashscreen.height);
+    return;
+  }
+
+  imageSize(imageFile, (error, dimensions) => {
+    if (error) {
+      console.log(`load splashscreen error:`);
+      console.error(error);
+
+      throw new Error(error.message);
+    }
+
+    startWindow(dimensions.width, dimensions.height)
   });
 }
 
