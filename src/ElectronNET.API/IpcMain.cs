@@ -117,7 +117,7 @@ namespace ElectronNET.API
         public void Once(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) =>
+            BridgeConnector.Socket.Once<object>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
