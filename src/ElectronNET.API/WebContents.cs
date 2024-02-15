@@ -262,6 +262,35 @@ public class WebContents
 
     private event Action<InputEvent> _inputEvent;
 
+    /// <summary>
+    /// Emitted when the document in the top-level frame is loaded.
+    /// </summary>
+    public event Action OnDomReady
+    {
+        add
+        {
+            if (_domReady == null)
+            {
+                BridgeConnector.Socket.On("webContents-domReady" + Id, () =>
+                    {
+                        _domReady();
+                    });
+
+                BridgeConnector.Socket.Emit("register-webContents-domReady", Id);
+            }
+            _domReady += value;
+        }
+        remove
+        {
+            _domReady -= value;
+
+            if (_domReady == null)
+                BridgeConnector.Socket.Off("webContents-domReady" + Id);
+        }
+    }
+
+    private event Action _domReady;
+
     internal WebContents(int id)
     {
         Id = id;
@@ -359,6 +388,37 @@ public class WebContents
         {
             BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
         }
+
+        return taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    /// Evaluates script code in page.
+    /// </summary>
+    /// <param name="code">The code to execute.</param>
+    /// <param name="userGesture">if set to <c>true</c> simulate a user gesture.</param>
+    /// <returns>The result of the executed code.</returns>
+    /// <remarks>
+    /// <para>
+    /// In the browser window some HTML APIs like `requestFullScreen` can only be
+    /// invoked by a gesture from the user. Setting `userGesture` to `true` will remove
+    /// this limitation.
+    /// </para>
+    /// <para>
+    /// Code execution will be suspended until web page stop loading.
+    /// </para>
+    /// </remarks>
+    public Task<object> ExecuteJavaScriptAsync(string code, bool userGesture = false)
+    {
+        var taskCompletionSource = new TaskCompletionSource<object>();
+
+        BridgeConnector.Socket.On("webContents-executeJavaScript-completed", (result) =>
+        {
+            BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
+            taskCompletionSource.SetResult(result);
+        });
+
+        BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
 
         return taskCompletionSource.Task;
     }

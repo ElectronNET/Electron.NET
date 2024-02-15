@@ -63,6 +63,16 @@ module.exports = (socket) => {
             }
         });
     });
+
+    socket.on('register-webContents-domReady', (id) => {
+        const browserWindow = getWindowById(id);
+
+        browserWindow.webContents.removeAllListeners('dom-ready');
+        browserWindow.webContents.on('dom-ready', () => {
+            electronSocket.emit('webContents-domReady' + id);
+        });
+    });
+    
     socket.on('webContentsOpenDevTools', (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
@@ -90,6 +100,12 @@ module.exports = (socket) => {
             }
         });
     });
+
+    socket.on('webContents-executeJavaScript', async (id, code, userGesture = false) => {
+        const result = await getWindowById(id).webContents.executeJavaScript(code, userGesture);
+        electronSocket.emit('webContents-executeJavaScript-completed', result);
+    });
+    
     socket.on('webContents-getUrl', function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
