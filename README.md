@@ -53,7 +53,7 @@ using ElectronNET.API.Entities;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseElectron(args);
 
-// Is optional, but you can use the Electron.NET API-Classes directly with DI (relevant if you wont more encoupled code)
+// Is optional, but you can use the Electron.NET API-Classes directly with DI (relevant if you want more encoupled code)
 builder.Services.AddElectron();
 
 var app = builder.Build();

@@ -19,6 +19,41 @@ module.exports = (socket) => {
             electronSocket.emit('webContents-didFinishLoad' + id);
         });
     });
+    socket.on('register-webContents-didStartNavigation', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('did-start-navigation');
+        browserWindow.webContents.on('did-start-navigation', (_, url) => {
+            electronSocket.emit('webContents-didStartNavigation' + id, url);
+        });
+    });
+    socket.on('register-webContents-didNavigate', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('did-navigate');
+        browserWindow.webContents.on('did-navigate', (_, url, httpResponseCode) => {
+            electronSocket.emit('webContents-didNavigate' + id, { url, httpResponseCode });
+        });
+    });
+    socket.on('register-webContents-willRedirect', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('will-redirect');
+        browserWindow.webContents.on('will-redirect', (_, url) => {
+            electronSocket.emit('webContents-willRedirect' + id, url);
+        });
+    });
+    socket.on('register-webContents-didFailLoad', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('did-fail-load');
+        browserWindow.webContents.on('did-fail-load', (_, errorCode, validatedUrl) => {
+            electronSocket.emit('webContents-didFailLoad' + id, { errorCode, validatedUrl });
+        });
+    });
+    socket.on('register-webContents-didRedirectNavigation', (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners('did-redirect-navigation');
+        browserWindow.webContents.on('did-redirect-navigation', (_, url) => {
+            electronSocket.emit('webContents-didRedirectNavigation' + id, url);
+        });
+    });
     socket.on('register-webContents-input-event', (id) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('input-event');
@@ -28,6 +63,16 @@ module.exports = (socket) => {
             }
         });
     });
+
+    socket.on('register-webContents-domReady', (id) => {
+        const browserWindow = getWindowById(id);
+
+        browserWindow.webContents.removeAllListeners('dom-ready');
+        browserWindow.webContents.on('dom-ready', () => {
+            electronSocket.emit('webContents-domReady' + id);
+        });
+    });
+    
     socket.on('webContentsOpenDevTools', (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
@@ -55,6 +100,12 @@ module.exports = (socket) => {
             }
         });
     });
+
+    socket.on('webContents-executeJavaScript', async (id, code, userGesture = false) => {
+        const result = await getWindowById(id).webContents.executeJavaScript(code, userGesture);
+        electronSocket.emit('webContents-executeJavaScript-completed', result);
+    });
+    
     socket.on('webContents-getUrl', function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());

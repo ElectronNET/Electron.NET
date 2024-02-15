@@ -85,6 +85,154 @@ public class WebContents
     private event Action _didFinishLoad;
 
     /// <summary>
+    /// Emitted when any frame (including main) starts navigating.
+    /// </summary>
+    public event Action<string> OnDidStartNavigation
+    {
+        add
+        {
+            if (_didStartNavigation == null)
+            {
+                BridgeConnector.Socket.On<string>("webContents-didStartNavigation" + Id, (url) =>
+                {
+                    _didStartNavigation(url);
+                });
+
+                BridgeConnector.Socket.Emit("register-webContents-didStartNavigation", Id);
+            }
+            _didStartNavigation += value;
+        }
+        remove
+        {
+            _didStartNavigation -= value;
+
+            if (_didStartNavigation == null)
+                BridgeConnector.Socket.Off("webContents-didStartNavigation" + Id);
+        }
+    }
+
+    private event Action<string> _didStartNavigation;
+
+    /// <summary>
+    /// Emitted when a main frame navigation is done.
+    /// This event is not emitted for in-page navigations, such as clicking anchor links or updating the window.location.hash. Use did-navigate-in-page event for this purpose.
+    /// </summary>
+    public event Action<OnDidNavigateInfo> OnDidNavigate
+    {
+        add
+        {
+            if (_didNavigate == null)
+            {
+                BridgeConnector.Socket.On<OnDidNavigateInfo>("webContents-didNavigate" + Id, (data) =>
+                {
+                    _didNavigate(data);
+                });
+
+                BridgeConnector.Socket.Emit("register-webContents-didNavigate", Id);
+            }
+            _didNavigate += value;
+        }
+        remove
+        {
+            _didNavigate -= value;
+
+            if (_didNavigate == null)
+                BridgeConnector.Socket.Off("webContents-didNavigate" + Id);
+        }
+    }
+
+    private event Action<OnDidNavigateInfo> _didNavigate;
+
+    /// <summary>
+    /// Emitted when a server side redirect occurs during navigation. For example a 302 redirect.
+    /// This event will be emitted after OnDidStartNavigation and always before the OnDidRedirectNavigation event for the same navigation.
+    /// </summary>
+    public event Action<string> OnWillRedirect
+    {
+        add
+        {
+            if (_willRedirect == null)
+            {
+                BridgeConnector.Socket.On<string>("webContents-willRedirect" + Id, (url) =>
+                {
+                    _willRedirect(url);
+                });
+
+                BridgeConnector.Socket.Emit("register-webContents-willRedirect", Id);
+            }
+            _willRedirect += value;
+        }
+        remove
+        {
+            _willRedirect -= value;
+
+            if (_willRedirect == null)
+                BridgeConnector.Socket.Off("webContents-willRedirect" + Id);
+        }
+    }
+
+    private event Action<string> _willRedirect;
+
+    /// <summary>
+    /// Emitted after a server side redirect occurs during navigation. For example a 302 redirect.
+    /// </summary>
+    public event Action<string> OnDidRedirectNavigation
+    {
+        add
+        {
+            if (_didRedirectNavigation == null)
+            {
+                BridgeConnector.Socket.On("webContents-didRedirectNavigation" + Id, (url) =>
+                {
+                    _didRedirectNavigation(url?.ToString());
+                });
+
+                BridgeConnector.Socket.Emit("register-webContents-didRedirectNavigation", Id);
+            }
+            _didRedirectNavigation += value;
+        }
+        remove
+        {
+            _didRedirectNavigation -= value;
+
+            if (_didRedirectNavigation == null)
+                BridgeConnector.Socket.Off("webContents-didRedirectNavigation" + Id);
+        }
+    }
+
+    private event Action<string> _didRedirectNavigation;
+
+
+    /// <summary>
+    /// This event is like OnDidFinishLoad but emitted when the load failed.
+    /// </summary>
+    public event Action<OnDidFailLoadInfo> OnDidFailLoad
+    {
+        add
+        {
+            if (_didFailLoad == null)
+            {
+                BridgeConnector.Socket.On("webContents-willRedirect" + Id, (data) =>
+                {
+                    _didFailLoad(((JObject) data).ToObject<OnDidFailLoadInfo>());
+                });
+
+                BridgeConnector.Socket.Emit("register-webContents-willRedirect", Id);
+            }
+            _didFailLoad += value;
+        }
+        remove
+        {
+            _didFailLoad -= value;
+
+            if (_didFailLoad == null)
+                BridgeConnector.Socket.Off("webContents-willRedirect" + Id);
+        }
+    }
+
+    private event Action<OnDidFailLoadInfo> _didFailLoad;
+
+    /// <summary>
     /// Emitted when an input event is sent to the WebContents.
     /// </summary>
     public event Action<InputEvent> InputEvent
@@ -113,6 +261,35 @@ public class WebContents
     }
 
     private event Action<InputEvent> _inputEvent;
+
+    /// <summary>
+    /// Emitted when the document in the top-level frame is loaded.
+    /// </summary>
+    public event Action OnDomReady
+    {
+        add
+        {
+            if (_domReady == null)
+            {
+                BridgeConnector.Socket.On("webContents-domReady" + Id, () =>
+                    {
+                        _domReady();
+                    });
+
+                BridgeConnector.Socket.Emit("register-webContents-domReady", Id);
+            }
+            _domReady += value;
+        }
+        remove
+        {
+            _domReady -= value;
+
+            if (_domReady == null)
+                BridgeConnector.Socket.Off("webContents-domReady" + Id);
+        }
+    }
+
+    private event Action _domReady;
 
     internal WebContents(int id)
     {
@@ -211,6 +388,37 @@ public class WebContents
         {
             BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
         }
+
+        return taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    /// Evaluates script code in page.
+    /// </summary>
+    /// <param name="code">The code to execute.</param>
+    /// <param name="userGesture">if set to <c>true</c> simulate a user gesture.</param>
+    /// <returns>The result of the executed code.</returns>
+    /// <remarks>
+    /// <para>
+    /// In the browser window some HTML APIs like `requestFullScreen` can only be
+    /// invoked by a gesture from the user. Setting `userGesture` to `true` will remove
+    /// this limitation.
+    /// </para>
+    /// <para>
+    /// Code execution will be suspended until web page stop loading.
+    /// </para>
+    /// </remarks>
+    public Task<object> ExecuteJavaScriptAsync(string code, bool userGesture = false)
+    {
+        var taskCompletionSource = new TaskCompletionSource<object>();
+
+        BridgeConnector.Socket.On("webContents-executeJavaScript-completed", (result) =>
+        {
+            BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
+            taskCompletionSource.SetResult(result);
+        });
+
+        BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
 
         return taskCompletionSource.Task;
     }
