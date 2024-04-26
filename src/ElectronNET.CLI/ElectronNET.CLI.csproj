@@ -25,6 +25,7 @@
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
+    <PublishSelfContained>true</PublishSelfContained>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
