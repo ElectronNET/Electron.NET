@@ -109,7 +109,7 @@ class Build : NukeBuild
         .Before(Restore)
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(dir => dir.DeleteDirectory());
         });
 
     Target Restore => _ => _
@@ -244,7 +244,7 @@ class Build : NukeBuild
                 throw new BuildAbortedException("Could not resolve the NuGet API key.");
             }
 
-            foreach (var nupkg in GlobFiles(ResultDirectory, "*.nupkg"))
+            foreach (var nupkg in ResultDirectory.GlobFiles("*.nupkg"))
             {
                 DotNetNuGetPush(s => s
                     .SetTargetPath(nupkg)
