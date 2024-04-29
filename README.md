@@ -2,7 +2,7 @@
 
 [![donate](https://img.shields.io/badge/Donate-Donorbox-green.svg)](https://donorbox.org/electron-net) [![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Build status](https://github.com/ElectronNET/Electron.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/ElectronNET/Electron.NET/actions/workflows/ci.yml)
 
-Build cross platform desktop apps with .NET 6 and Blazor, ASP.NET Core (Razor Pages, MVC). 
+Build cross platform desktop apps with .NET 8 and Blazor, ASP.NET Core (Razor Pages, MVC). 
 
 Electron.NET is a __wrapper__ around a native Electron application with an embedded ASP.NET Core application. Via our Electron.NET IPC bridge we can invoke Electron APIs from .NET.
 
@@ -18,7 +18,7 @@ Well... there are lots of different approaches how to get a X-plat desktop app r
 
 ## 🛠 Requirements to Run
 
-The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET 6, so our minimum base OS is the same as [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md).
+The current Electron.NET CLI builds Windows/macOS/Linux binaries. Our API uses .NET 8, so our minimum base OS is the same as [.NET 8](https://github.com/dotnet/core/blob/main/release-notes/8.0/supported-os.md).
 
 Also you should have installed:
 

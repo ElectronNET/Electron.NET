@@ -7,7 +7,7 @@
       "label": "build",
       "type": "shell",
       "command": "dotnet",
-      "args": ["build", "${workspaceRoot}/ElectronNET.CLI/ElectronNET.CLI.csproj"],
+      "args": ["build", "${workspaceRoot}/src/ElectronNET.CLI/ElectronNET.CLI.csproj"],
       "problemMatcher": "$msCompile",
       "group": {
         "_id": "build",
