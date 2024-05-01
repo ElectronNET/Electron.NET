@@ -71,6 +71,8 @@ class Build : NukeBuild
         }        
     }
 
+    string Framework => Solution.GetProject(DemoTargetLibName).GetProperty("TargetFramework");
+
     protected override void OnBuildInitialized()
     {
         var parser = new ReleaseNotesParser();
@@ -184,7 +186,9 @@ class Build : NukeBuild
             var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
             var args = "build /target custom win7-x86;win /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--publish never\"";
 
-            DotNet($"run --project {cli} -- {args}", sample);
+            var cmd = $"run --project {cli} --framework {Framework} -- {args}";
+            Log.Debug(cmd);
+            DotNet(cmd, sample);
         });
 
     Target ElectronizeWindowsTargetSample => _ => _
@@ -195,7 +199,9 @@ class Build : NukeBuild
             var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
             var args = "build /target win /electron-params \"--publish never\"";
 
-            DotNet($"run --project {cli} -- {args}", sample);
+            var cmd =$"run --project {cli} --framework {Framework} -- {args}";
+            Log.Debug(cmd);
+            DotNet(cmd, sample);
         });
 
     Target ElectronizeCustomWin7TargetSample => _ => _
@@ -206,7 +212,9 @@ class Build : NukeBuild
             var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
             var args = "build /target custom win7-x86;win /electron-params \"--publish never\"";
 
-            DotNet($"run --project {cli} -- {args}", sample);
+            var cmd =$"run --project {cli} --framework {Framework} -- {args}";
+            Log.Debug(cmd);
+            DotNet(cmd, sample);
         });
 
     Target ElectronizeMacOsTargetSample => _ => _
@@ -217,7 +225,9 @@ class Build : NukeBuild
             var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
             var args = "build /target osx /electron-params \"--publish never\"";
 
-            DotNet($"run --project {cli} -- {args}", sample);
+            var cmd =$"run --project {cli} --framework {Framework} -- {args}";
+            Log.Debug(cmd);
+            DotNet(cmd, sample);
         });
 
     Target ElectronizeLinuxTargetSample => _ => _
@@ -228,7 +238,9 @@ class Build : NukeBuild
             var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
             var args = "build /target linux /electron-params \"--publish never\"";
 
-            DotNet($"run --project {cli} -- {args}", sample);
+            var cmd =$"run --project {cli} --framework {Framework} -- {args}";
+            Log.Debug(cmd);
+            DotNet(cmd, sample);
         });
 
     Target PublishPackages => _ => _
