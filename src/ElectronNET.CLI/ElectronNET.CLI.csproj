@@ -70,6 +70,7 @@
     <EmbeddedResource Include="..\ElectronNET.Host\api\nativeTheme.js" Link="ElectronHost\api\nativeTheme.js" />
     <EmbeddedResource Include="..\ElectronNET.Host\.vscode\launch.json" Link="ElectronHost\.vscode\launch.json" />
     <EmbeddedResource Include="..\ElectronNET.Host\.vscode\tasks.json" Link="ElectronHost\.vscode\tasks.json" />
+    <EmbeddedResource Include="..\ElectronNET.Host\api\process.js" Link="ElectronHost\api\process.js" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">

@@ -42,6 +42,7 @@ namespace ElectronNET.CLI.Commands.Actions
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "browserView.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "powerMonitor.js", "api.");
             EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "nativeTheme.js", "api.");
+            EmbeddedFileHelper.DeployEmbeddedFile(hostApiFolder, "process.js", "api.");
 
             string splashscreenFolder = Path.Combine(tempPath, "splashscreen");
             if (Directory.Exists(splashscreenFolder) == false)
