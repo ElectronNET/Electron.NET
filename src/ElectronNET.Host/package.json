@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.5",
-    "electron": "^23.2.0",
+    "electron": "^30.0.3",
     "tslint": "^6.1.3",
     "typescript": "^5.0.2"
   }

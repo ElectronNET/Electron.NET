@@ -110,13 +110,13 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
-                
+
                 var dotNetPublishFlags = GetDotNetPublishFlags(parser);
 
                 var command =
                     $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\"{noRestore} --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
-                
-                // output the command 
+
+                // output the command
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(command);
                 Console.ResetColor();
@@ -205,7 +205,7 @@ namespace ElectronNET.CLI.Commands
                         : $"node build-helper.js {manifestFileName} {version}", tempPath);
 
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=23.2.0 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=30.0.3 {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 
