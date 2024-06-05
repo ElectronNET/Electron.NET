@@ -15,6 +15,7 @@ namespace ElectronNET.CLI.Commands
                                                  " for custom target, check .NET Core RID Catalog and Electron build target/" + Environment.NewLine +
                                                  " e.g. '/target win' or '/target custom \"win7-x86;win\"'" + Environment.NewLine +
                                                  "Optional: '/dotnet-configuration' with the desired .NET Core build config e.g. release or debug. Default = Release" + Environment.NewLine +
+                                                 "Optional: '/no-restore' to disable nuget packages restore" + Environment.NewLine +
                                                  "Optional: '/electron-arch' to specify the resulting electron processor architecture (e.g. ia86 for x86 builds). Be aware to use the '/target custom' param as well!" + Environment.NewLine +
                                                  "Optional: '/electron-params' specify any other valid parameter, which will be routed to the electron-packager." + Environment.NewLine +
                                                  "Optional: '/relative-path' to specify output a subdirectory for output." + Environment.NewLine +
@@ -45,6 +46,8 @@ namespace ElectronNET.CLI.Commands
         private string _manifest = "manifest";
         private string _paramPublishReadyToRun = "PublishReadyToRun";
         private string _paramPublishSingleFile = "PublishSingleFile";
+        private string _paramSelfContained = "SelfContained";
+        private string _paramNoRestore = "no-restore";
         private string _paramVersion = "Version";
 
         public Task<bool> ExecuteAsync()
@@ -81,6 +84,10 @@ namespace ElectronNET.CLI.Commands
                     configuration = parser.Arguments[_paramDotNetConfig][0];
                 }
 
+                string noRestore = parser.Arguments.ContainsKey(_paramNoRestore)
+                    ? " --no-restore"
+                    : string.Empty;
+
                 var platformInfo = GetTargetPlatformInformation.Do(desiredPlatform, specifiedFromCustom);
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid}...");
@@ -103,13 +110,13 @@ namespace ElectronNET.CLI.Commands
                 string tempBinPath = Path.Combine(tempPath, "bin");
 
                 Console.WriteLine($"Build ASP.NET Core App for {platformInfo.NetCorePublishRid} under {configuration}-Configuration...");
-                
+
                 var dotNetPublishFlags = GetDotNetPublishFlags(parser);
 
                 var command =
-                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\" --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))} --self-contained";
-                
-                // output the command 
+                    $"dotnet publish -r {platformInfo.NetCorePublishRid} -c \"{configuration}\"{noRestore} --output \"{tempBinPath}\" {string.Join(' ', dotNetPublishFlags.Select(kvp => $"{kvp.Key}={kvp.Value}"))}";
+
+                // output the command
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(command);
                 Console.ResetColor();
@@ -200,6 +207,7 @@ namespace ElectronNET.CLI.Commands
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
                 ProcessHelper.CmdExecute($"npx electron-builder@24.13.3 --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=23.2.0 {electronParams}", tempPath);
 
+
                 Console.WriteLine("... done");
 
                 return true;
@@ -212,6 +220,7 @@ namespace ElectronNET.CLI.Commands
             {
                 {"/p:PublishReadyToRun", parser.TryGet(_paramPublishReadyToRun, out var rtr) ? rtr[0] : "true"},
                 {"/p:PublishSingleFile", parser.TryGet(_paramPublishSingleFile, out var psf) ? psf[0] : "true"},
+                {"/p:SelfContained", parser.TryGet(_paramSelfContained, out var sc) ? sc[0] : "true"},
             };
 
             if (parser.Arguments.ContainsKey(_paramVersion))

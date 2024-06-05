@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <AssemblyName>dotnet-electronize</AssemblyName>
     <ToolCommandName>electronize</ToolCommandName>
     <PackageType>DotnetCliTool</PackageType>
@@ -25,7 +25,6 @@
     <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
-    <PublishSelfContained>true</PublishSelfContained>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>

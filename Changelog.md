@@ -1,3 +1,7 @@
+# 30.0.3
+
+(none)
+
 # 23.6.2
 
 ## ElectronNET.API
@@ -34,7 +38,7 @@
 
 ## ElectronNET.API
 
-* New Feature: Native Electron 23.2.0 support, but not all new API features included (we search contributors) 
+* New Feature: Native Electron 23.2.0 support, but not all new API features included (we search contributors)
 * New Feature: Upgrade to .NET 6 support
 * New Feature: Changed Web-Socket .NET Library to [SocketIOClient](https://github.com/doghappy/socket.io-client-csharp)
 * Breaking Changes: We removed deprecated API events/methods from ElectronNET.API [(More Details)](https://www.electronjs.org/docs/latest/breaking-changes)
@@ -43,26 +47,26 @@
 
 ElectronNET.CLI:
 
-* New Feature: Using exit code instead of seek for the term 'error' (thanks [TSrgy](https://github.com/TSrgy)) [\#562](https://github.com/ElectronNET/Electron.NET/pull/562)  
-* Fixed bug: Allow for property overrides to be passed in (thanks [danatcofo](https://github.com/danatcofo)) [\#531](https://github.com/ElectronNET/Electron.NET/pull/531)  
-Use `/p:propertyName=value` or `/property:propertyName=value` to pass in property overrides. This is equivalent to the `-p:` option documented here: [https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)  
-* Fixed bug: Add ability to pass an argument for "Version" for both the "dotnet publish" and "electron-builder" commands (thanks [tub5](https://github.com/tub5)) [\#546](https://github.com/ElectronNET/Electron.NET/pull/546)  
-* Fixed bug: Version flag not persisting with the referenced executable (thanks [tub5](https://github.com/tub5)) [\#585](https://github.com/ElectronNET/Electron.NET/pull/585)  
-* Fixed bug: Changes PublishSingleFile default to false for NET5 compatibility (thanks [cristiangiagante](https://github.com/cristiangiagante)) [\#570](https://github.com/ElectronNET/Electron.NET/pull/570)  
-  
-ElectronNET.API:  
-  
-* New Feature: Native Electron 13.1.5 support, but not all new features (we search contributors)   
-* Breaking API Changes (from native Electron 13.1.5): 
-   - `Shell.MoveItemToTrashAsync` renamed with `Shell.TrashItemAsync`  
-   - The deprecated extension APIs have been removed: `BrowserWindow.GetAllExtensionsAsync()`, `BrowserWindow.RemoveExtension()`, `BrowserWindow.AddExtensionAsync()`. Use the session APIs instead: `Session.GetAllExtensionsAsync()`, `Session.RemoveExtension()`, `Session.LoadExtensionAsync()`.  
-* New Feature: singleInstance handle command line arguments [\#520](https://github.com/ElectronNET/Electron.NET/issues/520)  
-* New Feature: Add WebContents [insertCSS](https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options) functionality (thanks [nfichter](https://github.com/nfichter)) [\#559](https://github.com/ElectronNET/Electron.NET/pull/559)  
-* New Feature: Allow IpcMain to send IPC messages to BrowserViews (thanks [nfichter](https://github.com/nfichter)) [\#560](https://github.com/ElectronNET/Electron.NET/pull/560)  
-* New Feature: Add support for proxies that require basic username/password authentication (thanks [nfichter](https://github.com/nfichter)) [\#561](https://github.com/ElectronNET/Electron.NET/pull/561)  
-* New Feature: Add PostData to LoadURLOptions to allow http-posts in LoadURL calls (thanks [Funkrusha](https://github.com/Funkrusha)) [\#547](https://github.com/ElectronNET/Electron.NET/pull/547)  
-* Fixed bug: Fix splash screen interaction causing crashes, ghost dragging, and resizable behavior #540 (thanks [MiniguyBrendan](https://github.com/MiniguyBrendan)) [\#540](https://github.com/ElectronNET/Electron.NET/pull/540)  
-* Fixed bug: Vibrancy serialization fix (thanks [tantumalice](https://github.com/tantumalice)) [\#573](https://github.com/ElectronNET/Electron.NET/pull/573)  
+* New Feature: Using exit code instead of seek for the term 'error' (thanks [TSrgy](https://github.com/TSrgy)) [\#562](https://github.com/ElectronNET/Electron.NET/pull/562)
+* Fixed bug: Allow for property overrides to be passed in (thanks [danatcofo](https://github.com/danatcofo)) [\#531](https://github.com/ElectronNET/Electron.NET/pull/531)
+Use `/p:propertyName=value` or `/property:propertyName=value` to pass in property overrides. This is equivalent to the `-p:` option documented here: [https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)
+* Fixed bug: Add ability to pass an argument for "Version" for both the "dotnet publish" and "electron-builder" commands (thanks [tub5](https://github.com/tub5)) [\#546](https://github.com/ElectronNET/Electron.NET/pull/546)
+* Fixed bug: Version flag not persisting with the referenced executable (thanks [tub5](https://github.com/tub5)) [\#585](https://github.com/ElectronNET/Electron.NET/pull/585)
+* Fixed bug: Changes PublishSingleFile default to false for NET5 compatibility (thanks [cristiangiagante](https://github.com/cristiangiagante)) [\#570](https://github.com/ElectronNET/Electron.NET/pull/570)
+
+ElectronNET.API:
+
+* New Feature: Native Electron 13.1.5 support, but not all new features (we search contributors)
+* Breaking API Changes (from native Electron 13.1.5):
+   - `Shell.MoveItemToTrashAsync` renamed with `Shell.TrashItemAsync`
+   - The deprecated extension APIs have been removed: `BrowserWindow.GetAllExtensionsAsync()`, `BrowserWindow.RemoveExtension()`, `BrowserWindow.AddExtensionAsync()`. Use the session APIs instead: `Session.GetAllExtensionsAsync()`, `Session.RemoveExtension()`, `Session.LoadExtensionAsync()`.
+* New Feature: singleInstance handle command line arguments [\#520](https://github.com/ElectronNET/Electron.NET/issues/520)
+* New Feature: Add WebContents [insertCSS](https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options) functionality (thanks [nfichter](https://github.com/nfichter)) [\#559](https://github.com/ElectronNET/Electron.NET/pull/559)
+* New Feature: Allow IpcMain to send IPC messages to BrowserViews (thanks [nfichter](https://github.com/nfichter)) [\#560](https://github.com/ElectronNET/Electron.NET/pull/560)
+* New Feature: Add support for proxies that require basic username/password authentication (thanks [nfichter](https://github.com/nfichter)) [\#561](https://github.com/ElectronNET/Electron.NET/pull/561)
+* New Feature: Add PostData to LoadURLOptions to allow http-posts in LoadURL calls (thanks [Funkrusha](https://github.com/Funkrusha)) [\#547](https://github.com/ElectronNET/Electron.NET/pull/547)
+* Fixed bug: Fix splash screen interaction causing crashes, ghost dragging, and resizable behavior #540 (thanks [MiniguyBrendan](https://github.com/MiniguyBrendan)) [\#540](https://github.com/ElectronNET/Electron.NET/pull/540)
+* Fixed bug: Vibrancy serialization fix (thanks [tantumalice](https://github.com/tantumalice)) [\#573](https://github.com/ElectronNET/Electron.NET/pull/573)
 
 # 11.5.1
 
@@ -150,24 +154,24 @@ Thank you for donation [Phil Seeman](https://github.com/mpnow) ❤
 
 ElectronNET.CLI:
 * New Feature: Deactivate PublishReadyToRun for build or start [\#395](https://github.com/ElectronNET/Electron.NET/issues/395)
-  
-   `electronize build /target win /PublishReadyToRun false`  
-   `electronize start /PublishReadyToRun false`   
+
+   `electronize build /target win /PublishReadyToRun false`
+   `electronize start /PublishReadyToRun false`
 * Fixed bug: Application window doesn't open after packaging  [\#387](https://github.com/ElectronNET/Electron.NET/issues/387)
 
 ElectronNET.API:
 
-* New Feature: NativeImage Support (thanks [ThrDev](https://github.com/ThrDev)) [\#394](https://github.com/ElectronNET/Electron.NET/pull/394)  
-* New Feature: Update menu items for context menu and system tray on-the-fly. [\#270](https://github.com/ElectronNET/Electron.NET/pull/270)  
+* New Feature: NativeImage Support (thanks [ThrDev](https://github.com/ThrDev)) [\#394](https://github.com/ElectronNET/Electron.NET/pull/394)
+* New Feature: Update menu items for context menu and system tray on-the-fly. [\#270](https://github.com/ElectronNET/Electron.NET/pull/270)
 
 
 # 8.31.1
 
 ElectronNET.CLI:
 * New Feature: Set a name and author of the app in `electron.manifest.json` [\#348](https://github.com/ElectronNET/Electron.NET/issues/348#issuecomment-615977950) [\#310](https://github.com/ElectronNET/Electron.NET/issues/310#issuecomment-617361086)
-* New Feature: Live reload (thanks [syedadeel2](https://github.com/syedadeel2)) [\#390](https://github.com/ElectronNET/Electron.NET/pull/390)  
+* New Feature: Live reload (thanks [syedadeel2](https://github.com/syedadeel2)) [\#390](https://github.com/ElectronNET/Electron.NET/pull/390)
 `electronize start /watch`
-* New Feature: Every new window will created with an clear cache [\#273](https://github.com/ElectronNET/Electron.NET/issues/273)  
+* New Feature: Every new window will created with an clear cache [\#273](https://github.com/ElectronNET/Electron.NET/issues/273)
 `electronize start /clear-cache`
 
 ElectronNET.API:
@@ -247,7 +251,7 @@ ElectronNET.API:
 
 * Fixed bug: Menu Item visibility [\#257](https://github.com/ElectronNET/Electron.NET/issues/257)
 * Fixed bug: electron.manifest.json - singleInstance not working [\#258](https://github.com/ElectronNET/Electron.NET/issues/258)
-* Fixed security issue: ASP.NET Core process is now bound to 127.0.0.1 instead of the broader localhost [\#258](https://github.com/ElectronNET/Electron.NET/pull/266)  
+* Fixed security issue: ASP.NET Core process is now bound to 127.0.0.1 instead of the broader localhost [\#258](https://github.com/ElectronNET/Electron.NET/pull/266)
 
 # 5.22.12
 
@@ -337,7 +341,7 @@ ElectronNET.CLI:
 ElectronNET.CLI:
 
 * nuget packages are now release bits and have the correct assembly version
-* Version command 
+* Version command
 * better devCleanup.cmd
 * Better Platform Support Issue - thanks to @Petermarcu
 * Start Command should now work on OSX/Linux - thanks to @r105m
@@ -369,7 +373,7 @@ ElectronNET.CLI:
 * Build for all platforms (well... for newest OSX/Linux/Windows)
 
 ElectronNET.API:
-* Moar XML documentation 
+* Moar XML documentation
 * Hybrid support (e.g. running as normal website and electron app)
 * Event bugfixing
 
