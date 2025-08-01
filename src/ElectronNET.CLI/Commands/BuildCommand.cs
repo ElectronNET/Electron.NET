@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 using ElectronNET.CLI.Commands.Actions;
 
 namespace ElectronNET.CLI.Commands
@@ -132,11 +133,70 @@ namespace ElectronNET.CLI.Commands
                     File.Copy(parser.Arguments[_paramPackageJson][0], Path.Combine(tempPath, "package.json"), true);
                 }
 
+                // Read electron version from manifest file and update package.json BEFORE npm install
+                string manifestFileName = "electron.manifest.json";
+
+                if (parser.Arguments.ContainsKey(_manifest))
+                {
+                    manifestFileName = parser.Arguments[_manifest].First();
+                }
+
+                // Read electron version from manifest file
+                string electronVersion = "23.2.0"; // default fallback version
+                string manifestPath = Path.Combine(Directory.GetCurrentDirectory(), manifestFileName);
+                
+                Console.WriteLine($"Reading electronVersion from manifest file: {manifestPath}");
+                
+                if (File.Exists(manifestPath))
+                {
+                    try
+                    {
+                        string manifestContent = File.ReadAllText(manifestPath);
+                        using (JsonDocument document = JsonDocument.Parse(manifestContent))
+                        {
+                            if (document.RootElement.TryGetProperty("electronVersion", out JsonElement electronVersionElement))
+                            {
+                                string manifestElectronVersion = electronVersionElement.GetString();
+                                if (!string.IsNullOrWhiteSpace(manifestElectronVersion))
+                                {
+                                    electronVersion = manifestElectronVersion;
+                                    Console.WriteLine($"Using Electron version {electronVersion} from manifest file");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"electronVersion property found but empty in manifest file, using fallback version {electronVersion}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"electronVersion property not found in manifest file, using fallback version {electronVersion}");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Could not read electronVersion from manifest file: {ex.Message}");
+                        Console.WriteLine($"Using fallback Electron version {electronVersion}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Warning: Manifest file not found at {manifestPath}");
+                    Console.WriteLine($"Using fallback Electron version {electronVersion}");
+                }
+
+                // Update package.json with electronVersion before npm install
+                Console.WriteLine("Create electron-builder configuration file...");
+                ProcessHelper.CmdExecute(
+                    string.IsNullOrWhiteSpace(version)
+                        ? $"node build-helper.js {manifestFileName}"
+                        : $"node build-helper.js {manifestFileName} {version}", tempPath);
+
                 var checkForNodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
                 if (Directory.Exists(checkForNodeModulesDirPath) == false || parser.Contains(_paramForceNodeInstall) || parser.Contains(_paramPackageJson))
-
                     Console.WriteLine("Start npm install...");
+
                 ProcessHelper.CmdExecute("npm install --production", tempPath);
 
                 Console.WriteLine("ElectronHostHook handling started...");
@@ -182,23 +242,8 @@ namespace ElectronNET.CLI.Commands
                     electronParams = parser.Arguments[_paramElectronParams][0];
                 }
 
-                // ToDo: Make the same thing easer with native c# - we can save a tmp file in production code :)
-                Console.WriteLine("Create electron-builder configuration file...");
-
-                string manifestFileName = "electron.manifest.json";
-
-                if (parser.Arguments.ContainsKey(_manifest))
-                {
-                    manifestFileName = parser.Arguments[_manifest].First();
-                }
-
-                ProcessHelper.CmdExecute(
-                    string.IsNullOrWhiteSpace(version)
-                        ? $"node build-helper.js {manifestFileName}"
-                        : $"node build-helper.js {manifestFileName} {version}", tempPath);
-
                 Console.WriteLine($"Package Electron App for Platform {platformInfo.ElectronPackerPlatform}...");
-                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion=23.2.0 {electronParams}", tempPath);
+                ProcessHelper.CmdExecute($"npx electron-builder --config=./bin/electron-builder.json --{platformInfo.ElectronPackerPlatform} --{electronArch} -c.electronVersion={electronVersion} {electronParams}", tempPath);
 
                 Console.WriteLine("... done");
 

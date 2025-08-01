@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Text.Json;
 using ElectronNET.CLI.Commands.Actions;
 
 namespace ElectronNET.CLI.Commands
@@ -117,6 +118,16 @@ namespace ElectronNET.CLI.Commands
                 }
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
+
+                // Update package.json with electronVersion from manifest before npm install
+                string manifestFileName = "electron.manifest.json";
+                if (parser.Arguments.ContainsKey(_manifest))
+                {
+                    manifestFileName = parser.Arguments[_manifest].First();
+                }
+
+                // Execute build-helper.js to update package.json before npm install
+                ProcessHelper.CmdExecute($"node build-helper.js {manifestFileName}", tempPath);
 
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
