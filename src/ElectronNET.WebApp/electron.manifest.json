@@ -5,6 +5,7 @@
   },
   "environment": "Production",
   "singleInstance": false,
+  "electronVersion": "25.9.0",
   "build": {
     "appId": "com.electronnetapidemos.app",
     "productName": "ElectronNET API Demos",

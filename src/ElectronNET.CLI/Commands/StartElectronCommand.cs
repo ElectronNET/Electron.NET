@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Text.Json;
 using ElectronNET.CLI.Commands.Actions;
 
 namespace ElectronNET.CLI.Commands
@@ -118,12 +119,117 @@ namespace ElectronNET.CLI.Commands
 
                 DeployEmbeddedElectronFiles.Do(tempPath);
 
+                // Update package.json with electronVersion from manifest before npm install
+                string manifestFileName = "electron.manifest.json";
+                if (parser.Arguments.ContainsKey(_manifest))
+                {
+                    manifestFileName = parser.Arguments[_manifest].First();
+                }
+
+                // Read electron version from manifest file
+                string electronVersion = "23.2.0"; // default fallback version
+                string manifestPath = Path.Combine(aspCoreProjectPath, manifestFileName);
+                
+                if (File.Exists(manifestPath))
+                {
+                    try
+                    {
+                        string manifestContent = File.ReadAllText(manifestPath);
+                        using (JsonDocument document = JsonDocument.Parse(manifestContent))
+                        {
+                            if (document.RootElement.TryGetProperty("electronVersion", out JsonElement electronVersionElement))
+                            {
+                                string manifestElectronVersion = electronVersionElement.GetString();
+                                if (!string.IsNullOrWhiteSpace(manifestElectronVersion))
+                                {
+                                    electronVersion = manifestElectronVersion;
+                                    Console.WriteLine($"Using Electron version {electronVersion} from manifest file");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Could not read electronVersion from manifest file: {ex.Message}");
+                    }
+                }
+
+                // Update package.json with electronVersion directly in C# before npm install
+                string packageJsonPath = Path.Combine(tempPath, "package.json");
+                if (File.Exists(packageJsonPath))
+                {
+                    try
+                    {
+                        string packageJsonContent = File.ReadAllText(packageJsonPath);
+                        using (JsonDocument packageDocument = JsonDocument.Parse(packageJsonContent))
+                        {
+                            var packageJsonObject = new Dictionary<string, object>();
+                            
+                            // Copy existing properties
+                            foreach (var property in packageDocument.RootElement.EnumerateObject())
+                            {
+                                if (property.Name == "devDependencies")
+                                {
+                                    var devDeps = new Dictionary<string, object>();
+                                    foreach (var dep in property.Value.EnumerateObject())
+                                    {
+                                        devDeps[dep.Name] = dep.Value.GetString();
+                                    }
+                                    // Update electron version
+                                    devDeps["electron"] = $"^{electronVersion}";
+                                    packageJsonObject["devDependencies"] = devDeps;
+                                }
+                                else if (property.Value.ValueKind == JsonValueKind.String)
+                                {
+                                    packageJsonObject[property.Name] = property.Value.GetString();
+                                }
+                                else if (property.Value.ValueKind == JsonValueKind.Object)
+                                {
+                                    var subObject = new Dictionary<string, object>();
+                                    foreach (var subProp in property.Value.EnumerateObject())
+                                    {
+                                        subObject[subProp.Name] = subProp.Value.GetString();
+                                    }
+                                    packageJsonObject[property.Name] = subObject;
+                                }
+                                else
+                                {
+                                    packageJsonObject[property.Name] = property.Value.ToString();
+                                }
+                            }
+                            
+                            // Ensure devDependencies exists and contains electron
+                            if (!packageJsonObject.ContainsKey("devDependencies"))
+                            {
+                                packageJsonObject["devDependencies"] = new Dictionary<string, object>();
+                            }
+                            var devDependencies = (Dictionary<string, object>)packageJsonObject["devDependencies"];
+                            devDependencies["electron"] = $"^{electronVersion}";
+                            
+                            string updatedPackageJson = JsonSerializer.Serialize(packageJsonObject, new JsonSerializerOptions 
+                            { 
+                                WriteIndented = true 
+                            });
+                            
+                            File.WriteAllText(packageJsonPath, updatedPackageJson);
+                            Console.WriteLine($"Updated package.json with Electron version {electronVersion}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Could not update package.json with electronVersion: {ex.Message}");
+                    }
+                }
+
                 var nodeModulesDirPath = Path.Combine(tempPath, "node_modules");
 
                 Console.WriteLine("node_modules missing in: " + nodeModulesDirPath);
 
                 Console.WriteLine("Start npm install...");
                 ProcessHelper.CmdExecute("npm install", tempPath);
+
+                // Execute build-helper.js to setup other configurations after npm install
+                ProcessHelper.CmdExecute($"node build-helper.js {manifestFileName}", tempPath);
 
                 Console.WriteLine("ElectronHostHook handling started...");
 
