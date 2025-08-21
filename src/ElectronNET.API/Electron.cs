@@ -90,7 +90,7 @@
         public static Dock Dock { get { return Dock.Instance; } }
 
         /// <summary>
-        /// Electeon extensions to the Nodejs process object.
+        /// Electron extensions to the Nodejs process object.
         /// </summary>
         public static Process Process { get { return Process.Instance; } }
     }
