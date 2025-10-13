@@ -11,7 +11,7 @@ namespace ElectronNET.WebApp.Controllers
         {
             if (HybridSupport.IsElectronActive)
             {
-                string viewPath = $"http://localhost:{BridgeSettings.WebPort}/windows/demowindow";
+                string viewPath = $"http://localhost:{ElectronNetRuntime.AspNetWebPort}/windows/demowindow";
 
                 Electron.IpcMain.On("new-window", async (args) =>
                 {
