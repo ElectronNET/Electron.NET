@@ -25,6 +25,7 @@
   <PropertyGroup>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
+    <Version>$(Version)$(VersionPostFix)</Version>
     <InformationalVersion>$(Version)</InformationalVersion>
   </PropertyGroup>
 </Project>
