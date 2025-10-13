@@ -1,11 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Build Schema",
   "$ref": "#/definitions/build",
+  "title": "Build Schema",
   "definitions": {
     "build": {
       "type": "object",
       "properties": {
+        "CommonPropsFilePath": {
+          "type": "string",
+          "description": "common.props file path - to determine the configured version"
+        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -64,7 +68,7 @@
         },
         "ReleaseNotesFilePath": {
           "type": "string",
-          "description": "ReleaseNotesFilePath - To determine the SemanticVersion"
+          "description": "ReleaseNotesFilePath - To determine the lates changelog version"
         },
         "Root": {
           "type": "string",
@@ -78,14 +82,8 @@
             "enum": [
               "Clean",
               "Compile",
-              "CompileSample",
               "CreatePackages",
               "Default",
-              "ElectronizeCustomWin7TargetSample",
-              "ElectronizeGenericTargetSample",
-              "ElectronizeLinuxTargetSample",
-              "ElectronizeMacOsTargetSample",
-              "ElectronizeWindowsTargetSample",
               "Package",
               "PrePublish",
               "Publish",
@@ -109,14 +107,8 @@
             "enum": [
               "Clean",
               "Compile",
-              "CompileSample",
               "CreatePackages",
               "Default",
-              "ElectronizeCustomWin7TargetSample",
-              "ElectronizeGenericTargetSample",
-              "ElectronizeLinuxTargetSample",
-              "ElectronizeMacOsTargetSample",
-              "ElectronizeWindowsTargetSample",
               "Package",
               "PrePublish",
               "Publish",
