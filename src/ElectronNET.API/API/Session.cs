@@ -25,10 +25,13 @@ namespace ElectronNET.API
         /// </summary>
         public Cookies Cookies { get; }
 
+        public WebRequest WebRequest { get; private set; }
+
         internal Session(int id)
         {
             Id = id;
             Cookies = new Cookies(id);
+            WebRequest = new WebRequest(id);
         }
 
         /// <summary>

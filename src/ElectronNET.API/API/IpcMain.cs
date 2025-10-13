@@ -46,7 +46,7 @@ namespace ElectronNET.API
         /// <param name="listener">Callback Method.</param>
         public async Task On(string channel, Action<object> listener)
         {
-            await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel);
+            await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel).ConfigureAwait(false);
             BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On(channel, (args) => 
             {

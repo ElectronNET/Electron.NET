@@ -15,7 +15,7 @@
         {
             get
             {
-                return !string.IsNullOrEmpty(BridgeSettings.SocketPort);
+                return ElectronNetRuntime.RuntimeController != null;
             }
         }
     }

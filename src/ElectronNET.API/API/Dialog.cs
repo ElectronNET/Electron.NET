@@ -103,7 +103,7 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public async Task<MessageBoxResult> ShowMessageBoxAsync(string message)
         {
-            return await ShowMessageBoxAsync(null, new MessageBoxOptions(message));
+            return await this.ShowMessageBoxAsync(null, new MessageBoxOptions(message)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public async Task<MessageBoxResult> ShowMessageBoxAsync(MessageBoxOptions messageBoxOptions)
         {
-            return await ShowMessageBoxAsync(null, messageBoxOptions);
+            return await this.ShowMessageBoxAsync(null, messageBoxOptions).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public async Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, string message)
         {
-            return await ShowMessageBoxAsync(browserWindow, new MessageBoxOptions(message));
+            return await this.ShowMessageBoxAsync(browserWindow, new MessageBoxOptions(message)).ConfigureAwait(false);
         }
 
         /// <summary>

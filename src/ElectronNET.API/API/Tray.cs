@@ -241,7 +241,7 @@ namespace ElectronNET.API
         /// <param name="menuItem">The menu item.</param>
         public async Task Show(string image, MenuItem menuItem)
         {
-            await Show(image, new MenuItem[] { menuItem });
+            await this.Show(image, new MenuItem[] { menuItem }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace ElectronNET.API
         public async Task Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            await BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, _jsonSerializer));
+            await BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, this._jsonSerializer)).ConfigureAwait(false);
             _items.Clear();
             _items.AddRange(menuItems);
 
@@ -270,7 +270,7 @@ namespace ElectronNET.API
         /// <param name="image">The image.</param>
         public async Task Show(string image)
         {
-            await BridgeConnector.Socket.Emit("create-tray", image);
+            await BridgeConnector.Socket.Emit("create-tray", image).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace ElectronNET.API
         /// </summary>
         public async Task Destroy()
         {
-            await BridgeConnector.Socket.Emit("tray-destroy");
+            await BridgeConnector.Socket.Emit("tray-destroy").ConfigureAwait(false);
             _items.Clear();
         }
 
@@ -288,7 +288,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public async Task SetImage(string image)
         {
-            await BridgeConnector.Socket.Emit("tray-setImage", image);
+            await BridgeConnector.Socket.Emit("tray-setImage", image).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace ElectronNET.API
         /// <param name="image"></param>
         public async Task SetPressedImage(string image)
         {
-            await BridgeConnector.Socket.Emit("tray-setPressedImage", image);
+            await BridgeConnector.Socket.Emit("tray-setPressedImage", image).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace ElectronNET.API
         /// <param name="toolTip"></param>
         public async Task SetToolTip(string toolTip)
         {
-            await BridgeConnector.Socket.Emit("tray-setToolTip", toolTip);
+            await BridgeConnector.Socket.Emit("tray-setToolTip", toolTip).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace ElectronNET.API
         /// <param name="title"></param>
         public async Task SetTitle(string title)
         {
-            await BridgeConnector.Socket.Emit("tray-setTitle", title);
+            await BridgeConnector.Socket.Emit("tray-setTitle", title).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public async Task DisplayBalloon(DisplayBalloonOptions options)
         {
-            await BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, _jsonSerializer));
+            await BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, this._jsonSerializer)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -342,9 +342,9 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(isDestroyed);
             });
 
-            await BridgeConnector.Socket.Emit("tray-isDestroyed");
+            await BridgeConnector.Socket.Emit("tray-isDestroyed").ConfigureAwait(false);
 
-            return await taskCompletionSource.Task;
+            return await taskCompletionSource.Task.ConfigureAwait(false);
         }
 
         private readonly JsonSerializer _jsonSerializer = new()
@@ -367,7 +367,7 @@ namespace ElectronNET.API
         /// <param name="eventName">The event name</param>
         /// <param name="action">The handler</param>
         public async Task On<T>(string eventName, Action<T> action)
-            => await Events.Instance.On(ModuleName, eventName, action);
+            => await Events.Instance.On(ModuleName, eventName, action).ConfigureAwait(false);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
@@ -381,6 +381,6 @@ namespace ElectronNET.API
         /// <param name="eventName">The event name</param>
         /// <param name="action">The handler</param>
         public async Task Once<T>(string eventName, Action<T> action)
-            => await Events.Instance.Once(ModuleName, eventName, action);
+            => await Events.Instance.Once(ModuleName, eventName, action).ConfigureAwait(false);
     }
 }

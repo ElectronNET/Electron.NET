@@ -1,1 +1,0 @@
-rm -rf ~/.nuget/packages/electronnet.api

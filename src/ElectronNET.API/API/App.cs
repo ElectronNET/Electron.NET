@@ -70,7 +70,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-before-quit" + GetHashCode(), async () =>
                     {
-                        await _beforeQuit(new QuitEventArgs());
+                        await this._beforeQuit(new QuitEventArgs()).ConfigureAwait(false);
 
                         if (_preventQuit)
                         {
@@ -84,7 +84,7 @@ namespace ElectronNET.API
                             }
                             else if (_willQuit != null)
                             {
-                                await _willQuit(new QuitEventArgs());
+                                await this._willQuit(new QuitEventArgs()).ConfigureAwait(false);
 
                                 if (_preventQuit)
                                 {
@@ -98,14 +98,14 @@ namespace ElectronNET.API
                                     }
                                     else
                                     {
-                                        await _quitting();
+                                        await this._quitting().ConfigureAwait(false);
                                         Exit();
                                     }
                                 }
                             }
                             else if (_quitting != null)
                             {
-                                await _quitting();
+                                await this._quitting().ConfigureAwait(false);
                                 Exit();
                             }
                         }
@@ -142,7 +142,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-will-quit" + GetHashCode(), async () =>
                     {
-                        await _willQuit(new QuitEventArgs());
+                        await this._willQuit(new QuitEventArgs()).ConfigureAwait(false);
 
                         if (_preventQuit)
                         {
@@ -156,7 +156,7 @@ namespace ElectronNET.API
                             }
                             else
                             {
-                                await _quitting();
+                                await this._quitting().ConfigureAwait(false);
                                 Exit();
                             }
                         }
@@ -192,7 +192,7 @@ namespace ElectronNET.API
                     {
                         if(_willQuit == null)
                         {
-                            await _quitting();
+                            await this._quitting().ConfigureAwait(false);
                             Exit();
                         }
                     });
@@ -567,6 +567,11 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("appExit", exitCode);
         }
 
+        public void DisposeSocket()
+        {
+            BridgeConnector.Socket.DisposeSocket();
+        }
+
         /// <summary>
         /// Relaunches the app when current instance exits. By default the new instance will use the same working directory
         /// and command line arguments with current instance.
@@ -816,7 +821,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
-            return await SetAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
+            return await this.SetAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -847,7 +852,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> SetAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
-            return await SetAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
+            return await this.SetAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -906,7 +911,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
-            return await RemoveAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
+            return await this.RemoveAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -919,7 +924,7 @@ namespace ElectronNET.API
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
-            return await RemoveAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
+            return await this.RemoveAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -966,7 +971,7 @@ namespace ElectronNET.API
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
         public async Task<bool> IsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
-            return await IsDefaultProtocolClientAsync(protocol, null, null, cancellationToken);
+            return await this.IsDefaultProtocolClientAsync(protocol, null, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -985,7 +990,7 @@ namespace ElectronNET.API
         /// <returns>Whether the current executable is the default handler for a protocol (aka URI scheme).</returns>
         public async Task<bool> IsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
-            return await IsDefaultProtocolClientAsync(protocol, path, null, cancellationToken);
+            return await this.IsDefaultProtocolClientAsync(protocol, path, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1437,7 +1442,7 @@ namespace ElectronNET.API
         /// </summary>
         public async Task<LoginItemSettings> GetLoginItemSettingsAsync(CancellationToken cancellationToken = default)
         {
-            return await GetLoginItemSettingsAsync(null, cancellationToken);
+            return await this.GetLoginItemSettingsAsync(null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1624,7 +1629,7 @@ namespace ElectronNET.API
         /// <param name="eventName">The event name</param>
         /// <param name="action">The handler</param>
         public async Task On(string eventName, Action<object> action)
-            => await Events.Instance.On(ModuleName, eventName, action);
+            => await Events.Instance.On(ModuleName, eventName, action).ConfigureAwait(false);
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
@@ -1638,6 +1643,6 @@ namespace ElectronNET.API
         /// <param name="eventName">The event name</param>
         /// <param name="action">The handler</param>
         public async Task Once(string eventName, Action<object> action)
-            => await Events.Instance.Once(ModuleName, eventName, action);
+            => await Events.Instance.Once(ModuleName, eventName, action).ConfigureAwait(false);
     }
 }

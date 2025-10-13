@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using ElectronNET.API.Converter;
 using Newtonsoft.Json;
 
 namespace ElectronNET.API.Entities
 {
+    using ElectronNET.Converter;
+
     /// <summary>
     /// 
     /// </summary>
