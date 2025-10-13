@@ -6,10 +6,13 @@ let electronSocket;
 
 export = (socket: Socket) => {
   electronSocket = socket;
+
+  // The crashed event has been removed in Electron 29
   socket.on('register-webContents-crashed', (id) => {
     const browserWindow = getWindowById(id);
 
     browserWindow.webContents.removeAllListeners('crashed');
+    // @ts-expect-error No overload matches this call
     browserWindow.webContents.on('crashed', (event, killed) => {
       electronSocket.emit('webContents-crashed' + id, killed);
     });
@@ -244,6 +247,19 @@ export = (socket: Socket) => {
   socket.on('webContents-session-setUserAgent', (id, userAgent, acceptLanguages) => {
     const browserWindow = getWindowById(id);
     browserWindow.webContents.session.setUserAgent(userAgent, acceptLanguages);
+  });
+
+  socket.on('register-webContents-session-webRequest-onBeforeRequest', (id, filter) => {
+      const browserWindow = getWindowById(id);
+      const session = browserWindow.webContents.session;
+
+      session.webRequest.onBeforeRequest(filter, (details, callback) => {
+          socket.emit(`webContents-session-webRequest-onBeforeRequest${id}`, details);
+          // Listen for a response from C# to continue the request
+          electronSocket.once(`webContents-session-webRequest-onBeforeRequest-response${id}`, (response) => {
+              callback(response);
+          });
+      });
   });
 
   socket.on('register-webContents-session-cookies-changed', (id) => {
