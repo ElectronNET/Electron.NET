@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- When this is enabled, the project will be switched from nuget packages to consuming the ElectronNet orchestration directly -->
+    <ElectronNetDevMode>False</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.props" Condition="$(ElectronNetDevMode)" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>exe</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <ImportNuGetBuildTasksPackTargetsFromSdk>false</ImportNuGetBuildTasksPackTargetsFromSdk>
+    <PublishTrimmed>False</PublishTrimmed>
+    <NuGetAudit>False</NuGetAudit>
+  </PropertyGroup>
+  <PropertyGroup Label="ElectronNetCommon">
+    <PackageIcon>128.png</PackageIcon>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ElectronIcon>app.ico</ElectronIcon>
+    <Title>ElectronNET API Demo1</Title>
+    <Version>1.0.2</Version>
+    <Product>com.electronnet-apisamples.app</Product>
+    <Description>Electron.NET Demo Application</Description>
+    <Company>Electron.Net</Company>
+    <Copyright>Copyright © 2025, Electron.NET</Copyright>
+    <PackageTags>Electron;.NET;ASP;NET;Sample;App</PackageTags>
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <ElectronSplashScreen></ElectronSplashScreen>
+    <License>MIT</License>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <ElectronSingleInstance>False</ElectronSingleInstance>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="publish\**" />
+    <Content Remove="publish\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="bin\**" />
+    <None Remove="publish\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\electron.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\electron_32x32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <Compile Remove="publish\**" />
+    <Content Remove="publish\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="obj\**" />
+    <None Remove="publish\**" />
+    <TypeScriptCompile Remove="bin\**" />
+    <TypeScriptCompile Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.0.18" Condition="'$(ElectronNetDevMode)' != 'True'" />
+  </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />
+
+</Project>

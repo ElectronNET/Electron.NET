@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "DotNet (unpackaged)": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Electron (unpackaged)": {
+      "commandName": "Executable",
+      "executablePath": "node",
+      "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron",
+      "workingDirectory": "$(TargetDir).electron",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:8001/"
+      },
+      "distributionName": ""
+    },
+    "Profile 1": {
+      "commandName": "Project"
+    }
+  }
+}
