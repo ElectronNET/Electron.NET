@@ -5,9 +5,11 @@ const fs = require('fs');
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
+    // The crashed event has been removed in Electron 29
     socket.on('register-webContents-crashed', (id) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.removeAllListeners('crashed');
+        // @ts-expect-error No overload matches this call
         browserWindow.webContents.on('crashed', (event, killed) => {
             electronSocket.emit('webContents-crashed' + id, killed);
         });
@@ -63,16 +65,13 @@ module.exports = (socket) => {
             }
         });
     });
-
     socket.on('register-webContents-domReady', (id) => {
         const browserWindow = getWindowById(id);
-
         browserWindow.webContents.removeAllListeners('dom-ready');
         browserWindow.webContents.on('dom-ready', () => {
             electronSocket.emit('webContents-domReady' + id);
         });
     });
-    
     socket.on('webContentsOpenDevTools', (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
@@ -100,12 +99,10 @@ module.exports = (socket) => {
             }
         });
     });
-
     socket.on('webContents-executeJavaScript', async (id, code, userGesture = false) => {
         const result = await getWindowById(id).webContents.executeJavaScript(code, userGesture);
         electronSocket.emit('webContents-executeJavaScript-completed', result);
     });
-    
     socket.on('webContents-getUrl', function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-getUrl' + id, browserWindow.webContents.getURL());
@@ -196,6 +193,17 @@ module.exports = (socket) => {
     socket.on('webContents-session-setUserAgent', (id, userAgent, acceptLanguages) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.setUserAgent(userAgent, acceptLanguages);
+    });
+    socket.on('register-webContents-session-webRequest-onBeforeRequest', (id, filter) => {
+        const browserWindow = getWindowById(id);
+        const session = browserWindow.webContents.session;
+        session.webRequest.onBeforeRequest(filter, (details, callback) => {
+            socket.emit(`webContents-session-webRequest-onBeforeRequest${id}`, details);
+            // Listen for a response from C# to continue the request
+            electronSocket.once(`webContents-session-webRequest-onBeforeRequest-response${id}`, (response) => {
+                callback(response);
+            });
+        });
     });
     socket.on('register-webContents-session-cookies-changed', (id) => {
         const browserWindow = getWindowById(id);

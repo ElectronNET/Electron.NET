@@ -1,3 +1,4 @@
+import { RelaunchOptions, LoginItemSettingsOptions, Settings, AboutPanelOptionsOptions } from "electron";
 import { Socket } from "net";
 
 let isQuitWindowAllClosed = true, electronSocket;
@@ -83,7 +84,7 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('appRelaunch', (options) => {
-        app.relaunch(options);
+        app.relaunch(options as RelaunchOptions);
     });
 
     socket.on('appFocus', (options) => {
@@ -257,12 +258,12 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('appGetLoginItemSettings', (options) => {
-        const loginItemSettings = app.getLoginItemSettings(options);
+        const loginItemSettings = app.getLoginItemSettings(options as LoginItemSettingsOptions);
         electronSocket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
     });
 
     socket.on('appSetLoginItemSettings', (settings) => {
-        app.setLoginItemSettings(settings);
+        app.setLoginItemSettings(settings as Settings);
     });
 
     socket.on('appIsAccessibilitySupportEnabled', () => {
@@ -279,7 +280,7 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('appSetAboutPanelOptions', (options) => {
-        app.setAboutPanelOptions(options);
+        app.setAboutPanelOptions(options as AboutPanelOptionsOptions);
     });
 
     socket.on('appGetUserAgentFallback', () => {
