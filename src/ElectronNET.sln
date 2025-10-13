@@ -1,13 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.WebApp", "ElectronNET.WebApp\ElectronNET.WebApp.csproj", "{7C048379-401C-4345-B5E7-BE232DEA8157}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.API", "ElectronNET.API\ElectronNET.API.csproj", "{A78157BA-B754-45F1-969F-D6A513CA0E72}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectronNET.CLI", "ElectronNET.CLI\ElectronNET.CLI.csproj", "{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "ElectronNET.Host\", "{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}"
 	ProjectSection(WebsiteProperties) = preProject
@@ -30,6 +27,32 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ElectronNET.Host", "Electro
 		SlnRelativePath = "ElectronNET.Host\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET.Build", "ElectronNET.Build\ElectronNET.Build.csproj", "{829FC339-4785-4229-ABA5-53ADB544DA00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET", "ElectronNET\ElectronNET.csproj", "{8860606D-6847-F22A-5AED-DF4E0984DD24}"
+	ProjectSection(ProjectDependencies) = postProject
+		{829FC339-4785-4229-ABA5-53ADB544DA00} = {829FC339-4785-4229-ABA5-53ADB544DA00}
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518} = {B33E9B82-B6B4-4DB0-B6EE-61CC34641518}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		..\Changelog.md = ..\Changelog.md
+		common.props = common.props
+		global.json = global.json
+		..\NuGet.config = ..\NuGet.config
+		..\publish.cmd = ..\publish.cmd
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET.AspNet", "ElectronNET.AspNet\ElectronNET.AspNet.csproj", "{DD10D21A-D131-1D9C-33F9-406046E0C5B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET.ConsoleApp", "ElectronNET.ConsoleApp\ElectronNET.ConsoleApp.csproj", "{EE38A326-5DE8-AF09-9EB9-DF0878938783}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{1BB6F634-2831-4496-83A6-BC6761DCEC8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{EDCBFC49-2AEE-4BAF-9368-4409298C52FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,17 +67,38 @@ Global
 		{A78157BA-B754-45F1-969F-D6A513CA0E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A78157BA-B754-45F1-969F-D6A513CA0E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A78157BA-B754-45F1-969F-D6A513CA0E72}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE3EB0F2-DA39-427A-85D2-E00D660EBFDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{829FC339-4785-4229-ABA5-53ADB544DA00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{829FC339-4785-4229-ABA5-53ADB544DA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{829FC339-4785-4229-ABA5-53ADB544DA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{829FC339-4785-4229-ABA5-53ADB544DA00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8860606D-6847-F22A-5AED-DF4E0984DD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8860606D-6847-F22A-5AED-DF4E0984DD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8860606D-6847-F22A-5AED-DF4E0984DD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8860606D-6847-F22A-5AED-DF4E0984DD24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD10D21A-D131-1D9C-33F9-406046E0C5B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD10D21A-D131-1D9C-33F9-406046E0C5B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD10D21A-D131-1D9C-33F9-406046E0C5B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD10D21A-D131-1D9C-33F9-406046E0C5B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE38A326-5DE8-AF09-9EB9-DF0878938783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE38A326-5DE8-AF09-9EB9-DF0878938783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE38A326-5DE8-AF09-9EB9-DF0878938783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE38A326-5DE8-AF09-9EB9-DF0878938783}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7C048379-401C-4345-B5E7-BE232DEA8157} = {EDCBFC49-2AEE-4BAF-9368-4409298C52FC}
+		{A78157BA-B754-45F1-969F-D6A513CA0E72} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
+		{B33E9B82-B6B4-4DB0-B6EE-61CC34641518} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
+		{829FC339-4785-4229-ABA5-53ADB544DA00} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
+		{8860606D-6847-F22A-5AED-DF4E0984DD24} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
+		{DD10D21A-D131-1D9C-33F9-406046E0C5B0} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
+		{EE38A326-5DE8-AF09-9EB9-DF0878938783} = {EDCBFC49-2AEE-4BAF-9368-4409298C52FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81A62E71-9E04-4EFE-AD5C-23165375F8EF}
