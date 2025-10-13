@@ -1,0 +1,31 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.0.18.0</Version>
+    <PackageNamePrefix>ElectronNET.Core</PackageNamePrefix>
+    <Authors>Gregor Biswanger, Florian Rappl, softworkz</Authors>
+    <Product>Electron.NET</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageTags>electron aspnetcore</PackageTags>
+    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
+    <PackageIcon>PackageIcon.png</PackageIcon>
+    <DescriptionFirstPart>Building cross platform electron based desktop apps with .NET Core and - optionally - ASP.NET Core.</DescriptionFirstPart>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(SOFTWORKZ)' == '1'">
+    <Version>50.0.24.0</Version>
+    <PackageNamePrefix>ElectronNET</PackageNamePrefix>
+    <PackageProjectUrl>/</PackageProjectUrl>
+    <PublishRepositoryUrl>false</PublishRepositoryUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIcon>PackageIcon.png</PackageIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+  </PropertyGroup>
+</Project>
+
