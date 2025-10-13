@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Rule Name="ElectronNet" 
+      DisplayName="Electron.NET" 
+      Order="1" 
+      PageTemplate="generic" 
+      xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="General" />
+    <Category Name="AppInfo" DisplayName="Application Info" />
+    <Category Name="Auxiliary" DisplayName="Aux" />
+  </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="ElectronNetCommon" HasConfigurationCondition="False" />
+  </Rule.DataSource>
+
+  <!--General Category -->
+
+  <EnumProperty Name="ElectronVersion"
+                DisplayName="Electron Version"
+                Description="The version of Electron to use for building (full semver)"
+                Category="General">
+    <!-- Auto-generated list of stable Electron releases -->
+    <EnumValue Name="23.0.0" DisplayName="23.0.0" />
+    <EnumValue Name="23.1.0" DisplayName="23.1.0" />
+    <EnumValue Name="23.1.1" DisplayName="23.1.1" />
+    <EnumValue Name="23.1.2" DisplayName="23.1.2" />
+    <EnumValue Name="23.1.3" DisplayName="23.1.3" />
+    <EnumValue Name="23.1.4" DisplayName="23.1.4" />
+    <EnumValue Name="23.2.0" DisplayName="23.2.0" />
+    <EnumValue Name="23.2.1" DisplayName="23.2.1" />
+    <EnumValue Name="23.2.2" DisplayName="23.2.2" />
+    <EnumValue Name="23.2.3" DisplayName="23.2.3" />
+    <EnumValue Name="23.2.4" DisplayName="23.2.4" />
+    <EnumValue Name="23.3.0" DisplayName="23.3.0" />
+    <EnumValue Name="23.3.1" DisplayName="23.3.1" />
+    <EnumValue Name="23.3.2" DisplayName="23.3.2" />
+    <EnumValue Name="23.3.3" DisplayName="23.3.3" />
+    <EnumValue Name="23.3.4" DisplayName="23.3.4" />
+    <EnumValue Name="23.3.5" DisplayName="23.3.5" />
+    <EnumValue Name="23.3.6" DisplayName="23.3.6" />
+    <EnumValue Name="23.3.7" DisplayName="23.3.7" />
+    <EnumValue Name="23.3.8" DisplayName="23.3.8" />
+    <EnumValue Name="23.3.9" DisplayName="23.3.9" />
+    <EnumValue Name="23.3.10" DisplayName="23.3.10" />
+    <EnumValue Name="23.3.11" DisplayName="23.3.11" />
+    <EnumValue Name="23.3.12" DisplayName="23.3.12" />
+    <EnumValue Name="23.3.13" DisplayName="23.3.13" />
+    <EnumValue Name="24.0.0" DisplayName="24.0.0" />
+    <EnumValue Name="24.1.0" DisplayName="24.1.0" />
+    <EnumValue Name="24.1.1" DisplayName="24.1.1" />
+    <EnumValue Name="24.1.2" DisplayName="24.1.2" />
+    <EnumValue Name="24.1.3" DisplayName="24.1.3" />
+    <EnumValue Name="24.2.0" DisplayName="24.2.0" />
+    <EnumValue Name="24.3.0" DisplayName="24.3.0" />
+    <EnumValue Name="24.3.1" DisplayName="24.3.1" />
+    <EnumValue Name="24.4.0" DisplayName="24.4.0" />
+    <EnumValue Name="24.4.1" DisplayName="24.4.1" />
+    <EnumValue Name="24.5.0" DisplayName="24.5.0" />
+    <EnumValue Name="24.5.1" DisplayName="24.5.1" />
+    <EnumValue Name="24.6.0" DisplayName="24.6.0" />
+    <EnumValue Name="24.6.1" DisplayName="24.6.1" />
+    <EnumValue Name="24.6.2" DisplayName="24.6.2" />
+    <EnumValue Name="24.6.3" DisplayName="24.6.3" />
+    <EnumValue Name="24.6.4" DisplayName="24.6.4" />
+    <EnumValue Name="24.6.5" DisplayName="24.6.5" />
+    <EnumValue Name="24.7.0" DisplayName="24.7.0" />
+    <EnumValue Name="24.7.1" DisplayName="24.7.1" />
+    <EnumValue Name="24.8.0" DisplayName="24.8.0" />
+    <EnumValue Name="24.8.1" DisplayName="24.8.1" />
+    <EnumValue Name="24.8.2" DisplayName="24.8.2" />
+    <EnumValue Name="24.8.3" DisplayName="24.8.3" />
+    <EnumValue Name="24.8.4" DisplayName="24.8.4" />
+    <EnumValue Name="24.8.5" DisplayName="24.8.5" />
+    <EnumValue Name="24.8.6" DisplayName="24.8.6" />
+    <EnumValue Name="24.8.7" DisplayName="24.8.7" />
+    <EnumValue Name="24.8.8" DisplayName="24.8.8" />
+    <EnumValue Name="25.0.0" DisplayName="25.0.0" />
+    <EnumValue Name="25.0.1" DisplayName="25.0.1" />
+    <EnumValue Name="25.1.0" DisplayName="25.1.0" />
+    <EnumValue Name="25.1.1" DisplayName="25.1.1" />
+    <EnumValue Name="25.2.0" DisplayName="25.2.0" />
+    <EnumValue Name="25.3.0" DisplayName="25.3.0" />
+    <EnumValue Name="25.3.1" DisplayName="25.3.1" />
+    <EnumValue Name="25.3.2" DisplayName="25.3.2" />
+    <EnumValue Name="25.4.0" DisplayName="25.4.0" />
+    <EnumValue Name="25.5.0" DisplayName="25.5.0" />
+    <EnumValue Name="25.6.0" DisplayName="25.6.0" />
+    <EnumValue Name="25.7.0" DisplayName="25.7.0" />
+    <EnumValue Name="25.8.0" DisplayName="25.8.0" />
+    <EnumValue Name="25.8.1" DisplayName="25.8.1" />
+    <EnumValue Name="25.8.2" DisplayName="25.8.2" />
+    <EnumValue Name="25.8.3" DisplayName="25.8.3" />
+    <EnumValue Name="25.8.4" DisplayName="25.8.4" />
+    <EnumValue Name="25.9.0" DisplayName="25.9.0" />
+    <EnumValue Name="25.9.1" DisplayName="25.9.1" />
+    <EnumValue Name="25.9.2" DisplayName="25.9.2" />
+    <EnumValue Name="25.9.3" DisplayName="25.9.3" />
+    <EnumValue Name="25.9.4" DisplayName="25.9.4" />
+    <EnumValue Name="25.9.5" DisplayName="25.9.5" />
+    <EnumValue Name="25.9.6" DisplayName="25.9.6" />
+    <EnumValue Name="25.9.7" DisplayName="25.9.7" />
+    <EnumValue Name="25.9.8" DisplayName="25.9.8" />
+    <EnumValue Name="26.0.0" DisplayName="26.0.0" />
+    <EnumValue Name="26.1.0" DisplayName="26.1.0" />
+    <EnumValue Name="26.2.0" DisplayName="26.2.0" />
+    <EnumValue Name="26.2.1" DisplayName="26.2.1" />
+    <EnumValue Name="26.2.2" DisplayName="26.2.2" />
+    <EnumValue Name="26.2.3" DisplayName="26.2.3" />
+    <EnumValue Name="26.2.4" DisplayName="26.2.4" />
+    <EnumValue Name="26.3.0" DisplayName="26.3.0" />
+    <EnumValue Name="26.4.0" DisplayName="26.4.0" />
+    <EnumValue Name="26.4.1" DisplayName="26.4.1" />
+    <EnumValue Name="26.4.2" DisplayName="26.4.2" />
+    <EnumValue Name="26.4.3" DisplayName="26.4.3" />
+    <EnumValue Name="26.5.0" DisplayName="26.5.0" />
+    <EnumValue Name="26.6.0" DisplayName="26.6.0" />
+    <EnumValue Name="26.6.1" DisplayName="26.6.1" />
+    <EnumValue Name="26.6.2" DisplayName="26.6.2" />
+    <EnumValue Name="26.6.3" DisplayName="26.6.3" />
+    <EnumValue Name="26.6.4" DisplayName="26.6.4" />
+    <EnumValue Name="26.6.5" DisplayName="26.6.5" />
+    <EnumValue Name="26.6.6" DisplayName="26.6.6" />
+    <EnumValue Name="26.6.7" DisplayName="26.6.7" />
+    <EnumValue Name="26.6.8" DisplayName="26.6.8" />
+    <EnumValue Name="26.6.9" DisplayName="26.6.9" />
+    <EnumValue Name="26.6.10" DisplayName="26.6.10" />
+    <EnumValue Name="27.0.0" DisplayName="27.0.0" />
+    <EnumValue Name="27.0.1" DisplayName="27.0.1" />
+    <EnumValue Name="27.0.2" DisplayName="27.0.2" />
+    <EnumValue Name="27.0.3" DisplayName="27.0.3" />
+    <EnumValue Name="27.0.4" DisplayName="27.0.4" />
+    <EnumValue Name="27.1.0" DisplayName="27.1.0" />
+    <EnumValue Name="27.1.2" DisplayName="27.1.2" />
+    <EnumValue Name="27.1.3" DisplayName="27.1.3" />
+    <EnumValue Name="27.2.0" DisplayName="27.2.0" />
+    <EnumValue Name="27.2.1" DisplayName="27.2.1" />
+    <EnumValue Name="27.2.2" DisplayName="27.2.2" />
+    <EnumValue Name="27.2.3" DisplayName="27.2.3" />
+    <EnumValue Name="27.2.4" DisplayName="27.2.4" />
+    <EnumValue Name="27.3.0" DisplayName="27.3.0" />
+    <EnumValue Name="27.3.1" DisplayName="27.3.1" />
+    <EnumValue Name="27.3.2" DisplayName="27.3.2" />
+    <EnumValue Name="27.3.3" DisplayName="27.3.3" />
+    <EnumValue Name="27.3.4" DisplayName="27.3.4" />
+    <EnumValue Name="27.3.5" DisplayName="27.3.5" />
+    <EnumValue Name="27.3.6" DisplayName="27.3.6" />
+    <EnumValue Name="27.3.7" DisplayName="27.3.7" />
+    <EnumValue Name="27.3.8" DisplayName="27.3.8" />
+    <EnumValue Name="27.3.9" DisplayName="27.3.9" />
+    <EnumValue Name="27.3.10" DisplayName="27.3.10" />
+    <EnumValue Name="27.3.11" DisplayName="27.3.11" />
+    <EnumValue Name="28.0.0" DisplayName="28.0.0" />
+    <EnumValue Name="28.1.0" DisplayName="28.1.0" />
+    <EnumValue Name="28.1.1" DisplayName="28.1.1" />
+    <EnumValue Name="28.1.2" DisplayName="28.1.2" />
+    <EnumValue Name="28.1.3" DisplayName="28.1.3" />
+    <EnumValue Name="28.1.4" DisplayName="28.1.4" />
+    <EnumValue Name="28.2.0" DisplayName="28.2.0" />
+    <EnumValue Name="28.2.1" DisplayName="28.2.1" />
+    <EnumValue Name="28.2.2" DisplayName="28.2.2" />
+    <EnumValue Name="28.2.3" DisplayName="28.2.3" />
+    <EnumValue Name="28.2.4" DisplayName="28.2.4" />
+    <EnumValue Name="28.2.5" DisplayName="28.2.5" />
+    <EnumValue Name="28.2.6" DisplayName="28.2.6" />
+    <EnumValue Name="28.2.7" DisplayName="28.2.7" />
+    <EnumValue Name="28.2.8" DisplayName="28.2.8" />
+    <EnumValue Name="28.2.9" DisplayName="28.2.9" />
+    <EnumValue Name="28.2.10" DisplayName="28.2.10" />
+    <EnumValue Name="28.3.0" DisplayName="28.3.0" />
+    <EnumValue Name="28.3.1" DisplayName="28.3.1" />
+    <EnumValue Name="28.3.2" DisplayName="28.3.2" />
+    <EnumValue Name="28.3.3" DisplayName="28.3.3" />
+    <EnumValue Name="29.0.0" DisplayName="29.0.0" />
+    <EnumValue Name="29.0.1" DisplayName="29.0.1" />
+    <EnumValue Name="29.1.0" DisplayName="29.1.0" />
+    <EnumValue Name="29.1.1" DisplayName="29.1.1" />
+    <EnumValue Name="29.1.2" DisplayName="29.1.2" />
+    <EnumValue Name="29.1.3" DisplayName="29.1.3" />
+    <EnumValue Name="29.1.4" DisplayName="29.1.4" />
+    <EnumValue Name="29.1.5" DisplayName="29.1.5" />
+    <EnumValue Name="29.1.6" DisplayName="29.1.6" />
+    <EnumValue Name="29.2.0" DisplayName="29.2.0" />
+    <EnumValue Name="29.3.0" DisplayName="29.3.0" />
+    <EnumValue Name="29.3.1" DisplayName="29.3.1" />
+    <EnumValue Name="29.3.2" DisplayName="29.3.2" />
+    <EnumValue Name="29.3.3" DisplayName="29.3.3" />
+    <EnumValue Name="29.4.0" DisplayName="29.4.0" />
+    <EnumValue Name="29.4.1" DisplayName="29.4.1" />
+    <EnumValue Name="29.4.2" DisplayName="29.4.2" />
+    <EnumValue Name="29.4.3" DisplayName="29.4.3" />
+    <EnumValue Name="29.4.4" DisplayName="29.4.4" />
+    <EnumValue Name="29.4.5" DisplayName="29.4.5" />
+    <EnumValue Name="29.4.6" DisplayName="29.4.6" />
+    <EnumValue Name="30.0.0" DisplayName="30.0.0" />
+    <EnumValue Name="30.0.1" DisplayName="30.0.1" />
+    <EnumValue Name="30.0.2" DisplayName="30.0.2" />
+    <EnumValue Name="30.0.3" DisplayName="30.0.3" />
+    <EnumValue Name="30.0.4" DisplayName="30.0.4" />
+    <EnumValue Name="30.0.5" DisplayName="30.0.5" />
+    <EnumValue Name="30.0.6" DisplayName="30.0.6" />
+    <EnumValue Name="30.0.7" DisplayName="30.0.7" />
+    <EnumValue Name="30.0.8" DisplayName="30.0.8" />
+    <EnumValue Name="30.0.9" DisplayName="30.0.9" />
+    <EnumValue Name="30.1.0" DisplayName="30.1.0" />
+    <EnumValue Name="30.1.1" DisplayName="30.1.1" />
+    <EnumValue Name="30.1.2" DisplayName="30.1.2" />
+    <EnumValue Name="30.2.0" DisplayName="30.2.0" />
+    <EnumValue Name="30.3.0" DisplayName="30.3.0" />
+    <EnumValue Name="30.3.1" DisplayName="30.3.1" />
+    <EnumValue Name="30.4.0" DisplayName="30.4.0" />
+    <EnumValue Name="30.5.0" DisplayName="30.5.0" />
+    <EnumValue Name="30.5.1" DisplayName="30.5.1" />
+    <EnumValue Name="31.0.0" DisplayName="31.0.0" />
+    <EnumValue Name="31.0.1" DisplayName="31.0.1" />
+    <EnumValue Name="31.0.2" DisplayName="31.0.2" />
+    <EnumValue Name="31.1.0" DisplayName="31.1.0" />
+    <EnumValue Name="31.2.0" DisplayName="31.2.0" />
+    <EnumValue Name="31.2.1" DisplayName="31.2.1" />
+    <EnumValue Name="31.3.0" DisplayName="31.3.0" />
+    <EnumValue Name="31.3.1" DisplayName="31.3.1" />
+    <EnumValue Name="31.4.0" DisplayName="31.4.0" />
+    <EnumValue Name="31.5.0" DisplayName="31.5.0" />
+    <EnumValue Name="31.6.0" DisplayName="31.6.0" />
+    <EnumValue Name="31.7.0" DisplayName="31.7.0" />
+    <EnumValue Name="31.7.1" DisplayName="31.7.1" />
+    <EnumValue Name="31.7.2" DisplayName="31.7.2" />
+    <EnumValue Name="31.7.3" DisplayName="31.7.3" />
+    <EnumValue Name="31.7.4" DisplayName="31.7.4" />
+    <EnumValue Name="31.7.5" DisplayName="31.7.5" />
+    <EnumValue Name="31.7.6" DisplayName="31.7.6" />
+    <EnumValue Name="31.7.7" DisplayName="31.7.7" />
+    <EnumValue Name="32.0.0" DisplayName="32.0.0" />
+    <EnumValue Name="32.0.1" DisplayName="32.0.1" />
+    <EnumValue Name="32.0.2" DisplayName="32.0.2" />
+    <EnumValue Name="32.1.0" DisplayName="32.1.0" />
+    <EnumValue Name="32.1.1" DisplayName="32.1.1" />
+    <EnumValue Name="32.1.2" DisplayName="32.1.2" />
+    <EnumValue Name="32.2.0" DisplayName="32.2.0" />
+    <EnumValue Name="32.2.1" DisplayName="32.2.1" />
+    <EnumValue Name="32.2.2" DisplayName="32.2.2" />
+    <EnumValue Name="32.2.3" DisplayName="32.2.3" />
+    <EnumValue Name="32.2.4" DisplayName="32.2.4" />
+    <EnumValue Name="32.2.5" DisplayName="32.2.5" />
+    <EnumValue Name="32.2.6" DisplayName="32.2.6" />
+    <EnumValue Name="32.2.7" DisplayName="32.2.7" />
+    <EnumValue Name="32.2.8" DisplayName="32.2.8" />
+    <EnumValue Name="32.3.0" DisplayName="32.3.0" />
+    <EnumValue Name="32.3.1" DisplayName="32.3.1" />
+    <EnumValue Name="32.3.2" DisplayName="32.3.2" />
+    <EnumValue Name="32.3.3" DisplayName="32.3.3" />
+    <EnumValue Name="33.0.0" DisplayName="33.0.0" />
+    <EnumValue Name="33.0.1" DisplayName="33.0.1" />
+    <EnumValue Name="33.0.2" DisplayName="33.0.2" />
+    <EnumValue Name="33.1.0" DisplayName="33.1.0" />
+    <EnumValue Name="33.2.0" DisplayName="33.2.0" />
+    <EnumValue Name="33.2.1" DisplayName="33.2.1" />
+    <EnumValue Name="33.3.0" DisplayName="33.3.0" />
+    <EnumValue Name="33.3.1" DisplayName="33.3.1" />
+    <EnumValue Name="33.3.2" DisplayName="33.3.2" />
+    <EnumValue Name="33.4.0" DisplayName="33.4.0" />
+    <EnumValue Name="33.4.1" DisplayName="33.4.1" />
+    <EnumValue Name="33.4.2" DisplayName="33.4.2" />
+    <EnumValue Name="33.4.3" DisplayName="33.4.3" />
+    <EnumValue Name="33.4.4" DisplayName="33.4.4" />
+    <EnumValue Name="33.4.5" DisplayName="33.4.5" />
+    <EnumValue Name="33.4.6" DisplayName="33.4.6" />
+    <EnumValue Name="33.4.7" DisplayName="33.4.7" />
+    <EnumValue Name="33.4.8" DisplayName="33.4.8" />
+    <EnumValue Name="33.4.9" DisplayName="33.4.9" />
+    <EnumValue Name="33.4.10" DisplayName="33.4.10" />
+    <EnumValue Name="33.4.11" DisplayName="33.4.11" />
+    <EnumValue Name="34.0.0" DisplayName="34.0.0" />
+    <EnumValue Name="34.0.1" DisplayName="34.0.1" />
+    <EnumValue Name="34.0.2" DisplayName="34.0.2" />
+    <EnumValue Name="34.1.0" DisplayName="34.1.0" />
+    <EnumValue Name="34.1.1" DisplayName="34.1.1" />
+    <EnumValue Name="34.2.0" DisplayName="34.2.0" />
+    <EnumValue Name="34.3.0" DisplayName="34.3.0" />
+    <EnumValue Name="34.3.1" DisplayName="34.3.1" />
+    <EnumValue Name="34.3.2" DisplayName="34.3.2" />
+    <EnumValue Name="34.3.3" DisplayName="34.3.3" />
+    <EnumValue Name="34.3.4" DisplayName="34.3.4" />
+    <EnumValue Name="34.4.0" DisplayName="34.4.0" />
+    <EnumValue Name="34.4.1" DisplayName="34.4.1" />
+    <EnumValue Name="34.5.0" DisplayName="34.5.0" />
+    <EnumValue Name="34.5.1" DisplayName="34.5.1" />
+    <EnumValue Name="34.5.2" DisplayName="34.5.2" />
+    <EnumValue Name="34.5.3" DisplayName="34.5.3" />
+    <EnumValue Name="34.5.4" DisplayName="34.5.4" />
+    <EnumValue Name="34.5.5" DisplayName="34.5.5" />
+    <EnumValue Name="34.5.6" DisplayName="34.5.6" />
+    <EnumValue Name="34.5.7" DisplayName="34.5.7" />
+    <EnumValue Name="34.5.8" DisplayName="34.5.8" />
+    <EnumValue Name="35.0.0" DisplayName="35.0.0" />
+    <EnumValue Name="35.0.1" DisplayName="35.0.1" />
+    <EnumValue Name="35.0.2" DisplayName="35.0.2" />
+    <EnumValue Name="35.0.3" DisplayName="35.0.3" />
+    <EnumValue Name="35.1.0" DisplayName="35.1.0" />
+    <EnumValue Name="35.1.1" DisplayName="35.1.1" />
+    <EnumValue Name="35.1.2" DisplayName="35.1.2" />
+    <EnumValue Name="35.1.3" DisplayName="35.1.3" />
+    <EnumValue Name="35.1.4" DisplayName="35.1.4" />
+    <EnumValue Name="35.1.5" DisplayName="35.1.5" />
+    <EnumValue Name="35.2.0" DisplayName="35.2.0" />
+    <EnumValue Name="35.2.1" DisplayName="35.2.1" />
+    <EnumValue Name="35.2.2" DisplayName="35.2.2" />
+    <EnumValue Name="35.3.0" DisplayName="35.3.0" />
+    <EnumValue Name="35.4.0" DisplayName="35.4.0" />
+    <EnumValue Name="35.5.0" DisplayName="35.5.0" />
+    <EnumValue Name="35.5.1" DisplayName="35.5.1" />
+    <EnumValue Name="35.6.0" DisplayName="35.6.0" />
+    <EnumValue Name="35.7.0" DisplayName="35.7.0" />
+    <EnumValue Name="35.7.1" DisplayName="35.7.1" />
+    <EnumValue Name="35.7.2" DisplayName="35.7.2" />
+    <EnumValue Name="35.7.4" DisplayName="35.7.4" />
+    <EnumValue Name="35.7.5" DisplayName="35.7.5" />
+    <EnumValue Name="36.0.0" DisplayName="36.0.0" />
+    <EnumValue Name="36.0.1" DisplayName="36.0.1" />
+    <EnumValue Name="36.1.0" DisplayName="36.1.0" />
+    <EnumValue Name="36.2.0" DisplayName="36.2.0" />
+    <EnumValue Name="36.2.1" DisplayName="36.2.1" />
+    <EnumValue Name="36.3.0" DisplayName="36.3.0" />
+    <EnumValue Name="36.3.1" DisplayName="36.3.1" />
+    <EnumValue Name="36.3.2" DisplayName="36.3.2" />
+    <EnumValue Name="36.4.0" DisplayName="36.4.0" />
+    <EnumValue Name="36.5.0" DisplayName="36.5.0" />
+    <EnumValue Name="36.6.0" DisplayName="36.6.0" />
+    <EnumValue Name="36.7.0" DisplayName="36.7.0" />
+    <EnumValue Name="36.7.1" DisplayName="36.7.1" />
+    <EnumValue Name="36.7.3" DisplayName="36.7.3" />
+    <EnumValue Name="36.7.4" DisplayName="36.7.4" />
+    <EnumValue Name="36.8.0" DisplayName="36.8.0" />
+    <EnumValue Name="36.8.1" DisplayName="36.8.1" />
+    <EnumValue Name="36.9.0" DisplayName="36.9.0" />
+    <EnumValue Name="36.9.1" DisplayName="36.9.1" />
+    <EnumValue Name="36.9.2" DisplayName="36.9.2" />
+    <EnumValue Name="36.9.3" DisplayName="36.9.3" />
+    <EnumValue Name="36.9.4" DisplayName="36.9.4" />
+    <EnumValue Name="37.0.0" DisplayName="37.0.0" />
+    <EnumValue Name="37.1.0" DisplayName="37.1.0" />
+    <EnumValue Name="37.2.0" DisplayName="37.2.0" />
+    <EnumValue Name="37.2.1" DisplayName="37.2.1" />
+    <EnumValue Name="37.2.2" DisplayName="37.2.2" />
+    <EnumValue Name="37.2.3" DisplayName="37.2.3" />
+    <EnumValue Name="37.2.4" DisplayName="37.2.4" />
+    <EnumValue Name="37.2.5" DisplayName="37.2.5" />
+    <EnumValue Name="37.2.6" DisplayName="37.2.6" />
+    <EnumValue Name="37.3.0" DisplayName="37.3.0" />
+    <EnumValue Name="37.3.1" DisplayName="37.3.1" />
+    <EnumValue Name="37.4.0" DisplayName="37.4.0" />
+    <EnumValue Name="37.5.0" DisplayName="37.5.0" />
+    <EnumValue Name="37.5.1" DisplayName="37.5.1" />
+    <EnumValue Name="37.6.0" DisplayName="37.6.0" />
+    <EnumValue Name="37.6.1" DisplayName="37.6.1" />
+    <EnumValue Name="38.0.0" DisplayName="38.0.0" />
+    <EnumValue Name="38.1.0" DisplayName="38.1.0" />
+    <EnumValue Name="38.1.1" DisplayName="38.1.1" />
+    <EnumValue Name="38.1.2" DisplayName="38.1.2" />
+    <EnumValue Name="38.2.0" DisplayName="38.2.0" />
+    <EnumValue Name="38.2.1" DisplayName="38.2.1" />
+    <EnumValue Name="38.2.2" DisplayName="38.2.2" />
+  </EnumProperty>
+
+  <EnumProperty Name="ElectronBuilderVersion"
+                DisplayName="Electron Builder Version"
+                Description="The version of electron-builder to use (major.minor only)"
+                Category="General">
+      <!-- Consolidated to major.minor versions only -->
+      <EnumValue Name="22.3" DisplayName="22.3" />
+      <EnumValue Name="22.4" DisplayName="22.4" />
+      <EnumValue Name="22.5" DisplayName="22.5" />
+      <EnumValue Name="22.6" DisplayName="22.6" />
+      <EnumValue Name="22.7" DisplayName="22.7" />
+      <EnumValue Name="22.8" DisplayName="22.8" />
+      <EnumValue Name="22.9" DisplayName="22.9" />
+      <EnumValue Name="22.10" DisplayName="22.10" />
+      <EnumValue Name="22.11" DisplayName="22.11" />
+      <EnumValue Name="22.12" DisplayName="22.12" />
+      <EnumValue Name="22.13" DisplayName="22.13" />
+      <EnumValue Name="22.14" DisplayName="22.14" />
+      <EnumValue Name="23.0" DisplayName="23.0" />
+      <EnumValue Name="23.1" DisplayName="23.1" />
+      <EnumValue Name="23.2" DisplayName="23.2" />
+      <EnumValue Name="23.3" DisplayName="23.3" />
+      <EnumValue Name="23.4" DisplayName="23.4" />
+      <EnumValue Name="23.5" DisplayName="23.5" />
+      <EnumValue Name="23.6" DisplayName="23.6" />
+      <EnumValue Name="24.1" DisplayName="24.1" />
+      <EnumValue Name="24.2" DisplayName="24.2" />
+      <EnumValue Name="24.3" DisplayName="24.3" />
+      <EnumValue Name="24.4" DisplayName="24.4" />
+      <EnumValue Name="24.5" DisplayName="24.5" />
+      <EnumValue Name="24.6" DisplayName="24.6" />
+      <EnumValue Name="24.7" DisplayName="24.7" />
+      <EnumValue Name="24.8" DisplayName="24.8" />
+      <EnumValue Name="24.9" DisplayName="24.9" />
+      <EnumValue Name="24.10" DisplayName="24.10" />
+      <EnumValue Name="24.11" DisplayName="24.11" />
+      <EnumValue Name="24.12" DisplayName="24.12" />
+      <EnumValue Name="24.13" DisplayName="24.13" />
+      <EnumValue Name="26.0" DisplayName="26.0" />
+      <EnumValue Name="27" DisplayName="27" />
+      <EnumValue Name="28" DisplayName="28" />
+      <EnumValue Name="29" DisplayName="29" />
+      <EnumValue Name="30" DisplayName="30" />
+  </EnumProperty>
+
+  <EnumProperty Name="RuntimeIdentifier"
+                DisplayName="Target Runtime Identifier (RID)"
+                Description="The target platform to build for"
+                Category="General">
+      <EnumValue Name="win-x64" DisplayName="win-x64" />
+      <EnumValue Name="win-x86" DisplayName="win-x86" />
+      <EnumValue Name="win-arm64" DisplayName="win-arm64" />
+      <EnumValue Name="linux-x64" DisplayName="linux-x64" />
+      <EnumValue Name="linux-arm" DisplayName="linux-arm" />
+      <EnumValue Name="linux-arm64" DisplayName="linux-arm64" />
+      <EnumValue Name="osx-x64" DisplayName="osx-x64" />
+      <EnumValue Name="osx-arm64" DisplayName="osx-arm64" />
+  </EnumProperty>
+
+  <BoolProperty Name="ElectronSingleInstance"
+                DisplayName="Single Instance Application"
+                Description="If enabled, only one instance of the application will run at a time"
+                Category="General">
+  </BoolProperty>
+
+  <StringProperty Name="ElectronBuilderJson"
+                  DisplayName="Electron Builder Configuration File"
+                  Description="Must be located in the .\Properties folder of the project. Default: electron-builder.json"
+                  Category="General">
+  </StringProperty>
+
+  <StringProperty Name="ElectronSplashScreen"
+                  DisplayName="Splash Screen Image"
+                  Description="Choose a PNG image to be shown as splash screen on startup"
+                  Subtype="File"
+                  Category="General">
+      <StringProperty.DataSource>
+          <DataSource Persistence="ProjectFileWithInterception" HasConfigurationCondition="False" />
+      </StringProperty.DataSource>
+      <StringProperty.ValueEditors>
+          <ValueEditor EditorType="FilePath">
+              <ValueEditor.Metadata>
+                  <NameValuePair Name="FileTypeFilter" Value="Image files (*.png,*.jpg,*.jpeg)|*.png;*.jpg;*.jpeg|All files (*.*)|*.*" />
+              </ValueEditor.Metadata>
+          </ValueEditor>
+      </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <StringProperty Name="ElectronIcon"
+                  DisplayName="App Icon"
+                  Description="Choose a ICO file to be used as application icon"
+                  Subtype="File"
+                  Category="General">
+      <StringProperty.DataSource>
+          <DataSource Persistence="ProjectFileWithInterception" HasConfigurationCondition="False" />
+      </StringProperty.DataSource>
+      <StringProperty.ValueEditors>
+          <ValueEditor EditorType="FilePath">
+              <ValueEditor.Metadata>
+                  <NameValuePair Name="FileTypeFilter" Value="Icon files (*.ico)|*.ico|All files (*.*)|*.*" />
+              </ValueEditor.Metadata>
+          </ValueEditor>
+      </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <!--AppInfo Category -->
+
+  <StringProperty Name="Title"
+                  DisplayName="Title"
+                  Description="The title of the application"
+                  Category="AppInfo" />
+
+  <StringProperty Name="Version"
+                  DisplayName="App Version"
+                  Description="The version of the app, following the major.minor.patch pattern. Version numbers may include a pre-release suffix."
+                  Category="AppInfo" />
+
+  <StringProperty Name="PackageId"
+                  DisplayName="App Identifier"
+                  Category="AppInfo">
+  </StringProperty>
+
+  <StringProperty Name="Description"
+                  DisplayName="App Description"
+                  Description="A description of the app for UI display."
+                  Category="AppInfo">
+      <StringProperty.ValueEditors>
+          <ValueEditor EditorType="MultiLineString" />
+      </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <StringProperty Name="Company"
+                  DisplayName="Company"
+                  Category="AppInfo">
+  </StringProperty>
+
+  <StringProperty Name="License"
+                  DisplayName="License"
+                  Category="AppInfo">
+  </StringProperty>
+
+  <StringProperty Name="ProjectUrl"
+                  DisplayName="Project Url"
+                  Category="AppInfo">
+  </StringProperty>
+
+  <StringProperty Name="Copyright"
+                  DisplayName="Copyright"
+                  Description="Copyright details for the app."
+                  Category="AppInfo" />
+
+  <StringProperty Name="PackageTags"
+                  DisplayName="Keywords"
+                  Description="A semicolon-delimited list of tags and keywords that describe the application"
+                  Category="AppInfo" />
+
+
+
+
+  <!--<StringProperty Name="_AcsClickOnceNote"
+                  DisplayName="Ignored"
+                  Description="IMPORTANT: Enabling ClickOnce signing disables the regular signing during the build.
+                  ClickOnce signing is performed when publishing instead but will also sign the project executable."
+                  Category="General">
+    <StringProperty.DataSource>
+      <DataSource PersistedName="_AcsClickOnceNote" Persistence="UserFile" HasConfigurationCondition="False" />
+    </StringProperty.DataSource>
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="Description" />
+    </StringProperty.ValueEditors>
+  </StringProperty>
+
+
+
+  <StringProperty Name="_AcsCiAuthNote"
+                  DisplayName="Ignored"
+                  Description="ERROR: Currently, ClickOnce signing and MSIX signing does not work with an access token.  
+                  EnvironmentCredential must be used in these cases."
+                  Category="Auxiliary">
+    <StringProperty.DataSource>
+      <DataSource PersistedName="_AcsClickOnceNote" Persistence="UserFile" HasConfigurationCondition="False" />
+    </StringProperty.DataSource>
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="Description" />
+    </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <StringProperty Name="AcsAdditionalFiles"
+                  DisplayName="Sign Additional Files"
+                  Description="Enter file paths relative to the output folder"
+                  Category="Auxiliary">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="MultiLineString">
+        <ValueEditor.Metadata>
+          <NameValuePair Name="UseMonospaceFont" Value="True" />
+        </ValueEditor.Metadata>
+      </ValueEditor>
+    </StringProperty.ValueEditors>
+  </StringProperty>-->
+
+
+</Rule>

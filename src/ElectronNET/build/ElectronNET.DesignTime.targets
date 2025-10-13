@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ElectronEnablePropertyPage Condition="'$(ElectronEnablePropertyPage)' == '' and '$(VisualStudioVersion)' &gt;= '17.0'">True</ElectronEnablePropertyPage>
+  </PropertyGroup>
+
+  <!-- This adds the custom Electron.NET tab to the project designer -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ElectronNETRules.Project.xaml" Condition="'$(ElectronEnablePropertyPage)' == 'True'">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)ElectronNETRules.Project2.xaml" Condition="'$(ElectronEnablePropertyPage)' == 'True'">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+  <!-- Remove all 'Pack' menu items -->
+  <ItemGroup>
+    <ProjectCapability Remove="Pack" />
+  </ItemGroup>
+
+  <!-- Remove the nuget package creation tab from the project designer -->
+  <ItemGroup>
+    <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)DebugPropertyPage.xaml" />
+    <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)ResourcesPropertyPage.xaml" />
+    <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)PackagePropertyPage.xaml" />
+    <PropertyPageSchema Remove="$(XamlResourcesDirectory)IISDebugPropertyPage.xaml" />
+    <PropertyPageSchema Remove="$(XamlResourcesDirectory)IISExpressDebugPropertyPage.xaml" />
+  </ItemGroup>
+
+  <Target Name="ElectronRemoveAppDesignerTabs" BeforeTargets="UpdateAspNetToFrameworkReference" >
+
+    <ItemGroup>
+      <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)DebugPropertyPage.xaml" />
+      <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)ResourcesPropertyPage.xaml" />
+      <PropertyPageSchema Remove="$(ManagedXamlResourcesDirectory)PackagePropertyPage.xaml" />
+      <PropertyPageSchema Remove="$(XamlResourcesDirectory)IISDebugPropertyPage.xaml" />
+      <PropertyPageSchema Remove="$(XamlResourcesDirectory)IISExpressDebugPropertyPage.xaml" />
+    </ItemGroup>
+
+  </Target>
+
+  <!-- This is also run at design time, each time when a property of the project is changed -->
+
+  <Target Name="ElectronMakePathRelative1" BeforeTargets="UpdateAspNetToFrameworkReference" Condition="
+      '$(DesignTimeBuild)'=='true'
+      and '$(ElectronSplashScreen)' != ''
+      and '$([System.IO.Path]::IsPathRooted($(ElectronSplashScreen)))' == 'true'
+      and '$(ElectronSplashScreen.StartsWith($(MSBuildProjectDirectory)))' == 'true'
+    ">
+
+    <Message Text="ElectronMakePathRelative start: ElectronSplashScreen: $(ElectronSplashScreen)" Importance="High" />
+    <Message Text="ElectronMakePathRelative IsPathRooted: $([System.IO.Path]::IsPathRooted($(ElectronSplashScreen)))" Importance="High" />
+    <Message Text="ElectronMakePathRelative StartsWith: $(ElectronSplashScreen.StartsWith('$(MSBuildProjectDirectory)'))" Importance="High" />
+
+    <PropertyGroup>
+      <ElectronRelativeplashScreen>$(ElectronSplashScreen.Replace('$(MSBuildProjectDirectory)', '').TrimStart('\'))</ElectronRelativeplashScreen>
+    </PropertyGroup>
+
+    <Message Text="ElectronMakePathRelative ElectronRelativeplashScreen: $(ElectronRelativeplashScreen)" Importance="High" />
+    <XmlPoke XmlInputPath="$(MSBuildProjectFullPath)"
+             Query="/Project/PropertyGroup[@Label='ElectronNetCommon']/ElectronSplashScreen"
+             Value="$(ElectronRelativeplashScreen)" />
+  </Target>
+
+  <Target Name="ElectronMakePathRelative2" BeforeTargets="UpdateAspNetToFrameworkReference" Condition="
+      '$(DesignTimeBuild)'=='true'
+      and '$(ElectronIcon)' != ''
+      and '$([System.IO.Path]::IsPathRooted($(ElectronIcon)))' == 'true'
+      and '$(ElectronIcon.StartsWith($(MSBuildProjectDirectory)))' == 'true'
+    ">
+
+    <Message Text="ElectronMakePathRelative start: ElectronIcon: $(ElectronIcon)" Importance="High" />
+    <Message Text="ElectronMakePathRelative IsPathRooted: $([System.IO.Path]::IsPathRooted($(ElectronIcon)))" Importance="High" />
+    <Message Text="ElectronMakePathRelative StartsWith: $(ElectronIcon.StartsWith('$(MSBuildProjectDirectory)'))" Importance="High" />
+
+    <PropertyGroup>
+      <ElectronRelativeElectronIcon>$(ElectronIcon.Replace('$(MSBuildProjectDirectory)', '').TrimStart('\'))</ElectronRelativeElectronIcon>
+    </PropertyGroup>
+
+    <Message Text="ElectronMakePathRelative ElectronRelativeElectronIcon: $(ElectronRelativeElectronIcon)" Importance="High" />
+    <XmlPoke XmlInputPath="$(MSBuildProjectFullPath)"
+             Query="/Project/PropertyGroup[@Label='ElectronNetCommon']/ElectronIcon"
+             Value="$(ElectronRelativeElectronIcon)" />
+  </Target>
+
+  <!-- This target runs during design-time builds -->
+  <Target Name="FixElectronSplashScreen" Condition="
+      '$(DesignTimeBuild)'!='true'
+      and '$(ElectronSplashScreen)' != ''
+      and $([System.IO.Path]::IsPathRooted($(ElectronSplashScreen))) == 'true'
+      and $([System.String]::StartsWith($(ElectronSplashScreen), '$(MSBuildProjectDirectory)')) == 'true'
+    " DependsOnTargets="ResolveProjectReferences">
+
+    <!-- Compute the relative path by removing the project folder prefix -->
+    <PropertyGroup>
+      <!-- Ensure the project directory ends with a backslash -->
+      <_ProjectDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)'))\</_ProjectDir>
+      <RelativeElectronSplashScreen>
+        $([System.String]::Substring($(ElectronSplashScreen), 
+        $([System.String]::Length($(_ProjectDir)))))
+      </RelativeElectronSplashScreen>
+    </PropertyGroup>
+
+    <Message Text="ElectronSplashScreen is absolute. Updating to relative path: $(RelativeElectronSplashScreen)"
+             Importance="High" />
+
+    <!-- Update the project file using XmlPoke -->
+    <XmlPoke XmlInputPath="$(MSBuildProjectFullPath)"
+             Query="/Project/PropertyGroup[@Label='ElectronNetCommon']/ElectronSplashScreen/text()"
+             Value="$(RelativeElectronSplashScreen)" />
+    <Message Text="Project file updated with relative ElectronSplashScreen." Importance="High" />
+  </Target>
+
+  <!-- Collects items for the up-to-date check in VS -->
+  <Target Name="ElectronCollectUpToDateCheckBuiltDesignTime" DependsOnTargets="ElectronResolvePaths">
+
+    <ItemGroup>
+      <UpToDateCheckBuilt Include="@(ElectronIntermediatePackageJson->'$(OutDir)%(TargetPath)')" Original="@(ElectronIntermediatePackageJson)" />
+      <UpToDateCheckBuilt Include="@(ElectronCustomHookPackageJson->'$(OutDir)%(TargetPath)')" Original="@(ElectronCustomHookPackageJson)" />
+    </ItemGroup>
+
+  </Target>
+
+</Project>
