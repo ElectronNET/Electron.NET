@@ -83,7 +83,7 @@
 
             if (newState < this.state)
             {
-                throw new Exception($"Invalid state transision from {this.state} to {newState}: " + this.GetType().Name);
+                throw new Exception($"Invalid state transition from {this.state} to {newState}: " + this.GetType().Name);
             }
 
             var oldState = this.state;

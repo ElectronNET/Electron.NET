@@ -7,20 +7,20 @@
 
     internal  class AspNetLifetimeAdapter : LifetimeServiceBase
     {
-        private readonly IHostApplicationLifetime lifetimeSercice;
+        private readonly IHostApplicationLifetime lifetimeService;
 
-        public AspNetLifetimeAdapter(IHostApplicationLifetime lifetimeSercice)
+        public AspNetLifetimeAdapter(IHostApplicationLifetime lifetimeService)
         {
-            this.lifetimeSercice = lifetimeSercice;
+            this.lifetimeService = lifetimeService;
 
-            this.lifetimeSercice.ApplicationStarted.Register(() => this.TransitionState(LifetimeState.Ready));
-            this.lifetimeSercice.ApplicationStopping.Register(() => this.TransitionState(LifetimeState.Stopping));
-            this.lifetimeSercice.ApplicationStopped.Register(() => this.TransitionState(LifetimeState.Stopped));
+            this.lifetimeService.ApplicationStarted.Register(() => this.TransitionState(LifetimeState.Ready));
+            this.lifetimeService.ApplicationStopping.Register(() => this.TransitionState(LifetimeState.Stopping));
+            this.lifetimeService.ApplicationStopped.Register(() => this.TransitionState(LifetimeState.Stopped));
         }
 
         protected override Task StopCore()
         {
-            this.lifetimeSercice.StopApplication();
+            this.lifetimeService.StopApplication();
             return Task.CompletedTask;
         }
     }
