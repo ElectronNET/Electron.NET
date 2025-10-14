@@ -13,7 +13,9 @@
   "author": "Gregor Biswanger",
   "license": "MIT",
   "devDependencies": {
-    "socket.io": "^4.6.1",
-    "typescript": "^5.0.2"
+  "typescript": "^5.9.3"
+  },
+  "dependencies": {
+  "socket.io": "^4.8.1"
   }
 }

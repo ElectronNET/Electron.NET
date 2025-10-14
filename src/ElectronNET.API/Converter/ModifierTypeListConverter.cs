@@ -1,11 +1,11 @@
-﻿using System;
+﻿namespace ElectronNET.Converter;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ElectronNET.API.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-namespace ElectronNET.API.Converter;
 
 /// <summary>
 /// 

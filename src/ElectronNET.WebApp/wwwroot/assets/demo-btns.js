@@ -10,4 +10,4 @@ setTimeout(() => {
       parent.classList.toggle('is-open');
     })
   })
-}, 1000);
+}, 3000);

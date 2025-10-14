@@ -1,11 +1,12 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "sourceMap": true,
-        "skipLibCheck": true,
-        "target": "es2015"
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2019",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "newLine": "crlf"
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

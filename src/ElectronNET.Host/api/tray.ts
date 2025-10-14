@@ -114,7 +114,7 @@ export = (socket: Socket) => {
 
     socket.on('register-tray-on-event', (eventName, listenerName) => {
         if (tray.value){
-            tray.value.on(eventName, (...args) => {
+            tray.value.on(eventName, (...args: any[]) => {
                 if (args.length > 1) {
                     electronSocket.emit(listenerName, args[1]);
                 } else {
@@ -126,7 +126,7 @@ export = (socket: Socket) => {
 
     socket.on('register-tray-once-event', (eventName, listenerName) => {
         if (tray.value){
-            tray.value.once(eventName, (...args) => {
+            tray.value.once(eventName, (...args: any[]) => {
                 if (args.length > 1) {
                     electronSocket.emit(listenerName, args[1]);
                 } else {

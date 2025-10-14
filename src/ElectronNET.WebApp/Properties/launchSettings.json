@@ -1,32 +1,29 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:50394/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "Electron.NET App": {
-      "commandName": "Executable",
-      "executablePath": "$(SolutionDir)ElectronNET.CLI\\bin\\Debug\\netcoreapp3.1\\dotnet-electronize.exe",
-      "commandLineArgs": "start",
-      "workingDirectory": "$(SolutionDir)ElectronNET.WebApp"
+    "ASP.Net (unpackaged)": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:8001/"
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "Electron (unpackaged)": {
+      "commandName": "Executable",
+      "executablePath": "node",
+      "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron",
+      "workingDirectory": "$(TargetDir).electron",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ElectronNET.WebApp": {
-      "commandName": "Project",
-      "launchBrowser": true,
+    "WSL": {
+      "commandName": "WSL2",
+      "launchUrl": "http://localhost:8001/",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:8001/"
       },
-      "applicationUrl": "http://localhost:50395/"
+      "distributionName": ""
     }
   }
 }

@@ -1,0 +1,48 @@
+{
+  "name": "$(PackageId)",
+  "productName": "$(ElectronTitle)",
+  "build": {
+    "appId": "$(PackageId)",
+    "linux": {
+      "desktop": {
+        "entry": { "Name": "$(Title)" }
+      },
+      "executableName": "$(PackageId)"
+    },
+    "deb": {
+      "desktop": {
+        "entry": { "Name": "$(Title)" }
+      }
+    }
+  },
+  "description": "$(Description)",
+  "version": "$(Version)",
+  "main": "main.js",
+  "author": {
+    "name": "$(Company)"
+  },
+  "license": "$(License)",
+  "executable": "$(TargetName)",
+  "singleInstance": "$(ElectronSingleInstance)",
+  "homepage": "$(ProjectUrl)",
+  "splashscreen": {
+    "imageFile": "$(ElectronSplashScreen)"
+  },
+  "scripts": {
+    "start": "tsc -p ."
+  },
+  "dependencies": {
+    "dasherize": "^2.0.0",
+    "electron-updater": "^6.6.2",
+    "image-size": "^1.2.1",
+    "portscanner": "^2.2.0",
+    "socket.io": "^4.8.1",
+    "electron-host-hook": "file:./ElectronHostHook"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18",
+    "electron": "$(ElectronVersion)",
+    "eslint": "^9.37.0",
+    "typescript": "^5.9.3"
+  }
+}

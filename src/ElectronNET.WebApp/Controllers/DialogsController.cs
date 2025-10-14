@@ -27,7 +27,7 @@ namespace ElectronNET.WebApp.Controllers
 
                 Electron.IpcMain.On("error-dialog", (args) =>
                 {
-                    Electron.Dialog.ShowErrorBox("An Error Message", "Demonstrating an error message.");
+                    Electron.Dialog.ShowErrorBox("An Error Message", "Demonstrating a really great message.");
                 });
 
                 Electron.IpcMain.On("information-dialog", async (args) =>

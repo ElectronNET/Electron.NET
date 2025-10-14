@@ -1,10 +1,9 @@
-// @ts-ignore
-import * as Electron from "electron";
 import { Connector } from "./connector";
-import { ExcelCreator } from "./excelCreator";
+import { Socket } from "socket.io";
+import { ExcelCreator } from './excelCreator';
 
 export class HookService extends Connector {
-    constructor(socket: SocketIO.Socket, public app: Electron.App) {
+    constructor(socket: Socket, public app: any) {
         super(socket, app);
     }
 

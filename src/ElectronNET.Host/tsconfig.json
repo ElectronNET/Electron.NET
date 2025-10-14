@@ -1,12 +1,13 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2019",
-        "sourceMap": true,
-        "skipLibCheck": true
-    },
-    "exclude": [
-        "node_modules",
-        "ElectronHostHook"
-    ]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2019",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "newLine": "crlf"
+  },
+  "exclude": [
+    "node_modules",
+    "ElectronHostHook"
+  ]
 }

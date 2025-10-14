@@ -1,11 +1,54 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- When this is enabled, the project will be switched from nuget packages to consuming the ElectronNet orchestration directly -->
+    <ElectronNetDevMode>False</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.props" Condition="$(ElectronNetDevMode)" />
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <TypeScriptToolsVersion>4.2</TypeScriptToolsVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <ImportNuGetBuildTasksPackTargetsFromSdk>false</ImportNuGetBuildTasksPackTargetsFromSdk>
+    <PublishTrimmed>False</PublishTrimmed>
+    <NuGetAudit>False</NuGetAudit>
+  </PropertyGroup>
+  <PropertyGroup Label="ElectronNetCommon">
+    <PackageIcon>128.png</PackageIcon>
+    <ApplicationIcon>wwwroot\assets\app-icon\win\app.ico</ApplicationIcon>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ElectronIcon>wwwroot\assets\app-icon\win\app.ico</ElectronIcon>
+    <Title>ElectronNET API Demo1</Title>
+    <Version>1.0.2</Version>
+    <Product>com.electronnet-apisamples.app</Product>
+    <Description>Electron.NET Demo Application</Description>
+    <Company>Electron.Net</Company>
+    <Copyright>Copyright © 2025, Electron.NET</Copyright>
+    <PackageTags>Electron;.NET;ASP;NET;Sample;App</PackageTags>
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <ElectronSplashScreen>wwwroot\assets\img\about@2x.png</ElectronSplashScreen>
+    <License>MIT</License>
+    <ElectronSingleInstance>False</ElectronSingleInstance>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptUseNodeJS>true</TypeScriptUseNodeJS>
+    <TypeScriptTSConfig>ElectronHostHook/tsconfig.json</TypeScriptTSConfig>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="publish\**" />
+    <Content Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+    <TypeScriptCompile Remove="**\node_modules\**" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Remove="Controllers\ManageWindowsController.cs" />
   </ItemGroup>
@@ -16,19 +59,6 @@
     <Folder Include="wwwroot\assets\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.15" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SocketIOClient" Version="3.0.8" />
-    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="3.0.7" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="Assets\electron.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -37,13 +67,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="ElectronHostHook\**\*.*">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+    <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="electron.manifest.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="ElectronNET.Core" Version="0.0.18" Condition="'$(ElectronNetDevMode)' != 'True'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.0.18" Condition="'$(ElectronNetDevMode)' != 'True'" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
   </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />
+
 </Project>
