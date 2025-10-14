@@ -1,57 +1,190 @@
 
 
-## 🛠 Requirements to Run
+# ASP.NET Core Setup
 
- Our API uses .NET 6/8, so our 
+ASP.NET Core remains the recommended approach for complex web applications with ElectronNET.Core, providing all the benefits of the ASP.NET ecosystem along with enhanced Electron integration.
 
-Also you should have installed:
+## 🛠 System Requirements
 
-* .NET 6/8 or later
-* OS
-  minimum base OS is the same as [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md) / [.NET 8](https://github.com/dotnet/core/blob/main/release-notes/8.0/supported-os.md).
-* NodeJS (at least [Version 22.x](https://nodejs.org))
+### Required Software
+- **.NET 8.0** or later
+- **Node.js 22.x** or later ([Download here](https://nodejs.org))
+- **Visual Studio 2022** (recommended) or other .NET IDE
 
+### Supported Operating Systems
+- **Windows 10/11** (x64, ARM64)
+- **macOS 11+** (Intel, Apple Silicon)
+- **Linux** (most distributions with glibc 2.31+)
 
-## 👩‍🏫 Usage with ASP.Net
+> **Note**: For Linux development on Windows, install [WSL2](https://docs.microsoft.com/windows/wsl/install) to build and debug Linux packages.
 
-- Create a new ASP.Net Core project
-- Install the following two nuget packages:
+## 🚀 Quick Start
 
-```ps1
+### 1. Create ASP.NET Core Project
+
+Create a new ASP.NET Core Web App in Visual Studio:
+
+```bash
+dotnet new webapp -n MyElectronWebApp
+cd MyElectronWebApp
+```
+
+### 2. Install NuGet Packages
+
+```powershell
 PM> Install-Package ElectronNET.Core
-
 PM> Install-Package ElectronNET.Core.AspNet
 ```
 
-### Enable Electron.NET on Startup
+> **Note**: `ElectronNET.Core.AspNet` provides ASP.NET-specific runtime components and should be used alongside `ElectronNET.Core`.
 
-To do so, use the `UseElectron` extension method on a `WebApplicationBuilder`, an `IWebHostBuilder` or any descendants.
+### 3. Configure Program.cs
 
-> [!NOTE]  
-> New in Electron.NET Core is that you provide a callback method as an argument to `UseElectron()`, which ensures that you get to know the right moment to set up your application UI.
+Update your `Program.cs` to enable Electron.NET:
 
-### Program.cs
-
-```csharp	
+```csharp
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-    public static void Main(string[] args)
-    {
-        WebHost.CreateDefaultBuilder(args)
-            .UseElectron(args, ElectronAppReady)
-            .UseStartup<Startup>()
-            .Build()
-            .Run();
-    }
+var builder = WebApplication.CreateBuilder(args);
 
-   public static async Task ElectronAppReady()
-    {
-        var browserWindow = await Electron.WindowManager.CreateWindowAsync(
-            new BrowserWindowOptions { Show = false });
+// Enable Electron.NET with callback for UI setup
+builder.WebHost.UseElectron(args, ElectronAppReady);
 
-        browserWindow.OnReadyToShow += () => browserWindow.Show();
-    }
+// Add services to the container
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+
+// Electron initialization callback
+async Task ElectronAppReady()
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+        new BrowserWindowOptions
+        {
+            Width = 1200,
+            Height = 800,
+            Show = false,
+            WebPreferences = new WebPreferences
+            {
+                NodeIntegration = false,
+                ContextIsolation = true
+            }
+        });
+
+    // Load your ASP.NET application
+    await browserWindow.WebContents.LoadURLAsync("https://localhost:7001");
+
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+}
+```
+
+### 4. Alternative: IWebHostBuilder Setup
+
+For projects using the traditional `Startup.cs` pattern:
+
+```csharp
+public static void Main(string[] args)
+{
+    CreateWebHostBuilder(args).Build().Run();
+}
+
+public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+    WebHost.CreateDefaultBuilder(args)
+        .UseElectron(args, ElectronAppReady)
+        .UseStartup<Startup>();
+
+// Electron callback (same as above)
+async Task ElectronAppReady()
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+        new BrowserWindowOptions { Show = false });
+
+    await browserWindow.WebContents.LoadURLAsync("https://localhost:5001");
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+}
+```
+
+## 🔧 Configuration
+
+### Project File Settings
+
+Configure Electron.NET through MSBuild properties in your `.csproj`:
+
+```xml
+<PropertyGroup>
+  <TargetFramework>net8.0</TargetFramework>
+  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <ElectronNETCoreDescription>My ASP.NET Electron App</ElectronNETCoreDescription>
+  <ElectronNETCoreDisplayName>MyApp</ElectronNETCoreDisplayName>
+</PropertyGroup>
 ```
 
 
+
+## 🎨 Customization
+
+### Window Configuration
+
+Customize the main window appearance:
+
+```csharp
+var options = new BrowserWindowOptions
+{
+    Width = 1400,
+    Height = 900,
+    MinWidth = 800,
+    MinHeight = 600,
+    Frame = true,
+    TitleBarStyle = TitleBarStyle.Default,
+    Icon = "wwwroot/favicon.ico"
+};
+```
+
+### Multiple Windows
+
+Create additional windows for different parts of your application:
+
+```csharp
+var settingsWindow = await Electron.WindowManager.CreateWindowAsync(
+    new BrowserWindowOptions
+    {
+        Width = 600,
+        Height = 400,
+        Parent = browserWindow,
+        Modal = true
+    },
+    "https://localhost:7001/settings");
+```
+
+## 🚀 Next Steps
+
+- **[Debugging](Debugging.md)** - Learn about ASP.NET debugging features
+- **[Package Building](Package-Building.md)** - Create distributable packages
+- **[Startup Methods](Startup-Methods.md)** - Understanding launch scenarios
+
+## 💡 Benefits of ASP.NET + Electron
+
+✅ **Full Web Stack** - Use MVC, Razor Pages, Blazor, and all ASP.NET features
+✅ **Hot Reload** - Edit ASP.NET code and see changes instantly
+✅ **Rich Ecosystem** - Access to thousands of ASP.NET packages
+✅ **Modern Development** - Latest C# features and ASP.NET patterns
+✅ **Scalable Architecture** - Build complex, maintainable applications

@@ -1,70 +1,184 @@
 # Migration Guide
 
-// Explain migration steps:
+Migrating from previous versions of Electron.NET to ElectronNET.Core is straightforward but requires several important changes. This guide walks you through the process step by step.
 
-Uninstall existing package ElectronNET.API
+## 📋 Prerequisites
 
-// Install new packages:
+Before starting the migration:
 
+- **Backup your project** - Ensure you have a working backup
+- **Update development tools** - Install Node.js 22.x and .NET 8.0+
+- **Review current setup** - Note your current Electron and ASP.NET versions
 
-```ps1
-PM> Install-Package ElectronNET.Core
+## 🚀 Migration Steps
 
-PM> Install-Package ElectronNET.Core.AspNet
+### Step 1: Update NuGet Packages
+
+**Uninstall old packages:**
+```powershell
+PM> Uninstall-Package ElectronNET.API
 ```
 
-// add link to package type description: [text](../Releases/Package-Description.md)
-// the API package is a dependency of .Core, so it's auto-incldued
+**Install new packages:**
+```powershell
+PM> Install-Package ElectronNET.Core
+PM> Install-Package ElectronNET.Core.AspNet  # For ASP.NET projects
+```
+
+> **Note**: The API package is automatically included as a dependency of `ElectronNET.Core`. See [Package Description](../Releases/Package-Description.md) for details about the package structure.
 
 
-// Edit Properties\electron-builder.json
-// it's auto-created: In VS after nuget restore, otherwise on first build - even when that fails
+### Step 2: Configure Project Settings
 
-// Now look at the electron-manifest.json file
-// 1. Manually merge everything under the 'build' property into the 
-// electron-builder file (omitting the build node, only its content is to be merged)
-// 2. Open the project designer in VS and enter the values from the manifest file into the fields
-// 3. Delete the manifest file
-// 
+**Auto-generated Configuration:**
+ElectronNET.Core automatically creates `electron-builder.json` during the first build or NuGet restore. No manual configuration is needed for basic setups.
 
-// Check ASP.Net core startup (program.cs or statup.cs, typically)
-// Find the UseElectron() extension method call
-// it will have an error. it needs a 3rd parameter now: the onAppReady callback. 
-// set this to a callback function. this gets called just in the right moment for you  
-// to start things going (like accessing ElectronNET classes)
+**Migrate Existing Configuration:**
+If you have an existing `electron.manifest.json` file:
 
-### Program.cs
+1. **Open the generated `electron-builder.json`** file in your project
+2. **Locate the 'build' section** in your old `electron.manifest.json`
+3. **Copy the contents** of the build section (not the "build" key itself) into the new `electron-builder.json`
+4. **Use Visual Studio Project Designer** to configure Electron settings through the UI
+5. **Delete the old `electron.manifest.json`** file
 
-```csharp	
+**Alternative: Manual Configuration**
+You can also manually edit `electron-builder.json`:
+
+```json
+{
+  "productName": "My Electron App",
+  "appId": "com.mycompany.myapp",
+  "directories": {
+    "output": "release"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "assets/app.ico"
+  }
+}
+```
+
+## 🎯 Testing Migration
+
+After completing the migration steps:
+
+1. **Build your project** to ensure no compilation errors
+2. **Test debugging** using the new ASP.NET-first approach
+3. **Verify packaging** works with the new configuration
+4. **Check cross-platform builds** if targeting multiple platforms
+
+## 🚨 Common Migration Issues
+
+### Build Errors
+- **Missing RuntimeIdentifier**: Ensure `<RuntimeIdentifier>win-x64</RuntimeIdentifier>` is set
+- **Node.js version**: Verify Node.js 22.x is installed and in PATH
+- **Package conflicts**: Clean NuGet cache if needed
+
+### Runtime Errors
+- **Port conflicts**: Update URLs in startup code to match your configuration
+- **Missing electron-builder.json**: Trigger rebuild or manual NuGet restore
+- **Process termination**: Use .NET-first startup mode for better cleanup
+
+## 🚀 Next Steps
+
+- **[What's New?](What's-New.md)** - Complete overview of ElectronNET.Core features
+- **[Advanced Migration Topics](Advanced-Migration-Topics.md)** - Handle complex scenarios
+- **[Getting Started](GettingStarted/ASP.Net.md)** - Learn about new development workflows
+
+## 💡 Migration Benefits
+
+✅ **Simplified Configuration** - No more CLI tools or JSON files
+✅ **Better Debugging** - Native Visual Studio experience with Hot Reload
+✅ **Modern Architecture** - .NET-first process lifecycle
+✅ **Cross-Platform Ready** - Build Linux apps from Windows
+✅ **Future-Proof** - Flexible Electron version selection
+
+### Step 3: Update Startup Code
+
+**Update UseElectron() calls** to include the new callback parameter. This callback executes at the right moment to initialize your Electron UI.
+
+#### Modern ASP.NET Core (WebApplication)
+
+```csharp
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-    public static void Main(string[] args)
-    {
-        WebHost.CreateDefaultBuilder(args)
-            .UseElectron(args, ElectronAppReady)
-            .UseStartup<Startup>()
-            .Build()
-            .Run();
-    }
+var builder = WebApplication.CreateBuilder(args);
 
-   public static async Task ElectronAppReady()
-    {
-        var browserWindow = await Electron.WindowManager.CreateWindowAsync(
-            new BrowserWindowOptions { Show = false });
+// Enable Electron.NET with callback
+builder.WebHost.UseElectron(args, async () =>
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+        new BrowserWindowOptions { Show = false });
 
-        browserWindow.OnReadyToShow += () => browserWindow.Show();
-    }
+    await browserWindow.WebContents.LoadURLAsync("https://localhost:7001");
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+});
+
+var app = builder.Build();
+app.Run();
+```
+
+#### Traditional ASP.NET Core (IWebHostBuilder)
+
+```csharp
+using ElectronNET.API;
+using ElectronNET.API.Entities;
+
+public static void Main(string[] args)
+{
+    CreateWebHostBuilder(args).Build().Run();
+}
+
+public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+    WebHost.CreateDefaultBuilder(args)
+        .UseElectron(args, ElectronAppReady)
+        .UseStartup<Startup>();
+
+// Electron callback
+async Task ElectronAppReady()
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+        new BrowserWindowOptions { Show = false });
+
+    await browserWindow.WebContents.LoadURLAsync("https://localhost:5001");
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+}
 ```
 
 
-// Also show an example for the other case with IWebHostBuilder and Startup class
+### Step 4: Update Development Tools
 
+**Node.js Upgrade:**
+ElectronNET.Core requires Node.js 22.x. Update your installation:
 
+**Windows:**
+1. Download from [nodejs.org](https://nodejs.org)
+2. Run the installer
+3. Verify: `node --version` should show v22.x.x
 
-// Next, explain that the 'watch' feature is no longer supported, now that proper debugging with hot reload is possible.
+**Linux:**
+```bash
+# Using Node Version Manager (recommended)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+nvm install 22
+nvm use 22
 
+# Or using package manager
+sudo apt update
+sudo apt install nodejs=22.*
+```
 
-// Nodejs needs to be updated to 22.x
-// Important. Explain how to (for win and linux)
+### Step 5: Update Debugging Setup
 
+**Watch Feature Removal:**
+The old 'watch' feature is no longer supported. Instead, use the new ASP.NET-first debugging with Hot Reload:
+
+- **Old approach**: Manual process attachment and slow refresh
+- **New approach**: Native Visual Studio debugging with Hot Reload
+- **Benefits**: Faster development cycle, better debugging experience
+
+**Update Launch Settings:**
+Replace old watch configurations with new debugging profiles. See [Debugging](GettingStarted/Debugging.md) for detailed setup instructions.
