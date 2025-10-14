@@ -68,12 +68,10 @@ namespace ElectronNET.API
             await BridgeConnector.Socket.Emit(subscriber, eventName, listener).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Subscribe to an unmapped electron event.
-        /// </summary>
+        /// <summary>Subscribe to an unmapped electron event.</summary>
         /// <param name="moduleName">The name of the module, e.g. app, dock, etc...</param>
         /// <param name="eventName">The name of the event</param>
-        /// <param name="fn">The event handler</param>
+        /// <param name="action">The action.</param>
         public async Task Once(string moduleName, string eventName, Action action)
         {
             var listener = $"{moduleName}{_textInfo.ToTitleCase(eventName)}Completed";

@@ -34,7 +34,7 @@ namespace ElectronNET.WebApp.Controllers
                     browserWindow.OnFocus += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-focus");
                     browserWindow.OnBlur += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-blur");
 
-                    Electron.IpcMain.On("listen-to-window-set-focus", (x) => browserWindow.Focus());
+                    _ = Electron.IpcMain.On("listen-to-window-set-focus", (x) => browserWindow.Focus());
                 });
 
                 Electron.IpcMain.On("frameless-window", async (args) =>

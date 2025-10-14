@@ -48,8 +48,6 @@
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            return null;
         }
 
         private StartupMethod DetectAppTypeAndStartup()
