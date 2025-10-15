@@ -20,13 +20,14 @@ The new package architecture reflects a clearer separation of concerns:
 - **ElectronNET.Core.Api** - Pure API definitions for Electron integration
 - **ElectronNET.Core.AspNet** - ASP.NET-specific runtime components
 
-This modular approach allows projects to include only what they need while maintaining the flexibility to scale from simple console applications to complex web applications.
+This modular approach allows projects to include only what they need while maintaining the flexibility to scale from simple console applications to complex web applications.  
+More about the avaílable nuget packages: [Package Description](../RelInfo/Package-Description.md).
 
 ## Beyond ASP.NET: Console Application Support
 
-### A Fundamental Shift in Accessibility
+### A Shift in Accessibility
 
-One of the most significant breakthroughs in ElectronNET.Core is the removal of the ASP.NET requirement. Developers can now build Electron applications using simple console applications, dramatically expanding the use cases and removing a major barrier to adoption.
+A major new opportunity in ElectronNET.Core is the removal of the ASP.NET requirement. Developers can now build Electron solutions using simple DotNet console applications, expanding the use cases and removing a major barrier to adoption for a number of use cases.
 
 ### Flexible Content Sources
 
@@ -43,7 +44,7 @@ This capability transforms ElectronNET from a web-focused framework into a versa
 
 ### Debugging Reimagined
 
-The debugging experience has been completely transformed. The new ASP.NET-first launch mode means developers can now debug their .NET code directly, with full access to familiar debugging tools and Hot Reload capabilities. No more attaching to processes or working around limited debugging scenarios—the development workflow now matches standard ASP.NET development patterns.
+The debugging experience has been completely transformed. The new DotNet-first launch mode means developers can now debug their .NET code directly, with full access to familiar debugging tools and Hot Reload capabilities. No more attaching to processes or working around limited debugging scenarios — the development workflow now matches standard .NET development patterns.
 
 ### Cross-Platform Development Without Compromises
 
@@ -71,7 +72,8 @@ The underlying process architecture has been fundamentally redesigned. Instead o
 - Enhanced error handling and recovery
 - Cleaner separation between web and native concerns
 
-This architecture supports eight different launch scenarios, covering every combination of packaged/unpackaged deployment, console/ASP.NET hosting, and dotnet-first/electron-first initialization.
+This architecture supports eight different launch scenarios, covering every combination of packaged/unpackaged deployment, console/ASP.NET hosting, and dotnet-first/electron-first initialization. The Electron-first launch method is still available or course.  
+For more details, see: [Startup Methods](../GettingStarted/Startup-Methods.md).
 
 ### Unpackaged Development Mode
 
@@ -103,7 +105,9 @@ The migration path is designed to be straightforward:
 1. Update package references to the new structure
 2. Remove the old manifest file
 3. Configure project properties through Visual Studio
-4. Adopt new debugging workflows at your own pace
+4. Adopt new debugging workflows at your own pace  
+
+Further reading: [Migration Guide](Migration-Guide.md).
 
 ## Future Horizons
 

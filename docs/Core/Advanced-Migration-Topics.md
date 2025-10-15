@@ -6,46 +6,47 @@ This guide covers advanced scenarios and edge cases that may require additional 
 
 ### Port Configuration Changes
 
-**Previous Approach:**
+**Previous Approach:**  
 Specifying the WebPort in `electron.manifest.json` is no longer supported because the ASP.NET-first launch mode makes this timing-dependent.
 
-**New Approach:**
+**New Approach:**  
 Configure custom ASP.NET ports through MSBuild metadata:
 
 ```xml
 <ItemGroup>
   <AssemblyMetadata Include="AspNetHttpPort" Value="4000" />
-  <AssemblyMetadata Include="AspNetHttpsPort" Value="4001" />
 </ItemGroup>
-```
-
-**Usage in Code:**
-```csharp
-// Access configured ports at runtime
-var port = int.Parse(Electron.App.GetEnvironmentVariable("AspNetHttpPort") ?? "5000");
 ```
 
 ## Custom ElectronHostHook Configuration
 
+> [!NOTE]  
+> These changes are only required in case you are using a custom ElectronHostHook implementation!  
+> If you have an ElectronHostHook folder in your project but you did not customize that code and aren't using its demo features (Excel and ZIP), you can also just remove that folder from your project.
+
+
 ### TypeScript and Node.js Updates
 
 **Update package.json:**
+
+This shows the delevant changes only: All shown versions are the new required minimum versions.
+
 ```json
 {
   "devDependencies": {
-    "eslint": "^9.37.0",
     "@types/node": "^22.18",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "archiver-utils": "^2.1.0",
     "socket.io": "^4.8.1",
-    "exceljs": "^1.10.0"
   }
 }
 ```
 
-**Update Project File:**
+**Update Project File:**  
+
+The below modifications will allow you to use the latest TypeScript compiler in your ASP.Net project.
+
 ```xml
 <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
 
@@ -78,33 +79,9 @@ var port = int.Parse(Electron.App.GetEnvironmentVariable("AspNetHttpPort") ?? "5
 When using ElectronNET.Core in multi-project solutions:
 
 1. **Install ElectronNET.Core.Api** in class library projects
-2. **Install ElectronNET.Core** only in the startup project
+2. **Install ElectronNET.Core and ElectronNET.Core.AspNet** only in the startup project
 3. **Share configuration** through project references or shared files
 
-### Custom Build Processes
-
-For advanced build customization:
-
-```xml
-<PropertyGroup>
-  <ElectronNETCoreOutputPath>custom\output\path</ElectronNETCoreOutputPath>
-  <ElectronNETCoreNodeModulesPath>custom\node_modules</ElectronNETCoreNodeModulesPath>
-</PropertyGroup>
-```
-
-### Environment-Specific Configuration
-
-Handle different environments with conditional configuration:
-
-```xml
-<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-  <ElectronNETCoreEnvironment>Development</ElectronNETCoreEnvironment>
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-  <ElectronNETCoreEnvironment>Production</ElectronNETCoreEnvironment>
-</PropertyGroup>
-```
 
 ## Next Steps
 

@@ -8,16 +8,20 @@
 
 - [What's new?](Core/What's-New.md)
 - [Migration Guiide](Core/Migration-Guide.md)
-- [Advcanced Migration](Core/Advanced-Migration-Topics.md)
+- [Advanced Migration](Core/Advanced-Migration-Topics.md)
 
 # Getting Started
 
+- [System Requirements](GettingStarted/System-Requirements.md)
 - [With ASP.Net](GettingStarted/ASP.Net.md)
 - [With a Console App](GettingStarted/Console-App.md)
-- [Startup-Method](GettingStarted/Startup-Methods.md)
-- [Debugging](GettingStarted/Debugging.md)
-- [Package Building](GettingStarted/Package-Building.md)
 
+# Using Electron.NET
+
+- [Configuration](Using/Configuration.md)
+- [Startup-Methods](Using/Startup-Methods.md)
+- [Debugging](Using/Debugging.md)
+- [Package Building](Using/Package-Building.md)
 
 
 #  Release Information

@@ -28,8 +28,8 @@ Electron.NET Core is a complete modernization of Electron.NET that eliminates th
 - **[Debugging](GettingStarted/Debugging.md)** - Debug Electron apps effectively in Visual Studio
 - **[Package Building](GettingStarted/Package-Building.md)** - Create distributable packages
 
-### [Release Information](Releases/Package-Description.md)
-- **[Package Description](Releases/Package-Description.md)** - Understanding the three NuGet packages
+### [Release Information](RelInfo/Package-Description.md)
+- **[Package Description](RelInfo/Package-Description.md)** - Understanding the three NuGet packages
 - **[Changelog](../Changelog.md)** - Complete list of changes and improvements
 
 ## 🛠 System Requirements

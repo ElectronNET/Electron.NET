@@ -1,0 +1,146 @@
+# Package Building
+
+ElectronNET.Core integrates with Visual Studio's publishing system to create distributable Electron packages using electron-builder. The process leverages .NET's build system while automatically generating the necessary Electron configuration files.
+
+## 🎯 Publishing Overview
+
+The publishing process differs slightly between ASP.NET and console applications:
+
+- **ASP.NET Apps** - Use folder publishing with SelfContained=true
+- **Console Apps** - Use folder publishing with SelfContained=false
+
+## 📋 Prerequisites
+
+Before publishing, ensure you have:
+
+- **Node.js 22.x** installed
+- **RuntimeIdentifier** set correctly for your target platform
+- **Project configured** for Release builds
+
+## 🚀 Publishing Process
+
+### Step 1: Create Publish Profiles
+
+Add publish profiles to `Properties/PublishProfiles/`:
+
+#### ASP.NET Application Profile (Windows)
+
+**win-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+#### ASP.NET Application Profile (Linux)
+
+**linux-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+#### Console Application Profile (Windows)
+
+**win-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishReadyToRun>false</PublishReadyToRun>
+  </PropertyGroup>
+</Project>
+```
+
+#### Console Application Profile (Linux)
+
+**linux-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+### Step 2: Configure Electron Builder
+
+ElectronNET.Core automatically adds a default `electron-builder.json` file under `Properties\electron-builder.json`.  
+Please see here for details of the available configuration options: https://www.electron.build/.
+
+
+### Step 3: Publish from Visual Studio
+
+1. **Right-click your project** in Solution Explorer
+2. **Select "Publish"**
+4. **Select your publish profile** (Windows/Linux)
+5. **Click "Publish"**
+
+The publish process will:
+- Build your .NET application
+- Copy all files as needed
+- Install npm dependencies
+- Run electron-builder
+
+> [!NOTE]  
+> When running publish for a Linux configuration on Windows, Electron.NET will automatically use WSL for the platform-specific steps.
+
+**After publishing**, build the final package, the final results will be in 
+
+`publish\Release\netx.0\xxx-xxx\`
+
+
+## 🚀 Next Steps
+
+- **[Startup Methods](Startup-Methods.md)** - Understanding different launch modes for packaged apps
+- **[Debugging](Debugging.md)** - Debug packaged applications
+- **[Migration Guide](../Core/Migration-Guide.md)** - Update existing projects for new publishing
+
+## 💡 Benefits
+
+✅ **Native VS Integration** - Use familiar publish workflows  
+✅ **Cross-Platform Building** - Build Linux packages from Windows  
+✅ **Automatic Configuration** - No manual electron-builder setup  
+✅ **Multiple Package Types** - NSIS, AppImage, DMG, etc.  
+✅ **CI/CD Ready** - Easy integration with build pipelines  

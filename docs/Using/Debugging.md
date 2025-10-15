@@ -18,7 +18,7 @@ Debug your .NET code directly with full Hot Reload support:
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:7001/"
+      "applicationUrl": "http://localhost:8001/"
     }
   }
 }
@@ -64,10 +64,10 @@ Debug Linux builds directly from Windows Visual Studio:
   "profiles": {
     "WSL": {
       "commandName": "WSL2",
-      "launchUrl": "http://localhost:7001/",
+      "launchUrl": "http://localhost:8001/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:7001/"
+        "ASPNETCORE_URLS": "http://localhost:8001/"
       },
       "distributionName": ""
     }
@@ -94,7 +94,7 @@ Add the debugging profiles to `Properties/launchSettings.json`:
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:7001/"
+      "applicationUrl": "http://localhost:8001/"
     },
     "Electron (unpackaged)": {
       "commandName": "Executable",
@@ -107,10 +107,10 @@ Add the debugging profiles to `Properties/launchSettings.json`:
     },
     "WSL": {
       "commandName": "WSL2",
-      "launchUrl": "http://localhost:7001/",
+      "launchUrl": "http://localhost:8001/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:7001/"
+        "ASPNETCORE_URLS": "http://localhost:8001/"
       },
       "distributionName": ""
     }
@@ -229,8 +229,8 @@ The debugging interface provides familiar Visual Studio tools:
 
 ## 💡 Benefits
 
-✅ **Native Visual Studio Experience** - No complex setup or manual attachment
-✅ **Hot Reload Support** - Edit ASP.NET code during debugging
-✅ **Cross-Platform Debugging** - Debug Linux apps from Windows
-✅ **Multiple Debugging Modes** - Choose the right approach for your needs
-✅ **Process Lifecycle Management** - Automatic cleanup and proper termination
+✅ **Native Visual Studio Experience** - No complex setup or manual attachment  
+✅ **Hot Reload Support** - Edit ASP.NET code during debugging  
+✅ **Cross-Platform Debugging** - Debug Linux apps from Windows  
+✅ **Multiple Debugging Modes** - Choose the right approach for your needs  
+✅ **Process Lifecycle Management** - Automatic cleanup and proper termination  

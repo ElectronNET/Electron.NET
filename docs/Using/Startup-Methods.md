@@ -14,13 +14,13 @@ The framework supports **8 different launch scenarios** covering every combinati
 
 ### Unpackaged Debugging Modes
 
-**`-unpackedelectron`** - Electron-first debugging
+#### **`-unpackedelectron`** - Electron-first debugging
 ```bash
 # Launch Electron first, which then starts .NET
 node node_modules/electron/cli.js main.js -unpackedelectron
 ```
 
-**`-unpackeddotnet`** - .NET-first debugging
+#### **`-unpackeddotnet`** - .NET-first debugging
 ```bash
 # Launch .NET first, which then starts Electron
 dotnet run -unpackeddotnet
@@ -28,13 +28,13 @@ dotnet run -unpackeddotnet
 
 ### Packaged Deployment Modes
 
-**`-dotnetpacked`** - .NET-first packaged execution
+#### **`-dotnetpacked`** - .NET-first packaged execution
 ```bash
 # Run packaged app with .NET starting first
 MyApp.exe -dotnetpacked
 ```
 
-**No flags** - Electron-first packaged execution (default)
+#### **No flags** - Electron-first packaged execution (default)
 ```bash
 # Run packaged app with Electron starting first
 MyApp.exe
@@ -92,7 +92,7 @@ builder.WebHost.UseElectron(args, async () =>
     var browserWindow = await Electron.WindowManager.CreateWindowAsync(
         new BrowserWindowOptions { Show = false });
 
-    await browserWindow.WebContents.LoadURLAsync("https://localhost:7001");
+    await browserWindow.WebContents.LoadURLAsync("http://localhost:8001");
     browserWindow.OnReadyToShow += () => browserWindow.Show();
 });
 
@@ -119,7 +119,8 @@ public static async Task Main(string[] args)
 
 ## 🎨 Visual Process Flow
 
-*Placeholder for image showing the 8 different startup mode flows*
+
+![Startup Modes](../images/startup_modes.png)
 
 The image above illustrates how each combination of deployment type, application type, and initialization order affects the process lifecycle.
 
@@ -153,6 +154,7 @@ The image above illustrates how each combination of deployment type, application
 ### Production Deployment
 
 **Dotnet-First Deployment**
+
 ```bash
 # Build and package
 dotnet publish -c Release -r win-x64
@@ -165,6 +167,7 @@ MyApp.exe -dotnetpacked
 ```
 
 **Electron-First Deployment** (Default)
+
 ```bash
 # Run packaged application (no special flags needed)
 MyApp.exe

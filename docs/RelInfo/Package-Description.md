@@ -47,7 +47,7 @@ ElectronNET.Core consists of three specialized NuGet packages designed for diffe
 ## 🏗 Architecture Benefits
 
 ### Separation of Concerns
-- **Build logic separate from API** - Cleaner dependency management
+- **Build logic separate from API** - Clean dependency management
 - **Optional ASP.NET integration** - Use only what you need
 - **Multi-project friendly** - Share APIs across projects without build conflicts
 
@@ -68,7 +68,7 @@ ElectronNET.Core consists of three specialized NuGet packages designed for diffe
 </ItemGroup>
 ```
 
-**Multi-Project Solution:**
+**Multi-Project Solution (ASP.NET):**
 ```xml
 <!-- Startup project -->
 <ItemGroup>
@@ -82,21 +82,35 @@ ElectronNET.Core consists of three specialized NuGet packages designed for diffe
 </ItemGroup>
 ```
 
+**Multi-Project Solution (Console):**
+```xml
+<!-- Startup project -->
+<ItemGroup>
+  <PackageReference Include="ElectronNET.Core" Version="1.0.0" />
+</ItemGroup>
+
+<!-- Class library projects -->
+<ItemGroup>
+  <PackageReference Include="ElectronNET.Core.Api" Version="1.0.0" />
+</ItemGroup>
+```
+
 ## 🔗 Dependency Chain
 
 ```
-ElectronNET.Core.AspNet
-       ↓
+ElectronNET.Core.AspNet  →  ElectronNET.Core.Api
+
 ElectronNET.Core  →  ElectronNET.Core.Api
 ```
 
-- **ElectronNET.Core.AspNet** depends on ElectronNET.Core
+- **ElectronNET.Core.AspNet** depends on ElectronNET.Core.Api
 - **ElectronNET.Core** depends on ElectronNET.Core.Api
 - **ElectronNET.Core.Api** has no dependencies
 
 ## 💡 Recommendations
 
-✅ **Start with ElectronNET.Core** for new projects
-✅ **Add ElectronNET.Core.AspNet** only for ASP.NET applications
-✅ **Use ElectronNET.Core.Api** for class libraries and API-only scenarios
-✅ **Multi-project solutions** benefit from the modular architecture
+✅ **Start with ElectronNET.Core** for new projects  
+✅ **Add ElectronNET.Core.AspNet** only for ASP.NET applications  
+✅ **Use ElectronNET.Core.Api** for class libraries and API-only scenarios  
+✅ **Multi-project solutions** benefit from the modular architecture  
+

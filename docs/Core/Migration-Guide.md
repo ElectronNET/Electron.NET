@@ -25,15 +25,15 @@ PM> Install-Package ElectronNET.Core
 PM> Install-Package ElectronNET.Core.AspNet  # For ASP.NET projects
 ```
 
-> **Note**: The API package is automatically included as a dependency of `ElectronNET.Core`. See [Package Description](../Releases/Package-Description.md) for details about the package structure.
+> **Note**: The API package is automatically included as a dependency of `ElectronNET.Core`. See [Package Description](../RelInfo/Package-Description.md) for details about the package structure.
 
 
 ### Step 2: Configure Project Settings
 
-**Auto-generated Configuration:**
+**Auto-generated Configuration:**  
 ElectronNET.Core automatically creates `electron-builder.json` during the first build or NuGet restore. No manual configuration is needed for basic setups.
 
-**Migrate Existing Configuration:**
+**Migrate Existing Configuration:**  
 If you have an existing `electron.manifest.json` file:
 
 1. **Open the generated `electron-builder.json`** file in your project
@@ -47,14 +47,18 @@ You can also manually edit `electron-builder.json`:
 
 ```json
 {
-  "productName": "My Electron App",
-  "appId": "com.mycompany.myapp",
-  "directories": {
-    "output": "release"
+  "linux": {
+    "target": [
+      "tar.xz"
+    ]
   },
   "win": {
-    "target": "nsis",
-    "icon": "assets/app.ico"
+    "target": [
+      {
+        "target": "portable",
+        "arch": "x64"
+      }
+    ]
   }
 }
 ```
@@ -71,12 +75,10 @@ After completing the migration steps:
 ## 🚨 Common Migration Issues
 
 ### Build Errors
-- **Missing RuntimeIdentifier**: Ensure `<RuntimeIdentifier>win-x64</RuntimeIdentifier>` is set
 - **Node.js version**: Verify Node.js 22.x is installed and in PATH
 - **Package conflicts**: Clean NuGet cache if needed
 
 ### Runtime Errors
-- **Port conflicts**: Update URLs in startup code to match your configuration
 - **Missing electron-builder.json**: Trigger rebuild or manual NuGet restore
 - **Process termination**: Use .NET-first startup mode for better cleanup
 
@@ -84,15 +86,15 @@ After completing the migration steps:
 
 - **[What's New?](What's-New.md)** - Complete overview of ElectronNET.Core features
 - **[Advanced Migration Topics](Advanced-Migration-Topics.md)** - Handle complex scenarios
-- **[Getting Started](GettingStarted/ASP.Net.md)** - Learn about new development workflows
+- **[Getting Started](../GettingStarted/ASP.Net.md)** - Learn about new development workflows
 
 ## 💡 Migration Benefits
 
-✅ **Simplified Configuration** - No more CLI tools or JSON files
-✅ **Better Debugging** - Native Visual Studio experience with Hot Reload
-✅ **Modern Architecture** - .NET-first process lifecycle
-✅ **Cross-Platform Ready** - Build Linux apps from Windows
-✅ **Future-Proof** - Flexible Electron version selection
+✅ **Simplified Configuration** - No more CLI tools or JSON files  
+✅ **Better Debugging** - Native Visual Studio experience with Hot Reload  
+✅ **Modern Architecture** - .NET-first process lifecycle  
+✅ **Cross-Platform Ready** - Build Linux apps from Windows  
+✅ **Future-Proof** - Flexible Electron version selection  
 
 ### Step 3: Update Startup Code
 
@@ -104,76 +106,58 @@ After completing the migration steps:
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-var builder = WebApplication.CreateBuilder(args);
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-// Enable Electron.NET with callback
-builder.WebHost.UseElectron(args, async () =>
-{
-    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
-        new BrowserWindowOptions { Show = false });
+        builder.UseElectron(args, ElectronAppReady);
 
-    await browserWindow.WebContents.LoadURLAsync("https://localhost:7001");
-    browserWindow.OnReadyToShow += () => browserWindow.Show();
-});
+        var app = builder.Build();
+        app.Run();
+    }
 
-var app = builder.Build();
-app.Run();
+    public static async Task ElectronAppReady()
+    {
+        var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+            new BrowserWindowOptions { Show = false });
+
+        browserWindow.OnReadyToShow += () => browserWindow.Show();
+    }
 ```
 
 #### Traditional ASP.NET Core (IWebHostBuilder)
 
-```csharp
+```csharp	
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-public static void Main(string[] args)
-{
-    CreateWebHostBuilder(args).Build().Run();
-}
+    public static void Main(string[] args)
+    {
+        WebHost.CreateDefaultBuilder(args)
+            .UseElectron(args, ElectronAppReady)
+            .UseStartup<Startup>()
+            .Build()
+            .Run();
+    }
 
-public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-    WebHost.CreateDefaultBuilder(args)
-        .UseElectron(args, ElectronAppReady)
-        .UseStartup<Startup>();
+    public static async Task ElectronAppReady()
+    {
+        var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+            new BrowserWindowOptions { Show = false });
 
-// Electron callback
-async Task ElectronAppReady()
-{
-    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
-        new BrowserWindowOptions { Show = false });
-
-    await browserWindow.WebContents.LoadURLAsync("https://localhost:5001");
-    browserWindow.OnReadyToShow += () => browserWindow.Show();
-}
+        browserWindow.OnReadyToShow += () => browserWindow.Show();
+    }
 ```
 
 
 ### Step 4: Update Development Tools
 
-**Node.js Upgrade:**
-ElectronNET.Core requires Node.js 22.x. Update your installation:
-
-**Windows:**
-1. Download from [nodejs.org](https://nodejs.org)
-2. Run the installer
-3. Verify: `node --version` should show v22.x.x
-
-**Linux:**
-```bash
-# Using Node Version Manager (recommended)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc
-nvm install 22
-nvm use 22
-
-# Or using package manager
-sudo apt update
-sudo apt install nodejs=22.*
-```
+See [System Requirements](../GettingStarted/System-Requirements.md).
 
 ### Step 5: Update Debugging Setup
 
 **Watch Feature Removal:**
+
 The old 'watch' feature is no longer supported. Instead, use the new ASP.NET-first debugging with Hot Reload:
 
 - **Old approach**: Manual process attachment and slow refresh
@@ -181,4 +165,6 @@ The old 'watch' feature is no longer supported. Instead, use the new ASP.NET-fir
 - **Benefits**: Faster development cycle, better debugging experience
 
 **Update Launch Settings:**
-Replace old watch configurations with new debugging profiles. See [Debugging](GettingStarted/Debugging.md) for detailed setup instructions.
+
+Replace old watch configurations with new debugging profiles. See [Debugging](../GettingStarted/Debugging.md) for detailed setup instructions.
+
