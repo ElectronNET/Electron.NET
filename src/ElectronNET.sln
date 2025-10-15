@@ -54,8 +54,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{EDCBFC49-2AEE-4BAF-9368-4409298C52FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{985D39A7-5216-4945-8167-2FD0CB387BD8}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "..\nuke\_build.csproj", "{015CB06B-6CAE-209F-E050-21C3ACA5FE9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Docs", "!Docs", "{D36CDFFD-3438-42E4-A7FF-88BA19AC4964}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\publish-wiki.yml = ..\.github\workflows\publish-wiki.yml
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Docs", "..\docs\Docs.shproj", "{06CAADC7-DE5B-47B4-AB2A-E9501459A2D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +103,8 @@ Global
 		{EE38A326-5DE8-AF09-9EB9-DF0878938783}.Release|Any CPU.Build.0 = Release|Any CPU
 		{015CB06B-6CAE-209F-E050-21C3ACA5FE9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{015CB06B-6CAE-209F-E050-21C3ACA5FE9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06CAADC7-DE5B-47B4-AB2A-E9501459A2D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06CAADC7-DE5B-47B4-AB2A-E9501459A2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +118,7 @@ Global
 		{DD10D21A-D131-1D9C-33F9-406046E0C5B0} = {1BB6F634-2831-4496-83A6-BC6761DCEC8D}
 		{EE38A326-5DE8-AF09-9EB9-DF0878938783} = {EDCBFC49-2AEE-4BAF-9368-4409298C52FC}
 		{015CB06B-6CAE-209F-E050-21C3ACA5FE9F} = {985D39A7-5216-4945-8167-2FD0CB387BD8}
+		{06CAADC7-DE5B-47B4-AB2A-E9501459A2D1} = {D36CDFFD-3438-42E4-A7FF-88BA19AC4964}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81A62E71-9E04-4EFE-AD5C-23165375F8EF}

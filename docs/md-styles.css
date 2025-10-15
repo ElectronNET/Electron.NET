@@ -7073,15 +7073,15 @@ body {
     word-wrap: break-word;
 }
 
-body div, body p, body ul {
-    color: var(--font-color);
-    font-family: "Roboto", sans-serif !important;
-    line-height: 1.5 !important;
-    font-size: 15px !important;
-    /*  -ms-text-size-adjust: 100%;
+    body div, body p, body ul {
+        color: var(--font-color);
+        font-family: "Roboto", sans-serif !important;
+        line-height: 1.5 !important;
+        font-size: 15px !important;
+        /*  -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;*/
-    word-wrap: break-word;
-}
+        word-wrap: break-word;
+    }
 
 body, p, blockquote, ul, ol, dl, table, pre, code, tr {
     color: var(--font-color);
@@ -7218,19 +7218,6 @@ article li {
 }
 
 
-/* NAVBAR */
-
-.navbar-brand > img {
-    color: var(--header-ft-color);
-}
-
-b, optgroup, strong {
-    font-weight: 500;
-}
-
-.article img {
-    margin: 0.6rem 0;
-}
 
 /* SIDEBAR */
 
@@ -7854,17 +7841,17 @@ H2.card-title {
 }
 
 body {
-padding: 20px !important;
+    padding: 20px !important;
 }
 
-body > div:first-child > hr + p {
-    display: none;
-}
+    body > div:first-child > hr + p {
+        display: none;
+    }
 
-body > div:first-child  hr  {
-    display: none;
-}
+    body > div:first-child hr {
+        display: none;
+    }
 
-body > div:first-child {
-    margin-top: 20px;
-}
+    body > div:first-child {
+        margin-top: 20px;
+    }
