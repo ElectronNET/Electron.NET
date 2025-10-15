@@ -41,7 +41,7 @@ Array of available printers.
 #### 🧊 `Task<string> GetUrl()`
 Get the URL of the loaded page.
 
-It's usefull if a web-server redirects you and you need to know where it redirects. For instance, It's useful in case of Implicit Authorization.
+It's useful if a web-server redirects you and you need to know where it redirects. For instance, It's useful in case of Implicit Authorization.
 
 **Returns:**
 

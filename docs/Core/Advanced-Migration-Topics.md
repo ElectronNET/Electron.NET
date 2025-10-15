@@ -29,7 +29,7 @@ Configure custom ASP.NET ports through MSBuild metadata:
 
 **Update package.json:**
 
-This shows the delevant changes only: All shown versions are the new required minimum versions.
+This shows the relevant changes only: All shown versions are the new required minimum versions.
 
 ```json
 {

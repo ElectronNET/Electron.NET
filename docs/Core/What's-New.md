@@ -21,7 +21,7 @@ The new package architecture reflects a clearer separation of concerns:
 - **ElectronNET.Core.AspNet** - ASP.NET-specific runtime components
 
 This modular approach allows projects to include only what they need while maintaining the flexibility to scale from simple console applications to complex web applications.  
-More about the avaílable nuget packages: [Package Description](../RelInfo/Package-Description.md).
+More about the available nuget packages: [Package Description](../RelInfo/Package-Description.md).
 
 ## Beyond ASP.NET: Console Application Support
 

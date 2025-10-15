@@ -8,7 +8,7 @@
 # Electron.NET Core
 
 - [What's new?](Core/What's-New.md)
-- [Migration Guiide](Core/Migration-Guide.md)
+- [Migration Guide](Core/Migration-Guide.md)
 - [Advanced Migration](Core/Advanced-Migration-Topics.md)
 
 # Getting Started
