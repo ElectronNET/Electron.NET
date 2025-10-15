@@ -3,6 +3,7 @@
 # Wiki
 
 - [Home](Home.md)
+- [About this Project](About.md)
 
 # Electron.NET Core
 
