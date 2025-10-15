@@ -34,19 +34,16 @@ Electron.NET Core is a complete modernization of Electron.NET that eliminates th
 
 ## 🛠 System Requirements
 
-- **.NET 8.0** or later
-- **Node.js 22.x** or later
-- **Visual Studio 2022** (recommended) or other .NET IDE
-- **WSL2** (for Linux development on Windows)
+See [System Requirements](GettingStarted/System-Requirements.md).
 
 ## 💡 Key Benefits
 
-✅ **No CLI Tools Required** - Everything works through Visual Studio
-✅ **Console App Support** - Use any HTML/JS source, not just ASP.NET
-✅ **True Cross-Platform** - Build Linux apps from Windows
-✅ **Modern Debugging** - Hot Reload and ASP.NET-first debugging
-✅ **Flexible Packaging** - Choose any Electron version
-✅ **MSBuild Integration** - Leverages .NET's build system
+✅ **No CLI Tools Required** - Everything works through Visual Studio  
+✅ **Console App Support** - Use any HTML/JS source, not just ASP.NET  
+✅ **True Cross-Platform** - Build Linux apps from Windows  
+✅ **Modern Debugging** - Hot Reload and ASP.NET-first debugging  
+✅ **Flexible Packaging** - Choose any Electron version  
+✅ **MSBuild Integration** - Leverages .NET's build system  
 
 ## 🚦 Getting Started
 
@@ -58,4 +55,5 @@ New to ElectronNET.Core? Start here:
 
 ## 🤝 Contributing
 
-Found an issue or want to improve the documentation? Contributions are welcome! The wiki is auto-generated from the `/docs` folder in the [GitHub repository](https://github.com/ElectronNET/Electron.NET).
+Found an issue or want to improve the documentation? Contributions are welcome!   
+The wiki is auto-generated from the `/docs` folder in the [GitHub repository](https://github.com/ElectronNET/Electron.NET).

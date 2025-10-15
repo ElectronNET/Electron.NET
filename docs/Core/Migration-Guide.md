@@ -16,13 +16,13 @@ Before starting the migration:
 
 **Uninstall old packages:**
 ```powershell
-PM> Uninstall-Package ElectronNET.API
+dotnet remove package  ElectronNET.API
 ```
 
 **Install new packages:**
 ```powershell
-PM> Install-Package ElectronNET.Core
-PM> Install-Package ElectronNET.Core.AspNet  # For ASP.NET projects
+dotnet add package ElectronNET.Core
+dotnet add package ElectronNET.Core.AspNet  # For ASP.NET projects
 ```
 
 > **Note**: The API package is automatically included as a dependency of `ElectronNET.Core`. See [Package Description](../RelInfo/Package-Description.md) for details about the package structure.

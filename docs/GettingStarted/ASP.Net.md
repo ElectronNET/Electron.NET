@@ -12,7 +12,11 @@ See [System Requirements](../GettingStarted/System-Requirements.md).
 
 ### 1. Create ASP.NET Core Project
 
-Create a new ASP.NET Core Web App in Visual Studio:
+#### Visual Studio
+
+Create a new ASP.NET Core Web App in Visual Studio by selecting **New Project** and choosing one of the ASP.NET Core project templates.
+
+#### From the command line
 
 ```bash
 dotnet new webapp -n MyElectronWebApp
@@ -21,14 +25,20 @@ cd MyElectronWebApp
 
 ### 2. Install NuGet Packages
 
+#### Visual Studio
+
+Right-click the solution and select **Manage Nuget Packages**. 
+Finr and install `ElectronNET.Core` as well as `ElectronNET.Core.AspNet`.
+
+#### From the command line
+
 ```powershell
-PM> Install-Package ElectronNET.Core
-PM> Install-Package ElectronNET.Core.AspNet
+dotnet add package ElectronNET.Core
+dotnet add package ElectronNET.Core.AspNet
 ```
-  
 
 > [!Note]  
-> `ElectronNET.Core.AspNet` provides ASP.NET-specific runtime components and should be used alongside `ElectronNET.Core`.
+> The API package is automatically included as a dependency of `ElectronNET.Core`.
 
 
 ### 3. Configure Program.cs

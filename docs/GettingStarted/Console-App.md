@@ -22,7 +22,11 @@ See [System Requirements](../GettingStarted/System-Requirements.md).
 
 ### 1. Create Console Application
 
-Create a new Console Application project in Visual Studio:
+#### Visual Studio
+
+Create a new console application in Visual Studio by selecting **New Project** and choosing one of the project templates for console apps.
+
+#### From the command line
 
 ```bash
 dotnet new console -n MyElectronApp
@@ -32,7 +36,7 @@ cd MyElectronApp
 ### 2. Install NuGet Packages
 
 ```powershell
-PM> Install-Package ElectronNET.Core
+dotnet add package ElectronNET.Core
 ```
 
 > [!Note]  

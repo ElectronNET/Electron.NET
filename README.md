@@ -41,9 +41,9 @@ Also you should have installed:
 - Install the following two nuget packages:
 
 ```ps1
-PM> Install-Package ElectronNET.Core
+dotnet add package ElectronNET.Core
 
-PM> Install-Package ElectronNET.Core.AspNet
+dotnet add package ElectronNET.Core.AspNet
 ```
 
 ### Enable Electron.NET on Startup

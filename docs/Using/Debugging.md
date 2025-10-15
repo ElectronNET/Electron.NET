@@ -123,8 +123,14 @@ Add the debugging profiles to `Properties/launchSettings.json`:
 When switching between Windows and WSL debugging:
 
 1. **Right-click your project** in Solution Explorer
-2. **Select "Edit Project File"**
-3. **Update the RuntimeIdentifier**:
+2. Select **Properties**
+3. Adjust the Runtime Identifier
+
+
+Without Visual Studio:
+
+1. **Edit** the .csproj file
+2. **Update the RuntimeIdentifier**:
 
 ```xml
 <!-- For Windows debugging -->

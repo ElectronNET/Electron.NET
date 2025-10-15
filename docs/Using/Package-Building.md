@@ -9,13 +9,6 @@ The publishing process differs slightly between ASP.NET and console applications
 - **ASP.NET Apps** - Use folder publishing with SelfContained=true
 - **Console Apps** - Use folder publishing with SelfContained=false
 
-## 📋 Prerequisites
-
-Before publishing, ensure you have:
-
-- **Node.js 22.x** installed
-- **RuntimeIdentifier** set correctly for your target platform
-- **Project configured** for Release builds
 
 ## 🚀 Publishing Process
 
@@ -126,7 +119,7 @@ The publish process will:
 > [!NOTE]  
 > When running publish for a Linux configuration on Windows, Electron.NET will automatically use WSL for the platform-specific steps.
 
-**After publishing**, build the final package, the final results will be in 
+**After publishing**, the final results will be in 
 
 `publish\Release\netx.0\xxx-xxx\`
 
