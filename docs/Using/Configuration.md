@@ -70,6 +70,21 @@ Since electron builder still expects a `package.json` file to exist, ElectronNET
 }
 ```
 
+### Node.js Integration
+
+Electron.NET requires Node.js integration to be enabled for IPC to function. If you are not using the IPC functionality you can disable Node.js integration like so:
+
+```csharp
+WebPreferences wp = new WebPreferences();
+wp.NodeIntegration = false;
+BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
+{
+    WebPreferences = wp
+};
+
+```
+
+
 
 ## 🚀 Next Steps
 

@@ -131,6 +131,12 @@ The publish process will:
 `publish\Release\netx.0\xxx-xxx\`
 
 
+## MacOS
+
+> [!NOTE]
+> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
+
+
 ## 🚀 Next Steps
 
 - **[Startup Methods](Startup-Methods.md)** - Understanding different launch modes for packaged apps

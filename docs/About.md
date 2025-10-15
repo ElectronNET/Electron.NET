@@ -6,6 +6,12 @@ Electron.NET has been developed by a small number of people in the hope that it 
 
 Support for this project in all forms is very welcome, no matter whether in form of code contributions or donations.
 
+## 💬 Community
+
+[![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+Besides the chat on Gitter and the issues [discussed here](https://github.com/ElectronNET/Electron.NET/issues) you can also use [StackOverflow](https://stackoverflow.com/questions/tagged/electron.net) with the tag `electron.net`.
+
 
 ## 🙋‍♀️🙋‍♂ Contributing
 
@@ -40,17 +46,6 @@ Any support appreciated! 🍻
 See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/graphs/contributors) who participated in this project.
   
 
-## 🧪 Working with this Repo
-
-This video provides an introduction to development for Electron.NET: [Electron.NET - Contributing Getting Started](https://youtu.be/Po-saU_Z6Ws)  
-  
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the build scripts (.cmd or .ps1 for Windows, the .sh for macOS/Linux).
-
-If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
-
-The problem working with this repository is, that NuGet has a pretty aggressive cache, see [here for further information](https://github.com/ElectronNET/Electron.NET/wiki).
-
-
 ## 🎉 License
 
-MIT-licensed. See [LICENSE](./LICENSE) for details.
+MIT-licensed. See [LICENSE](https://github.com/ElectronNET/Electron.NET?tab=MIT-1-ov-file#readme) for details.

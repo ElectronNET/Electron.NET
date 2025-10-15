@@ -90,11 +90,25 @@ If you want to launch a specific URL, you can retrieve the actual ASP.NET port f
 For projects using the traditional `Startup.cs` pattern, please see "Traditional ASP.NET Core" in the [Migration Guide](../Core/Migration-Guide.md).
 
 
+### 5. Dependency Injection
+
+ElectronNET.API can be added to your DI container within the `Startup` class. All of the modules available in Electron will be added as Singletons.
+
+```csharp
+using ElectronNET.API;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddElectron();
+}
+```
+
+
 ## 🚀 Next Steps
 
-- **[Debugging](Debugging.md)** - Learn about ASP.NET debugging features
-- **[Package Building](Package-Building.md)** - Create distributable packages
-- **[Startup Methods](Startup-Methods.md)** - Understanding launch scenarios
+- **[Debugging](../Using/Debugging.md)** - Learn about ASP.NET debugging features
+- **[Package Building](../Using/Package-Building.md)** - Create distributable packages
+- **[Startup Methods](../Using/Startup-Methods.md)** - Understanding launch scenarios
 
 ## 💡 Benefits of ASP.NET + Electron
 
