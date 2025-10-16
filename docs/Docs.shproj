@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>06caadc7-de5b-47b4-ab2a-e9501459a2d1</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="About\Azure\**" />
+    <Compile Remove="About\BuildBot\**" />
+    <Compile Remove="images\AzureDevOps\**" />
+    <Compile Remove="images\visualization\**" />
+    <Compile Remove="schema_printing\**" />
+    <EmbeddedResource Remove="About\Azure\**" />
+    <EmbeddedResource Remove="About\BuildBot\**" />
+    <EmbeddedResource Remove="images\AzureDevOps\**" />
+    <EmbeddedResource Remove="images\visualization\**" />
+    <EmbeddedResource Remove="schema_printing\**" />
+    <None Remove="About\Azure\**" />
+    <None Remove="About\BuildBot\**" />
+    <None Remove="images\AzureDevOps\**" />
+    <None Remove="images\visualization\**" />
+    <None Remove="schema_printing\**" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project=".docproj\DocProj.props" />
+  <Import Project=".docproj\DocProj.targets" />
+</Project>

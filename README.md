@@ -8,7 +8,7 @@
 
 ElectronNET.Core represents a fundamental modernization of Electron.NET, addressing years of accumulated pain points while preserving full API compatibility. This isn't just an update—it's a complete rethinking of how .NET developers build and debug cross-platform desktop applications with Electron.
 
-Read more: [**What's New in ElectronNET.Core**](WHATS_NEW.md)
+Read more: [**What's New in ElectronNET.Core**](wiki/What's-New)
 
 
 Build cross platform desktop applications with .NET 6/8 - from console apps to ASP.Net Core (Razor Pages, MVC) to Blazor
@@ -41,9 +41,9 @@ Also you should have installed:
 - Install the following two nuget packages:
 
 ```ps1
-PM> Install-Package ElectronNET.Core
+dotnet add package ElectronNET.Core
 
-PM> Install-Package ElectronNET.Core.AspNet
+dotnet add package ElectronNET.Core.AspNet
 ```
 
 ### Enable Electron.NET on Startup
@@ -85,15 +85,13 @@ Just press F5 in Visual Studio or use dotnet for debugging.
 
 ## 📔 Usage of the Electron API
 
-A complete documentation will follow. Until then take a look in the source code of the sample application:  
-[Electron.NET API Demos](https://github.com/ElectronNET/electron.net-api-demos)  
+A complete documentation is available on the Wiki.
 
 In this YouTube video, we show you how you can create a new project, use the Electron.NET API, debug a application and build an executable desktop app for Windows: [Electron.NET - Getting Started](https://www.youtube.com/watch?v=nuM6AojRFHk)  
   
+  > [!NOTE]  
+  > The video hasn't been updated for the changes in ElectronNET.Core, so it is partially outdated.
 
-### Note
-
-> macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
 
 ## 👨‍💻 Authors
@@ -110,15 +108,6 @@ See also the list of [contributors](https://github.com/ElectronNET/Electron.NET/
 Feel free to submit a pull request if you find any bugs (to see a list of active issues, visit the [Issues section](https://github.com/ElectronNET/Electron.NET/issues).
 Please make sure all commits are properly documented.
 
-## 🧪 Working with this Repo
-
-This video provides an introduction to development for Electron.NET: [Electron.NET - Contributing Getting Started](https://youtu.be/Po-saU_Z6Ws)  
-  
-This repository consists of the main parts (API & CLI) and it's own "playground" ASP.NET Core application. Both main parts produce local NuGet packages, that are versioned with 99.0.0. The first thing you will need is to run one of the build scripts (.cmd or .ps1 for Windows, the .sh for macOS/Linux).
-
-If you look for pure __[demo projects](https://github.com/ElectronNET)__ checkout the other repositories. 
-
-The problem working with this repository is, that NuGet has a pretty aggressive cache, see [here for further information](https://github.com/ElectronNET/Electron.NET/wiki).
 
 ## 🙏 Donate
 
@@ -140,39 +129,4 @@ MIT-licensed. See [LICENSE](./LICENSE) for details.
 **Enjoy!**
     
 
-
-### Node.js Integration
-
-Electron.NET requires Node.js integration to be enabled for IPC to function. If you are not using the IPC functionality you can disable Node.js integration like so:
-
-```csharp
-WebPreferences wp = new WebPreferences();
-wp.NodeIntegration = false;
-BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
-{
-    WebPreferences = wp
-};
-
-```
-
-### Dependency Injection
-
-ElectronNET.API can be added to your DI container within the `Startup` class. All of the modules available in Electron will be added as Singletons.
-
-```csharp
-using ElectronNET.API;
-
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddElectron();
-}
-```
-
-## 💬 Community
-
-[![Gitter](https://badges.gitter.im/ElectronNET/community.svg)](https://gitter.im/ElectronNET/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
-Besides the chat on Gitter and the issues [discussed here](https://github.com/ElectronNET/Electron.NET/issues) you can also use [StackOverflow](https://stackoverflow.com/questions/tagged/electron.net) with the tag `electron.net`.
-
-If you want to sponsor the further maintenance and development of this project [see the donate section](#🙏-donate).
 
