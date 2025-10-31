@@ -103,7 +103,7 @@ class Build : NukeBuild
             VersionPostFix = $"-pre";
         }
 
-        Log.Information("Building version: {Version}", Version);
+        Log.Information("Building version {Version} with postfix {VersionPostFix}", Version, VersionPostFix);
     }
 
     Target Clean => _ => _
