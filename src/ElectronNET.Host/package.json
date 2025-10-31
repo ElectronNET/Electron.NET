@@ -21,7 +21,7 @@
   },
   "devDependencies": {
   "@types/node": "^22.18",
-  "electron": "^30.0.3",
+  "electron": "^35.7.5",
   "eslint": "^9.37.0",
   "typescript": "^5.9.3"
   }
