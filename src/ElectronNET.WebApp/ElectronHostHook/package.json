@@ -19,6 +19,6 @@
     "dependencies": {
     "archiver-utils": "^2.1.0",
     "socket.io": "^4.8.1",
-    "exceljs": "^1.10.0"
+    "exceljs": "^4.4.0"
     }
 }
