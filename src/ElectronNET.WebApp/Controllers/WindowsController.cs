@@ -11,7 +11,7 @@ namespace ElectronNET.WebApp.Controllers
         {
             if (HybridSupport.IsElectronActive)
             {
-                string viewPath = $"http://localhost:{BridgeSettings.WebPort}/windows/demowindow";
+                string viewPath = $"http://localhost:{ElectronNetRuntime.AspNetWebPort}/windows/demowindow";
 
                 Electron.IpcMain.On("new-window", async (args) =>
                 {
@@ -34,7 +34,7 @@ namespace ElectronNET.WebApp.Controllers
                     browserWindow.OnFocus += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-focus");
                     browserWindow.OnBlur += () => Electron.IpcMain.Send(mainBrowserWindow, "listen-to-window-blur");
 
-                    Electron.IpcMain.On("listen-to-window-set-focus", (x) => browserWindow.Focus());
+                    _ = Electron.IpcMain.On("listen-to-window-set-focus", (x) => browserWindow.Focus());
                 });
 
                 Electron.IpcMain.On("frameless-window", async (args) =>

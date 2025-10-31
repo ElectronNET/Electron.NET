@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Rule Name="Build" 
+      DisplayName="Build" 
+      OverrideMode="Extend"
+      Order="300" 
+      PageTemplate="generic" 
+      xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <Rule.Categories>
+        <Category Name="General"
+                  DisplayName="General" />
+
+        <Category Name="ErrorsAndWarnings"
+                  Description="Configures the error and warning options for the build process."
+                  DisplayName="Errors and warnings" />
+
+        <Category Name="Output"
+                  Description="Configures the output options for the build process."
+                  DisplayName="Output" />
+
+        <Category Name="Events"
+                  Description="Configures custom events that run before and after build."
+                  DisplayName="Events" />
+
+        <Category Name="Publish"
+                  DisplayName="Publish"
+                  Description="Configures options in the publish process." />
+    
+        <Category Name="StrongNaming"
+                  Description="Configures strong name signing of build outputs."
+                  DisplayName="Strong naming" />
+
+        <Category Name="Advanced"
+                  DisplayName="Advanced"
+                  Description="Advanced settings for the application." />
+    </Rule.Categories>
+
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="ElectronNetCommon" HasConfigurationCondition="False" />
+  </Rule.DataSource>
+
+  <!--General Category -->
+
+  <DynamicEnumProperty Name="PlatformTarget"  Visible="False"
+                       DisplayName="Platform target"
+                       Description="Specifies the processor to be targeted by the output file. Choose 'Any CPU' to specify that any processor is acceptable, allowing the application to run on the broadest range of hardware."
+                       HelpUrl="https://go.microsoft.com/fwlink/?linkid=2147129"
+                       Category="General"
+                       EnumProvider="PlatformTargetEnumProvider"
+                       MultipleValuesAllowed="False">
+  </DynamicEnumProperty>
+
+
+  <StringProperty Name="BaseOutputPath"  Visible="False"
+                  DisplayName="Base output path"
+                  Description="Specifies the base location for the project's output during build. Subfolders will be appended to this path to differentiate project configuration."
+                  Category="Output"
+                  Subtype="directory">
+  </StringProperty>
+
+ 
+</Rule>

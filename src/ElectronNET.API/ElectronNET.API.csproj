@@ -1,47 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <PackageOutputPath>..\..\artifacts</PackageOutputPath>
-    <PackageId>ElectronNET.API</PackageId>
-    <Authors>Gregor Biswanger, Florian Rappl</Authors>
-    <Company />
-    <Product>Electron.NET</Product>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/ElectronNET/Electron.NET/</PackageProjectUrl>
-    <Description>Building cross platform electron based desktop apps with .NET Core and ASP.NET Core.
-This package contains the API to access the "native" electron API.</Description>
-    <RepositoryUrl>https://github.com/ElectronNET/Electron.NET/</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageTags>electron aspnetcore</PackageTags>
-    <PackageReleaseNotes>Changelog: https://github.com/ElectronNET/Electron.NET/blob/main/Changelog.md</PackageReleaseNotes>
-    <PackageIcon>PackageIcon.png</PackageIcon>
-    <Version>99.0.0.0</Version>
+    <PackageId>$(PackageNamePrefix).API</PackageId>
+    <Title>$(PackageId)</Title>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Nullable>disable</Nullable>
+    <Description>$(DescriptionFirstPart) This package contains the API to access the "native" electron API.</Description>
+    <RootNamespace>ElectronNET</RootNamespace>
+    <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ElectronNET.API.csproj.DotSettings" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="$(ProjectDir)devCleanup.cmd" IgnoreExitCode="true" />
-  </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' != 'Windows_NT'">
-    <Exec Command="$(ProjectDir)devCleanup.sh" IgnoreExitCode="true" />
-  </Target>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SocketIOClient" Version="3.0.8" />
-    <PackageReference Include="SocketIOClient.Newtonsoft.Json" Version="3.0.7" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="SocketIO.Serializer.NewtonsoftJson" Version="3.1.2" />
+    <PackageReference Include="SocketIOClient" Version="3.1.2" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.16" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ElectronNET.AspNet" />
+    <InternalsVisibleTo Include="ElectronNET.Core.AspNet" />
   </ItemGroup>
 </Project>

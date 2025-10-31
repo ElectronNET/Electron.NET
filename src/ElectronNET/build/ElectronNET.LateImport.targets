@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+ <!--<Import Project="$(MSBuildThisFileDirectory)ElectronNET.Tasks.targets"  />-->
+  <UsingTask TaskName="ElectronNET.Build.ReplaceTemplateTask"
+             AssemblyFile="$(MSBuildThisFileDirectory)ElectronNET.Build.dll" />
+
+  <UsingTask TaskName="ElectronNET.Build.DumpItemMetadataTask"
+             AssemblyFile="$(MSBuildThisFileDirectory)ElectronNET.Build.dll" />
+
+  <UsingTask TaskName="ElectronNET.Build.RemoveEnvironmentVariables"
+             AssemblyFile="$(MSBuildThisFileDirectory)ElectronNET.Build.dll" />
+
+
+  <!-- Adjust the properties of items in the ElectronHostHook folder (if present) -->
+
+  <ItemGroup>
+    <Content Update="ElectronHostHook\package.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="ElectronHostHook\package-lock.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="ElectronHostHook\tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ElectronHostHook\*.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="ElectronHostHook\*.ts" />
+  </ItemGroup>
+
+  <!-- Static Evaluation -->
+  <ItemGroup>
+    <ElectronCustomHookTsFiles Include="ElectronHostHook\*.ts" />
+  </ItemGroup>
+
+  <!-- Create variables for our output paths -->
+  <PropertyGroup>
+    <ElectronSourceFilesPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\xxxxElectronNET.Host'))</ElectronSourceFilesPath>
+    <ElectronSourceFilesPath Condition="!Exists($(ElectronSourceFilesPath))">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\.electron'))</ElectronSourceFilesPath>
+    <ElectronDirName>.electron</ElectronDirName>
+    <ElectronSplashScreenFileName Condition="'$(ElectronSplashScreen)' != ''">$([System.IO.Path]::GetFileName($(ElectronSplashScreen)))</ElectronSplashScreenFileName>
+    <ElectronIconFileName Condition="'$(ElectronIcon)' != ''">$([System.IO.Path]::GetFileName($(ElectronIcon)))</ElectronIconFileName>
+  </PropertyGroup>
+
+
+  <!-- Targets -->
+
+  <Target Name="ElectronBeforeClean" AfterTargets="BeforeClean" DependsOnTargets="ElectronResolvePaths">
+    <ItemGroup>
+      <Clean Include="$(ElectronOutDir)**" />
+    </ItemGroup>
+
+    <!--<Message Text="ElectronBeforeClean - Clean Files: @(Clean)" Importance="High" />-->
+  </Target>
+
+  <Target Name="ElectronClean" AfterTargets="CoreClean" DependsOnTargets="ElectronResolvePaths">
+
+    <RemoveDir Directories="$(ElectronOutDir)" />
+
+  </Target>
+
+  <Target Name="ElectronSetPaths">
+
+    <PropertyGroup>
+      <ElectronOutDir>$(OutDir)$(ElectronDirName)\</ElectronOutDir>
+      <ElectronTargetDir>$(TargetDir)$(ElectronDirName)\</ElectronTargetDir>
+      <ElectronIntermediateOutputPath>$(IntermediateOutputPath)$(ElectronDirName)\</ElectronIntermediateOutputPath>
+      <ElectronIntermediatePackageJson>$(ElectronIntermediateOutputPath)package.json</ElectronIntermediatePackageJson>
+    </PropertyGroup>
+
+  </Target>
+
+ <Target Name="EnsureElectronBuilderJson" DependsOnTargets="ResolveProjectReferences" >
+
+   <PropertyGroup>
+     <_ProjectPropertiesFolder>$(MSBuildProjectDirectory)\Properties\</_ProjectPropertiesFolder>
+     <_ElectronBuilderExpectedPath>$(_ProjectPropertiesFolder)$(ElectronBuilderJson)</_ElectronBuilderExpectedPath>
+     <_NeedCopyElectronBuilderFile>True</_NeedCopyElectronBuilderFile>
+     <_NeedCopyElectronBuilderFile Condition="Exists($(_ElectronBuilderExpectedPath))">False</_NeedCopyElectronBuilderFile>
+   </PropertyGroup>
+
+   <Message Text="EnsureElectronBuilderJson: $(_ProjectPropertiesFolder)" Importance="High" />
+   <Message Text="EnsureElectronBuilderJson: $(_ElectronBuilderExpectedPath)" Importance="High" />
+   <Message Text="EnsureElectronBuilderJson: $(_NeedCopyElectronBuilderFile)" Importance="High" />
+
+   <Copy Condition="'$(_NeedCopyElectronBuilderFile)' == 'True'" SourceFiles="$(MSBuildThisFileDirectory)electron-builder.json" DestinationFiles="$(_ProjectPropertiesFolder)$(ElectronBuilderJson)" />
+
+ </Target>
+
+
+  <!-- This is also run at design time, each time when a property of the project is changed -->
+  <Target Name="ElectronCreatePackageJson" DependsOnTargets="ResolveProjectReferences;ElectronSetPaths">
+
+    <Message Text="Creating package.json from template..." Importance="High" />
+    <Message Text="OutDir: $(OutDir)" Importance="High" />
+
+    <!-- This makes sure the directories get created in PrepareForBuild -->
+    <ItemGroup>
+      <CreateDirectory Include="$(ElectronIntermediateOutputPath)" />
+      <CreateDirectory Include="$(ElectronOutDir)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <ElectronSingleInstance Condition="'$(ElectronSingleInstance)' == ''">true</ElectronSingleInstance>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <ElectronTargetName Condition="'$(ElectronTargetName)' == ''">$(TargetName)</ElectronTargetName>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <!-- Version may have only 3 parts -->
+      <Version>$([System.Text.RegularExpressions.Regex]::Replace('$(Version)', '^(\d+\.\d+\.\d+)(?:\.\d+)?(.*)$', '$1$2'))</Version>
+      <!-- Electron Builder uses title for the installation dir on Linux, but it should not have spaces -->
+      <LinuxPrefix>linux</LinuxPrefix>
+      <ElectronTitle>$(Title)</ElectronTitle>
+      <ElectronTitle  Condition="'$(RuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'">$(Title.Replace(' ', '-'))</ElectronTitle>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <TemplateProperty Include="PackageId" Value="$(PackageId)" />
+      <TemplateProperty Include="Title" Value="$(Title)" />
+      <TemplateProperty Include="ElectronTitle" Value="$(ElectronTitle)" />
+      <TemplateProperty Include="Version" Value="$(Version)" />
+      <TemplateProperty Include="Description" Value="$(Description)" />
+      <TemplateProperty Include="ProjectUrl" Value="$(ProjectUrl)" />
+      <TemplateProperty Include="License" Value="$(License)" />
+      <TemplateProperty Include="Company" Value="$(Company)" />
+      <TemplateProperty Include="ElectronSplashScreen" Value="$(ElectronSplashScreenFileName)" />
+      <TemplateProperty Include="ElectronVersion" Value="$(ElectronVersion)" />
+      <TemplateProperty Include="TargetName" Value="$(ElectronTargetName)" />
+      <TemplateProperty Include="ElectronSingleInstance" Value="$(ElectronSingleInstance)" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(ElectronIntermediateOutputPath)" />
+
+    <ReplaceTemplateTask TemplateFile="$(MSBuildThisFileDirectory)package.template.json"
+                         OutputFile="$(ElectronIntermediatePackageJson)"
+                         TemplateProperties="@(TemplateProperty)" />
+  </Target>
+
+
+  <Target Name="ElectronSetIntermediatePublishDir"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ElectronResolvePaths">
+
+    <PropertyGroup  Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
+      <_NonIntermediatePublishDir>$(PublishDir)</_NonIntermediatePublishDir>
+      <PublishUrl>$(PublishDir)</PublishUrl>
+      <PublishDir>$(IntermediateOutputPath)PubTmp\</PublishDir>
+    </PropertyGroup>
+
+    <RemoveDir Directories="$(PublishDir);$(PublishUrl)"   Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
+    <MakeDir Directories="$(PublishDir);$(PublishUrl)"   Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
+
+  </Target>
+
+
+  <Target Name="ElectronResolvePaths"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="ResolveProjectReferences;ElectronCreatePackageJson;EnsureElectronBuilderJson;ElectronSetPaths">
+
+    <ItemGroup>
+      <ElectronCustomHookPackageJson Include="ElectronHostHook\package.json" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <ElectronHasCustomHookCode>false</ElectronHasCustomHookCode>
+      <ElectronHasCustomHookCode Condition="'@(ElectronCustomHookTsFiles->Count())' &gt; 1 AND '@(ElectronCustomHookPackageJson->Count())' == 1">true</ElectronHasCustomHookCode>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ElectronSourceFiles
+        Include="$(ElectronSourceFilesPath)\**\*.js;$(ElectronSourceFilesPath)\**\*.json;$(ElectronSourceFilesPath)\**\*.html"
+        Exclude="$(ElectronSourceFilesPath)\**\build-helper.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronSourceFiles Remove="$(ElectronSourceFilesPath)\ElectronHostHook\**" Condition="'$(ElectronHasCustomHookCode)' == 'true'" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronSourceFiles Update="@(ElectronSourceFiles)">
+        <Link>$(ElectronDirName)\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ElectronSourceFiles>
+    </ItemGroup>
+
+    <AssignTargetPath Files="@(ElectronSourceFiles)" RootFolder="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="AssignedFiles" ItemName="ElectronSourceFilesWithTargetPath" />
+    </AssignTargetPath>
+
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="@(ElectronSourceFilesWithTargetPath->'%(Identity)')"/>
+      <ContentWithTargetPath Include="@(ElectronSourceFilesWithTargetPath->'%(Identity)')"/>
+      <Content Include="@(ElectronSourceFiles->'%(Identity)')" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronCustomHookPackageJson Remove="@(ElectronCustomHookPackageJson)" Condition="'$(ElectronHasCustomHookCode)' != 'true'" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronCustomHookPackageJson Update="@(ElectronCustomHookPackageJson)" Condition="'$(ElectronHasCustomHookCode)' == 'true'" >
+        <TargetPath>$(ElectronDirName)\%(RelativeDir)%(FileName)%(Extension)</TargetPath>
+      </ElectronCustomHookPackageJson>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronIntermediatePackageJson Include="$(ElectronIntermediatePackageJson)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronIntermediatePackageJson Update="@(ElectronIntermediatePackageJson)" >
+        <TargetPath>$(ElectronDirName)\%(FileName)%(Extension)</TargetPath>
+      </ElectronIntermediatePackageJson>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ElectronPackageJsonFiles Include="@(ElectronCustomHookPackageJson)" />
+      <ElectronPackageJsonFiles Include="@(ElectronIntermediatePackageJson)" />
+    </ItemGroup>
+
+  </Target>
+
+
+  <!-- Run before GetTypeScriptOutputForPublishing to adjust the target directory -->
+  <Target Name="ElectronAdjustHostHookOutput" BeforeTargets="GetTypeScriptOutputForPublishing" DependsOnTargets="CompileTypeScriptWithTSConfig">
+
+    <ItemGroup>
+      <GeneratedJavascript Update="@(GeneratedJavascript)">
+        <DestinationRelativePath>$(ElectronDirName)\%(DestinationRelativePath)</DestinationRelativePath>
+        <TargetPath>$(ElectronDirName)\%(DestinationRelativePath)</TargetPath>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </GeneratedJavascript>
+    </ItemGroup>
+  </Target>
+
+
+  <Target Name="ElectronGetCopyToOutputDirectoryItems" BeforeTargets="GetCopyToOutputDirectoryItems">
+
+    <ItemGroup>
+      <!--<_ElectronFiles Include="$(ElectronIntermediatePackageJson)" />-->
+      <_ElectronFiles Include="$(ElectronSplashScreen)"  Condition="'$(ElectronSplashScreen)'!=''" />
+      <_ElectronFiles Include="$(ElectronIcon)"  Condition="'$(ElectronIcon)'!=''" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ElectronFiles Update="**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </_ElectronFiles>
+    </ItemGroup>
+
+    <Message Importance="High" Text="_ElectronFiles: @(_ElectronFiles)" />
+
+    <ItemGroup>
+      <_ElectronFilesToCopy Include="@(_ElectronFiles->'%(FullPath)')" />
+    </ItemGroup>
+
+    <Message Importance="High" Text="_ElectronFilesToCopy: @(_ElectronFilesToCopy)" />
+
+    <ItemGroup>
+      <_ElectronFilesToCopyWithTargetPath Include="@(_ElectronFilesToCopy)">
+        <TargetPath>$(ElectronDirName)\%(FileName)%(Extension)</TargetPath>
+      </_ElectronFilesToCopyWithTargetPath>
+    </ItemGroup>
+
+    <Message Text="_ElectronFilesToCopyWithTargetPath: @(_ElectronFilesToCopyWithTargetPath)" />
+    <Message Text="_ElectronFilesToCopyWithTargetPath: @(_ElectronFilesToCopyWithTargetPath->'%(TargetPath)')" />
+    <Message Text="_ElectronFilesToCopyWithTargetPath: @(_ElectronFilesToCopyWithTargetPath->'%(CopyToOutputDirectory)')" />
+
+    <!-- The _SourceItems properties are internal to Microsoft.Common.targets,
+         but necessary to use here because there is no public equivalent -->
+    <ItemGroup>
+      <AllItemsFullPathWithTargetPath                 Include="@(_ElectronFilesToCopyWithTargetPath)"/>
+      <_SourceItemsToCopyToOutputDirectoryIfDifferent Include="@(_ElectronFilesToCopyWithTargetPath)"/>
+    </ItemGroup>
+
+  </Target>
+
+  <Target Name="ElectronResetHostHook"
+          Inputs="@(ElectronCustomHookPackageJson)"
+          Outputs="@(ElectronCustomHookPackageJson->'$(OutDir)%(TargetPath)')"
+          AfterTargets="CopyFilesToOutputDirectory"
+          >
+
+    <PropertyGroup>
+      <ElectronHookTargetModuleDir>$(OutDir)$(ElectronDirName)\node_modules\electron-host-hook</ElectronHookTargetModuleDir>
+    </PropertyGroup>
+
+    <RemoveDir Directories="$(ElectronHookTargetModuleDir)" Condition="Exists($(ElectronHookTargetModuleDir))" />
+  </Target>
+
+
+  <Target Name="ElectronConfigureApp"
+          Inputs="@(ElectronPackageJsonFiles)"
+          Outputs="@(ElectronPackageJsonFiles->'$(OutDir)%(TargetPath)')"
+          AfterTargets="CopyFilesToOutputDirectory"
+          DependsOnTargets="ElectronResetHostHook"
+          >
+
+    <Copy SourceFiles="@(ElectronPackageJsonFiles)" DestinationFiles="@(ElectronPackageJsonFiles->'$(OutDir)%(TargetPath)')" >
+      <Output TaskParameter="CopiedFiles" ItemName="_CopiedFiles" />
+    </Copy>
+
+    <!--<Message Importance="High" Text="ElectronDumpInfo: _CopiedFiles" />
+    <DumpItemMetadataTask Items="@(_CopiedFiles)" />-->
+
+    <Touch Files="@(_CopiedFiles)" />
+
+    <PropertyGroup>
+      <ElectronOutputPath>$([System.IO.Path]::GetFullPath('$(ElectronOutDir)'))</ElectronOutputPath>
+      <LinuxPrefix>linux</LinuxPrefix>
+      <IsLinuxWsl>false</IsLinuxWsl>
+      <IsLinuxWsl Condition="'$(RuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
+      <_NpmCmd>npm install --no-bin-links</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
+
+    <!--<Message Importance="High" Text="ElectronConfigureApp: CopiedFiles - @(_CopiedFiles)" />-->
+
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="@(_CopiedFiles->Count()) > 0" />
+
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(_CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <!--<Exec Command="powershell -Command &quot;Start-Sleep -Seconds 10&quot;" />-->
+
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+  </Target>
+
+  <Target Name="BeforePublishElectronApp" BeforeTargets="PrepareForPublish">
+
+    <Message Importance="High" Text="BeforePublishElectronApp PublishDir: $(PublishDir)" />
+
+    <PropertyGroup>
+      <_OriginalPublishDir>$(PublishDir)</_OriginalPublishDir>
+      <PublishDir>$(_OriginalPublishDir)bin\</PublishDir>
+      <DeleteExistingFiles>true</DeleteExistingFiles>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="BeforePublishElectronApp PublishDir: $(PublishDir)" />
+
+  </Target>
+
+
+  <Target Name="ElectronFileSystemPublishClearItems" DependsOnTargets="_GatherFilesFromPublishIntermediateOutputPath">
+
+    <Message Importance="High" Text="_PublishIntermediateOutputPathFiles: @(_PublishIntermediateOutputPathFiles)" />
+    <Message Importance="High" Text="_ElectronFilesToCopyWithTargetPath: @(_ElectronFilesToCopyWithTargetPath->'%(TargetPath)')" />
+
+    <ItemGroup>
+      <_PublishIntermediateOutputPathFiles Remove="@(_PublishIntermediateOutputPathFiles)"></_PublishIntermediateOutputPathFiles>
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup>
+    <_ElectronPublishAppAfterTarget Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">AfterPublish</_ElectronPublishAppAfterTarget>
+    <_ElectronPublishAppAfterTarget Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">Publish</_ElectronPublishAppAfterTarget>
+  </PropertyGroup>
+
+  <Target Name="ElectronPublishApp" AfterTargets="$(_ElectronPublishAppAfterTarget)">
+
+    <PropertyGroup>
+      <PublishDir>$(_OriginalPublishDir)</PublishDir>
+      <PublishDir Condition="'$(_NonIntermediatePublishDir)' != ''">$(_NonIntermediatePublishDir)</PublishDir>
+      <ElectronPublishDir>$(_OriginalPublishDir)</ElectronPublishDir>
+    </PropertyGroup>
+
+
+    <PropertyGroup>
+      <!-- Default values -->
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
+
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86' OR '$(RuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm' OR '$(RuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
+    </PropertyGroup>
+
+    <RemoveEnvironmentVariables Variables="BUILD_BUILDNUMBER;BUILD_NUMBER;TRAVIS_BUILD_NUMBER;APPVEYOR_BUILD_NUMBER;CIRCLE_BUILD_NUM;CI_PIPELINE_IID" />
+
+    <Copy SourceFiles="@(ElectronPackageJsonFiles)" DestinationFiles="@(ElectronPackageJsonFiles->'$(ElectronPublishDir)bin\%(TargetPath)')" >
+      <Output TaskParameter="CopiedFiles" ItemName="CopiedFiles" />
+    </Copy>
+
+    <Copy SourceFiles="@(_ElectronFilesToCopyWithTargetPath)" DestinationFiles="@(_ElectronFilesToCopyWithTargetPath->'$(ElectronPublishDir)bin\%(TargetPath)')" >
+      <Output TaskParameter="CopiedFiles" ItemName="CopiedFiles" />
+    </Copy>
+
+    <Message Importance="High" Text="_ElectronFilesToCopyWithTargetPath: @(_ElectronFilesToCopyWithTargetPath)" />
+    <Message Importance="High" Text="CopiedFiles: @(CopiedFiles)" />
+
+
+    <Copy SourceFiles="Properties\$(ElectronBuilderJson)" DestinationFolder="$(ElectronPublishDir)">
+    </Copy>
+
+    <ItemGroup>
+      <ElectronPublishFilesToMove Include="$(ElectronPublishDir)bin\$(ElectronDirName)\**\*.*" />
+    </ItemGroup>
+    <Message Importance="High" Text="ElectronPublishFilesToMove: @(ElectronPublishFilesToMove)" />
+
+    <ItemGroup>
+      <ElectronPublishFilesToMove Update="@(ElectronPublishFilesToMove)" >
+        <MoveTargetPath>$(ElectronPublishDir)%(RecursiveDir)%(FileName)%(Extension)</MoveTargetPath>
+      </ElectronPublishFilesToMove>
+    </ItemGroup>
+
+    <!--<Message Importance="High" Text="ElectronDumpInfo: ElectronPublishFilesToMove" />
+    <DumpItemMetadataTask Items="@(ElectronPublishFilesToMove)" />-->
+
+    <Move SourceFiles="@(ElectronPublishFilesToMove)" DestinationFiles="@(ElectronPublishFilesToMove->'%(MoveTargetPath)')" />
+
+    <PropertyGroup>
+      <ElectronPublishDirFullPath>$([System.IO.Path]::GetFullPath('$(ElectronPublishDir)'))</ElectronPublishDirFullPath>
+      <ElectronPublishUrlFullPath>$([System.IO.Path]::GetFullPath('$(PublishUrl.TrimEnd(&quot;\&quot;))'))</ElectronPublishUrlFullPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <IsLinuxWsl>false</IsLinuxWsl>
+      <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
+      <_NpmCmd>npm install electron-builder@$(ElectronBuilderVersion) --save-dev </_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="ElectronPublishApp: ElectronPublishDirFullPath - $(ElectronPublishDirFullPath)" />
+
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+    <!-- Transform ElectronPublishUrlFullPath to a wslpath if IsLinuxWsl is true -->
+    <Exec Command="wsl wslpath '$(ElectronPublishUrlFullPath)'" ConsoleToMsBuild="true" Condition="'$(IsLinuxWsl)' == 'true'">
+      <Output TaskParameter="ConsoleOutput" PropertyName="ElectronPublishUrlFullPath" />
+    </Exec>
+
+    <PropertyGroup>
+      <ElectronPaParams></ElectronPaParams>
+      <ElectronPaParams Condition="'$(PackageId)' != ''">$(ElectronPaParams) -c.appId &quot;$(PackageId)&quot;</ElectronPaParams>
+      <ElectronPaParams Condition="'$(Version)' != ''">$(ElectronPaParams) -c.buildVersion &quot;$(Version)&quot;</ElectronPaParams>
+      <ElectronPaParams Condition="'$(Copyright)' != ''">$(ElectronPaParams) -c.copyright &quot;$(Copyright)&quot;</ElectronPaParams>
+      <ElectronPaParams>$(ElectronPaParams) -c.extraResources &quot;bin/**/*&quot;</ElectronPaParams>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
+    </PropertyGroup>
+
+    <!--<Message Importance="High" Text="ElectronDumpInfo: ElectronPublishUrlFullPath: $(ElectronPublishUrlFullPath)" />-->
+    <!--<Message Importance="High" Text="ElectronDumpInfo: _NpxCmd: $(_NpxCmd)" />-->
+
+    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="900000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+  </Target>
+
+ <Import Project="$(MSBuildThisFileDirectory)ElectronNET.DesignTime.targets" Condition="'$(MSBuildRuntimeType)' == 'Full' and '$(BuildingInsideVisualStudio)' == 'true'"/>
+
+</Project>

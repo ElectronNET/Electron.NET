@@ -266,3 +266,4 @@ __pycache__/
 
 # Nuke build tool
 .nuke/temp
+/publish.cmd

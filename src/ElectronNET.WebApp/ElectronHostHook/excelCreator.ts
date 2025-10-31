@@ -1,9 +1,8 @@
-import * as Excel from "exceljs";
 import { Workbook, Worksheet } from "exceljs";
 
 export class ExcelCreator {
     async create(path: string): Promise<string> {
-        const workbook: Workbook = new Excel.Workbook();
+        const workbook: Workbook = new Workbook();
         const worksheet: Worksheet = workbook.addWorksheet("My Sheet");
         worksheet.columns = [
             { header: "Id", key: "id", width: 10 },
@@ -15,6 +14,6 @@ export class ExcelCreator {
 
         await workbook.xlsx.writeFile(path + "\\sample.xlsx");
 
-        return "Excel file created!";
+        return "Excel file created YAY YAY!";
     }
 }

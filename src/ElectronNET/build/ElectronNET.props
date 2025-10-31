@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="ElectronNetCommon">
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ElectronSingleInstance>true</ElectronSingleInstance>
+    <ElectronSplashScreen></ElectronSplashScreen>
+    <ElectronIcon></ElectronIcon>
+    <PackageIcon></PackageIcon>
+    <PackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</PackageId>
+    <ElectronBuilderJson>electron-builder.json</ElectronBuilderJson>
+    <Title>$(MSBuildProjectName)</Title>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <AccelerateBuildsInVisualStudio>false</AccelerateBuildsInVisualStudio>
+    <ImportNuGetBuildTasksPackTargetsFromSdk>false</ImportNuGetBuildTasksPackTargetsFromSdk>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CustomAfterDirectoryBuildTargets>$(MSBuildThisFileDirectory)ElectronNET.LateImport.targets</CustomAfterDirectoryBuildTargets>
+  </PropertyGroup>  
+
+  <PropertyGroup>
+    <CollectUpToDateCheckBuiltDesignTimeDependsOn>$(CollectUpToDateCheckBuiltDesignTimeDependsOn);ElectronCollectUpToDateCheckBuiltDesignTime</CollectUpToDateCheckBuiltDesignTimeDependsOn>
+    <FileSystemPublishDependsOn>$(FileSystemPublishDependsOn);ElectronFileSystemPublishClearItems</FileSystemPublishDependsOn>
+  </PropertyGroup>  
+
+</Project>

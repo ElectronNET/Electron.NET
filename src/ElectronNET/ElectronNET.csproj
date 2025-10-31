@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <PackageOutputPath>..\..\artifacts</PackageOutputPath>
+    <PackageId>$(PackageNamePrefix)</PackageId>
+    <Title>$(PackageId)</Title>
+    <Description>$(DescriptionFirstPart) This package contains the ElectronNET project system.</Description>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".electron\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ElectronNET.Host\**\*.js;..\ElectronNET.Host\**\*.html" Exclude="..\ElectronNET.Host\node_modules\**">
+      <Link>.electron\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>.electron\</PackagePath>
+   </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\**\*">
+      <Pack>true</Pack>
+      <PackagePath>build\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj">
+      <ReferenceOutputAssembly>True</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="build\ElectronNETRules.Project2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="build\ElectronNETRules.Project.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+</Project>

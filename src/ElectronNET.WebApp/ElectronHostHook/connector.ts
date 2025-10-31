@@ -1,7 +1,8 @@
-export class Connector {
-    constructor(private socket: SocketIO.Socket,
-        // @ts-ignore
-        public app: Electron.App) { }
+import { Socket } from 'socket.io';
+
+export class Connector { 
+    constructor(private socket:  Socket,
+        public app: any) { }
 
     on(key: string, javaScriptCode: Function): void {
         this.socket.on(key, (...args: any[]) => {

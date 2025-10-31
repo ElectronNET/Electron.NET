@@ -1,0 +1,59 @@
+name: Publish wiki
+on:
+  push:
+    branches: [electronnet_core, main]
+  workflow_dispatch:
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  publish-wiki:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Remove level 1 headings from Markdown files
+        shell: bash
+        run: |
+          find docs/ -name '*.md' -exec sed -i '1d' {} \;
+      - name: Move all files to root folder
+        shell: bash
+        run: |
+          mv docs/*/* docs/
+      - name: Delete unwanted files
+        shell: bash
+        run: |
+          # rm docs/*.xlsm
+          # rm docs/*.pptx
+          rm docs/*.shproj
+      - name: Stripping file extensions....
+        uses: softworkz/strip-markdown-extensions-from-links-action@main
+        with:
+          path: ./docs/
+      - name: Copy Changelog
+        shell: bash
+        run: |
+          cp Changelog.md docs/RelInfo/ 2>/dev/null || true
+      - name: Copy images to wiki/wiki folder
+        shell: bash
+        run: |
+          mkdir docs/wiki
+          cp docs/*.svg docs/wiki/ 2>/dev/null || true
+          cp docs/*.png docs/wiki/ 2>/dev/null || true
+          cp docs/*.jpg docs/wiki/ 2>/dev/null || true
+          cp docs/*.gif docs/wiki/ 2>/dev/null || true
+          cp docs/*.mp4 docs/wiki/ 2>/dev/null || true
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add -A
+          git commit -m "Automatically update Markdown files" || echo "No changes to commit"
+      - uses: Andrew-Chen-Wang/github-wiki-action@v4.4.0
+        with:
+          path: docs/
+          ignore: |
+            '**/*.xlsm'
+            '**/*.pptx'
+            '**/*.shproj'

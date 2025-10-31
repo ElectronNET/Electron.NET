@@ -18,6 +18,7 @@ using System.Linq;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+// ReSharper disable ArrangeThisQualifier
 
 class Build : NukeBuild
 {
@@ -27,24 +28,19 @@ class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static int Main () => Execute<Build>(x => x.RunUnitTests);
+    public static int Main() => Execute<Build>(x => x.RunUnitTests);
 
     [Nuke.Common.Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Nuke.Common.Parameter("ReleaseNotesFilePath - To determine the SemanticVersion")]
+    [Nuke.Common.Parameter("ReleaseNotesFilePath - To determine the lates changelog version")]
     readonly AbsolutePath ReleaseNotesFilePath = RootDirectory / "Changelog.md";
+
+    [Nuke.Common.Parameter("common.props file path - to determine the configured version")]
+    readonly AbsolutePath CommonPropsFilePath = RootDirectory / "src" / "common.props";
 
     [Solution]
     readonly Solution Solution;
-
-    string TargetProjectName => "ElectronNET";
-
-    string ApiTargetLibName => $"{TargetProjectName}.API";
-
-    string CliTargetLibName => $"{TargetProjectName}.CLI";
-
-    string DemoTargetLibName => $"{TargetProjectName}.WebApp";
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
 
@@ -60,16 +56,7 @@ class Build : NukeBuild
 
     string Version { get; set; }
 
-    AbsolutePath[] Projects
-    {
-        get
-        {
-            var api = SourceDirectory / ApiTargetLibName / $"{ApiTargetLibName}.csproj";
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var projects = new[] { api, cli };
-            return projects;    
-        }        
-    }
+    string VersionPostFix { get; set; }
 
     protected override void OnBuildInitialized()
     {
@@ -82,9 +69,19 @@ class Build : NukeBuild
         LatestReleaseNotes = ChangeLog.First();
         LatestReleaseNotes.NotNull("LatestVersion could not be read!");
 
-        Log.Debug("Using LastestVersion from ChangeLog: {LatestVersion}", LatestReleaseNotes.Version);
+        var propsParser = new CommonPropsParser();
+
+        var propsVersion = propsParser.Parse(CommonPropsFilePath);
+
+        propsVersion.NotNull("Version from common.props could not be read!");
+
+        Assert.True(propsVersion == LatestReleaseNotes.Version,
+                $"The version in common.props ({propsVersion}) does not " +
+                $"equal the latest version in the changelog ({LatestReleaseNotes.Version})");
+
+        Log.Debug("Using version: {LatestVersion}", propsVersion);
         SemVersion = LatestReleaseNotes.SemVersion;
-        Version = LatestReleaseNotes.Version.ToString();
+        Version = propsVersion.ToString();
 
         if (GitHubActions != null)
         {
@@ -94,12 +91,16 @@ class Build : NukeBuild
 
             if (ScheduledTargets.Contains(Default))
             {
-                Version = $"{Version}-ci.{buildNumber}";
+                VersionPostFix = $"-ci.{buildNumber}";
             }
             else if (ScheduledTargets.Contains(PrePublish))
             {
-                Version = $"{Version}-alpha.{buildNumber}";
+                VersionPostFix = $"-pre.{buildNumber}";
             }
+        }
+        else if (ScheduledTargets.Contains(PrePublish))
+        {
+            VersionPostFix = $"-pre";
         }
 
         Log.Information("Building version: {Version}", Version);
@@ -115,120 +116,32 @@ class Build : NukeBuild
     Target Restore => _ => _
         .Executes(() =>
         {
-            Projects.ForEach(project =>
-            {
-                DotNetRestore(s => s
-                    .SetProjectFile(project));
-            });
+            DotNetRestore(s => s.SetProjectFile(Solution.Path));
         });
 
     Target Compile => _ => _
         .DependsOn(Restore)
         .Executes(() =>
         {
-            Projects.ForEach(project =>
-            {
-                DotNetBuild(s => s
-                    .SetProjectFile(project)
-                    .SetVersion(Version)
-                    .SetConfiguration(Configuration)
-                    .EnableNoRestore());
-            });
+            DotNetBuild(s => s
+                .SetProjectFile(Solution.Path)
+                .SetConfiguration(Configuration)
+                .SetProperty("GeneratePackageOnBuild", "True")
+                .SetProperty("VersionPostFix", VersionPostFix ?? string.Empty));
         });
 
     Target RunUnitTests => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            Projects.ForEach(project =>
-            {
-                DotNetTest(s => s
-                    .SetProjectFile(project)
-                    .SetConfiguration(Configuration)
-                    .EnableNoRestore()
-                    .EnableNoBuild());
-            });
+            // There aren't any yet
         });
 
     Target CreatePackages => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            Projects.ForEach(project =>
-            {
-                DotNetPack(s => s
-                    .SetProject(project)
-                    .SetVersion(Version)
-                    .SetConfiguration(Configuration)
-                    .SetOutputDirectory(ResultDirectory)
-                    .SetIncludeSymbols(true)
-                    .SetSymbolPackageFormat("snupkg")
-                    .EnableNoRestore()
-                );
-            });
-        });
-
-    Target CompileSample => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName / $"{DemoTargetLibName}.csproj";
-            DotNetBuild(s => s.SetProjectFile(sample).SetConfiguration(Configuration));
-        });
-
-    Target ElectronizeGenericTargetSample => _ => _
-        .DependsOn(CompileSample)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName;
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var args = "build /target custom win7-x86;win /dotnet-configuration Debug /electron-arch ia32  /electron-params \"--publish never\"";
-
-            DotNet($"run --project {cli} -- {args}", sample);
-        });
-
-    Target ElectronizeWindowsTargetSample => _ => _
-        .DependsOn(CompileSample)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName;
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var args = "build /target win /electron-params \"--publish never\"";
-
-            DotNet($"run --project {cli} -- {args}", sample);
-        });
-
-    Target ElectronizeCustomWin7TargetSample => _ => _
-        .DependsOn(CompileSample)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName;
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var args = "build /target custom win7-x86;win /electron-params \"--publish never\"";
-
-            DotNet($"run --project {cli} -- {args}", sample);
-        });
-
-    Target ElectronizeMacOsTargetSample => _ => _
-        .DependsOn(CompileSample)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName;
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var args = "build /target osx /electron-params \"--publish never\"";
-
-            DotNet($"run --project {cli} -- {args}", sample);
-        });
-
-    Target ElectronizeLinuxTargetSample => _ => _
-        .DependsOn(CompileSample)
-        .Executes(() =>
-        {
-            var sample = SourceDirectory / DemoTargetLibName;
-            var cli = SourceDirectory / CliTargetLibName / $"{CliTargetLibName}.csproj";
-            var args = "build /target linux /electron-params \"--publish never\"";
-
-            DotNet($"run --project {cli} -- {args}", sample);
+            // Packages are created on build
         });
 
     Target PublishPackages => _ => _
@@ -280,9 +193,9 @@ class Build : NukeBuild
                 new InMemoryCredentialStore(credentials));
 
             GitHubTasks.GitHubClient.Repository.Release
-                .Create("ElectronNET", "Electron.NET", new NewRelease(Version)
+                .Create("ElectronNET", "Electron.NET", new NewRelease(Version + VersionPostFix)
                 {
-                    Name = Version,
+                    Name = "ElectronNET.Core " + Version + VersionPostFix,
                     Body = String.Join(Environment.NewLine, LatestReleaseNotes.Notes),
                     Prerelease = true,
                     TargetCommitish = "develop",
@@ -318,7 +231,7 @@ class Build : NukeBuild
             GitHubTasks.GitHubClient.Repository.Release
                 .Create("ElectronNET", "Electron.NET", new NewRelease(Version)
                 {
-                    Name = Version,
+                    Name = "ElectronNET.Core " + Version,
                     Body = String.Join(Environment.NewLine, LatestReleaseNotes.Notes),
                     Prerelease = false,
                     TargetCommitish = "main",
