@@ -155,7 +155,7 @@ Any support appreciated! 🍻
 
 ## 🎉 License
 
-MIT-licensed. See [LICENSE](./LICENSE) for details.
+MIT-licensed. See [LICENSE](https://github.com/ElectronNET/Electron.NET/blob/main/LICENSE) for details.
 
 **Enjoy!**
 

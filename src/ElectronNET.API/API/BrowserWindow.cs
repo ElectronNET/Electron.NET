@@ -106,7 +106,9 @@ public class BrowserWindow
             _close -= value;
 
             if (_close == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-close" + Id);
+            }
         }
     }
 
@@ -137,7 +139,9 @@ public class BrowserWindow
             _closed -= value;
 
             if (_closed == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-closed" + Id);
+            }
         }
     }
 

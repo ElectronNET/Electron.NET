@@ -71,8 +71,8 @@
     <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ElectronNET.Core" Version="0.0.18" Condition="'$(ElectronNetDevMode)' != 'True'" />
-    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.0.18" Condition="'$(ElectronNetDevMode)' != 'True'" />
+    <PackageReference Include="ElectronNET.Core" Version="0.1.0" Condition="'$(ElectronNetDevMode)' != 'True'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.1.0" Condition="'$(ElectronNetDevMode)' != 'True'" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
   </ItemGroup>
 

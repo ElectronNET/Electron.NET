@@ -48,7 +48,7 @@ namespace ElectronNET.API
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<string[]>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("showOpenDialogComplete" + guid, (filePaths) =>
             {
@@ -75,7 +75,7 @@ namespace ElectronNET.API
         public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.On("showSaveDialogComplete" + guid, (filename) =>
             {

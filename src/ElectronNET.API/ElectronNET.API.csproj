@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PackageIcon.png" Pack="true" PackagePath="\" />
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
