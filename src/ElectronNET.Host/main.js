@@ -204,7 +204,8 @@ function isSplashScreenEnabled() {
 }
 
 function startSplashScreen() {
-    let imageFile = path.join(currentPath, manifestJsonFile.splashscreen.imageFile);
+    const imageFile = path.join(currentPath, manifestJsonFile.splashscreen.imageFile);
+    const isHtml = imageFile.endsWith('.html') || imageFile.endsWith('.htm');
     const startWindow = (width, height) => {
         splashScreen = new BrowserWindow({
             width: width,
@@ -224,7 +225,7 @@ function startSplashScreen() {
             splashScreen.destroy();
         });
 
-        const loadSplashscreenUrl = path.join(currentPath, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
+        const loadSplashscreenUrl = isHtml ? imageFile : path.join(currentPath, 'splashscreen', 'index.html') + '?imgPath=' + imageFile;
         splashScreen.loadURL('file://' + loadSplashscreenUrl);
         splashScreen.once('closed', () => {
             splashScreen = null;
@@ -232,10 +233,16 @@ function startSplashScreen() {
     };
 
     if (manifestJsonFile.splashscreen.width && manifestJsonFile.splashscreen.height) {
-        startWindow(manifestJsonFile.splashscreen.width, manifestJsonFile.splashscreen.height);
-        return;
+        // width and height are set explicitly
+        return startWindow(manifestJsonFile.splashscreen.width, manifestJsonFile.splashscreen.height);
     }
 
+    if (isHtml) {
+        // we cannot compute width and height => use default
+        return startWindow(800, 600);
+    }
+
+    // it's an image, so we can compute the desired splash screen size
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
             console.log(`load splashscreen error:`);

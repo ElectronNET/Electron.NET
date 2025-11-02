@@ -48,7 +48,9 @@ public class BrowserWindow
             _readyToShow -= value;
 
             if (_readyToShow == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-ready-to-show" + Id);
+            }
         }
     }
 
@@ -77,7 +79,9 @@ public class BrowserWindow
             _pageTitleUpdated -= value;
 
             if (_pageTitleUpdated == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-page-title-updated" + Id);
+            }
         }
     }
 
@@ -170,7 +174,9 @@ public class BrowserWindow
             _sessionEnd -= value;
 
             if (_sessionEnd == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-session-end" + Id);
+            }
         }
     }
 
@@ -199,7 +205,9 @@ public class BrowserWindow
             _unresponsive -= value;
 
             if (_unresponsive == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-unresponsive" + Id);
+            }
         }
     }
 
@@ -228,7 +236,9 @@ public class BrowserWindow
             _responsive -= value;
 
             if (_responsive == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-responsive" + Id);
+            }
         }
     }
 
@@ -257,7 +267,9 @@ public class BrowserWindow
             _blur -= value;
 
             if (_blur == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-blur" + Id);
+            }
         }
     }
 
@@ -286,7 +298,9 @@ public class BrowserWindow
             _focus -= value;
 
             if (_focus == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-focus" + Id);
+            }
         }
     }
 
@@ -315,7 +329,9 @@ public class BrowserWindow
             _show -= value;
 
             if (_show == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-show" + Id);
+            }
         }
     }
 
@@ -344,7 +360,9 @@ public class BrowserWindow
             _hide -= value;
 
             if (_hide == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-hide" + Id);
+            }
         }
     }
 
@@ -373,7 +391,9 @@ public class BrowserWindow
             _maximize -= value;
 
             if (_maximize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-maximize" + Id);
+            }
         }
     }
 
@@ -402,7 +422,9 @@ public class BrowserWindow
             _unmaximize -= value;
 
             if (_unmaximize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-unmaximize" + Id);
+            }
         }
     }
 
@@ -431,7 +453,9 @@ public class BrowserWindow
             _minimize -= value;
 
             if (_minimize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-minimize" + Id);
+            }
         }
     }
 
@@ -460,7 +484,9 @@ public class BrowserWindow
             _restore -= value;
 
             if (_restore == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-restore" + Id);
+            }
         }
     }
 
@@ -489,7 +515,9 @@ public class BrowserWindow
             _resize -= value;
 
             if (_resize == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-resize" + Id);
+            }
         }
     }
 
@@ -520,7 +548,9 @@ public class BrowserWindow
             _move -= value;
 
             if (_move == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-move" + Id);
+            }
         }
     }
 
@@ -549,7 +579,9 @@ public class BrowserWindow
             _moved -= value;
 
             if (_moved == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-moved" + Id);
+            }
         }
     }
 
@@ -578,7 +610,9 @@ public class BrowserWindow
             _enterFullScreen -= value;
 
             if (_enterFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-enter-full-screen" + Id);
+            }
         }
     }
 
@@ -607,7 +641,9 @@ public class BrowserWindow
             _leaveFullScreen -= value;
 
             if (_leaveFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-leave-full-screen" + Id);
+            }
         }
     }
 
@@ -636,7 +672,9 @@ public class BrowserWindow
             _enterHtmlFullScreen -= value;
 
             if (_enterHtmlFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-enter-html-full-screen" + Id);
+            }
         }
     }
 
@@ -665,7 +703,9 @@ public class BrowserWindow
             _leaveHtmlFullScreen -= value;
 
             if (_leaveHtmlFullScreen == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-leave-html-full-screen" + Id);
+            }
         }
     }
 
@@ -700,7 +740,9 @@ public class BrowserWindow
             _appCommand -= value;
 
             if (_appCommand == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-app-command" + Id);
+            }
         }
     }
 
@@ -729,7 +771,9 @@ public class BrowserWindow
             _swipe -= value;
 
             if (_swipe == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-swipe" + Id);
+            }
         }
     }
 
@@ -758,7 +802,9 @@ public class BrowserWindow
             _sheetBegin -= value;
 
             if (_sheetBegin == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-sheet-begin" + Id);
+            }
         }
     }
 
@@ -787,7 +833,9 @@ public class BrowserWindow
             _sheetEnd -= value;
 
             if (_sheetEnd == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-sheet-end" + Id);
+            }
         }
     }
 
@@ -816,7 +864,9 @@ public class BrowserWindow
             _newWindowForTab -= value;
 
             if (_newWindowForTab == null)
+            {
                 BridgeConnector.Socket.Off("browserWindow-new-window-for-tab" + Id);
+            }
         }
     }
 
