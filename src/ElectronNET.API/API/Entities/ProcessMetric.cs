@@ -38,9 +38,20 @@
         public bool Sandboxed { get; set; }
 
         /// <summary>
-        ///  One of the following values:
+        /// One of the following values:
         /// untrusted | low | medium | high | unknown
         /// </summary>
         public string IntegrityLevel { get; set; }
+
+        /// <summary>
+        /// The name of the process.
+        /// Examples for utility: Audio Service, Content Decryption Module Service, Network Service, Video Capture, etc.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The non-localized name of the process.
+        /// </summary>
+        public string ServiceName { get; set; }
     }
 }
