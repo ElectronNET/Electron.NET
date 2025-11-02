@@ -92,7 +92,7 @@ app.on('will-finish-launching', () => {
 
 const manifestJsonFile = require(manifestJsonFilePath);
 
-if (manifestJsonFile.singleInstance) {
+if (manifestJsonFile.singleInstance === "yes") {
     const mainInstance = app.requestSingleInstanceLock();
     app.on('second-instance', (events, args = []) => {
         args.forEach((parameter) => {

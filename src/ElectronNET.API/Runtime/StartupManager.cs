@@ -136,18 +136,26 @@
                 buildInfo.ElectronExecutable = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronExecutable))?.Value;
                 buildInfo.ElectronVersion = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronVersion))?.Value;
                 buildInfo.RuntimeIdentifier = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.RuntimeIdentifier))?.Value;
-                buildInfo.ElectronSingleInstance = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronSingleInstance))?.Value;
                 buildInfo.Title = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.Title))?.Value;
                 buildInfo.Version = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.Version))?.Value;
                 buildInfo.BuildConfiguration = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.BuildConfiguration))?.Value;
                 var isAspNet = attributes.FirstOrDefault(e => e.Key == "IsAspNet")?.Value;
+                var isSingleInstance = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronSingleInstance))?.Value;
+                var httpPort = attributes.FirstOrDefault(e => e.Key == "AspNetHttpPort")?.Value;
 
                 if (isAspNet?.Length > 0 && bool.TryParse(isAspNet, out var res) && res)
                 {
                     ElectronNetRuntime.DotnetAppType = DotnetAppType.AspNetCoreApp;
                 }
 
-                var httpPort = attributes.FirstOrDefault(e => e.Key == "AspNetHttpPort")?.Value;
+                if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var res) && res)
+                {
+                    buildInfo.ElectronSingleInstance = "yes";
+                }
+                else
+                {
+                    buildInfo.ElectronSingleInstance = "no";
+                }
 
                 if (httpPort?.Length > 0 && int.TryParse(httpPort, out var port))
                 {

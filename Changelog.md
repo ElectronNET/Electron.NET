@@ -4,6 +4,7 @@
 
 - Updated `PrintToPDFOptions` to also allow specifying the `PageSize` with an object (#769)
 - Updated splashscreen image to have 0 margin (#622)
+- Fixed single instance behavior using the `ElectronSingleInstance` property (#901)
 - Added option to use `ElectronSplashScreen` with an HTML file (#799)
 - Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
 
