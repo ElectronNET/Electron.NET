@@ -151,14 +151,14 @@
           BeforeTargets="AssignTargetPaths"
           DependsOnTargets="ElectronResolvePaths">
 
-    <PropertyGroup  Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
+    <PropertyGroup Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
       <_NonIntermediatePublishDir>$(PublishDir)</_NonIntermediatePublishDir>
       <PublishUrl>$(PublishDir)</PublishUrl>
       <PublishDir>$(IntermediateOutputPath)PubTmp\</PublishDir>
     </PropertyGroup>
 
-    <RemoveDir Directories="$(PublishDir);$(PublishUrl)"   Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
-    <MakeDir Directories="$(PublishDir);$(PublishUrl)"   Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
+    <RemoveDir Directories="$(PublishDir);$(PublishUrl)" Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
+    <MakeDir Directories="$(PublishDir);$(PublishUrl)" Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
 
   </Target>
 
@@ -345,6 +345,7 @@
     <PropertyGroup>
       <_OriginalPublishDir>$(PublishDir)</_OriginalPublishDir>
       <PublishDir>$(_OriginalPublishDir)bin\</PublishDir>
+      <PublishUrl>$(PublishDir)</PublishUrl>
       <DeleteExistingFiles>true</DeleteExistingFiles>
     </PropertyGroup>
 
@@ -460,12 +461,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) $(ElectronPaParams)</_NpxCmd>
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
-
-    <!--<Message Importance="High" Text="ElectronDumpInfo: ElectronPublishUrlFullPath: $(ElectronPublishUrlFullPath)" />-->
-    <!--<Message Importance="High" Text="ElectronDumpInfo: _NpxCmd: $(_NpxCmd)" />-->
 
     <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="900000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>

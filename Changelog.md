@@ -1,8 +1,19 @@
+# 0.1.0
+
+## ElectronNET.Core
+
+- Updated `PrintToPDFOptions` to also allow specifying the `PageSize` with an object (#769)
+- Updated splashscreen image to have 0 margin (#622)
+- Fixed single instance behavior using the `ElectronSingleInstance` property (#901)
+- Added option to use `ElectronSplashScreen` with an HTML file (#799)
+- Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
+
 # 0.0.18
 
 ## ElectronNET.Core
 
 ### Highlights
+
 - **Complete MSBuild Integration**: Eliminated CLI tool dependency, moved all build processes to MSBuild with deep Visual Studio integration
 - **Modernized Architecture**: Restructured process lifecycle with .NET launching first and running Electron as child process for better control and reliability
 - **Cross-Platform Development**: Build and debug Linux applications directly from Windows Visual Studio via WSL integration
@@ -11,6 +22,7 @@
 - **Console App Support**: No longer requires ASP.NET - now works with simple console applications for file system or remote server HTML/JS
 
 ### Build System & Project Structure
+
 - Eliminated electron.manifest.json configuration file, replaced with MSBuild project properties
 - Introduced new package structure: ElectronNET.Core (main package), ElectronNET.Core.Api (API definitions), ElectronNET.Core.AspNet (ASP.NET integration)
 - Added Runtime Identifier (RID) selection as part of project configuration
@@ -19,19 +31,22 @@
 - Added custom MSBuild tasks for Electron-specific build operations
 
 ### Development Experience
+
 - Implemented unpackaged run-mode for development using regular .NET builds with unpackaged Electron configuration
 - Added support for building Linux packages on Windows via WSL integration
 - Enabled running and debugging Linux application outputs on Windows through WSL
 - Integrated TypeScript compilation with ASP.NET tooling for consistent builds
-- Added process orchestration supporting 8 different launch scenarios (packaged/unpackaged × console/ASP.NET × dotnet-first/electron-first)
+- Added process orchestration supporting 8 different launch scenarios (packaged/unpackaged Ã— console/ASP.NET Ã— dotnet-first/electron-first)
 
 ### Debugging & Runtime
+
 - Dramatically improved debugging experience with ASP.NET-first launch mode
 - Added Hot Reload support for ASP.NET code during development
 - Implemented proper process termination handling for all exit scenarios
 - Minimized startup times through optimized build and launch procedures
 
 ### Technical Improvements
+
 - Enhanced splash screen handling with automatic path resolution
 - Improved ElectronHostHook integration as proper npm package dependency
 - Updated to latest TypeScript version with ESLint configuration
@@ -40,6 +55,7 @@
 - Added build-time Electron version compatibility validation
 
 ### Package & Distribution
+
 - Integrated MSBuild publishing mechanisms for creating Electron packages
 - Added folder publishing support with improved parameter handling
 - Implemented automated package.json generation from MSBuild properties
@@ -47,6 +63,7 @@
 - Reduced package sizes by eliminating unnecessary TypeScript dependencies
 
 ### Migration & Compatibility
+
 - Maintained backward compatibility for existing ElectronHostHook implementations
 - Removed ASP.NET requirement: Now works with simple console applications for file system or remote server HTML/JS scenarios
 - Added support for both console and ASP.NET Core application types
@@ -54,4 +71,3 @@
 - Added migration path for existing projects through updated package structure
 
 This represents a comprehensive modernization of Electron.NET, addressing the major pain points around debugging, build complexity, and platform limitations while maintaining full API compatibility.
-

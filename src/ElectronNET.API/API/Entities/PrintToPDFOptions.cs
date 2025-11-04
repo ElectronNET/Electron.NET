@@ -30,7 +30,7 @@ public class PrintToPDFOptions
     /// `A5`, `A6`, `Legal`, `Letter`, `Tabloid`, `Ledger`, or an Object containing
     /// `height` and `width` in inches. Defaults to `Letter`.
     /// </summary>
-    public string PageSize { get; set; } = "Letter";
+    public object PageSize { get; set; } = "Letter";
 
     /// <summary>
     /// Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string,
