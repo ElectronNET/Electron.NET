@@ -143,12 +143,12 @@
                 var isSingleInstance = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronSingleInstance))?.Value;
                 var httpPort = attributes.FirstOrDefault(e => e.Key == "AspNetHttpPort")?.Value;
 
-                if (isAspNet?.Length > 0 && bool.TryParse(isAspNet, out var res) && res)
+                if (isAspNet?.Length > 0 && bool.TryParse(isAspNet, out var isAspNetActive) && isAspNetActive)
                 {
                     ElectronNetRuntime.DotnetAppType = DotnetAppType.AspNetCoreApp;
                 }
 
-                if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var res) && res)
+                if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var isSingleInstanceActive) && isSingleInstanceActive)
                 {
                     buildInfo.ElectronSingleInstance = "yes";
                 }
