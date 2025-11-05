@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.Common;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API;
 
@@ -30,26 +32,8 @@ public class WebContents
     /// </summary>
     public event Action<bool> OnCrashed
     {
-        add
-        {
-            if (_crashed == null)
-            {
-                BridgeConnector.Socket.On("webContents-crashed" + Id, (killed) =>
-                {
-                    _crashed((bool)killed);
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-crashed", Id);
-            }
-            _crashed += value;
-        }
-        remove
-        {
-            _crashed -= value;
-
-            if (_crashed == null)
-                BridgeConnector.Socket.Off("webContents-crashed" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-crashed", Id, _crashed, value, (args) => (bool)args);
+        remove => ApiEventManager.RemoveEvent("webContents-crashed", Id, _crashed, value);
     }
 
     private event Action<bool> _crashed;
@@ -60,26 +44,8 @@ public class WebContents
     /// </summary>
     public event Action OnDidFinishLoad
     {
-        add
-        {
-            if (_didFinishLoad == null)
-            {
-                BridgeConnector.Socket.On("webContents-didFinishLoad" + Id, () =>
-                {
-                    _didFinishLoad();
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-didFinishLoad", Id);
-            }
-            _didFinishLoad += value;
-        }
-        remove
-        {
-            _didFinishLoad -= value;
-
-            if (_didFinishLoad == null)
-                BridgeConnector.Socket.Off("webContents-didFinishLoad" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-didFinishLoad", Id, _didFinishLoad, value);
+        remove => ApiEventManager.RemoveEvent("webContents-didFinishLoad", Id, _didFinishLoad, value);
     }
 
     private event Action _didFinishLoad;
@@ -89,26 +55,8 @@ public class WebContents
     /// </summary>
     public event Action<string> OnDidStartNavigation
     {
-        add
-        {
-            if (_didStartNavigation == null)
-            {
-                BridgeConnector.Socket.On<string>("webContents-didStartNavigation" + Id, (url) =>
-                {
-                    _didStartNavigation(url);
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-didStartNavigation", Id);
-            }
-            _didStartNavigation += value;
-        }
-        remove
-        {
-            _didStartNavigation -= value;
-
-            if (_didStartNavigation == null)
-                BridgeConnector.Socket.Off("webContents-didStartNavigation" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-didStartNavigation", Id, _didStartNavigation, value);
+        remove => ApiEventManager.RemoveEvent("webContents-didStartNavigation", Id, _didStartNavigation, value);
     }
 
     private event Action<string> _didStartNavigation;
@@ -119,26 +67,8 @@ public class WebContents
     /// </summary>
     public event Action<OnDidNavigateInfo> OnDidNavigate
     {
-        add
-        {
-            if (_didNavigate == null)
-            {
-                BridgeConnector.Socket.On<OnDidNavigateInfo>("webContents-didNavigate" + Id, (data) =>
-                {
-                    _didNavigate(data);
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-didNavigate", Id);
-            }
-            _didNavigate += value;
-        }
-        remove
-        {
-            _didNavigate -= value;
-
-            if (_didNavigate == null)
-                BridgeConnector.Socket.Off("webContents-didNavigate" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-didNavigate", Id, _didNavigate, value);
+        remove => ApiEventManager.RemoveEvent("webContents-didNavigate", Id, _didNavigate, value);
     }
 
     private event Action<OnDidNavigateInfo> _didNavigate;
@@ -149,26 +79,8 @@ public class WebContents
     /// </summary>
     public event Action<string> OnWillRedirect
     {
-        add
-        {
-            if (_willRedirect == null)
-            {
-                BridgeConnector.Socket.On<string>("webContents-willRedirect" + Id, (url) =>
-                {
-                    _willRedirect(url);
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-willRedirect", Id);
-            }
-            _willRedirect += value;
-        }
-        remove
-        {
-            _willRedirect -= value;
-
-            if (_willRedirect == null)
-                BridgeConnector.Socket.Off("webContents-willRedirect" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-willRedirect", Id, _willRedirect, value);
+        remove => ApiEventManager.RemoveEvent("webContents-willRedirect", Id, _willRedirect, value);
     }
 
     private event Action<string> _willRedirect;
@@ -178,56 +90,19 @@ public class WebContents
     /// </summary>
     public event Action<string> OnDidRedirectNavigation
     {
-        add
-        {
-            if (_didRedirectNavigation == null)
-            {
-                BridgeConnector.Socket.On("webContents-didRedirectNavigation" + Id, (url) =>
-                {
-                    _didRedirectNavigation(url?.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-didRedirectNavigation", Id);
-            }
-            _didRedirectNavigation += value;
-        }
-        remove
-        {
-            _didRedirectNavigation -= value;
-
-            if (_didRedirectNavigation == null)
-                BridgeConnector.Socket.Off("webContents-didRedirectNavigation" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-didRedirectNavigation", Id, _didRedirectNavigation, value);
+        remove => ApiEventManager.RemoveEvent("webContents-didRedirectNavigation", Id, _didRedirectNavigation, value);
     }
 
     private event Action<string> _didRedirectNavigation;
-
 
     /// <summary>
     /// This event is like OnDidFinishLoad but emitted when the load failed.
     /// </summary>
     public event Action<OnDidFailLoadInfo> OnDidFailLoad
     {
-        add
-        {
-            if (_didFailLoad == null)
-            {
-                BridgeConnector.Socket.On("webContents-willRedirect" + Id, (data) =>
-                {
-                    _didFailLoad(((JObject) data).ToObject<OnDidFailLoadInfo>());
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-willRedirect", Id);
-            }
-            _didFailLoad += value;
-        }
-        remove
-        {
-            _didFailLoad -= value;
-
-            if (_didFailLoad == null)
-                BridgeConnector.Socket.Off("webContents-willRedirect" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-didFailLoad", Id, _didFailLoad, value, (args) => ((JObject)args).ToObject<OnDidFailLoadInfo>());
+        remove => ApiEventManager.RemoveEvent("webContents-didFailLoad", Id, _didFailLoad, value);
     }
 
     private event Action<OnDidFailLoadInfo> _didFailLoad;
@@ -237,27 +112,8 @@ public class WebContents
     /// </summary>
     public event Action<InputEvent> InputEvent
     {
-        add
-        {
-            if (_inputEvent == null)
-            {
-                BridgeConnector.Socket.On("webContents-input-event" + Id, (eventArgs) =>
-                {
-                    var inputEvent = ((JObject)eventArgs).ToObject<InputEvent>();
-                    _inputEvent(inputEvent);
-                });
-
-                BridgeConnector.Socket.Emit("register-webContents-input-event", Id);
-            }
-            _inputEvent += value;
-        }
-        remove
-        {
-            _inputEvent -= value;
-
-            if (_inputEvent == null)
-                BridgeConnector.Socket.Off("webContents-input-event" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-input-event", Id, _inputEvent, value, (args) => ((JObject)args).ToObject<InputEvent>());
+        remove => ApiEventManager.RemoveEvent("webContents-input-event", Id, _inputEvent, value);
     }
 
     private event Action<InputEvent> _inputEvent;
@@ -267,26 +123,8 @@ public class WebContents
     /// </summary>
     public event Action OnDomReady
     {
-        add
-        {
-            if (_domReady == null)
-            {
-                BridgeConnector.Socket.On("webContents-domReady" + Id, () =>
-                    {
-                        _domReady();
-                    });
-
-                BridgeConnector.Socket.Emit("register-webContents-domReady", Id);
-            }
-            _domReady += value;
-        }
-        remove
-        {
-            _domReady -= value;
-
-            if (_domReady == null)
-                BridgeConnector.Socket.Off("webContents-domReady" + Id);
-        }
+        add => ApiEventManager.AddEvent("webContents-domReady", Id, _domReady, value);
+        remove => ApiEventManager.RemoveEvent("webContents-domReady", Id, _domReady, value);
     }
 
     private event Action _domReady;

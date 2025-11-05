@@ -22,6 +22,12 @@ internal class ApiEventManager
         AddEvent(eventName, id, callback, value, "-event");
     }
     
+    internal static void RemoveEvent(string eventName, object id, Action callback, Action value)
+    {
+        callback -= value;
+        if (callback == null) BridgeConnector.Socket.Off(eventName + id);
+    }
+    
     internal static void AddEvent<T>(string eventName, object id, Action<T> callback, Action<T> value, Func<object, T> converter, string suffix = "")
     {
         if (callback == null)
@@ -36,9 +42,25 @@ internal class ApiEventManager
         callback += value;
     }
     
+    internal static void AddEvent<T>(string eventName, object id, Action<T> callback, Action<T> value)
+    {
+        if (callback == null)
+        {
+            BridgeConnector.Socket.On<T>(eventName + id, (args) => callback(args));
+            BridgeConnector.Socket.Emit($"register-{eventName}", id);
+        }
+        callback += value;
+    }
+    
     internal static void AddEventWithSuffix<T>(string eventName, object id, Action<T> callback, Action<T> value, Func<object, T> converter)
     {
         AddEvent(eventName, id, callback, value, converter, "-event");
+    }
+    
+    internal static void RemoveEvent<T>(string eventName, object id, Action<T> callback, Action<T> value)
+    {
+        callback -= value;
+        if (callback == null) BridgeConnector.Socket.Off(eventName + id);
     }
     
     internal static void AddTrayEvent(string eventName, object id, Action<TrayClickEventArgs, Rectangle> callback, Action<TrayClickEventArgs, Rectangle> value)
@@ -56,22 +78,32 @@ internal class ApiEventManager
             callback += value;
         }
     }
-    
-    internal static void RemoveEvent(string eventName, object id, Action callback, Action value)
-    {
-        callback -= value;
-        if (callback == null) BridgeConnector.Socket.Off(eventName + id);
-    }
-    
-    internal static void RemoveEvent<T>(string eventName, object id, Action<T> callback, Action<T> value)
-    {
-        callback -= value;
-        if (callback == null) BridgeConnector.Socket.Off(eventName + id);
-    }
 
     internal static void RemoveTrayEvent(string eventName, object id, Action<TrayClickEventArgs, Rectangle> callback, Action<TrayClickEventArgs, Rectangle> value)
     {
         callback -= value;
         if (callback == null) BridgeConnector.Socket.Off(eventName + id);
     }
+    
+    internal static void AddScreenEvent(string eventName, object id, Action<Display, string[]> callback, Action<Display, string[]> value)
+    {
+        if (callback == null)
+        {
+            BridgeConnector.Socket.On(eventName + id, (args) =>
+            {
+                var display = ((JArray)args).First.ToObject<Display>();
+                var metrics = ((JArray)args).Last.ToObject<string[]>();
+                callback(display, metrics);
+            });
+            BridgeConnector.Socket.Emit($"register-{eventName}", id);
+            callback += value;
+        }
+    }
+    
+    internal static void RemoveScreenEvent(string eventName, object id, Action<Display, string[]> callback, Action<Display, string[]> value)
+    {
+        callback -= value;
+        if (callback == null) BridgeConnector.Socket.Off(eventName + id);
+    }
+
 }

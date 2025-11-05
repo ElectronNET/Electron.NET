@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ElectronNET.Common;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
 {
@@ -13,26 +15,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnLockScreen
         {
-            add
-            {
-                if (_lockScreen == null)
-                {
-                    BridgeConnector.Socket.On("pm-lock-screen" , () =>
-                    {
-                        _lockScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-lock-screen");
-                }
-                _lockScreen += value;
-            }
-            remove
-            {
-                _lockScreen -= value;
-
-                if (_lockScreen == null)
-                    BridgeConnector.Socket.Off("pm-lock-screen");
-            }
+            add => ApiEventManager.AddEvent("pm-lock-screen", string.Empty, _lockScreen, value);
+            remove => ApiEventManager.RemoveEvent("pm-lock-screen", string.Empty, _lockScreen, value);
         }
 
         private event Action _lockScreen;
@@ -42,26 +26,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnUnLockScreen
         {
-            add
-            {
-                if (_unlockScreen == null)
-                {
-                    BridgeConnector.Socket.On("pm-unlock-screen", () =>
-                    {
-                        _unlockScreen();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-unlock-screen");
-                }
-                _unlockScreen += value;
-            }
-            remove
-            {
-                _unlockScreen -= value;
-
-                if (_unlockScreen == null)
-                    BridgeConnector.Socket.Off("pm-unlock-screen");
-            }
+            add => ApiEventManager.AddEvent("pm-unlock-screen", string.Empty, _unlockScreen, value);
+            remove => ApiEventManager.RemoveEvent("pm-unlock-screen", string.Empty, _unlockScreen, value);
         }
 
         private event Action _unlockScreen;
@@ -71,26 +37,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnSuspend
         {
-            add
-            {
-                if (_suspend == null)
-                {
-                    BridgeConnector.Socket.On("pm-suspend", () =>
-                    {
-                        _suspend();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-suspend");
-                }
-                _suspend += value;
-            }
-            remove
-            {
-                _suspend -= value;
-
-                if (_suspend == null)
-                    BridgeConnector.Socket.Off("pm-suspend");
-            }
+            add => ApiEventManager.AddEvent("pm-suspend", string.Empty, _suspend, value);
+            remove => ApiEventManager.RemoveEvent("pm-suspend", string.Empty, _suspend, value);
         }
 
         private event Action _suspend;
@@ -100,26 +48,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnResume
         {
-            add
-            {
-                if (_resume == null)
-                {
-                    BridgeConnector.Socket.On("pm-resume", () =>
-                    {
-                        _resume();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-resume");
-                }
-                _resume += value;
-            }
-            remove
-            {
-                _resume -= value;
-
-                if (_resume == null)
-                    BridgeConnector.Socket.Off("pm-resume");
-            }
+            add => ApiEventManager.AddEvent("pm-resume", string.Empty, _resume, value);
+            remove => ApiEventManager.RemoveEvent("pm-resume", string.Empty, _resume, value);
         }
 
         private event Action _resume;
@@ -129,26 +59,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnAC
         {
-            add
-            {
-                if (_onAC == null)
-                {
-                    BridgeConnector.Socket.On("pm-on-ac", () =>
-                    {
-                        _onAC();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-on-ac");
-                }
-                _onAC += value;
-            }
-            remove
-            {
-                _onAC -= value;
-
-                if (_onAC == null)
-                    BridgeConnector.Socket.Off("pm-on-ac");
-            }
+            add => ApiEventManager.AddEvent("pm-on-ac", string.Empty, _onAC, value);
+            remove => ApiEventManager.RemoveEvent("pm-on-ac", string.Empty, _onAC, value);
         }
 
         private event Action _onAC;
@@ -158,31 +70,12 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnBattery
         {
-            add
-            {
-                if (_onBattery == null)
-                {
-                    BridgeConnector.Socket.On("pm-on-battery", () =>
-                    {
-                        _onBattery();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-on-battery");
-                }
-                _onBattery += value;
-            }
-            remove
-            {
-                _onBattery -= value;
-
-                if (_onBattery == null)
-                    BridgeConnector.Socket.Off("pm-on-battery");
-            }
+            add => ApiEventManager.AddEvent("pm-on-battery", string.Empty, _onBattery, value);
+            remove => ApiEventManager.RemoveEvent("pm-on-battery", string.Empty, _onBattery, value);
         }
 
         private event Action _onBattery;
-
-
+        
         /// <summary>
         /// Emitted when the system is about to reboot or shut down. If the event handler
         /// invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
@@ -191,26 +84,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnShutdown
         {
-            add
-            {
-                if (_shutdown == null)
-                {
-                    BridgeConnector.Socket.On("pm-shutdown", () =>
-                    {
-                        _shutdown();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-pm-shutdown");
-                }
-                _shutdown += value;
-            }
-            remove
-            {
-                _shutdown -= value;
-
-                if (_shutdown == null)
-                    BridgeConnector.Socket.Off("pm-on-shutdown");
-            }
+            add => ApiEventManager.AddEvent("pm-shutdown", string.Empty, _shutdown, value);
+            remove => ApiEventManager.RemoveEvent("pm-shutdown", string.Empty, _shutdown, value);
         }
 
         private event Action _shutdown;
