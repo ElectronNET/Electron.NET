@@ -18,45 +18,45 @@ module.exports = (socket, app) => {
             electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
         }
     });
-    socket.on('quit-app-window-all-closed-event', (quit) => {
+    socket.on('quit-app-window-all-closed', (quit) => {
         isQuitWindowAllClosed = quit;
     });
-    socket.on('register-app-window-all-closed-event', (id) => {
+    socket.on('register-app-window-all-closed', (id) => {
         appWindowAllClosedEventId = id;
     });
-    socket.on('register-app-before-quit-event', (id) => {
+    socket.on('register-app-before-quit', (id) => {
         app.on('before-quit', (event) => {
             event.preventDefault();
             electronSocket.emit('app-before-quit' + id);
         });
     });
-    socket.on('register-app-will-quit-event', (id) => {
+    socket.on('register-app-will-quit', (id) => {
         app.on('will-quit', (event) => {
             event.preventDefault();
             electronSocket.emit('app-will-quit' + id);
         });
     });
-    socket.on('register-app-browser-window-blur-event', (id) => {
+    socket.on('register-app-browser-window-blur', (id) => {
         app.on('browser-window-blur', () => {
             electronSocket.emit('app-browser-window-blur' + id);
         });
     });
-    socket.on('register-app-browser-window-focus-event', (id) => {
+    socket.on('register-app-browser-window-focus', (id) => {
         app.on('browser-window-focus', () => {
             electronSocket.emit('app-browser-window-focus' + id);
         });
     });
-    socket.on('register-app-browser-window-created-event', (id) => {
+    socket.on('register-app-browser-window-created', (id) => {
         app.on('browser-window-created', () => {
             electronSocket.emit('app-browser-window-created' + id);
         });
     });
-    socket.on('register-app-web-contents-created-event', (id) => {
+    socket.on('register-app-web-contents-created', (id) => {
         app.on('web-contents-created', () => {
             electronSocket.emit('app-web-contents-created' + id);
         });
     });
-    socket.on('register-app-accessibility-support-changed-event', (id) => {
+    socket.on('register-app-accessibility-support-changed', (id) => {
         app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
             electronSocket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
         });

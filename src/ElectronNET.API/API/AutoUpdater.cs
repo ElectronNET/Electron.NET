@@ -288,7 +288,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OnError
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-error", GetHashCode(), _error, value, (args) => args.ToString());
+            add => ApiEventManager.AddEvent("autoUpdater-error", GetHashCode(), _error, value, (args) => args.ToString());
             remove => ApiEventManager.RemoveEvent("autoUpdater-error", GetHashCode(), _error, value);
         }
 
@@ -299,7 +299,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnCheckingForUpdate
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-checking-for-update", GetHashCode(), _checkingForUpdate, value);
+            add => ApiEventManager.AddEvent("autoUpdater-checking-for-update", GetHashCode(), _checkingForUpdate, value);
             remove => ApiEventManager.RemoveEvent("autoUpdater-checking-for-update", GetHashCode(), _checkingForUpdate, value);
         }
 
@@ -311,7 +311,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateAvailable
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-available", GetHashCode(), _updateAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            add => ApiEventManager.AddEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value);
         }
 
@@ -322,7 +322,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateNotAvailable
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            add => ApiEventManager.AddEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value);
         }
 
@@ -333,7 +333,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<ProgressInfo> OnDownloadProgress
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value, (args) => JObject.Parse(args.ToString()).ToObject<ProgressInfo>());
+            add => ApiEventManager.AddEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value, (args) => JObject.Parse(args.ToString()).ToObject<ProgressInfo>());
             remove => ApiEventManager.RemoveEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value);
         }
 
@@ -344,7 +344,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateDownloaded
         {
-            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            add => ApiEventManager.AddEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value);
         }
 

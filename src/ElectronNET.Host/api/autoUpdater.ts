@@ -5,37 +5,37 @@ let electronSocket;
 export = (socket: Socket) => {
     electronSocket = socket;
 
-    socket.on('register-autoUpdater-error-event', (id) => {
+    socket.on('register-autoUpdater-error', (id) => {
         autoUpdater.on('error', (error) => {
             electronSocket.emit('autoUpdater-error' + id, error.message);
         });
     });
 
-    socket.on('register-autoUpdater-checking-for-update-event', (id) => {
+    socket.on('register-autoUpdater-checking-for-update', (id) => {
         autoUpdater.on('checking-for-update', () => {
             electronSocket.emit('autoUpdater-checking-for-update' + id);
         });
     });
 
-    socket.on('register-autoUpdater-update-available-event', (id) => {
+    socket.on('register-autoUpdater-update-available', (id) => {
         autoUpdater.on('update-available', (updateInfo) => {
             electronSocket.emit('autoUpdater-update-available' + id, updateInfo);
         });
     });
 
-    socket.on('register-autoUpdater-update-not-available-event', (id) => {
+    socket.on('register-autoUpdater-update-not-available', (id) => {
         autoUpdater.on('update-not-available', (updateInfo) => {
             electronSocket.emit('autoUpdater-update-not-available' + id, updateInfo);
         });
     });
 
-    socket.on('register-autoUpdater-download-progress-event', (id) => {
+    socket.on('register-autoUpdater-download-progress', (id) => {
         autoUpdater.on('download-progress', (progressInfo) => {
             electronSocket.emit('autoUpdater-download-progress' + id, progressInfo);
         });
     });
 
-    socket.on('register-autoUpdater-update-downloaded-event', (id) => {
+    socket.on('register-autoUpdater-update-downloaded', (id) => {
         autoUpdater.on('update-downloaded', (updateInfo) => {
             electronSocket.emit('autoUpdater-update-downloaded' + id, updateInfo);
         });

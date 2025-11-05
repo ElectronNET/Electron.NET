@@ -41,7 +41,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-window-all-closed", GetHashCode());
                 }
                 _windowAllClosed += value;
             }
@@ -113,7 +113,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-before-quit", GetHashCode());
                 }
                 _beforeQuit += value;
             }
@@ -164,7 +164,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode());
                 }
                 _willQuit += value;
             }
@@ -199,7 +199,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
+                    BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode() + "quitting");
                 }
                 _quitting += value;
             }
@@ -219,7 +219,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowBlur
         {
-            add => ApiEventManager.AddEventWithSuffix("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
+            add => ApiEventManager.AddEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
             remove => ApiEventManager.RemoveEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
         }
 
@@ -230,7 +230,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowFocus
         {
-            add => ApiEventManager.AddEventWithSuffix("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
+            add => ApiEventManager.AddEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
             remove => ApiEventManager.RemoveEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
         }
 
@@ -241,7 +241,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowCreated
         {
-            add => ApiEventManager.AddEventWithSuffix("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
+            add => ApiEventManager.AddEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
             remove => ApiEventManager.RemoveEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
         }
 
@@ -252,7 +252,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action WebContentsCreated
         {
-            add => ApiEventManager.AddEventWithSuffix("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
+            add => ApiEventManager.AddEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
             remove => ApiEventManager.RemoveEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
         }
 
@@ -265,7 +265,7 @@ namespace ElectronNET.API
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
         public event Action<bool> AccessibilitySupportChanged
         {
-            add => ApiEventManager.AddEventWithSuffix("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value, (args) => (bool)args);
+            add => ApiEventManager.AddEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value, (args) => (bool)args);
             remove => ApiEventManager.RemoveEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value);
         }
 
@@ -320,7 +320,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenFile
         {
-            add => ApiEventManager.AddEventWithSuffix("app-open-file", GetHashCode(), _openFile, value, (args) => args.ToString());
+            add => ApiEventManager.AddEvent("app-open-file", GetHashCode(), _openFile, value, (args) => args.ToString());
             remove => ApiEventManager.RemoveEvent("app-open-file", GetHashCode(), _openFile, value);
         }
 
@@ -333,7 +333,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenUrl
         {
-            add => ApiEventManager.AddEventWithSuffix("app-open-url", GetHashCode(), _openUrl, value, (args) => args.ToString());
+            add => ApiEventManager.AddEvent("app-open-url", GetHashCode(), _openUrl, value, (args) => args.ToString());
             remove => ApiEventManager.RemoveEvent("app-open-url", GetHashCode(), _openUrl, value);
         }
 

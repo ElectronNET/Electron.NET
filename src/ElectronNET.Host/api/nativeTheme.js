@@ -22,7 +22,7 @@ module.exports = (socket) => {
     socket.on('nativeTheme-themeSource', (themeSource) => {
         electron_1.nativeTheme.themeSource = themeSource;
     });
-    socket.on('register-nativeTheme-updated-event', (id) => {
+    socket.on('register-nativeTheme-updated', (id) => {
         electron_1.nativeTheme.on('updated', () => {
             electronSocket.emit('nativeTheme-updated' + id);
         });

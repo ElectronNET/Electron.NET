@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ElectronNET.Common;
 
-internal class ApiEventManager
+internal static class ApiEventManager
 {
     internal static void AddEvent(string eventName, object id, Action callback, Action value, string suffix = "")
     {
@@ -15,11 +15,6 @@ internal class ApiEventManager
             BridgeConnector.Socket.Emit($"register-{eventName}{suffix}", id);
         }
         callback += value;
-    }
-    
-    internal static void AddEventWithSuffix(string eventName, object id, Action callback, Action value)
-    {
-        AddEvent(eventName, id, callback, value, "-event");
     }
     
     internal static void RemoveEvent(string eventName, object id, Action callback, Action value)
@@ -50,11 +45,6 @@ internal class ApiEventManager
             BridgeConnector.Socket.Emit($"register-{eventName}", id);
         }
         callback += value;
-    }
-    
-    internal static void AddEventWithSuffix<T>(string eventName, object id, Action<T> callback, Action<T> value, Func<object, T> converter)
-    {
-        AddEvent(eventName, id, callback, value, converter, "-event");
     }
     
     internal static void RemoveEvent<T>(string eventName, object id, Action<T> callback, Action<T> value)
