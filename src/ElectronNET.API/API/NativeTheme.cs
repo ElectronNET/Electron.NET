@@ -184,7 +184,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action Updated
         {
-            add => ApiEventManager.AddEventWithSuffix("nativeTheme-updated", GetHashCode(), _updated, value);
+            add => ApiEventManager.AddEvent("nativeTheme-updated", GetHashCode(), _updated, value);
             remove => ApiEventManager.RemoveEvent("nativeTheme-updated", GetHashCode(), _updated, value);
         }
 
