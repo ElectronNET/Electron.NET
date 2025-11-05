@@ -7,11 +7,6 @@ namespace ElectronNET.Common;
 
 internal class ApiEventManager
 {
-    internal T Deserialize<T>(Func<T> action)
-    {
-        return action.Invoke();
-    }
-    
     internal static void AddEvent(string eventName, object id, Action callback, Action value, string suffix = "")
     {
         if (callback == null)

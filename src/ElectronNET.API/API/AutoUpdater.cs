@@ -5,6 +5,8 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElectronNET.Common;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
 {
@@ -286,26 +288,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OnError
         {
-            add
-            {
-                if (_error == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-error" + GetHashCode(), (message) =>
-                    {
-                        _error(message.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-error-event", GetHashCode());
-                }
-                _error += value;
-            }
-            remove
-            {
-                _error -= value;
-
-                if (_error == null)
-                    BridgeConnector.Socket.Off("autoUpdater-error" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-error", GetHashCode(), _error, value, (args) => args.ToString());
+            remove => ApiEventManager.RemoveEvent("autoUpdater-error", GetHashCode(), _error, value);
         }
 
         private event Action<string> _error;
@@ -315,26 +299,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnCheckingForUpdate
         {
-            add
-            {
-                if (_checkingForUpdate == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-checking-for-update" + GetHashCode(), () =>
-                    {
-                        _checkingForUpdate();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-checking-for-update-event", GetHashCode());
-                }
-                _checkingForUpdate += value;
-            }
-            remove
-            {
-                _checkingForUpdate -= value;
-
-                if (_checkingForUpdate == null)
-                    BridgeConnector.Socket.Off("autoUpdater-checking-for-update" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-checking-for-update", GetHashCode(), _checkingForUpdate, value);
+            remove => ApiEventManager.RemoveEvent("autoUpdater-checking-for-update", GetHashCode(), _checkingForUpdate, value);
         }
 
         private event Action _checkingForUpdate;
@@ -345,26 +311,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateAvailable
         {
-            add
-            {
-                if (_updateAvailable == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-update-available" + GetHashCode(), (updateInfo) =>
-                    {
-                        _updateAvailable(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-available-event", GetHashCode());
-                }
-                _updateAvailable += value;
-            }
-            remove
-            {
-                _updateAvailable -= value;
-
-                if (_updateAvailable == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-available" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-available", GetHashCode(), _updateAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            remove => ApiEventManager.RemoveEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value);
         }
 
         private event Action<UpdateInfo> _updateAvailable;
@@ -374,26 +322,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateNotAvailable
         {
-            add
-            {
-                if (_updateNotAvailable == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-update-not-available" + GetHashCode(), (updateInfo) =>
-                    {
-                        _updateNotAvailable(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-not-available-event", GetHashCode());
-                }
-                _updateNotAvailable += value;
-            }
-            remove
-            {
-                _updateNotAvailable -= value;
-
-                if (_updateNotAvailable == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-not-available" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            remove => ApiEventManager.RemoveEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value);
         }
 
         private event Action<UpdateInfo> _updateNotAvailable;
@@ -403,26 +333,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<ProgressInfo> OnDownloadProgress
         {
-            add
-            {
-                if (_downloadProgress == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-download-progress" + GetHashCode(), (progressInfo) =>
-                    {
-                        _downloadProgress(JObject.Parse(progressInfo.ToString()).ToObject<ProgressInfo>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-download-progress-event", GetHashCode());
-                }
-                _downloadProgress += value;
-            }
-            remove
-            {
-                _downloadProgress -= value;
-
-                if (_downloadProgress == null)
-                    BridgeConnector.Socket.Off("autoUpdater-download-progress" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value, (args) => JObject.Parse(args.ToString()).ToObject<ProgressInfo>());
+            remove => ApiEventManager.RemoveEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value);
         }
 
         private event Action<ProgressInfo> _downloadProgress;
@@ -432,26 +344,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateDownloaded
         {
-            add
-            {
-                if (_updateDownloaded == null)
-                {
-                    BridgeConnector.Socket.On("autoUpdater-update-downloaded" + GetHashCode(), (updateInfo) =>
-                    {
-                        _updateDownloaded(JObject.Parse(updateInfo.ToString()).ToObject<UpdateInfo>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-autoUpdater-update-downloaded-event", GetHashCode());
-                }
-                _updateDownloaded += value;
-            }
-            remove
-            {
-                _updateDownloaded -= value;
-
-                if (_updateDownloaded == null)
-                    BridgeConnector.Socket.Off("autoUpdater-update-downloaded" + GetHashCode());
-            }
+            add => ApiEventManager.AddEventWithSuffix("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value, (args) => JObject.Parse(args.ToString()).ToObject<UpdateInfo>());
+            remove => ApiEventManager.RemoveEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value);
         }
 
         private event Action<UpdateInfo> _updateDownloaded;
