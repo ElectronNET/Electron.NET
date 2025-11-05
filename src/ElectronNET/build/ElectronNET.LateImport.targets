@@ -11,7 +11,6 @@
   <UsingTask TaskName="ElectronNET.Build.RemoveEnvironmentVariables"
              AssemblyFile="$(MSBuildThisFileDirectory)ElectronNET.Build.dll" />
 
-
   <!-- Adjust the properties of items in the ElectronHostHook folder (if present) -->
 
   <ItemGroup>
@@ -42,7 +41,7 @@
 
   <!-- Create variables for our output paths -->
   <PropertyGroup>
-    <ElectronSourceFilesPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\xxxxElectronNET.Host'))</ElectronSourceFilesPath>
+    <ElectronSourceFilesPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\ElectronNET.Host'))</ElectronSourceFilesPath>
     <ElectronSourceFilesPath Condition="!Exists($(ElectronSourceFilesPath))">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\.electron'))</ElectronSourceFilesPath>
     <ElectronDirName>.electron</ElectronDirName>
     <ElectronSplashScreenFileName Condition="'$(ElectronSplashScreen)' != ''">$([System.IO.Path]::GetFileName($(ElectronSplashScreen)))</ElectronSplashScreenFileName>

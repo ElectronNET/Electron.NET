@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup  Condition="'$(ElectronExecutable)' == ''">
+  <PropertyGroup Condition="'$(ElectronExecutable)' == ''">
     <WinPrefix>win</WinPrefix>
-    <ElectronExecutable  Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' == 'true'">$(Title)</ElectronExecutable>
-    <ElectronExecutable  Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' != 'true'">$(PackageId)</ElectronExecutable>
+    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' == 'true'">$(Title)</ElectronExecutable>
+    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' != 'true'">$(PackageId)</ElectronExecutable>
   </PropertyGroup>
 
   <PropertyGroup>
     <_IsMsAspNetProject>False</_IsMsAspNetProject>
-    <_IsMsAspNetProject  Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">True</_IsMsAspNetProject>
+    <_IsMsAspNetProject Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">True</_IsMsAspNetProject>
   </PropertyGroup>
 
   <ItemGroup>

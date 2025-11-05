@@ -8,9 +8,9 @@
                 <section class="about-section play-along">
                     <h2>Play Along</h2>
                     <p>Use the demo snippets in an Electron app of your own. The <a href="https://github.com/electron/electron-quick-start">Electron Quick Start<span class="u-visible-to-screen-reader">(opens in new window)</span></a> app is a bare-bones setup that pairs with these demos. Follow the instructions here to get it going.
-                    To activate Electron.NET include the <a href="https://www.nuget.org/packages/ElectronNET.API/" target="_blank">ElectronNET.API NuGet package</a> in your ASP.NET Core app.
+                    To activate Electron.NET include the <a href="https://www.nuget.org/packages/ElectronNET.Core/" target="_blank">ElectronNET.API NuGet package</a> in your ASP.NET Core app.
                     <p>
-                        <code class="language-bash">dotnet add package ElectronNET.API</code>
+                        <code class="language-bash">dotnet add package ElectronNET.Core</code>
                     </p>
 
                     Then include the UseElectron WebHostBuilder-Extension into the Program.cs-file of your ASP.NET Core project.
@@ -20,7 +20,7 @@
 {
     return WebHost.CreateDefaultBuilder(args)
         .UseElectron(args)
-        .UseStartup<Startup>()
+        .UseStartup&lt;Startup&gt;()
         .Build();
 }</code>
                     </pre>
