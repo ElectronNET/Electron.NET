@@ -328,7 +328,7 @@ function startSocketApiBridge(port) {
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
 
-        socket.on('register-app-open-file-event', (id) => {
+        socket.on('register-app-open-file', (id) => {
             global['electronsocket'] = socket;
 
             app.on('open-file', (event, file) => {
@@ -342,7 +342,7 @@ function startSocketApiBridge(port) {
             }
         });
 
-        socket.on('register-app-open-url-event', (id) => {
+        socket.on('register-app-open-url', (id) => {
             global['electronsocket'] = socket;
 
             app.on('open-url', (event, url) => {

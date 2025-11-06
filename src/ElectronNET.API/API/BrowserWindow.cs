@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ElectronNET.Common;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API;
 
@@ -30,28 +32,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnReadyToShow
     {
-        add
-        {
-            if (_readyToShow == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-ready-to-show" + Id, () =>
-                {
-                    _readyToShow();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-ready-to-show", Id);
-            }
-            _readyToShow += value;
-        }
-        remove
-        {
-            _readyToShow -= value;
-
-            if (_readyToShow == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-ready-to-show" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-ready-to-show", Id, _readyToShow, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-ready-to-show", Id, _readyToShow, value);
     }
 
     private event Action _readyToShow;
@@ -61,28 +43,8 @@ public class BrowserWindow
     /// </summary>
     public event Action<string> OnPageTitleUpdated
     {
-        add
-        {
-            if (_pageTitleUpdated == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-page-title-updated" + Id, (title) =>
-                {
-                    _pageTitleUpdated(title.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-page-title-updated", Id);
-            }
-            _pageTitleUpdated += value;
-        }
-        remove
-        {
-            _pageTitleUpdated -= value;
-
-            if (_pageTitleUpdated == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-page-title-updated" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-page-title-updated", Id, _pageTitleUpdated, value, (args) => args.ToString());
+        remove => ApiEventManager.RemoveEvent("browserWindow-page-title-updated", Id, _pageTitleUpdated, value);
     }
 
     private event Action<string> _pageTitleUpdated;
@@ -92,28 +54,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnClose
     {
-        add
-        {
-            if (_close == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-close" + Id, () =>
-                {
-                    _close();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-close", Id);
-            }
-            _close += value;
-        }
-        remove
-        {
-            _close -= value;
-
-            if (_close == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-close" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-close", Id, _close, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-close", Id, _close, value);
     }
 
     private event Action _close;
@@ -125,28 +67,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnClosed
     {
-        add
-        {
-            if (_closed == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-closed" + Id, () =>
-                {
-                    _closed();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-closed", Id);
-            }
-            _closed += value;
-        }
-        remove
-        {
-            _closed -= value;
-
-            if (_closed == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-closed" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-closed", Id, _closed, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-closed", Id, _closed, value);
     }
 
     private event Action _closed;
@@ -156,28 +78,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnSessionEnd
     {
-        add
-        {
-            if (_sessionEnd == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-session-end" + Id, () =>
-                {
-                    _sessionEnd();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-session-end", Id);
-            }
-            _sessionEnd += value;
-        }
-        remove
-        {
-            _sessionEnd -= value;
-
-            if (_sessionEnd == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-session-end" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-session-end", Id, _sessionEnd, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-session-end", Id, _sessionEnd, value);
     }
 
     private event Action _sessionEnd;
@@ -187,28 +89,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnUnresponsive
     {
-        add
-        {
-            if (_unresponsive == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-unresponsive" + Id, () =>
-                {
-                    _unresponsive();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-unresponsive", Id);
-            }
-            _unresponsive += value;
-        }
-        remove
-        {
-            _unresponsive -= value;
-
-            if (_unresponsive == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-unresponsive" + Id);
-            }
-        }
+            add => ApiEventManager.AddEvent("browserWindow-unresponsive", Id, _unresponsive, value);
+            remove => ApiEventManager.RemoveEvent("browserWindow-unresponsive", Id, _unresponsive, value);
     }
 
     private event Action _unresponsive;
@@ -218,28 +100,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnResponsive
     {
-        add
-        {
-            if (_responsive == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-responsive" + Id, () =>
-                {
-                    _responsive();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-responsive", Id);
-            }
-            _responsive += value;
-        }
-        remove
-        {
-            _responsive -= value;
-
-            if (_responsive == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-responsive" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-responsive", Id, _responsive, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-responsive", Id, _responsive, value);
     }
 
     private event Action _responsive;
@@ -249,28 +111,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnBlur
     {
-        add
-        {
-            if (_blur == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-blur" + Id, () =>
-                {
-                    _blur();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-blur", Id);
-            }
-            _blur += value;
-        }
-        remove
-        {
-            _blur -= value;
-
-            if (_blur == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-blur" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-blur", Id, _blur, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-blur", Id, _blur, value);
     }
 
     private event Action _blur;
@@ -280,28 +122,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnFocus
     {
-        add
-        {
-            if (_focus == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-focus" + Id, () =>
-                {
-                    _focus();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-focus", Id);
-            }
-            _focus += value;
-        }
-        remove
-        {
-            _focus -= value;
-
-            if (_focus == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-focus" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-focus", Id, _focus, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-focus", Id, _focus, value);
     }
 
     private event Action _focus;
@@ -311,28 +133,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnShow
     {
-        add
-        {
-            if (_show == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-show" + Id, () =>
-                {
-                    _show();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-show", Id);
-            }
-            _show += value;
-        }
-        remove
-        {
-            _show -= value;
-
-            if (_show == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-show" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-show", Id, _show, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-show", Id, _show, value);
     }
 
     private event Action _show;
@@ -342,28 +144,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnHide
     {
-        add
-        {
-            if (_hide == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-hide" + Id, () =>
-                {
-                    _hide();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-hide", Id);
-            }
-            _hide += value;
-        }
-        remove
-        {
-            _hide -= value;
-
-            if (_hide == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-hide" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-hide", Id, _hide, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-hide", Id, _hide, value);
     }
 
     private event Action _hide;
@@ -373,28 +155,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnMaximize
     {
-        add
-        {
-            if (_maximize == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-maximize" + Id, () =>
-                {
-                    _maximize();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-maximize", Id);
-            }
-            _maximize += value;
-        }
-        remove
-        {
-            _maximize -= value;
-
-            if (_maximize == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-maximize" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-maximize", Id, _maximize, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-maximize", Id, _maximize, value);
     }
 
     private event Action _maximize;
@@ -404,28 +166,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnUnmaximize
     {
-        add
-        {
-            if (_unmaximize == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-unmaximize" + Id, () =>
-                {
-                    _unmaximize();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-unmaximize", Id);
-            }
-            _unmaximize += value;
-        }
-        remove
-        {
-            _unmaximize -= value;
-
-            if (_unmaximize == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-unmaximize" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-unmaximize", Id, _unmaximize, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-unmaximize", Id, _unmaximize, value);
     }
 
     private event Action _unmaximize;
@@ -435,28 +177,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnMinimize
     {
-        add
-        {
-            if (_minimize == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-minimize" + Id, () =>
-                {
-                    _minimize();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-minimize", Id);
-            }
-            _minimize += value;
-        }
-        remove
-        {
-            _minimize -= value;
-
-            if (_minimize == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-minimize" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-minimize", Id, _minimize, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-minimize", Id, _minimize, value);
     }
 
     private event Action _minimize;
@@ -466,28 +188,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnRestore
     {
-        add
-        {
-            if (_restore == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-restore" + Id, () =>
-                {
-                    _restore();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-restore", Id);
-            }
-            _restore += value;
-        }
-        remove
-        {
-            _restore -= value;
-
-            if (_restore == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-restore" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-restore", Id, _restore, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-restore", Id, _restore, value);
     }
 
     private event Action _restore;
@@ -497,28 +199,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnResize
     {
-        add
-        {
-            if (_resize == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-resize" + Id, () =>
-                {
-                    _resize();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-resize", Id);
-            }
-            _resize += value;
-        }
-        remove
-        {
-            _resize -= value;
-
-            if (_resize == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-resize" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-resize", Id, _resize, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-resize", Id, _resize, value);
     }
 
     private event Action _resize;
@@ -530,28 +212,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnMove
     {
-        add
-        {
-            if (_move == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-move" + Id, () =>
-                {
-                    _move();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-move", Id);
-            }
-            _move += value;
-        }
-        remove
-        {
-            _move -= value;
-
-            if (_move == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-move" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-move", Id, _move, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-move", Id, _move, value);
     }
 
     private event Action _move;
@@ -561,28 +223,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnMoved
     {
-        add
-        {
-            if (_moved == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-moved" + Id, () =>
-                {
-                    _moved();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-moved", Id);
-            }
-            _moved += value;
-        }
-        remove
-        {
-            _moved -= value;
-
-            if (_moved == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-moved" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-moved", Id, _moved, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-moved", Id, _moved, value);
     }
 
     private event Action _moved;
@@ -592,28 +234,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnEnterFullScreen
     {
-        add
-        {
-            if (_enterFullScreen == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-enter-full-screen" + Id, () =>
-                {
-                    _enterFullScreen();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-enter-full-screen", Id);
-            }
-            _enterFullScreen += value;
-        }
-        remove
-        {
-            _enterFullScreen -= value;
-
-            if (_enterFullScreen == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-enter-full-screen" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-enter-full-screen", Id, _enterFullScreen, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-enter-full-screen", Id, _enterFullScreen, value);
     }
 
     private event Action _enterFullScreen;
@@ -623,28 +245,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnLeaveFullScreen
     {
-        add
-        {
-            if (_leaveFullScreen == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-leave-full-screen" + Id, () =>
-                {
-                    _leaveFullScreen();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-leave-full-screen", Id);
-            }
-            _leaveFullScreen += value;
-        }
-        remove
-        {
-            _leaveFullScreen -= value;
-
-            if (_leaveFullScreen == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-leave-full-screen" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-leave-full-screen", Id, _leaveFullScreen, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-leave-full-screen", Id, _leaveFullScreen, value);
     }
 
     private event Action _leaveFullScreen;
@@ -654,28 +256,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnEnterHtmlFullScreen
     {
-        add
-        {
-            if (_enterHtmlFullScreen == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-enter-html-full-screen" + Id, () =>
-                {
-                    _enterHtmlFullScreen();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-enter-html-full-screen", Id);
-            }
-            _enterHtmlFullScreen += value;
-        }
-        remove
-        {
-            _enterHtmlFullScreen -= value;
-
-            if (_enterHtmlFullScreen == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-enter-html-full-screen" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-enter-html-full-screen", Id, _enterHtmlFullScreen, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-enter-html-full-screen", Id, _enterHtmlFullScreen, value);
     }
 
     private event Action _enterHtmlFullScreen;
@@ -685,28 +267,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnLeaveHtmlFullScreen
     {
-        add
-        {
-            if (_leaveHtmlFullScreen == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-leave-html-full-screen" + Id, () =>
-                {
-                    _leaveHtmlFullScreen();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-leave-html-full-screen", Id);
-            }
-            _leaveHtmlFullScreen += value;
-        }
-        remove
-        {
-            _leaveHtmlFullScreen -= value;
-
-            if (_leaveHtmlFullScreen == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-leave-html-full-screen" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-leave-html-full-screen", Id, _leaveHtmlFullScreen, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-leave-html-full-screen", Id, _leaveHtmlFullScreen, value);
     }
 
     private event Action _leaveHtmlFullScreen;
@@ -722,28 +284,8 @@ public class BrowserWindow
     /// </summary>
     public event Action<string> OnAppCommand
     {
-        add
-        {
-            if (_appCommand == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-app-command" + Id, (command) =>
-                {
-                    _appCommand(command.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-app-command", Id);
-            }
-            _appCommand += value;
-        }
-        remove
-        {
-            _appCommand -= value;
-
-            if (_appCommand == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-app-command" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-app-command", Id, _appCommand, value, (args) => args.ToString());
+        remove => ApiEventManager.RemoveEvent("browserWindow-app-command", Id, _appCommand, value);
     }
 
     private event Action<string> _appCommand;
@@ -753,28 +295,8 @@ public class BrowserWindow
     /// </summary>
     public event Action<string> OnSwipe
     {
-        add
-        {
-            if (_swipe == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-swipe" + Id, (direction) =>
-                {
-                    _swipe(direction.ToString());
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-swipe", Id);
-            }
-            _swipe += value;
-        }
-        remove
-        {
-            _swipe -= value;
-
-            if (_swipe == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-swipe" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-swipe", Id, _swipe, value, (args) => args.ToString());
+        remove => ApiEventManager.RemoveEvent("browserWindow-swipe", Id, _swipe, value);
     }
 
     private event Action<string> _swipe;
@@ -784,28 +306,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnSheetBegin
     {
-        add
-        {
-            if (_sheetBegin == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-sheet-begin" + Id, () =>
-                {
-                    _sheetBegin();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-sheet-begin", Id);
-            }
-            _sheetBegin += value;
-        }
-        remove
-        {
-            _sheetBegin -= value;
-
-            if (_sheetBegin == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-sheet-begin" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-sheet-begin", Id, _sheetBegin, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-sheet-begin", Id, _sheetBegin, value);
     }
 
     private event Action _sheetBegin;
@@ -815,28 +317,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnSheetEnd
     {
-        add
-        {
-            if (_sheetEnd == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-sheet-end" + Id, () =>
-                {
-                    _sheetEnd();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-sheet-end", Id);
-            }
-            _sheetEnd += value;
-        }
-        remove
-        {
-            _sheetEnd -= value;
-
-            if (_sheetEnd == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-sheet-end" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-sheet-end", Id, _sheetEnd, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-sheet-end", Id, _sheetEnd, value);
     }
 
     private event Action _sheetEnd;
@@ -846,28 +328,8 @@ public class BrowserWindow
     /// </summary>
     public event Action OnNewWindowForTab
     {
-        add
-        {
-            if (_newWindowForTab == null)
-            {
-                BridgeConnector.Socket.On("browserWindow-new-window-for-tab" + Id, () =>
-                {
-                    _newWindowForTab();
-                });
-
-                BridgeConnector.Socket.Emit("register-browserWindow-new-window-for-tab", Id);
-            }
-            _newWindowForTab += value;
-        }
-        remove
-        {
-            _newWindowForTab -= value;
-
-            if (_newWindowForTab == null)
-            {
-                BridgeConnector.Socket.Off("browserWindow-new-window-for-tab" + Id);
-            }
-        }
+        add => ApiEventManager.AddEvent("browserWindow-new-window-for-tab", Id, _newWindowForTab, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-new-window-for-tab", Id, _newWindowForTab, value);
     }
 
     private event Action _newWindowForTab;

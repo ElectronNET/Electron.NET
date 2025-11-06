@@ -7,42 +7,42 @@ module.exports = (socket) => {
     socket.on('register-tray-click', (id) => {
         if (tray.value) {
             tray.value.on('click', (event, bounds) => {
-                electronSocket.emit('tray-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-click' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-right-click', (id) => {
         if (tray.value) {
             tray.value.on('right-click', (event, bounds) => {
-                electronSocket.emit('tray-right-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-right-click' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-double-click', (id) => {
         if (tray.value) {
             tray.value.on('double-click', (event, bounds) => {
-                electronSocket.emit('tray-double-click-event' + id, [event.__proto__, bounds]);
+                electronSocket.emit('tray-double-click' + id, [event.__proto__, bounds]);
             });
         }
     });
     socket.on('register-tray-balloon-show', (id) => {
         if (tray.value) {
             tray.value.on('balloon-show', () => {
-                electronSocket.emit('tray-balloon-show-event' + id);
+                electronSocket.emit('tray-balloon-show' + id);
             });
         }
     });
     socket.on('register-tray-balloon-click', (id) => {
         if (tray.value) {
             tray.value.on('balloon-click', () => {
-                electronSocket.emit('tray-balloon-click-event' + id);
+                electronSocket.emit('tray-balloon-click' + id);
             });
         }
     });
     socket.on('register-tray-balloon-closed', (id) => {
         if (tray.value) {
             tray.value.on('balloon-closed', () => {
-                electronSocket.emit('tray-balloon-closed-event' + id);
+                electronSocket.emit('tray-balloon-closed' + id);
             });
         }
     });

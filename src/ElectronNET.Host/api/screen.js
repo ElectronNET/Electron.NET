@@ -5,17 +5,17 @@ module.exports = (socket) => {
     electronSocket = socket;
     socket.on('register-screen-display-added', (id) => {
         electron_1.screen.on('display-added', (event, display) => {
-            electronSocket.emit('screen-display-added-event' + id, display);
+            electronSocket.emit('screen-display-added' + id, display);
         });
     });
     socket.on('register-screen-display-removed', (id) => {
         electron_1.screen.on('display-removed', (event, display) => {
-            electronSocket.emit('screen-display-removed-event' + id, display);
+            electronSocket.emit('screen-display-removed' + id, display);
         });
     });
     socket.on('register-screen-display-metrics-changed', (id) => {
         electron_1.screen.on('display-metrics-changed', (event, display, changedMetrics) => {
-            electronSocket.emit('screen-display-metrics-changed-event' + id, [display, changedMetrics]);
+            electronSocket.emit('screen-display-metrics-changed' + id, [display, changedMetrics]);
         });
     });
     socket.on('screen-getCursorScreenPoint', () => {

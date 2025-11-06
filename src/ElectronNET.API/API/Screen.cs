@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.Common;
 
 namespace ElectronNET.API
 {
@@ -17,26 +18,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayAdded
         {
-            add
-            {
-                if (_onDisplayAdded == null)
-                {
-                    BridgeConnector.Socket.On("screen-display-added-event" + GetHashCode(), (display) =>
-                    {
-                        _onDisplayAdded(((JObject)display).ToObject<Display>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-screen-display-added", GetHashCode());
-                }
-                _onDisplayAdded += value;
-            }
-            remove
-            {
-                _onDisplayAdded -= value;
-
-                if (_onDisplayAdded == null)
-                    BridgeConnector.Socket.Off("screen-display-added-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => ((JObject)args).ToObject<Display>());
+            remove => ApiEventManager.RemoveEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value);
         }
 
         private event Action<Display> _onDisplayAdded;
@@ -46,26 +29,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayRemoved
         {
-            add
-            {
-                if (_onDisplayRemoved == null)
-                {
-                    BridgeConnector.Socket.On("screen-display-removed-event" + GetHashCode(), (display) =>
-                    {
-                        _onDisplayRemoved(((JObject)display).ToObject<Display>());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-screen-display-removed", GetHashCode());
-                }
-                _onDisplayRemoved += value;
-            }
-            remove
-            {
-                _onDisplayRemoved -= value;
-
-                if (_onDisplayRemoved == null)
-                    BridgeConnector.Socket.Off("screen-display-removed-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => ((JObject)args).ToObject<Display>());
+            remove => ApiEventManager.RemoveEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value);
         }
 
         private event Action<Display> _onDisplayRemoved;
@@ -77,29 +42,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display, string[]> OnDisplayMetricsChanged
         {
-            add
-            {
-                if (_onDisplayMetricsChanged == null)
-                {
-                    BridgeConnector.Socket.On("screen-display-metrics-changed-event" + GetHashCode(), (args) =>
-                    {
-                        var display = ((JArray)args).First.ToObject<Display>();
-                        var metrics = ((JArray)args).Last.ToObject<string[]>();
-
-                        _onDisplayMetricsChanged(display, metrics);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode());
-                }
-                _onDisplayMetricsChanged += value;
-            }
-            remove
-            {
-                _onDisplayMetricsChanged -= value;
-
-                if (_onDisplayMetricsChanged == null)
-                    BridgeConnector.Socket.Off("screen-display-metrics-changed-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddScreenEvent("screen-display-metrics-changed", GetHashCode(), _onDisplayMetricsChanged, value);
+            remove => ApiEventManager.RemoveScreenEvent("screen-display-metrics-changed", GetHashCode(), _onDisplayMetricsChanged, value);
         }
 
         private event Action<Display, string[]> _onDisplayMetricsChanged;

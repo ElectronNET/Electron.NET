@@ -51,7 +51,7 @@ namespace ElectronNET.API
             get => _isQuitOnWindowAllClosed;
             set
             {
-                BridgeConnector.Socket.Emit("quit-app-window-all-closed-event", value);
+                BridgeConnector.Socket.Emit("quit-app-window-all-closed", value);
                 _isQuitOnWindowAllClosed = value;
             }
         }

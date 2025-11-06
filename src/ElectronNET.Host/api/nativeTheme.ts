@@ -33,7 +33,7 @@ export = (socket: Socket) => {
         nativeTheme.themeSource = themeSource;
     });
 
-    socket.on('register-nativeTheme-updated-event', (id) => {
+    socket.on('register-nativeTheme-updated', (id) => {
         nativeTheme.on('updated', () => {
             electronSocket.emit('nativeTheme-updated' + id);
         });

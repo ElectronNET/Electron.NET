@@ -7,7 +7,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Extensions;
-using static System.Collections.Specialized.BitVector32;
+using ElectronNET.Common;
+
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
 {
@@ -39,7 +41,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-window-all-closed-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-window-all-closed", GetHashCode());
                 }
                 _windowAllClosed += value;
             }
@@ -111,7 +113,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-before-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-before-quit", GetHashCode());
                 }
                 _beforeQuit += value;
             }
@@ -162,7 +164,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode());
+                    BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode());
                 }
                 _willQuit += value;
             }
@@ -197,7 +199,7 @@ namespace ElectronNET.API
                         }
                     });
 
-                    BridgeConnector.Socket.Emit("register-app-will-quit-event", GetHashCode() + "quitting");
+                    BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode() + "quitting");
                 }
                 _quitting += value;
             }
@@ -217,26 +219,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowBlur
         {
-            add
-            {
-                if (_browserWindowBlur == null)
-                {
-                    BridgeConnector.Socket.On("app-browser-window-blur" + GetHashCode(), () =>
-                    {
-                        _browserWindowBlur();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-blur-event", GetHashCode());
-                }
-                _browserWindowBlur += value;
-            }
-            remove
-            {
-                _browserWindowBlur -= value;
-
-                if (_browserWindowBlur == null)
-                    BridgeConnector.Socket.Off("app-browser-window-blur" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
+            remove => ApiEventManager.RemoveEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
         }
 
         private event Action _browserWindowBlur;
@@ -246,26 +230,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowFocus
         {
-            add
-            {
-                if (_browserWindowFocus == null)
-                {
-                    BridgeConnector.Socket.On("app-browser-window-focus" + GetHashCode(), () =>
-                    {
-                        _browserWindowFocus();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-focus-event", GetHashCode());
-                }
-                _browserWindowFocus += value;
-            }
-            remove
-            {
-                _browserWindowFocus -= value;
-
-                if (_browserWindowFocus == null)
-                    BridgeConnector.Socket.Off("app-browser-window-focus" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
+            remove => ApiEventManager.RemoveEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
         }
 
         private event Action _browserWindowFocus;
@@ -275,26 +241,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowCreated
         {
-            add
-            {
-                if (_browserWindowCreated == null)
-                {
-                    BridgeConnector.Socket.On("app-browser-window-created" + GetHashCode(), () =>
-                    {
-                        _browserWindowCreated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-browser-window-created-event", GetHashCode());
-                }
-                _browserWindowCreated += value;
-            }
-            remove
-            {
-                _browserWindowCreated -= value;
-
-                if (_browserWindowCreated == null)
-                    BridgeConnector.Socket.Off("app-browser-window-created" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
+            remove => ApiEventManager.RemoveEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
         }
 
         private event Action _browserWindowCreated;
@@ -304,26 +252,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action WebContentsCreated
         {
-            add
-            {
-                if (_webContentsCreated == null)
-                {
-                    BridgeConnector.Socket.On("app-web-contents-created" + GetHashCode(), () =>
-                    {
-                        _webContentsCreated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-web-contents-created-event", GetHashCode());
-                }
-                _webContentsCreated += value;
-            }
-            remove
-            {
-                _webContentsCreated -= value;
-
-                if (_webContentsCreated == null)
-                    BridgeConnector.Socket.Off("app-web-contents-created" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
+            remove => ApiEventManager.RemoveEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
         }
 
         private event Action _webContentsCreated;
@@ -335,26 +265,8 @@ namespace ElectronNET.API
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
         public event Action<bool> AccessibilitySupportChanged
         {
-            add
-            {
-                if (_accessibilitySupportChanged == null)
-                {
-                    BridgeConnector.Socket.On("app-accessibility-support-changed" + GetHashCode(), (state) =>
-                    {
-                        _accessibilitySupportChanged((bool)state);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-accessibility-support-changed-event", GetHashCode());
-                }
-                _accessibilitySupportChanged += value;
-            }
-            remove
-            {
-                _accessibilitySupportChanged -= value;
-
-                if (_accessibilitySupportChanged == null)
-                    BridgeConnector.Socket.Off("app-accessibility-support-changed" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value, (args) => (bool)args);
+            remove => ApiEventManager.RemoveEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value);
         }
 
         private event Action<bool> _accessibilitySupportChanged;
@@ -408,26 +320,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenFile
         {
-            add
-            {
-                if (_openFile == null)
-                {
-                    BridgeConnector.Socket.On("app-open-file" + GetHashCode(), (file) =>
-                    {
-                        _openFile(file.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-open-file-event", GetHashCode());
-                }
-                _openFile += value;
-            }
-            remove
-            {
-                _openFile -= value;
-
-                if (_openFile == null)
-                    BridgeConnector.Socket.Off("app-open-file" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-open-file", GetHashCode(), _openFile, value, (args) => args.ToString());
+            remove => ApiEventManager.RemoveEvent("app-open-file", GetHashCode(), _openFile, value);
         }
 
         private event Action<string> _openFile;
@@ -439,26 +333,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenUrl
         {
-            add
-            {
-                if (_openUrl == null)
-                {
-                    BridgeConnector.Socket.On("app-open-url" + GetHashCode(), (url) =>
-                    {
-                        _openUrl(url.ToString());
-                    });
-
-                    BridgeConnector.Socket.Emit("register-app-open-url-event", GetHashCode());
-                }
-                _openUrl += value;
-            }
-            remove
-            {
-                _openUrl -= value;
-
-                if (_openUrl == null)
-                    BridgeConnector.Socket.Off("app-open-url" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("app-open-url", GetHashCode(), _openUrl, value, (args) => args.ToString());
+            remove => ApiEventManager.RemoveEvent("app-open-url", GetHashCode(), _openUrl, value);
         }
 
         private event Action<string> _openUrl;

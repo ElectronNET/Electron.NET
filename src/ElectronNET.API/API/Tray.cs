@@ -6,6 +6,8 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElectronNET.Common;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
 {
@@ -19,29 +21,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<TrayClickEventArgs, Rectangle> OnClick
         {
-            add
-            {
-                if (_click == null)
-                {
-                    BridgeConnector.Socket.On<dynamic>("tray-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _click(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
-                }
-                _click += value;
-            }
-            remove
-            {
-                _click -= value;
-
-                if (_click == null)
-                    BridgeConnector.Socket.Off("tray-click-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddTrayEvent("tray-click", GetHashCode(), _click, value);
+            remove => ApiEventManager.RemoveTrayEvent("tray-click", GetHashCode(), _click, value);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _click;
@@ -51,29 +32,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<TrayClickEventArgs, Rectangle> OnRightClick
         {
-            add
-            {
-                if (_rightClick == null)
-                {
-                    BridgeConnector.Socket.On<dynamic>("tray-right-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _rightClick(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
-                }
-                _rightClick += value;
-            }
-            remove
-            {
-                _rightClick -= value;
-
-                if (_rightClick == null)
-                    BridgeConnector.Socket.Off("tray-right-click-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddTrayEvent("tray-right-click", GetHashCode(), _rightClick, value);
+            remove => ApiEventManager.RemoveTrayEvent("tray-right-click", GetHashCode(), _rightClick, value);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _rightClick;
@@ -83,29 +43,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<TrayClickEventArgs, Rectangle> OnDoubleClick
         {
-            add
-            {
-                if (_doubleClick == null)
-                {
-                    BridgeConnector.Socket.On<dynamic>("tray-double-click-event" + GetHashCode(), (result) =>
-                    {
-                        var args = ((JArray)result).ToObject<object[]>();
-                        var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                        var bounds = ((JObject)args[1]).ToObject<Rectangle>();
-                        _doubleClick(trayClickEventArgs, bounds);
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
-                }
-                _doubleClick += value;
-            }
-            remove
-            {
-                _doubleClick -= value;
-
-                if (_doubleClick == null)
-                    BridgeConnector.Socket.Off("tray-double-click-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddTrayEvent("tray-double-click", GetHashCode(), _doubleClick, value);
+            remove => ApiEventManager.RemoveTrayEvent("tray-double-click", GetHashCode(), _doubleClick, value);
         }
 
         private event Action<TrayClickEventArgs, Rectangle> _doubleClick;
@@ -115,26 +54,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnBalloonShow
         {
-            add
-            {
-                if (_balloonShow == null)
-                {
-                    BridgeConnector.Socket.On("tray-balloon-show-event" + GetHashCode(), () =>
-                    {
-                        _balloonShow();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-balloon-show", GetHashCode());
-                }
-                _balloonShow += value;
-            }
-            remove
-            {
-                _balloonShow -= value;
-
-                if (_balloonShow == null)
-                    BridgeConnector.Socket.Off("tray-balloon-show-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("tray-balloon-show", GetHashCode(), _balloonShow, value);
+            remove => ApiEventManager.RemoveEvent("tray-balloon-show", GetHashCode(), _balloonShow, value);
         }
 
         private event Action _balloonShow;
@@ -144,26 +65,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnBalloonClick
         {
-            add
-            {
-                if (_balloonClick == null)
-                {
-                    BridgeConnector.Socket.On("tray-balloon-click-event" + GetHashCode(), () =>
-                    {
-                        _balloonClick();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-tray-balloon-click", GetHashCode());
-                }
-                _balloonClick += value;
-            }
-            remove
-            {
-                _balloonClick -= value;
-
-                if (_balloonClick == null)
-                    BridgeConnector.Socket.Off("tray-balloon-click-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("tray-balloon-click", GetHashCode(), _balloonClick, value);
+            remove => ApiEventManager.RemoveEvent("tray-balloon-click", GetHashCode(), _balloonClick, value);
         }
 
         private event Action _balloonClick;
@@ -174,26 +77,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action OnBalloonClosed
         {
-            add
-            {
-                if (_balloonClosed == null)
-                {
-                    BridgeConnector.Socket.On("tray-balloon-closed-event" + GetHashCode(), () =>
-                    {
-                        _balloonClosed();
-                    });
-                    
-                    BridgeConnector.Socket.Emit("register-tray-balloon-closed", GetHashCode());
-                }
-                _balloonClosed += value;
-            }
-            remove
-            {
-                _balloonClosed -= value;
-
-                if (_balloonClosed == null)
-                    BridgeConnector.Socket.Off("tray-balloon-closed-event" + GetHashCode());
-            }
+            add => ApiEventManager.AddEvent("tray-balloon-closed", GetHashCode(), _balloonClosed, value);
+            remove => ApiEventManager.RemoveEvent("tray-balloon-closed", GetHashCode(), _balloonClosed, value);
         }
 
         private event Action _balloonClosed;

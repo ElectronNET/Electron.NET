@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.Common;
 
 namespace ElectronNET.API
 {
@@ -183,28 +184,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action Updated
         {
-            add
-            {
-                if (_updated == null)
-                {
-                    BridgeConnector.Socket.On("nativeTheme-updated" + GetHashCode(), () =>
-                    {
-                        _updated();
-                    });
-
-                    BridgeConnector.Socket.Emit("register-nativeTheme-updated-event", GetHashCode());
-                }
-                _updated += value;
-            }
-            remove
-            {
-                _updated -= value;
-
-                if (_updated == null)
-                {
-                    BridgeConnector.Socket.Off("nativeTheme-updated" + GetHashCode());
-                }
-            }
+            add => ApiEventManager.AddEvent("nativeTheme-updated", GetHashCode(), _updated, value);
+            remove => ApiEventManager.RemoveEvent("nativeTheme-updated", GetHashCode(), _updated, value);
         }
 
         private event Action _updated;
