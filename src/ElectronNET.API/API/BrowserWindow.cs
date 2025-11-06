@@ -23,6 +23,8 @@ using ElectronNET.Common;
 /// </summary>
 public class BrowserWindow : ApiBase
 {
+    protected override string SocketEventCompleteSuffix => "-completed";
+
     /// <summary>
     /// Gets the identifier.
     /// </summary>
@@ -339,7 +341,8 @@ public class BrowserWindow : ApiBase
 
     private event Action _newWindowForTab;
 
-    internal BrowserWindow(int id) {
+    internal BrowserWindow(int id)
+    {
         Id = id;
         WebContents = new WebContents(id);
     }
@@ -371,39 +374,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is focused.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFocusedAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isFocused-completed", (isFocused) => {
-            BridgeConnector.Socket.Off("browserWindow-isFocused-completed");
-
-            taskCompletionSource.SetResult((bool)isFocused);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsFocused", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsFocusedAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Whether the window is destroyed.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsDestroyedAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isDestroyed-completed", (isDestroyed) => {
-            BridgeConnector.Socket.Off("browserWindow-isDestroyed-completed");
-
-            taskCompletionSource.SetResult((bool)isDestroyed);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsDestroyed", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsDestroyedAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Shows and gives focus to the window.
@@ -424,39 +401,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is visible to the user.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsVisibleAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isVisible-completed", (isVisible) => {
-            BridgeConnector.Socket.Off("browserWindow-isVisible-completed");
-
-            taskCompletionSource.SetResult((bool)isVisible);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsVisible", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsVisibleAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Whether current window is a modal window.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsModalAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isModal-completed", (isModal) => {
-            BridgeConnector.Socket.Off("browserWindow-isModal-completed");
-
-            taskCompletionSource.SetResult((bool)isModal);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsModal", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsModalAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Maximizes the window. This will also show (but not focus) the window if it isn’t being displayed already.
@@ -472,20 +423,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is maximized.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMaximizedAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMaximized-completed", (isMaximized) => {
-            BridgeConnector.Socket.Off("browserWindow-isMaximized-completed");
-
-            taskCompletionSource.SetResult((bool)isMaximized);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMaximized", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMaximizedAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Minimizes the window. On some platforms the minimized window will be shown in the Dock.
@@ -501,20 +439,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is minimized.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMinimizedAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMinimized-completed", (isMinimized) => {
-            BridgeConnector.Socket.Off("browserWindow-isMinimized-completed");
-
-            taskCompletionSource.SetResult((bool)isMinimized);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMinimized", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMinimizedAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should be in fullscreen mode.
@@ -526,20 +451,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is in fullscreen mode.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFullScreenAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isFullScreen-completed", (isFullScreen) => {
-            BridgeConnector.Socket.Off("browserWindow-isFullScreen-completed");
-
-            taskCompletionSource.SetResult((bool)isFullScreen);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsFullScreen", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsFullScreenAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
@@ -615,20 +527,7 @@ public class BrowserWindow : ApiBase
     /// Gets the bounds asynchronous.
     /// </summary>
     /// <returns></returns>
-    public Task<Rectangle> GetBoundsAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-        BridgeConnector.Socket.On("browserWindow-getBounds-completed", (getBounds) => {
-            BridgeConnector.Socket.Off("browserWindow-getBounds-completed");
-
-            taskCompletionSource.SetResult(((JObject)getBounds).ToObject<Rectangle>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetBounds", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<Rectangle> GetBoundsAsync() => this.GetPropertyAsync<Rectangle>();
 
     /// <summary>
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
@@ -647,20 +546,7 @@ public class BrowserWindow : ApiBase
     /// Gets the content bounds asynchronous.
     /// </summary>
     /// <returns></returns>
-    public Task<Rectangle> GetContentBoundsAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<Rectangle>();
-
-        BridgeConnector.Socket.On("browserWindow-getContentBounds-completed", (getContentBounds) => {
-            BridgeConnector.Socket.Off("browserWindow-getContentBounds-completed");
-
-            taskCompletionSource.SetResult(((JObject)getContentBounds).ToObject<Rectangle>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetContentBounds", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<Rectangle> GetContentBoundsAsync() => this.GetPropertyAsync<Rectangle>();
 
     /// <summary>
     /// Resizes the window to width and height.
@@ -681,20 +567,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetSizeAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-        BridgeConnector.Socket.On("browserWindow-getSize-completed", (size) => {
-            BridgeConnector.Socket.Off("browserWindow-getSize-completed");
-
-            taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetSize", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<int[]> GetSizeAsync() => this.GetPropertyAsync<int[]>();
 
     /// <summary>
     /// Resizes the window’s client area (e.g. the web page) to width and height.
@@ -715,20 +588,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s client area’s width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetContentSizeAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-        BridgeConnector.Socket.On("browserWindow-getContentSize-completed", (size) => {
-            BridgeConnector.Socket.Off("browserWindow-getContentSize-completed");
-
-            taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetContentSize", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<int[]> GetContentSizeAsync() => this.GetPropertyAsync<int[]>();
 
     /// <summary>
     /// Sets the minimum size of window to width and height.
@@ -741,20 +601,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s minimum width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetMinimumSizeAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-        BridgeConnector.Socket.On("browserWindow-getMinimumSize-completed", (size) => {
-            BridgeConnector.Socket.Off("browserWindow-getMinimumSize-completed");
-
-            taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetMinimumSize", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<int[]> GetMinimumSizeAsync() => this.GetPropertyAsync<int[]>();
 
     /// <summary>
     /// Sets the maximum size of window to width and height.
@@ -767,20 +614,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s maximum width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetMaximumSizeAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-        BridgeConnector.Socket.On("browserWindow-getMaximumSize-completed", (size) => {
-            BridgeConnector.Socket.Off("browserWindow-getMaximumSize-completed");
-
-            taskCompletionSource.SetResult(((JArray)size).ToObject<int[]>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetMaximumSize", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<int[]> GetMaximumSizeAsync() => this.GetPropertyAsync<int[]>();
 
     /// <summary>
     /// Sets whether the window can be manually resized by user.
@@ -792,20 +626,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window can be manually resized by user.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsResizableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isResizable-completed", (resizable) => {
-            BridgeConnector.Socket.Off("browserWindow-isResizable-completed");
-
-            taskCompletionSource.SetResult((bool)resizable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsResizable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsResizableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be moved by user. On Linux does nothing.
@@ -819,20 +640,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMovableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMovable-completed", (movable) => {
-            BridgeConnector.Socket.Off("browserWindow-isMovable-completed");
-
-            taskCompletionSource.SetResult((bool)movable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMovable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMovableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually minimized by user. On Linux does nothing.
@@ -846,20 +654,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMinimizableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMinimizable-completed", (minimizable) => {
-            BridgeConnector.Socket.Off("browserWindow-isMinimizable-completed");
-
-            taskCompletionSource.SetResult((bool)minimizable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMinimizable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMinimizableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually maximized by user. On Linux does nothing.
@@ -873,20 +668,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMaximizableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMaximizable-completed", (maximizable) => {
-            BridgeConnector.Socket.Off("browserWindow-isMaximizable-completed");
-
-            taskCompletionSource.SetResult((bool)maximizable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMaximizable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMaximizableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
@@ -898,20 +680,7 @@ public class BrowserWindow : ApiBase
     /// Whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFullScreenableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isFullScreenable-completed", (fullscreenable) => {
-            BridgeConnector.Socket.Off("browserWindow-isFullScreenable-completed");
-
-            taskCompletionSource.SetResult((bool)fullscreenable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsFullScreenable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsFullScreenableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually closed by user. On Linux does nothing.
@@ -925,20 +694,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsClosableAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isClosable-completed", (closable) => {
-            BridgeConnector.Socket.Off("browserWindow-isClosable-completed");
-
-            taskCompletionSource.SetResult((bool)closable);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsClosable", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsClosableAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should show always on top of other windows. 
@@ -976,20 +732,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is always on top of other windows.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsAlwaysOnTopAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isAlwaysOnTop-completed", (isAlwaysOnTop) => {
-            BridgeConnector.Socket.Off("browserWindow-isAlwaysOnTop-completed");
-
-            taskCompletionSource.SetResult((bool)isAlwaysOnTop);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsAlwaysOnTop", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsAlwaysOnTopAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Moves window to the center of the screen.
@@ -1038,20 +781,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s current position.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetPositionAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<int[]>();
-
-        BridgeConnector.Socket.On("browserWindow-getPosition-completed", (position) => {
-            BridgeConnector.Socket.Off("browserWindow-getPosition-completed");
-
-            taskCompletionSource.SetResult(((JArray)position).ToObject<int[]>());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetPosition", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<int[]> GetPositionAsync() => this.GetPropertyAsync<int[]>();
 
     /// <summary>
     /// Changes the title of native window to title.
@@ -1065,20 +795,7 @@ public class BrowserWindow : ApiBase
     /// Note: The title of web page can be different from the title of the native window.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetTitleAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<string>();
-
-        BridgeConnector.Socket.On("browserWindow-getTitle-completed", (title) => {
-            BridgeConnector.Socket.Off("browserWindow-getTitle-completed");
-
-            taskCompletionSource.SetResult(title.ToString());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetTitle", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<string> GetTitleAsync() => this.GetPropertyAsync<string>();
 
     /// <summary>
     /// Changes the attachment point for sheets on macOS. 
@@ -1119,39 +836,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is in kiosk mode.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsKioskAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isKiosk-completed", (isKiosk) => {
-            BridgeConnector.Socket.Off("browserWindow-isKiosk-completed");
-
-            taskCompletionSource.SetResult((bool)isKiosk);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsKiosk", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsKioskAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Returns the native type of the handle is HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.
     /// </summary>
     /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
-    public Task<string> GetNativeWindowHandle()
-    {
-        var taskCompletionSource = new TaskCompletionSource<string>();
-
-        BridgeConnector.Socket.On("browserWindow-getNativeWindowHandle-completed", (nativeWindowHandle) =>
-        {
-            BridgeConnector.Socket.Off("browserWindow-getNativeWindowHandle-completed");
-            taskCompletionSource.SetResult(nativeWindowHandle.ToString());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetNativeWindowHandle", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<string> GetNativeWindowHandle() => this.GetPropertyAsync<string>();
 
     /// <summary>
     /// Sets the pathname of the file the window represents, 
@@ -1164,20 +855,7 @@ public class BrowserWindow : ApiBase
     /// The pathname of the file the window represents.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetRepresentedFilenameAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<string>();
-
-        BridgeConnector.Socket.On("browserWindow-getRepresentedFilename-completed", (pathname) => {
-            BridgeConnector.Socket.Off("browserWindow-getRepresentedFilename-completed");
-
-            taskCompletionSource.SetResult(pathname.ToString());
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetRepresentedFilename", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<string> GetRepresentedFilenameAsync() => this.GetPropertyAsync<string>();
 
     /// <summary>
     /// Specifies whether the window’s document has been edited, 
@@ -1190,20 +868,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window’s document has been edited.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsDocumentEditedAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isDocumentEdited-completed", (edited) => {
-            BridgeConnector.Socket.Off("browserWindow-isDocumentEdited-completed");
-
-            taskCompletionSource.SetResult((bool)edited);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsDocumentEdited", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsDocumentEditedAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Focuses the on web view.
@@ -1308,20 +973,7 @@ public class BrowserWindow : ApiBase
     /// On Windows and Linux always returns true.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> HasShadowAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-hasShadow-completed", (hasShadow) => {
-            BridgeConnector.Socket.Off("browserWindow-hasShadow-completed");
-
-            taskCompletionSource.SetResult((bool)hasShadow);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowHasShadow", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> HasShadowAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Gets the thumbar buttons.
@@ -1348,7 +1000,8 @@ public class BrowserWindow : ApiBase
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On("browserWindowSetThumbarButtons-completed", (success) => {
+        BridgeConnector.Socket.On("browserWindowSetThumbarButtons-completed", (success) =>
+        {
             BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
 
             taskCompletionSource.SetResult((bool)success);
@@ -1360,7 +1013,8 @@ public class BrowserWindow : ApiBase
         _thumbarButtons.AddRange(thumbarButtons);
 
         BridgeConnector.Socket.Off("thumbarButtonClicked");
-        BridgeConnector.Socket.On("thumbarButtonClicked", (id) => {
+        BridgeConnector.Socket.On("thumbarButtonClicked", (id) =>
+        {
             ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.ToString());
             thumbarButton?.Click();
         });
@@ -1409,20 +1063,7 @@ public class BrowserWindow : ApiBase
     /// Whether menu bar automatically hides itself.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMenuBarAutoHideAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMenuBarAutoHide-completed", (isMenuBarAutoHide) => {
-            BridgeConnector.Socket.Off("browserWindow-isMenuBarAutoHide-completed");
-
-            taskCompletionSource.SetResult((bool)isMenuBarAutoHide);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMenuBarAutoHide", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMenuBarAutoHideAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the menu bar should be visible. If the menu bar is auto-hide,
@@ -1435,20 +1076,7 @@ public class BrowserWindow : ApiBase
     /// Whether the menu bar is visible.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMenuBarVisibleAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isMenuBarVisible-completed", (isMenuBarVisible) => {
-            BridgeConnector.Socket.Off("browserWindow-isMenuBarVisible-completed");
-
-            taskCompletionSource.SetResult((bool)isMenuBarVisible);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsMenuBarVisible", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsMenuBarVisibleAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should be visible on all workspaces.
@@ -1464,20 +1092,7 @@ public class BrowserWindow : ApiBase
     /// Note: This API always returns false on Windows.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsVisibleOnAllWorkspacesAsync()
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-
-        BridgeConnector.Socket.On("browserWindow-isVisibleOnAllWorkspaces-completed", (isVisibleOnAllWorkspaces) => {
-            BridgeConnector.Socket.Off("browserWindow-isVisibleOnAllWorkspaces-completed");
-
-            taskCompletionSource.SetResult((bool)isVisibleOnAllWorkspaces);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowIsVisibleOnAllWorkspaces", Id);
-
-        return taskCompletionSource.Task;
-    }
+    public Task<bool> IsVisibleOnAllWorkspacesAsync() => this.GetPropertyAsync<bool>();
 
     /// <summary>
     /// Makes the window ignore all mouse events.
@@ -1514,49 +1129,29 @@ public class BrowserWindow : ApiBase
     /// The parent window.
     /// </summary>
     /// <returns></returns>
-    public Task<BrowserWindow> GetParentWindowAsync()
+    public async Task<BrowserWindow> GetParentWindowAsync()
     {
-        var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
-
-        BridgeConnector.Socket.On("browserWindow-getParentWindow-completed", (id) => {
-            BridgeConnector.Socket.Off("browserWindow-getParentWindow-completed");
-            var browserWindowId = int.Parse(id.ToString());
-            var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
-
-            taskCompletionSource.SetResult(browserWindow);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetParentWindow", Id);
-
-        return taskCompletionSource.Task;
+        var browserWindowId = await this.GetPropertyAsync<int>().ConfigureAwait(false);
+        var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
+        return browserWindow;
     }
 
     /// <summary>
     /// All child windows.
     /// </summary>
     /// <returns></returns>
-    public Task<List<BrowserWindow>> GetChildWindowsAsync()
+    public async Task<List<BrowserWindow>> GetChildWindowsAsync()
     {
-        var taskCompletionSource = new TaskCompletionSource<List<BrowserWindow>>();
+        var browserWindowIds = await this.GetPropertyAsync<int[]>().ConfigureAwait(false);
+        var browserWindows = new List<BrowserWindow>();
 
-        BridgeConnector.Socket.On("browserWindow-getChildWindows-completed", (ids) => {
-            BridgeConnector.Socket.Off("browserWindow-getChildWindows-completed");
-            var browserWindowIds = ((JArray)ids).ToObject<int[]>();
-            var browserWindows = new List<BrowserWindow>();
+        foreach (var id in browserWindowIds)
+        {
+            var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == id);
+            browserWindows.Add(browserWindow);
+        }
 
-            browserWindowIds.ToList().ForEach(id =>
-            {
-                var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == id);
-                browserWindows.Add(browserWindow);
-            });
-
-
-            taskCompletionSource.SetResult(browserWindows);
-        });
-
-        BridgeConnector.Socket.Emit("browserWindowGetChildWindows", Id);
-
-        return taskCompletionSource.Task;
+        return browserWindows;
     }
 
     /// <summary>
