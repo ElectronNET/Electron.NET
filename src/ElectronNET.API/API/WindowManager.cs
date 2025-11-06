@@ -153,12 +153,7 @@ namespace ElectronNET.API
                     options.X -= 7;
                 }
 
-                var ownjsonSerializer = new JsonSerializer()
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
-                };
-                await BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, ownjsonSerializer), loadUrl).ConfigureAwait(false);
+                await BridgeConnector.Socket.Emit("createBrowserWindow", JObject.FromObject(options, this._jsonSerializer), loadUrl).ConfigureAwait(false);
             }
 
             return await taskCompletionSource.Task.ConfigureAwait(false);
@@ -216,8 +211,7 @@ namespace ElectronNET.API
         private readonly JsonSerializer _jsonSerializer = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Ignore
         };
     }
 }
