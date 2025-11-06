@@ -16,8 +16,10 @@ namespace ElectronNET.API
     /// <summary>
     /// Control your application's event lifecycle.
     /// </summary>
-    public sealed class App
+    public sealed class App : ApiBase
     {
+        protected override string SocketEventCompleteSuffix => "Completed";
+
         /// <summary>
         /// Emitted when all windows have been closed.
         /// <para/>
@@ -430,7 +432,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Quit()
         {
-            BridgeConnector.Socket.Emit("appQuit");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -440,7 +442,7 @@ namespace ElectronNET.API
         /// <param name="exitCode">Exits immediately with exitCode. exitCode defaults to 0.</param>
         public void Exit(int exitCode = 0)
         {
-            BridgeConnector.Socket.Emit("appExit", exitCode);
+            this.CallMethod1(exitCode);
         }
 
         public void DisposeSocket()
@@ -460,7 +462,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Relaunch()
         {
-            BridgeConnector.Socket.Emit("appRelaunch");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -478,7 +480,7 @@ namespace ElectronNET.API
         /// <param name="relaunchOptions">Options for the relaunch.</param>
         public void Relaunch(RelaunchOptions relaunchOptions)
         {
-            BridgeConnector.Socket.Emit("appRelaunch", JObject.FromObject(relaunchOptions, _jsonSerializer));
+            this.CallMethod1(JObject.FromObject(relaunchOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -487,7 +489,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus()
         {
-            BridgeConnector.Socket.Emit("appFocus");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -498,7 +500,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Focus(FocusOptions focusOptions)
         {
-            BridgeConnector.Socket.Emit("appFocus", JObject.FromObject(focusOptions, _jsonSerializer));
+            this.CallMethod1(JObject.FromObject(focusOptions, _jsonSerializer));
         }
 
         /// <summary>
@@ -506,7 +508,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Hide()
         {
-            BridgeConnector.Socket.Emit("appHide");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -514,7 +516,7 @@ namespace ElectronNET.API
         /// </summary>
         public void Show()
         {
-            BridgeConnector.Socket.Emit("appShow");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -550,7 +552,7 @@ namespace ElectronNET.API
         /// <param name="path">A custom path for your logs. Must be absolute.</param>
         public void SetAppLogsPath(string path)
         {
-            BridgeConnector.Socket.Emit("appSetAppLogsPath", path);
+            this.CallMethod1(path);
         }
 
         /// <summary>
@@ -596,7 +598,7 @@ namespace ElectronNET.API
         /// </summary>
         public void SetPath(PathName name, string path)
         {
-            BridgeConnector.Socket.Emit("appSetPath", name.GetDescription(), path);
+            this.CallMethod2(name.GetDescription(), path);
         }
 
         /// <summary>
@@ -659,7 +661,7 @@ namespace ElectronNET.API
         /// <param name="path">Path to add.</param>
         public void AddRecentDocument(string path)
         {
-            BridgeConnector.Socket.Emit("appAddRecentDocument", path);
+            this.CallMethod1(path);
         }
 
         /// <summary>
@@ -667,7 +669,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ClearRecentDocuments()
         {
-            BridgeConnector.Socket.Emit("appClearRecentDocuments");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -975,7 +977,7 @@ namespace ElectronNET.API
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
         public void SetJumpList(JumpListCategory[] categories)
         {
-            BridgeConnector.Socket.Emit("appSetJumpList", JArray.FromObject(categories, _jsonSerializer));
+            this.CallMethod1(JArray.FromObject(categories, _jsonSerializer));
         }
 
         /// <summary>
@@ -1035,7 +1037,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ReleaseSingleInstanceLock()
         {
-            BridgeConnector.Socket.Emit("appReleaseSingleInstanceLock");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -1090,7 +1092,7 @@ namespace ElectronNET.API
         /// </param>
         public void SetUserActivity(string type, object userInfo, string webpageUrl)
         {
-            BridgeConnector.Socket.Emit("appSetUserActivity", type, userInfo, webpageUrl);
+            this.CallMethod3(type, userInfo, webpageUrl);
         }
 
         /// <summary>
@@ -1122,7 +1124,7 @@ namespace ElectronNET.API
         /// </summary>
         public void InvalidateCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appInvalidateCurrentActivity");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -1130,7 +1132,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ResignCurrentActivity()
         {
-            BridgeConnector.Socket.Emit("appResignCurrentActivity");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -1139,7 +1141,7 @@ namespace ElectronNET.API
         /// <param name="id">Model Id.</param>
         public void SetAppUserModelId(string id)
         {
-            BridgeConnector.Socket.Emit("appSetAppUserModelId", id);
+            this.CallMethod1(id);
         }
 
         /// TODO: Check new parameter which is a function [App.ImportCertificate]
@@ -1365,7 +1367,7 @@ namespace ElectronNET.API
         /// <param name="loginSettings"></param>
         public void SetLoginItemSettings(LoginSettings loginSettings)
         {
-            BridgeConnector.Socket.Emit("appSetLoginItemSettings", JObject.FromObject(loginSettings, _jsonSerializer));
+            this.CallMethod1(JObject.FromObject(loginSettings, _jsonSerializer));
         }
 
         /// <summary>
@@ -1406,7 +1408,7 @@ namespace ElectronNET.API
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
         public void SetAccessibilitySupportEnabled(bool enabled)
         {
-            BridgeConnector.Socket.Emit("appSetAccessibilitySupportEnabled", enabled);
+            this.CallMethod1(enabled);
         }
 
         /// <summary>
@@ -1415,7 +1417,7 @@ namespace ElectronNET.API
         /// </summary>
         public void ShowAboutPanel()
         {
-            BridgeConnector.Socket.Emit("appShowAboutPanel");
+            this.CallMethod0();
         }
 
         /// <summary>
@@ -1431,7 +1433,7 @@ namespace ElectronNET.API
         /// <param name="options">About panel options.</param>
         public void SetAboutPanelOptions(AboutPanelOptions options)
         {
-            BridgeConnector.Socket.Emit("appSetAboutPanelOptions", JObject.FromObject(options, _jsonSerializer));
+            this.CallMethod1(JObject.FromObject(options, _jsonSerializer));
         }
 
         /// <summary>

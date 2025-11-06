@@ -13,10 +13,15 @@ using ElectronNET.Common;
 
 namespace ElectronNET.API;
 
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using ElectronNET.Common;
+
 /// <summary>
 /// Create and control browser windows.
 /// </summary>
-public class BrowserWindow
+public class BrowserWindow : ApiBase
 {
     /// <summary>
     /// Gets the identifier.
@@ -24,7 +29,7 @@ public class BrowserWindow
     /// <value>
     /// The identifier.
     /// </value>
-    public int Id { get; private set; }
+    public override int Id { get; protected set; }
 
     /// <summary>
     /// Emitted when the web page has been rendered (while not being shown) and 
@@ -344,35 +349,23 @@ public class BrowserWindow
     /// emitted for the web page, and close event will also not be emitted 
     /// for this window, but it guarantees the closed event will be emitted.
     /// </summary>
-    public void Destroy()
-    {
-        BridgeConnector.Socket.Emit("browserWindowDestroy", Id);
-    }
+    public void Destroy() => this.CallMethod0();
 
     /// <summary>
     /// Try to close the window. This has the same effect as a user manually 
     /// clicking the close button of the window. The web page may cancel the close though. 
     /// </summary>
-    public void Close()
-    {
-        BridgeConnector.Socket.Emit("browserWindowClose", Id);
-    }
+    public void Close() => this.CallMethod0();
 
     /// <summary>
     /// Focuses on the window.
     /// </summary>
-    public void Focus()
-    {
-        BridgeConnector.Socket.Emit("browserWindowFocus", Id);
-    }
+    public void Focus() => this.CallMethod0();
 
     /// <summary>
     /// Removes focus from the window.
     /// </summary>
-    public void Blur()
-    {
-        BridgeConnector.Socket.Emit("browserWindowBlur", Id);
-    }
+    public void Blur() => this.CallMethod0();
 
     /// <summary>
     /// Whether the window is focused.
@@ -415,26 +408,17 @@ public class BrowserWindow
     /// <summary>
     /// Shows and gives focus to the window.
     /// </summary>
-    public void Show()
-    {
-        BridgeConnector.Socket.Emit("browserWindowShow", Id);
-    }
+    public void Show() => this.CallMethod0();
 
     /// <summary>
     /// Shows the window but doesn’t focus on it.
     /// </summary>
-    public void ShowInactive()
-    {
-        BridgeConnector.Socket.Emit("browserWindowShowInactive", Id);
-    }
+    public void ShowInactive() => this.CallMethod0();
 
     /// <summary>
     /// Hides the window.
     /// </summary>
-    public void Hide()
-    {
-        BridgeConnector.Socket.Emit("browserWindowHide", Id);
-    }
+    public void Hide() => this.CallMethod0();
 
     /// <summary>
     /// Whether the window is visible to the user.
@@ -477,18 +461,12 @@ public class BrowserWindow
     /// <summary>
     /// Maximizes the window. This will also show (but not focus) the window if it isn’t being displayed already.
     /// </summary>
-    public void Maximize()
-    {
-        BridgeConnector.Socket.Emit("browserWindowMaximize", Id);
-    }
+    public void Maximize() => this.CallMethod0();
 
     /// <summary>
     /// Unmaximizes the window.
     /// </summary>
-    public void Unmaximize()
-    {
-        BridgeConnector.Socket.Emit("browserWindowUnmaximize", Id);
-    }
+    public void Unmaximize() => this.CallMethod0();
 
     /// <summary>
     /// Whether the window is maximized.
@@ -512,18 +490,12 @@ public class BrowserWindow
     /// <summary>
     /// Minimizes the window. On some platforms the minimized window will be shown in the Dock.
     /// </summary>
-    public void Minimize()
-    {
-        BridgeConnector.Socket.Emit("browserWindowMinimize", Id);
-    }
+    public void Minimize() => this.CallMethod0();
 
     /// <summary>
     /// Restores the window from minimized state to its previous state.
     /// </summary>
-    public void Restore()
-    {
-        BridgeConnector.Socket.Emit("browserWindowRestore", Id);
-    }
+    public void Restore() => this.CallMethod0();
 
     /// <summary>
     /// Whether the window is minimized.
@@ -547,10 +519,8 @@ public class BrowserWindow
     /// <summary>
     /// Sets whether the window should be in fullscreen mode.
     /// </summary>
-    public void SetFullScreen(bool flag)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetFullScreen", Id, flag);
-    }
+    /// <param name="flag"></param>
+    public void SetFullScreen(bool flag) => this.CallMethod1(flag);
 
     /// <summary>
     /// Whether the window is in fullscreen mode.
@@ -585,10 +555,8 @@ public class BrowserWindow
     /// </summary>
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
     /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
-    public void SetAspectRatio(double aspectRatio, Size extraSize)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
-    }
+    public void SetAspectRatio(double aspectRatio, Size extraSize) =>
+        this.CallMethod2(aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
 
     /// <summary>
     /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
@@ -604,10 +572,8 @@ public class BrowserWindow
     /// </summary>
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
     /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
-    public void SetAspectRatio(int aspectRatio, Size extraSize)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAspectRatio", Id, aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
-    }
+    public void SetAspectRatio(int aspectRatio, Size extraSize) =>
+        this.CallMethod2(aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
 
     /// <summary>
     /// Uses Quick Look to preview a file at a given path.
@@ -615,10 +581,7 @@ public class BrowserWindow
     /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as 
     /// Quick Look uses the file name and file extension on the path to determine the content type of the 
     /// file to open.</param>
-    public void PreviewFile(string path)
-    {
-        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path);
-    }
+    public void PreviewFile(string path) => this.CallMethod1(path);
 
     /// <summary>
     /// Uses Quick Look to preview a file at a given path.
@@ -628,37 +591,25 @@ public class BrowserWindow
     /// file to open.</param>
     /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is 
     /// purely visual and does not affect the content type of the file. Defaults to path.</param>
-    public void PreviewFile(string path, string displayname)
-    {
-        BridgeConnector.Socket.Emit("browserWindowPreviewFile", Id, path, displayname);
-    }
+    public void PreviewFile(string path, string displayname) => this.CallMethod2(path, displayname);
 
     /// <summary>
     /// Closes the currently open Quick Look panel.
     /// </summary>
-    public void CloseFilePreview()
-    {
-        BridgeConnector.Socket.Emit("browserWindowCloseFilePreview", Id);
-    }
+    public void CloseFilePreview() => this.CallMethod0();
 
     /// <summary>
     /// Resizes and moves the window to the supplied bounds
     /// </summary>
     /// <param name="bounds"></param>
-    public void SetBounds(Rectangle bounds)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
-    }
+    public void SetBounds(Rectangle bounds) => this.CallMethod1(JObject.FromObject(bounds, _jsonSerializer));
 
     /// <summary>
     /// Resizes and moves the window to the supplied bounds
     /// </summary>
     /// <param name="bounds"></param>
     /// <param name="animate"></param>
-    public void SetBounds(Rectangle bounds, bool animate)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
-    }
+    public void SetBounds(Rectangle bounds, bool animate) => this.CallMethod2(JObject.FromObject(bounds, _jsonSerializer), animate);
 
     /// <summary>
     /// Gets the bounds asynchronous.
@@ -683,20 +634,14 @@ public class BrowserWindow
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
     /// </summary>
     /// <param name="bounds"></param>
-    public void SetContentBounds(Rectangle bounds)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer));
-    }
+    public void SetContentBounds(Rectangle bounds) => this.CallMethod1(JObject.FromObject(bounds, _jsonSerializer));
 
     /// <summary>
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
     /// </summary>
     /// <param name="bounds"></param>
     /// <param name="animate"></param>
-    public void SetContentBounds(Rectangle bounds, bool animate)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetContentBounds", Id, JObject.FromObject(bounds, _jsonSerializer), animate);
-    }
+    public void SetContentBounds(Rectangle bounds, bool animate) => this.CallMethod2(JObject.FromObject(bounds, _jsonSerializer), animate);
 
     /// <summary>
     /// Gets the content bounds asynchronous.
@@ -722,10 +667,7 @@ public class BrowserWindow
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public void SetSize(int width, int height)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height);
-    }
+    public void SetSize(int width, int height) => this.CallMethod2(width, height);
 
     /// <summary>
     /// Resizes the window to width and height.
@@ -733,10 +675,7 @@ public class BrowserWindow
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <param name="animate"></param>
-    public void SetSize(int width, int height, bool animate)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetSize", Id, width, height, animate);
-    }
+    public void SetSize(int width, int height, bool animate) => this.CallMethod3(width, height, animate);
 
     /// <summary>
     /// Contains the window’s width and height.
@@ -762,10 +701,7 @@ public class BrowserWindow
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public void SetContentSize(int width, int height)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height);
-    }
+    public void SetContentSize(int width, int height) => this.CallMethod2(width, height);
 
     /// <summary>
     /// Resizes the window’s client area (e.g. the web page) to width and height.
@@ -773,10 +709,7 @@ public class BrowserWindow
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <param name="animate"></param>
-    public void SetContentSize(int width, int height, bool animate)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetContentSize", Id, width, height, animate);
-    }
+    public void SetContentSize(int width, int height, bool animate) => this.CallMethod3(width, height, animate);
 
     /// <summary>
     /// Contains the window’s client area’s width and height.
@@ -802,10 +735,7 @@ public class BrowserWindow
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public void SetMinimumSize(int width, int height)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMinimumSize", Id, width, height);
-    }
+    public void SetMinimumSize(int width, int height) => this.CallMethod2(width, height);
 
     /// <summary>
     /// Contains the window’s minimum width and height.
@@ -831,10 +761,7 @@ public class BrowserWindow
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public void SetMaximumSize(int width, int height)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMaximumSize", Id, width, height);
-    }
+    public void SetMaximumSize(int width, int height) => this.CallMethod2(width, height);
 
     /// <summary>
     /// Contains the window’s maximum width and height.
@@ -859,10 +786,7 @@ public class BrowserWindow
     /// Sets whether the window can be manually resized by user.
     /// </summary>
     /// <param name="resizable"></param>
-    public void SetResizable(bool resizable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetResizable", Id, resizable);
-    }
+    public void SetResizable(bool resizable) => this.CallMethod1(resizable);
 
     /// <summary>
     /// Whether the window can be manually resized by user.
@@ -887,10 +811,7 @@ public class BrowserWindow
     /// Sets whether the window can be moved by user. On Linux does nothing.
     /// </summary>
     /// <param name="movable"></param>
-    public void SetMovable(bool movable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMovable", Id, movable);
-    }
+    public void SetMovable(bool movable) => this.CallMethod1(movable);
 
     /// <summary>
     /// Whether the window can be moved by user.
@@ -917,10 +838,7 @@ public class BrowserWindow
     /// Sets whether the window can be manually minimized by user. On Linux does nothing.
     /// </summary>
     /// <param name="minimizable"></param>
-    public void SetMinimizable(bool minimizable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMinimizable", Id, minimizable);
-    }
+    public void SetMinimizable(bool minimizable) => this.CallMethod1(minimizable);
 
     /// <summary>
     /// Whether the window can be manually minimized by user.
@@ -947,10 +865,7 @@ public class BrowserWindow
     /// Sets whether the window can be manually maximized by user. On Linux does nothing.
     /// </summary>
     /// <param name="maximizable"></param>
-    public void SetMaximizable(bool maximizable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMaximizable", Id, maximizable);
-    }
+    public void SetMaximizable(bool maximizable) => this.CallMethod1(maximizable);
 
     /// <summary>
     /// Whether the window can be manually maximized by user.
@@ -977,10 +892,7 @@ public class BrowserWindow
     /// Sets whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
     /// </summary>
     /// <param name="fullscreenable"></param>
-    public void SetFullScreenable(bool fullscreenable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetFullScreenable", Id, fullscreenable);
-    }
+    public void SetFullScreenable(bool fullscreenable) => this.CallMethod1(fullscreenable);
 
     /// <summary>
     /// Whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
@@ -1005,10 +917,7 @@ public class BrowserWindow
     /// Sets whether the window can be manually closed by user. On Linux does nothing.
     /// </summary>
     /// <param name="closable"></param>
-    public void SetClosable(bool closable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetClosable", Id, closable);
-    }
+    public void SetClosable(bool closable) => this.CallMethod1(closable);
 
     /// <summary>
     /// Whether the window can be manually closed by user.
@@ -1037,10 +946,7 @@ public class BrowserWindow
     /// window which can not be focused on.
     /// </summary>
     /// <param name="flag"></param>
-    public void SetAlwaysOnTop(bool flag)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag);
-    }
+    public void SetAlwaysOnTop(bool flag) => this.CallMethod1(flag);
 
     /// <summary>
     /// Sets whether the window should show always on top of other windows. 
@@ -1051,10 +957,7 @@ public class BrowserWindow
     /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
     /// status, pop-up-menu and screen-saver. The default is floating. 
     /// See the macOS docs</param>
-    public void SetAlwaysOnTop(bool flag, OnTopLevel level)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription());
-    }
+    public void SetAlwaysOnTop(bool flag, OnTopLevel level) => this.CallMethod2(flag, level.GetDescription());
 
     /// <summary>
     /// Sets whether the window should show always on top of other windows. 
@@ -1067,10 +970,7 @@ public class BrowserWindow
     /// See the macOS docs</param>
     /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level. 
     /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
-    public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAlwaysOnTop", Id, flag, level.GetDescription(), relativeLevel);
-    }
+    public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel) => this.CallMethod3(flag, level.GetDescription(), relativeLevel);
 
     /// <summary>
     /// Whether the window is always on top of other windows.
@@ -1094,10 +994,7 @@ public class BrowserWindow
     /// <summary>
     /// Moves window to the center of the screen.
     /// </summary>
-    public void Center()
-    {
-        BridgeConnector.Socket.Emit("browserWindowCenter", Id);
-    }
+    public void Center() => this.CallMethod0();
 
     /// <summary>
     /// Moves window to x and y.
@@ -1112,8 +1009,7 @@ public class BrowserWindow
         {
             x = x - 7;
         }
-
-        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y);
+        this.CallMethod2(x, y);
     }
 
     /// <summary>
@@ -1130,8 +1026,7 @@ public class BrowserWindow
         {
             x = x - 7;
         }
-
-        BridgeConnector.Socket.Emit("browserWindowSetPosition", Id, x, y, animate);
+        this.CallMethod3(x, y, animate);
     }
 
     private bool isWindows10()
@@ -1162,10 +1057,7 @@ public class BrowserWindow
     /// Changes the title of native window to title.
     /// </summary>
     /// <param name="title"></param>
-    public void SetTitle(string title)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetTitle", Id, title);
-    }
+    public void SetTitle(string title) => this.CallMethod1(title);
 
     /// <summary>
     /// The title of the native window.
@@ -1194,10 +1086,7 @@ public class BrowserWindow
     /// but you may want to display them beneath a HTML-rendered toolbar.
     /// </summary>
     /// <param name="offsetY"></param>
-    public void SetSheetOffset(float offsetY)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY);
-    }
+    public void SetSheetOffset(float offsetY) => this.CallMethod1(offsetY);
 
     /// <summary>
     /// Changes the attachment point for sheets on macOS. 
@@ -1206,37 +1095,25 @@ public class BrowserWindow
     /// </summary>
     /// <param name="offsetY"></param>
     /// <param name="offsetX"></param>
-    public void SetSheetOffset(float offsetY, float offsetX)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetSheetOffset", Id, offsetY, offsetX);
-    }
+    public void SetSheetOffset(float offsetY, float offsetX) => this.CallMethod2(offsetY, offsetX);
 
     /// <summary>
     /// Starts or stops flashing the window to attract user’s attention.
     /// </summary>
     /// <param name="flag"></param>
-    public void FlashFrame(bool flag)
-    {
-        BridgeConnector.Socket.Emit("browserWindowFlashFrame", Id, flag);
-    }
+    public void FlashFrame(bool flag) => this.CallMethod1(flag);
 
     /// <summary>
     /// Makes the window not show in the taskbar.
     /// </summary>
     /// <param name="skip"></param>
-    public void SetSkipTaskbar(bool skip)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetSkipTaskbar", Id, skip);
-    }
+    public void SetSkipTaskbar(bool skip) => this.CallMethod1(skip);
 
     /// <summary>
     /// Enters or leaves the kiosk mode.
     /// </summary>
     /// <param name="flag"></param>
-    public void SetKiosk(bool flag)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetKiosk", Id, flag);
-    }
+    public void SetKiosk(bool flag) => this.CallMethod1(flag);
 
     /// <summary>
     /// Whether the window is in kiosk mode.
@@ -1281,10 +1158,7 @@ public class BrowserWindow
     /// and the icon of the file will show in window’s title bar.
     /// </summary>
     /// <param name="filename"></param>
-    public void SetRepresentedFilename(string filename)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetRepresentedFilename", Id, filename);
-    }
+    public void SetRepresentedFilename(string filename) => this.CallMethod1(filename);
 
     /// <summary>
     /// The pathname of the file the window represents.
@@ -1310,10 +1184,7 @@ public class BrowserWindow
     /// and the icon in title bar will become gray when set to true.
     /// </summary>
     /// <param name="edited"></param>
-    public void SetDocumentEdited(bool edited)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetDocumentEdited", Id, edited);
-    }
+    public void SetDocumentEdited(bool edited) => this.CallMethod1(edited);
 
     /// <summary>
     /// Whether the window’s document has been edited.
@@ -1337,28 +1208,19 @@ public class BrowserWindow
     /// <summary>
     /// Focuses the on web view.
     /// </summary>
-    public void FocusOnWebView()
-    {
-        BridgeConnector.Socket.Emit("browserWindowFocusOnWebView", Id);
-    }
+    public void FocusOnWebView() => this.CallMethod0();
 
     /// <summary>
     /// Blurs the web view.
     /// </summary>
-    public void BlurWebView()
-    {
-        BridgeConnector.Socket.Emit("browserWindowBlurWebView", Id);
-    }
+    public void BlurWebView() => this.CallMethod0();
 
     /// <summary>
     /// The url can be a remote address (e.g. http://) or 
     /// a path to a local HTML file using the file:// protocol.
     /// </summary>
     /// <param name="url"></param>
-    public void LoadURL(string url)
-    {
-        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url);
-    }
+    public void LoadURL(string url) => this.CallMethod1(url);
 
     /// <summary>
     /// The url can be a remote address (e.g. http://) or 
@@ -1366,18 +1228,12 @@ public class BrowserWindow
     /// </summary>
     /// <param name="url"></param>
     /// <param name="options"></param>
-    public void LoadURL(string url, LoadURLOptions options)
-    {
-        BridgeConnector.Socket.Emit("browserWindowLoadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
-    }
+    public void LoadURL(string url, LoadURLOptions options) => this.CallMethod2(url, JObject.FromObject(options, _jsonSerializer));
 
     /// <summary>
     /// Same as webContents.reload.
     /// </summary>
-    public void Reload()
-    {
-        BridgeConnector.Socket.Emit("browserWindowReload", Id);
-    }
+    public void Reload() => this.CallMethod0();
 
     /// <summary>
     /// Gets the menu items.
@@ -1396,11 +1252,12 @@ public class BrowserWindow
     public void SetMenu(MenuItem[] menuItems)
     {
         menuItems.AddMenuItemsId();
-        BridgeConnector.Socket.Emit("browserWindowSetMenu", Id, JArray.FromObject(menuItems, _jsonSerializer));
+        this.CallMethod1(JArray.FromObject(menuItems, _jsonSerializer));
         _items.AddRange(menuItems);
 
         BridgeConnector.Socket.Off("windowMenuItemClicked");
-        BridgeConnector.Socket.On("windowMenuItemClicked", (id) => {
+        BridgeConnector.Socket.On("windowMenuItemClicked", (id) =>
+        {
             MenuItem menuItem = _items.GetMenuItem(id.ToString());
             menuItem?.Click();
         });
@@ -1409,10 +1266,7 @@ public class BrowserWindow
     /// <summary>
     /// Remove the window's menu bar.
     /// </summary>
-    public void RemoveMenu()
-    {
-        BridgeConnector.Socket.Emit("browserWindowRemoveMenu", Id);
-    }
+    public void RemoveMenu() => this.CallMethod0();
 
     /// <summary>
     /// Sets progress value in progress bar. Valid range is [0, 1.0]. Remove progress
@@ -1425,10 +1279,7 @@ public class BrowserWindow
     /// assumed.
     /// </summary>
     /// <param name="progress"></param>
-    public void SetProgressBar(double progress)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress);
-    }
+    public void SetProgressBar(double progress) => this.CallMethod1(progress);
 
     /// <summary>
     /// Sets progress value in progress bar. Valid range is [0, 1.0]. Remove progress
@@ -1442,19 +1293,14 @@ public class BrowserWindow
     /// </summary>
     /// <param name="progress"></param>
     /// <param name="progressBarOptions"></param>
-    public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetProgressBar", Id, progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
-    }
+    public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions) =>
+        this.CallMethod2(progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
 
     /// <summary>
     /// Sets whether the window should have a shadow. On Windows and Linux does nothing.
     /// </summary>
     /// <param name="hasShadow"></param>
-    public void SetHasShadow(bool hasShadow)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetHasShadow", Id, hasShadow);
-    }
+    public void SetHasShadow(bool hasShadow) => this.CallMethod1(hasShadow);
 
     /// <summary>
     /// Whether the window has a shadow.
@@ -1528,19 +1374,13 @@ public class BrowserWindow
     /// an empty region: {x: 0, y: 0, width: 0, height: 0}.
     /// </summary>
     /// <param name="rectangle"></param>
-    public void SetThumbnailClip(Rectangle rectangle)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetThumbnailClip", Id, rectangle);
-    }
+    public void SetThumbnailClip(Rectangle rectangle) => this.CallMethod1(rectangle);
 
     /// <summary>
     /// Sets the toolTip that is displayed when hovering over the window thumbnail in the taskbar.
     /// </summary>
     /// <param name="tooltip"></param>
-    public void SetThumbnailToolTip(string tooltip)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetThumbnailToolTip", Id, tooltip);
-    }
+    public void SetThumbnailToolTip(string tooltip) => this.CallMethod1(tooltip);
 
     /// <summary>
     /// Sets the properties for the window’s taskbar button.
@@ -1549,18 +1389,12 @@ public class BrowserWindow
     /// If one of those properties is not set, then neither will be used.
     /// </summary>
     /// <param name="options"></param>
-    public void SetAppDetails(AppDetailsOptions options)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAppDetails", Id, JObject.FromObject(options, _jsonSerializer));
-    }
+    public void SetAppDetails(AppDetailsOptions options) => this.CallMethod1(JObject.FromObject(options, _jsonSerializer));
 
     /// <summary>
     /// Same as webContents.showDefinitionForSelection().
     /// </summary>
-    public void ShowDefinitionForSelection()
-    {
-        BridgeConnector.Socket.Emit("browserWindowShowDefinitionForSelection", Id);
-    }
+    public void ShowDefinitionForSelection() => this.CallMethod0();
 
     /// <summary>
     /// Sets whether the window menu bar should hide itself automatically. 
@@ -1569,10 +1403,7 @@ public class BrowserWindow
     /// If the menu bar is already visible, calling setAutoHideMenuBar(true) won’t hide it immediately.
     /// </summary>
     /// <param name="hide"></param>
-    public void SetAutoHideMenuBar(bool hide)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAutoHideMenuBar", Id, hide);
-    }
+    public void SetAutoHideMenuBar(bool hide) => this.CallMethod1(hide);
 
     /// <summary>
     /// Whether menu bar automatically hides itself.
@@ -1598,10 +1429,7 @@ public class BrowserWindow
     /// users can still bring up the menu bar by pressing the single Alt key.
     /// </summary>
     /// <param name="visible"></param>
-    public void SetMenuBarVisibility(bool visible)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetMenuBarVisibility", Id, visible);
-    }
+    public void SetMenuBarVisibility(bool visible) => this.CallMethod1(visible);
 
     /// <summary>
     /// Whether the menu bar is visible.
@@ -1628,10 +1456,7 @@ public class BrowserWindow
     /// Note: This API does nothing on Windows.
     /// </summary>
     /// <param name="visible"></param>
-    public void SetVisibleOnAllWorkspaces(bool visible)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetVisibleOnAllWorkspaces", Id, visible);
-    }
+    public void SetVisibleOnAllWorkspaces(bool visible) => this.CallMethod1(visible);
 
     /// <summary>
     /// Whether the window is visible on all workspaces.
@@ -1661,10 +1486,7 @@ public class BrowserWindow
     /// below this window, but if this window has focus, it will still receive keyboard events.
     /// </summary>
     /// <param name="ignore"></param>
-    public void SetIgnoreMouseEvents(bool ignore)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetIgnoreMouseEvents", Id, ignore);
-    }
+    public void SetIgnoreMouseEvents(bool ignore) => this.CallMethod1(ignore);
 
     /// <summary>
     /// Prevents the window contents from being captured by other apps.
@@ -1673,29 +1495,20 @@ public class BrowserWindow
     /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
     /// </summary>
     /// <param name="enable"></param>
-    public void SetContentProtection(bool enable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetContentProtection", Id, enable);
-    }
+    public void SetContentProtection(bool enable) => this.CallMethod1(enable);
 
     /// <summary>
     /// Changes whether the window can be focused.
     /// </summary>
     /// <param name="focusable"></param>
-    public void SetFocusable(bool focusable)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetFocusable", Id, focusable);
-    }
+    public void SetFocusable(bool focusable) => this.CallMethod1(focusable);
 
     /// <summary>
     /// Sets parent as current window’s parent window, 
     /// passing null will turn current window into a top-level window.
     /// </summary>
     /// <param name="parent"></param>
-    public void SetParentWindow(BrowserWindow parent)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
-    }
+    public void SetParentWindow(BrowserWindow parent) => this.CallMethod1(JObject.FromObject(parent, _jsonSerializer));
 
     /// <summary>
     /// The parent window.
@@ -1750,10 +1563,7 @@ public class BrowserWindow
     /// Controls whether to hide cursor when typing.
     /// </summary>
     /// <param name="autoHide"></param>
-    public void SetAutoHideCursor(bool autoHide)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetAutoHideCursor", Id, autoHide);
-    }
+    public void SetAutoHideCursor(bool autoHide) => this.CallMethod1(autoHide);
 
     /// <summary>
     /// Adds a vibrancy effect to the browser window. 
@@ -1762,10 +1572,7 @@ public class BrowserWindow
     /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
     /// menu, popover, sidebar, medium-light or ultra-dark. 
     /// See the macOS documentation for more details.</param>
-    public void SetVibrancy(Vibrancy type)
-    {
-        BridgeConnector.Socket.Emit("browserWindowSetVibrancy", Id, type.GetDescription());
-    }
+    public void SetVibrancy(Vibrancy type) => this.CallMethod1(type.GetDescription());
 
     /// <summary>
     /// Render and control web pages.
@@ -1780,6 +1587,7 @@ public class BrowserWindow
     /// <param name="browserView"></param>
     public void SetBrowserView(BrowserView browserView)
     {
+        // This message name does not match the default ApiBase naming convention.
         BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
     }
 
