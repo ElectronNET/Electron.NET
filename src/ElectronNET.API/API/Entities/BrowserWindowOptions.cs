@@ -199,7 +199,7 @@ namespace ElectronNET.API.Entities
         public bool DarkTheme { get; set; }
 
         /// <summary>
-        /// Makes the window . Default is false.
+        /// Makes the window transparent. Default is false.
         /// </summary>
         public bool Transparent { get; set; }
 
@@ -216,6 +216,12 @@ namespace ElectronNET.API.Entities
         public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
+        /// When using a frameless window this can be used to indicate if the
+        /// standard control buttons should be shown. Default is false.
+        /// </summary>
+        public bool TitleBarOverlay { get; set; }
+
+        /// <summary>
         /// Shows the title in the tile bar in full screen mode on macOS for all
         /// titleBarStyle options.Default is false.
         /// </summary>
@@ -228,6 +234,15 @@ namespace ElectronNET.API.Entities
         /// </summary>
         [DefaultValue(true)]
         public bool ThickFrame { get; set; } = true;
+
+        /// <summary>
+        /// Whether frameless window should have rounded corners. Default is true. Setting this
+        /// property to false will prevent the window from being fullscreenable on macOS. On
+        /// Windows versions older than Windows 11 Build 22000 this property has no effect, and
+        /// frameless windows will not have rounded corners.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool RoundedCorners { get; set; } = true;
 
         /// <summary>
         /// Add a type of vibrancy effect to the window, only on macOS. Can be

@@ -10,6 +10,8 @@
 - Fixed potential race conditions (#908) @softworkz
 - Added option to use `ElectronSplashScreen` with an HTML file (#799)
 - Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
+- Added `TitleBarOverlay` property to `BrowserWindowOptions` (#909)
+- Added `RoundedCorners` property to `BrowserWindowOptions`
 
 # 0.0.18
 
