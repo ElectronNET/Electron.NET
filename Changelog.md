@@ -4,7 +4,10 @@
 
 - Updated `PrintToPDFOptions` to also allow specifying the `PageSize` with an object (#769)
 - Updated splashscreen image to have 0 margin (#622)
+- Updated the IPC API w.r.t. naming and consistency (#905) @agracio
+- Fixed creation of windows with `contextIsolation` enabled (#906) @NimbusFox
 - Fixed single instance behavior using the `ElectronSingleInstance` property (#901)
+- Fixed potential race conditions (#908) @softworkz
 - Added option to use `ElectronSplashScreen` with an HTML file (#799)
 - Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
 
