@@ -1,11 +1,10 @@
 ﻿namespace ElectronNET.Common
 {
     using System;
-    using System.Collections.Immutable;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services;
 
-    public static class Extensions
+    internal static class Extensions
     {
         public static bool IsUnpackaged(this StartupMethod method)
         {
@@ -17,6 +16,38 @@
                 default:
                     return false;
             }
+        }
+
+        public static string LowerFirst(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return str;
+            }
+
+            if (str.Length == 1)
+            {
+                return str.ToLower();
+            }
+
+            return char.ToLower(str[0]) + str.Substring(1);
+        }
+
+        public static string StripAsync(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return str;
+            }
+
+            var pos = str.LastIndexOf("Async", StringComparison.Ordinal);
+
+            if (pos > 0)
+            {
+                return str.Substring(0, pos);
+            }
+
+            return str;
         }
 
         public static bool IsReady(this LifetimeServiceBase service)

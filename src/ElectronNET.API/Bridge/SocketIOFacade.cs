@@ -12,6 +12,7 @@ using SocketIO = SocketIOClient.SocketIO;
 internal class SocketIoFacade
 {
     private readonly SocketIO _socket;
+    private readonly object _lockObj = new object();
 
     public SocketIoFacade(string uri)
     {
@@ -54,53 +55,71 @@ internal class SocketIoFacade
 
     public void On(string eventName, Action action)
     {
-        _socket.On(eventName, _ =>
+        lock (_lockObj)
         {
-            Task.Run(action);
-        });
+            _socket.On(eventName, _ =>
+            {
+                Task.Run(action);
+            });
+        }
     }
 
     public void On<T>(string eventName, Action<T> action)
     {
-        _socket.On(eventName, response =>
+        lock (_lockObj)
         {
-            var value = response.GetValue<T>();
-            Task.Run(() => action(value));
-        });
+            _socket.On(eventName, response =>
+            {
+                var value = response.GetValue<T>();
+                Task.Run(() => action(value));
+            });
+        }
     }
 
     // TODO: Remove this method when SocketIoClient supports object deserialization
     public void On(string eventName, Action<object> action)
     {
-        _socket.On(eventName, response =>
+        lock (_lockObj)
         {
-            var value = response.GetValue<object>();
-            ////Console.WriteLine($"Called Event {eventName} - data {value}");
-            Task.Run(() => action(value));
-        });
+            _socket.On(eventName, response =>
+            {
+                var value = response.GetValue<object>();
+                ////Console.WriteLine($"Called Event {eventName} - data {value}");
+                Task.Run(() => action(value));
+            });
+        }
     }
 
     public void Once(string eventName, Action action)
     {
-        _socket.On(eventName, _ =>
+        lock (_lockObj)
         {
-            _socket.Off(eventName);
-            Task.Run(action);
-        });
+            _socket.On(eventName, _ =>
+            {
+                _socket.Off(eventName);
+                Task.Run(action);
+            });
+        }
     }
 
     public void Once<T>(string eventName, Action<T> action)
     {
-        _socket.On(eventName, (socketIoResponse) =>
+        lock (_lockObj)
         {
-            _socket.Off(eventName);
-            Task.Run(() => action(socketIoResponse.GetValue<T>()));
-        });
+            _socket.On(eventName, (socketIoResponse) =>
+                {
+                    _socket.Off(eventName);
+                    Task.Run(() => action(socketIoResponse.GetValue<T>()));
+                });
+        }
     }
 
     public void Off(string eventName)
     {
-        _socket.Off(eventName);
+        lock (_lockObj)
+        {
+            _socket.Off(eventName);
+        }
     }
 
     public async Task Emit(string eventName, params object[] args)
