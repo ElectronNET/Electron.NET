@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ElectronNET.Converter;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 
@@ -216,10 +217,16 @@ namespace ElectronNET.API.Entities
         public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
-        /// When using a frameless window this can be used to indicate if the
-        /// standard control buttons should be shown. Default is false.
+        /// Configures the window's title bar overlay when using a frameless window.
+        /// Can be either:
+        /// - false: No title bar overlay.
+        /// - true: Enables the default title bar overlay.
+        /// - An object defining custom overlay options (such as height, color, etc.).
+        /// 
+        /// Default is false.
         /// </summary>
-        public bool TitleBarOverlay { get; set; }
+        [JsonConverter(typeof(TitleBarOverlayConverter))]
+        public TitleBarOverlay TitleBarOverlay { get; set; }
 
         /// <summary>
         /// Shows the title in the tile bar in full screen mode on macOS for all
