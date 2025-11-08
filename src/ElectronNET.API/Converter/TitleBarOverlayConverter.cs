@@ -1,39 +1,42 @@
 ﻿using ElectronNET.API.Entities;
+using Newtonsoft.Json;
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ElectronNET.Converter;
 
 public class TitleBarOverlayConverter : JsonConverter<TitleBarOverlay>
 {
-    public override TitleBarOverlay Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override TitleBarOverlay ReadJson(JsonReader reader, Type objectType, TitleBarOverlay existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        return reader.TokenType switch
+        if (reader.TokenType == JsonToken.Boolean)
         {
-            JsonTokenType.True => true,
-            JsonTokenType.False => false,
-            JsonTokenType.StartObject => JsonSerializer.Deserialize<TitleBarOverlay>(ref reader, options),
-            _ => throw new JsonException("Invalid value for TitleBarOverlay. Expected true or false."),
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TitleBarOverlay value, JsonSerializerOptions options)
-    {
-        if (value is null)
-        {
-            writer.WriteNullValue();
-            return;
+            return (bool)reader.Value;
         }
-
-        var @bool = (bool?)value;
-        if (@bool.HasValue)
+        else if (reader.TokenType == JsonToken.StartObject)
         {
-            writer.WriteBooleanValue(@bool.Value);
+            return serializer.Deserialize<TitleBarOverlay>(reader);
         }
         else
         {
-            JsonSerializer.Serialize(writer, value, options);
+            throw new JsonSerializationException("Invalid value for TitleBarOverlay. Expected true, false, or an object.");
+        }
+    }
+
+    public override void WriteJson(JsonWriter writer, TitleBarOverlay value, JsonSerializer serializer)
+    {
+        if (value is null)
+        {
+            writer.WriteNull();
+            return;
+        }
+        var @bool = (bool?)value;
+        if (@bool.HasValue)
+        {
+            writer.WriteValue(@bool.Value);
+        }
+        else
+        {
+            serializer.Serialize(writer, value);
         }
     }
 }
