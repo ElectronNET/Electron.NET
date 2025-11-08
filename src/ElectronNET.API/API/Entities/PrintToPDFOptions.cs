@@ -1,4 +1,7 @@
-﻿namespace ElectronNET.API.Entities;
+﻿using ElectronNET.Converter;
+using Newtonsoft.Json;
+
+namespace ElectronNET.API.Entities;
 
 /// <summary>
 /// 
@@ -30,7 +33,8 @@ public class PrintToPDFOptions
     /// `A5`, `A6`, `Legal`, `Letter`, `Tabloid`, `Ledger`, or an Object containing
     /// `height` and `width` in inches. Defaults to `Letter`.
     /// </summary>
-    public object PageSize { get; set; } = "Letter";
+    [JsonConverter(typeof(PageSizeConverter))]
+    public PageSize PageSize { get; set; } = "Letter";
 
     /// <summary>
     /// Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string,
