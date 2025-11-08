@@ -26,9 +26,9 @@ public class TitleBarOverlayConverter : JsonConverter<TitleBarOverlay>
     {
         if (value is null)
         {
-            writer.WriteNull();
             return;
         }
+
         var @bool = (bool?)value;
         if (@bool.HasValue)
         {
