@@ -4,7 +4,11 @@ public class TitleBarOverlay
 {
     private readonly bool? _value;
 
-    private TitleBarOverlay(bool value) => _value = value;
+    public TitleBarOverlay()
+    {
+    }
+
+    private TitleBarOverlay(bool value) : this() => _value = value;
 
     public string Color { get; set; }
 
