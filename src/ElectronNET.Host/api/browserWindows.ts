@@ -665,8 +665,20 @@ export = (socket: Socket, app: Electron.App) => {
 
     socket.on('browserWindowSetThumbarButtons', (id, thumbarButtons: Electron.ThumbarButton[]) => {
         thumbarButtons.forEach(thumbarButton => {
-            const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
-            thumbarButton.icon = nativeImage.createFromPath(imagePath);
+            const originalIconPath = thumbarButton.icon.toString();
+            const path = require('path');
+            const fs = require('fs');
+            let imagePath = originalIconPath;
+            if (!path.isAbsolute(originalIconPath)) {
+                imagePath = path.join(__dirname.replace('api', ''), 'bin', originalIconPath);
+            }
+            const { nativeImage } = require('electron');
+            if (fs.existsSync(imagePath)) {
+                thumbarButton.icon = nativeImage.createFromPath(imagePath);
+            } else {
+                // Fallback to empty image to avoid failure
+                thumbarButton.icon = nativeImage.createEmpty();
+            }
             thumbarButton.click = () => {
                 electronSocket.emit('thumbarButtonClicked', thumbarButton['id']);
             };
