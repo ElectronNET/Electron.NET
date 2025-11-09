@@ -104,7 +104,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On<JsonElement>("NotificationEventAction", (args) =>
                 {
                     var arguments = JsonSerializer.Deserialize<string[]>(args, Serialization.ElectronJson.Options);
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0]).OnAction(arguments[1]);
+                    _notificationOptions.Single(x => x.ActionID == arguments[0]).OnAction(arguments[1]);
                 });
             }
 
