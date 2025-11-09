@@ -66,7 +66,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setApplicationMenu", JsonSerializer.SerializeToNode(menuItems, ElectronJson.Options));
+            BridgeConnector.Socket.Emit("menu-setApplicationMenu", new[] { menuItems });
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("menuItemClicked");

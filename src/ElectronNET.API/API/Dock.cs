@@ -184,7 +184,7 @@ namespace ElectronNET.API
         public void SetMenu(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            BridgeConnector.Socket.Emit("dock-setMenu", menuItems);
+            BridgeConnector.Socket.Emit("dock-setMenu", new[] { menuItems });
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("dockMenuItemClicked");
