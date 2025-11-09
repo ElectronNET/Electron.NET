@@ -1,5 +1,6 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -179,7 +180,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-readShortcutLinkCompleted");
 
-                var details = JsonSerializer.Deserialize<ShortcutDetails>(shortcutDetails, Serialization.ElectronJson.Options);
+                var details = shortcutDetails.Deserialize<ShortcutDetails>(ElectronJson.Options);
 
                 taskCompletionSource.SetResult(details);
             });

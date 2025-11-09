@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -74,7 +75,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On<JsonElement>("process-argv-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-argv-Completed");
-                    taskCompletionSource.SetResult(JsonSerializer.Deserialize<string[]>(result, Serialization.ElectronJson.Options));
+                    taskCompletionSource.SetResult(result.Deserialize<string[]>(ElectronJson.Options));
                 });
 
                 BridgeConnector.Socket.Emit("process-argv");
@@ -117,7 +118,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On<JsonElement>("process-versions-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-versions-Completed");
-                    taskCompletionSource.SetResult(JsonSerializer.Deserialize<ProcessVersions>(result, Serialization.ElectronJson.Options));
+                    taskCompletionSource.SetResult(result.Deserialize<ProcessVersions>(ElectronJson.Options));
                 });
 
                 BridgeConnector.Socket.Emit("process-versions");

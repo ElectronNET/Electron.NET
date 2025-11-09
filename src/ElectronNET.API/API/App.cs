@@ -1,5 +1,6 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Serialization;
 using ElectronNET.Common;
 using System;
 using System.Runtime.InteropServices;
@@ -1188,7 +1189,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
 
-                    var result = JsonSerializer.Deserialize<LoginItemSettings>(loginItemSettings, Serialization.ElectronJson.Options);
+                    var result = loginItemSettings.Deserialize<LoginItemSettings>(ElectronJson.Options);
 
                     taskCompletionSource.SetResult(result);
                 });

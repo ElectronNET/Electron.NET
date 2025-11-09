@@ -13,7 +13,6 @@ namespace ElectronNET.API.Entities
         ///  displays the same icon as "info", unless you set an icon using the "icon"
         ///  option. On macOS, both "warning" and "error" display the same warning icon.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MessageBoxType Type { get; set; }
 
         /// <summary>

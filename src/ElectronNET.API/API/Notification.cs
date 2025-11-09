@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,7 +91,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Off("NotificationEventReply");
                 BridgeConnector.Socket.On<JsonElement>("NotificationEventReply", (args) =>
                 {
-                    var arguments = args.Deserialize<string[]>(Serialization.ElectronJson.Options);
+                    var arguments = args.Deserialize<string[]>(ElectronJson.Options);
                     _notificationOptions.Single(x => x.ReplyID == arguments[0]).OnReply(arguments[1]);
                 });
             }
@@ -103,7 +104,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Off("NotificationEventAction");
                 BridgeConnector.Socket.On<JsonElement>("NotificationEventAction", (args) =>
                 {
-                    var arguments = JsonSerializer.Deserialize<string[]>(args, Serialization.ElectronJson.Options);
+                    var arguments = args.Deserialize<string[]>(ElectronJson.Options);
                     _notificationOptions.Single(x => x.ActionID == arguments[0]).OnAction(arguments[1]);
                 });
             }

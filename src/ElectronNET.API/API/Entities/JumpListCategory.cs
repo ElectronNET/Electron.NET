@@ -21,7 +21,6 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// One of the following: "tasks" | "frequent" | "recent" | "custom"
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JumpListCategoryType Type { get; set; }
     }
 }

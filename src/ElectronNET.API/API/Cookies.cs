@@ -1,5 +1,7 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
+using System.Text.Json;
 
 namespace ElectronNET.API
 {
@@ -30,13 +32,13 @@ namespace ElectronNET.API
             {
                 if (_changed == null)
                 {
-                    BridgeConnector.Socket.On<System.Text.Json.JsonElement>("webContents-session-cookies-changed" + Id, (args) =>
+                    BridgeConnector.Socket.On<JsonElement>("webContents-session-cookies-changed" + Id, (args) =>
                     {
                         var e = args.EnumerateArray().GetEnumerator();
                         e.MoveNext();
-                        var cookie = System.Text.Json.JsonSerializer.Deserialize<Cookie>(e.Current, Serialization.ElectronJson.Options);
+                        var cookie = e.Current.Deserialize<Cookie>(ElectronJson.Options);
                         e.MoveNext();
-                        var cause = System.Text.Json.JsonSerializer.Deserialize<CookieChangedCause>(e.Current, Serialization.ElectronJson.Options);
+                        var cause = e.Current.Deserialize<CookieChangedCause>(ElectronJson.Options);
                         e.MoveNext();
                         var removed = e.Current.GetBoolean();
                         _changed(cookie, cause, removed);

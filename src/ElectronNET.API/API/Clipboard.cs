@@ -143,7 +143,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("clipboard-readBookmark-Completed");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize<ReadBookmark>(bookmark, ElectronJson.Options));
+                taskCompletionSource.SetResult(bookmark.Deserialize<ReadBookmark>(ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("clipboard-readBookmark");
@@ -220,7 +220,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("clipboard-availableFormats-Completed");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize<string[]>(formats, ElectronJson.Options));
+                taskCompletionSource.SetResult(formats.Deserialize<string[]>(ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("clipboard-availableFormats", type);

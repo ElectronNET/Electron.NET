@@ -6,7 +6,6 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// The cause of the change 
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CookieChangedCause
     {
         /// <summary>

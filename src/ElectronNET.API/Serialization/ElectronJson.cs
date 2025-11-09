@@ -11,12 +11,11 @@ namespace ElectronNET.API.Serialization
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             WriteIndented = false,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
         };
-
-        static ElectronJson()
-        {
-            Options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-        }
     }
 
     // Use source generation where feasible for hot paths

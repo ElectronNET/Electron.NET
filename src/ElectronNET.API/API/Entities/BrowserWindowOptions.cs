@@ -213,7 +213,6 @@ namespace ElectronNET.API.Entities
         /// The style of window title bar. Default is default. Possible values are:
         /// 'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover'
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
@@ -256,7 +255,6 @@ namespace ElectronNET.API.Entities
         /// appearance-based, light, dark, titlebar, selection, menu, popover, sidebar,
         /// medium-light or ultra-dark.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Vibrancy Vibrancy { get; set; }
 
         /// <summary>

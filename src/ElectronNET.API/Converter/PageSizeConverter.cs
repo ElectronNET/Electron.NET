@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,12 +12,11 @@ public class PageSizeConverter : JsonConverter<PageSize>
     {
         if (reader.TokenType == JsonTokenType.String)
         {
-            return (string)reader.GetString();
+            return reader.GetString();
         }
         else if (reader.TokenType == JsonTokenType.StartObject)
         {
-            using var doc = JsonDocument.ParseValue(ref reader);
-            return doc.RootElement.Deserialize<PageSize>(API.Serialization.ElectronJson.Options);
+            return JsonSerializer.Deserialize<PageSize>(ref reader, ElectronJson.Options);
         }
         else
         {
@@ -39,7 +39,7 @@ public class PageSizeConverter : JsonConverter<PageSize>
         }
         else
         {
-            JsonSerializer.Serialize(writer, value, API.Serialization.ElectronJson.Options);
+            JsonSerializer.Serialize(writer, value, ElectronJson.Options);
         }
     }
 }

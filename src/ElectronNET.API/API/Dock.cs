@@ -1,5 +1,6 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using ElectronNET.API.Serialization;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
@@ -209,7 +210,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On<JsonElement>("dock-getMenu-completed", (menu) =>
                 {
                     BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(JsonSerializer.Deserialize<Menu>(menu, Serialization.ElectronJson.Options));
+                    taskCompletionSource.SetResult(menu.Deserialize<Menu>(ElectronJson.Options));
                 });
 
                 BridgeConnector.Socket.Emit("dock-getMenu");

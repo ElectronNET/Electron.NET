@@ -75,7 +75,6 @@ namespace ElectronNET.API.Entities
         /// `touchScrollStarted`, `pointerDown`, `pointerUp`, `pointerMove`,
         /// `pointerRawUpdate`, `pointerCancel` or `pointerCausedUaAction`.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public InputEventType Type { get; set; }
     }
 }

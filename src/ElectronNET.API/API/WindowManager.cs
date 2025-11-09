@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,7 +114,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("BrowserWindowClosed");
 
-                var browserWindowIds = ids.Deserialize<int[]>(Serialization.ElectronJson.Options);
+                var browserWindowIds = ids.Deserialize<int[]>(ElectronJson.Options);
 
                 for (int index = 0; index < _browserWindows.Count; index++)
                 {

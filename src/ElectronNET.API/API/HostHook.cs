@@ -1,3 +1,4 @@
+using ElectronNET.API.Serialization;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -83,7 +84,7 @@ namespace ElectronNET.API
 
                 try
                 {
-                    data = result.Deserialize<T>(Serialization.ElectronJson.Options);
+                    data = result.Deserialize<T>(ElectronJson.Options);
                 }
                 catch (Exception exception)
                 {

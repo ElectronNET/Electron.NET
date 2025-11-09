@@ -28,7 +28,6 @@ namespace ElectronNET.API.Entities
         /// Scheme of the authentication. Can be basic, digest, ntlm, negotiate. 
         /// Must be provided if removing by origin.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Scheme Scheme { get; set; }
 
         /// <summary>

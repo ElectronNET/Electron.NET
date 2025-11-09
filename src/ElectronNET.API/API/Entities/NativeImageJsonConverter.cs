@@ -1,3 +1,4 @@
+using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,12 +19,12 @@ namespace ElectronNET.API.Entities
             }
 
             var scaledImages = value.GetAllScaledImages();
-            JsonSerializer.Serialize(writer, scaledImages, Serialization.ElectronJson.Options);
+            JsonSerializer.Serialize(writer, scaledImages, ElectronJson.Options);
         }
 
         public override NativeImage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var dict = JsonSerializer.Deserialize<Dictionary<float, string>>(ref reader, Serialization.ElectronJson.Options);
+            var dict = JsonSerializer.Deserialize<Dictionary<float, string>>(ref reader, ElectronJson.Options);
             var newDictionary = new Dictionary<float, Image>();
             foreach (var item in dict)
             {

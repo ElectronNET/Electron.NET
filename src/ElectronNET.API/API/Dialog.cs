@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace ElectronNET.API
             BridgeConnector.Socket.On<JsonElement>("showOpenDialogComplete" + guid, (filePaths) =>
             {
                 BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
-                var result = JsonSerializer.Deserialize<string[]>(filePaths, Serialization.ElectronJson.Options);
+                var result = filePaths.Deserialize<string[]>(ElectronJson.Options);
                 taskCompletionSource.SetResult(result);
             });
 

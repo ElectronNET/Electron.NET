@@ -1,5 +1,6 @@
 ﻿namespace ElectronNET.API
 {
+    using ElectronNET.API.Serialization;
     using ElectronNET.Common;
     using System;
     using System.Collections.Concurrent;
@@ -159,7 +160,7 @@
                     {
                         try
                         {
-                            var value = JsonSerializer.Deserialize<T>(result, Serialization.ElectronJson.Options);
+                            var value = result.Deserialize<T>(ElectronJson.Options);
                             this.tcs?.SetResult(value);
                         }
                         catch (Exception ex)

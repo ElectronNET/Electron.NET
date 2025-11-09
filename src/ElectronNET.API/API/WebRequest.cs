@@ -1,4 +1,6 @@
+using ElectronNET.API.Serialization;
 using System;
+using System.Text.Json;
 
 namespace ElectronNET.API.Entities
 {
@@ -35,8 +37,8 @@ namespace ElectronNET.API.Entities
                 BridgeConnector.Socket.On<System.Text.Json.JsonElement>($"webContents-session-webRequest-onBeforeRequest{Id}",
                     (args) =>
                     {
-                        //// var details0 = args[0].Deserialize<OnBeforeRequestDetails>(ElectronNET.API.Serialization.ElectronJson.Options);
-                        var details = System.Text.Json.JsonSerializer.Deserialize<OnBeforeRequestDetails>(args, Serialization.ElectronJson.Options);
+                        //// var details0 = args[0].Deserialize<OnBeforeRequestDetails>(ElectronNET.ElectronJson.Options);
+                        var details = args.Deserialize<OnBeforeRequestDetails>(ElectronJson.Options);
                         var callback = (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); });
 
                         _onBeforeRequest?.Invoke(details, callback);

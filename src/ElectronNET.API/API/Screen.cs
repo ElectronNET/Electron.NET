@@ -17,7 +17,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayAdded
         {
-            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => JsonSerializer.Deserialize(args, Serialization.ElectronJsonContext.Default.Display));
+            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => args.Deserialize(ElectronJsonContext.Default.Display));
             remove => ApiEventManager.RemoveEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value);
         }
 
@@ -28,7 +28,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayRemoved
         {
-            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => JsonSerializer.Deserialize(args, Serialization.ElectronJsonContext.Default.Display));
+            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => args.Deserialize(ElectronJsonContext.Default.Display));
             remove => ApiEventManager.RemoveEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value);
         }
 
@@ -85,7 +85,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("screen-getCursorScreenPointCompleted");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize<Point>(point, Serialization.ElectronJson.Options));
+                taskCompletionSource.SetResult(point.Deserialize<Point>(ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("screen-getCursorScreenPoint");
@@ -165,7 +165,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("screen-getDisplayNearestPointCompleted");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize(display, Serialization.ElectronJsonContext.Default.Display));
+                taskCompletionSource.SetResult(display.Deserialize(ElectronJsonContext.Default.Display));
             });
 
             BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", point);
@@ -186,7 +186,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("screen-getDisplayMatching");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize(display, Serialization.ElectronJsonContext.Default.Display));
+                taskCompletionSource.SetResult(display.Deserialize(ElectronJsonContext.Default.Display));
             });
 
             BridgeConnector.Socket.Emit("screen-getDisplayMatching", rectangle);

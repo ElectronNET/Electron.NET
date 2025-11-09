@@ -310,7 +310,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateAvailable
         {
-            add => ApiEventManager.AddEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value, (args) => JsonSerializer.Deserialize(args, ElectronJsonContext.Default.UpdateInfo));
+            add => ApiEventManager.AddEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value, (args) => args.Deserialize(ElectronJsonContext.Default.UpdateInfo));
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-available", GetHashCode(), _updateAvailable, value);
         }
 
@@ -321,7 +321,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateNotAvailable
         {
-            add => ApiEventManager.AddEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value, (args) => JsonSerializer.Deserialize(args, ElectronJsonContext.Default.UpdateInfo));
+            add => ApiEventManager.AddEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value, (args) => args.Deserialize(ElectronJsonContext.Default.UpdateInfo));
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-not-available", GetHashCode(), _updateNotAvailable, value);
         }
 
@@ -332,7 +332,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<ProgressInfo> OnDownloadProgress
         {
-            add => ApiEventManager.AddEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value, (args) => JsonSerializer.Deserialize(args, ElectronJsonContext.Default.ProgressInfo));
+            add => ApiEventManager.AddEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value, (args) => args.Deserialize(ElectronJsonContext.Default.ProgressInfo));
             remove => ApiEventManager.RemoveEvent("autoUpdater-download-progress", GetHashCode(), _downloadProgress, value);
         }
 
@@ -343,7 +343,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<UpdateInfo> OnUpdateDownloaded
         {
-            add => ApiEventManager.AddEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value, (args) => JsonSerializer.Deserialize(args, ElectronJsonContext.Default.UpdateInfo));
+            add => ApiEventManager.AddEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value, (args) => args.Deserialize(ElectronJsonContext.Default.UpdateInfo));
             remove => ApiEventManager.RemoveEvent("autoUpdater-update-downloaded", GetHashCode(), _updateDownloaded, value);
         }
 

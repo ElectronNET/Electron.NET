@@ -52,7 +52,6 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// One of the following: "task" | "separator" | "file"
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JumpListItemType Type { get; set; }
     }
 }

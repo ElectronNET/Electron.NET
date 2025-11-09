@@ -19,13 +19,11 @@ namespace ElectronNET.API.Entities
         /// Define the action of the menu item, when specified the click property will be
         /// ignored.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MenuRole Role { get; set; }
 
         /// <summary>
         /// Can be normal, separator, submenu, checkbox or radio.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MenuType Type { get; set; }
 
 

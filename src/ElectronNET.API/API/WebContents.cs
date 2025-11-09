@@ -101,7 +101,7 @@ public class WebContents
     /// </summary>
     public event Action<OnDidFailLoadInfo> OnDidFailLoad
     {
-        add => ApiEventManager.AddEvent("webContents-didFailLoad", Id, _didFailLoad, value, (args) => JsonSerializer.Deserialize<OnDidFailLoadInfo>(args, ElectronJson.Options));
+        add => ApiEventManager.AddEvent("webContents-didFailLoad", Id, _didFailLoad, value, (args) => args.Deserialize<OnDidFailLoadInfo>(ElectronJson.Options));
         remove => ApiEventManager.RemoveEvent("webContents-didFailLoad", Id, _didFailLoad, value);
     }
 
@@ -112,7 +112,7 @@ public class WebContents
     /// </summary>
     public event Action<InputEvent> InputEvent
     {
-        add => ApiEventManager.AddEvent("webContents-input-event", Id, _inputEvent, value, (args) => JsonSerializer.Deserialize<InputEvent>(args, ElectronJson.Options));
+        add => ApiEventManager.AddEvent("webContents-input-event", Id, _inputEvent, value, (args) => args.Deserialize<InputEvent>(ElectronJson.Options));
         remove => ApiEventManager.RemoveEvent("webContents-input-event", Id, _inputEvent, value);
     }
 
@@ -164,7 +164,7 @@ public class WebContents
         {
             BridgeConnector.Socket.Off("webContents-getPrinters-completed");
 
-            taskCompletionSource.SetResult(JsonSerializer.Deserialize<PrinterInfo[]>(printers, ElectronJson.Options));
+            taskCompletionSource.SetResult(printers.Deserialize<PrinterInfo[]>(ElectronJson.Options));
         });
 
         BridgeConnector.Socket.Emit("webContents-getPrinters", Id);

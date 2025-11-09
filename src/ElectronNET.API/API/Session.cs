@@ -1,4 +1,5 @@
 using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -213,7 +214,7 @@ namespace ElectronNET.API
 
             BridgeConnector.Socket.On<JsonElement>("webContents-session-getBlobData-completed" + guid, (buffer) =>
             {
-                var result = JsonSerializer.Deserialize<int[]>(buffer, Serialization.ElectronJson.Options);
+                var result = buffer.Deserialize<int[]>(ElectronJson.Options);
 
                 BridgeConnector.Socket.Off("webContents-session-getBlobData-completed" + guid);
                 taskCompletionSource.SetResult(result);
@@ -255,7 +256,7 @@ namespace ElectronNET.API
 
             BridgeConnector.Socket.On<JsonElement>("webContents-session-getPreloads-completed" + guid, (preloads) =>
             {
-                var result = JsonSerializer.Deserialize<string[]>(preloads, Serialization.ElectronJson.Options);
+                var result = preloads.Deserialize<string[]>(ElectronJson.Options);
                 BridgeConnector.Socket.Off("webContents-session-getPreloads-completed" + guid);
                 taskCompletionSource.SetResult(result);
             });
@@ -388,7 +389,7 @@ namespace ElectronNET.API
             BridgeConnector.Socket.On<JsonElement>("webContents-session-getAllExtensions-completed", (extensionslist) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getAllExtensions-completed");
-                var chromeExtensionInfos = JsonSerializer.Deserialize<ChromeExtensionInfo[]>(extensionslist, Serialization.ElectronJson.Options);
+                var chromeExtensionInfos = extensionslist.Deserialize<ChromeExtensionInfo[]>(ElectronJson.Options);
 
                 taskCompletionSource.SetResult(chromeExtensionInfos);
             });
@@ -443,7 +444,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("webContents-session-loadExtension-completed");
 
-                taskCompletionSource.SetResult(JsonSerializer.Deserialize<Extension>(extension, Serialization.ElectronJson.Options));
+                taskCompletionSource.SetResult(extension.Deserialize<Extension>(ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess);

@@ -1,6 +1,8 @@
+using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -63,7 +65,7 @@ namespace ElectronNET.API
 
         private static List<object> FormatArguments(System.Text.Json.JsonElement args)
         {
-            var objectArray = System.Text.Json.JsonSerializer.Deserialize<object[]>(args, Serialization.ElectronJson.Options).ToList();
+            var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
             objectArray.RemoveAll(item => item is null);
             return objectArray;
         }
