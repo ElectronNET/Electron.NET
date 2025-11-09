@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, BrowserView } from 'electron';
+import { ipcMain, BrowserWindow, BrowserView, Menu } from 'electron';
 import { Socket } from 'net';
 let electronSocket;
 
@@ -53,5 +53,29 @@ export = (socket: Socket) => {
         if (view) {
             view.webContents.send(channel, ...data);
         }
+    });
+
+    // Integration helpers: programmatically click menu items from renderer tests
+    ipcMain.on('integration-click-application-menu', (event, id: string) => {
+        try {
+            const menu = Menu.getApplicationMenu();
+            const mi = menu ? menu.getMenuItemById(id) : null;
+            if (mi && typeof (mi as any).click === 'function') {
+                const bw = BrowserWindow.fromWebContents(event.sender);
+                (mi as any).click(undefined, bw, undefined);
+            }
+        } catch { /* ignore */ }
+    });
+
+    ipcMain.on('integration-click-context-menu', (event, windowId: number, id: string) => {
+        try {
+            const entries = (global as any)['contextMenuItems'] || [];
+            const entry = entries.find((x: any) => x.browserWindowId === windowId);
+            const mi = entry?.menu?.items?.find((i: any) => i.id === id);
+            if (mi && typeof (mi as any).click === 'function') {
+                const bw = BrowserWindow.fromId(windowId);
+                (mi as any).click(undefined, bw, undefined);
+            }
+        } catch { /* ignore */ }
     });
 };
