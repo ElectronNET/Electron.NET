@@ -28,7 +28,6 @@ public class TitleBarOverlayConverter : JsonConverter<TitleBarOverlay>
     {
         if (value is null)
         {
-            writer.WriteNullValue();
             return;
         }
 

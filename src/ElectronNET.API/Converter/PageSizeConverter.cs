@@ -28,7 +28,6 @@ public class PageSizeConverter : JsonConverter<PageSize>
     {
         if (value is null)
         {
-            writer.WriteNullValue();
             return;
         }
 
