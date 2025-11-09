@@ -16,7 +16,9 @@ namespace ElectronNET.API
         private static Dialog _dialog;
         private static object _syncRoot = new object();
 
-        internal Dialog() { }
+        internal Dialog()
+        {
+        }
 
         internal static Dialog Instance
         {
@@ -26,7 +28,7 @@ namespace ElectronNET.API
                 {
                     lock (_syncRoot)
                     {
-                        if(_dialog == null)
+                        if (_dialog == null)
                         {
                             _dialog = new Dialog();
                         }
@@ -60,8 +62,8 @@ namespace ElectronNET.API
 
 
             BridgeConnector.Socket.Emit("showOpenDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer), guid);
+                JObject.FromObject(browserWindow, _jsonSerializer),
+                JObject.FromObject(options, _jsonSerializer), guid);
 
             return taskCompletionSource.Task;
         }
@@ -85,9 +87,9 @@ namespace ElectronNET.API
             });
 
             BridgeConnector.Socket.Emit("showSaveDialog",
-            JObject.FromObject(browserWindow, _jsonSerializer),
-            JObject.FromObject(options, _jsonSerializer),
-            guid);
+                JObject.FromObject(browserWindow, _jsonSerializer),
+                JObject.FromObject(options, _jsonSerializer),
+                guid);
 
             return taskCompletionSource.Task;
         }
@@ -157,15 +159,15 @@ namespace ElectronNET.API
                     Response = (int)result.First,
                     CheckboxChecked = (bool)result.Last
                 });
-
             });
 
             if (browserWindow == null)
             {
                 BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
-            } else
+            }
+            else
             {
-                BridgeConnector.Socket.Emit("showMessageBox", 
+                BridgeConnector.Socket.Emit("showMessageBox",
                     JObject.FromObject(browserWindow, _jsonSerializer),
                     JObject.FromObject(messageBoxOptions, _jsonSerializer),
                     guid);

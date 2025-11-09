@@ -20,7 +20,6 @@
 
         protected override Task StartCore()
         {
-
             return Task.CompletedTask;
         }
 
@@ -28,6 +27,5 @@
         {
             return Task.CompletedTask;
         }
-
     }
 }

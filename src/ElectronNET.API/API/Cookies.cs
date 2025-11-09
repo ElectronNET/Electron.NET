@@ -44,6 +44,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-webContents-session-cookies-changed", Id);
                 }
+
                 _changed += value;
             }
             remove

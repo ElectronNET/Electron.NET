@@ -67,7 +67,7 @@ namespace ElectronNET.API.Entities
         /// true for landscape, false for portrait.
         /// </summary>
         public bool Landscape { get; set; }
-        
+
         /// <summary>
         /// The scale factor of the web page
         /// </summary>
@@ -102,6 +102,5 @@ namespace ElectronNET.API.Entities
         /// Dpi
         /// </summary>
         public PrintDpi Dpi { get; set; }
-
     }
 }

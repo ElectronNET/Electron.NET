@@ -17,7 +17,9 @@ namespace ElectronNET.API
         private static Menu _menu;
         private static object _syncRoot = new object();
 
-        internal Menu() { }
+        internal Menu()
+        {
+        }
 
         internal static Menu Instance
         {
@@ -27,7 +29,7 @@ namespace ElectronNET.API
                 {
                     lock (_syncRoot)
                     {
-                        if(_menu == null)
+                        if (_menu == null)
                         {
                             _menu = new Menu();
                         }
@@ -44,7 +46,14 @@ namespace ElectronNET.API
         /// <value>
         /// The menu items.
         /// </value>
-        public IReadOnlyCollection<MenuItem> MenuItems { get { return _menuItems.AsReadOnly(); } }
+        public IReadOnlyCollection<MenuItem> MenuItems
+        {
+            get
+            {
+                return _menuItems.AsReadOnly();
+            }
+        }
+
         private List<MenuItem> _menuItems = new List<MenuItem>();
 
         /// <summary>
@@ -62,7 +71,8 @@ namespace ElectronNET.API
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("menuItemClicked");
-            BridgeConnector.Socket.On("menuItemClicked", (id) => {
+            BridgeConnector.Socket.On("menuItemClicked", (id) =>
+            {
                 MenuItem menuItem = _menuItems.GetMenuItem(id.ToString());
                 menuItem.Click?.Invoke();
             });
@@ -75,6 +85,7 @@ namespace ElectronNET.API
         /// The context menu items.
         /// </value>
         public IReadOnlyDictionary<int, ReadOnlyCollection<MenuItem>> ContextMenuItems { get; internal set; }
+
         private Dictionary<int, List<MenuItem>> _contextMenuItems = new Dictionary<int, List<MenuItem>>();
 
         /// <summary>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronNET.Common;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
@@ -249,7 +250,6 @@ namespace ElectronNET.API
         }
 
 
-
         /// <summary>
         /// The request headers.
         /// </summary>
@@ -353,7 +353,9 @@ namespace ElectronNET.API
         private static AutoUpdater _autoUpdater;
         private static object _syncRoot = new object();
 
-        internal AutoUpdater() { }
+        internal AutoUpdater()
+        {
+        }
 
         internal static AutoUpdater Instance
         {

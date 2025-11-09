@@ -14,7 +14,7 @@ namespace ElectronNET.API.Entities
         /// Name
         /// </summary>
         public string Description { get; set; }
-        
+
         /// <summary>
         /// Status
         /// </summary>
@@ -24,6 +24,5 @@ namespace ElectronNET.API.Entities
         /// Is default
         /// </summary>
         public bool IsDefault { get; set; }
-
     }
 }

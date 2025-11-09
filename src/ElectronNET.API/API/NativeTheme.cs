@@ -14,7 +14,9 @@ namespace ElectronNET.API
         private static NativeTheme _nativeTheme;
         private static object _syncRoot = new object();
 
-        internal NativeTheme() { }
+        internal NativeTheme()
+        {
+        }
 
         internal static NativeTheme Instance
         {
@@ -129,7 +131,8 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) => {
+            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) =>
+            {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseDarkColors-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseDarkColors);
@@ -148,7 +151,8 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) => {
+            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) =>
+            {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseHighContrastColors-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
@@ -167,7 +171,8 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) => {
+            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) =>
+            {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
 
                 taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);

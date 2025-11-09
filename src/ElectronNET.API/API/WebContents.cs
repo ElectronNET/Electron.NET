@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Threading.Tasks;
 using ElectronNET.Common;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API;
@@ -187,7 +188,7 @@ public class WebContents
             taskCompletionSource.SetResult((bool)success);
         });
 
-        if(options == null)
+        if (options == null)
         {
             BridgeConnector.Socket.Emit("webContents-print", Id, "");
         }
@@ -218,7 +219,7 @@ public class WebContents
             taskCompletionSource.SetResult((bool)success);
         });
 
-        if(options == null)
+        if (options == null)
         {
             BridgeConnector.Socket.Emit("webContents-printToPDF", Id, "", path);
         }

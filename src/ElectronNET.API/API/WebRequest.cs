@@ -8,6 +8,7 @@ namespace ElectronNET.API.Entities
         public int Id { get; set; }
         public string Url { get; set; }
         public string Method { get; set; }
+
         public int? WebContentsId { get; set; }
         // Ensure all necessary properties are included as per Electron documentation
     }
@@ -34,14 +35,14 @@ namespace ElectronNET.API.Entities
             {
                 BridgeConnector.Socket.On($"webContents-session-webRequest-onBeforeRequest{Id}",
                     (args) =>
-                        {
-                            ////var details = ((JObject)args[0]).ToObject<OnBeforeRequestDetails>();
-                            ////var callback = args.Length > 1 ? (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); }) : null;
-                            var details = ((JObject)args).ToObject<OnBeforeRequestDetails>();
-                            var callback =  (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); });
+                    {
+                        ////var details = ((JObject)args[0]).ToObject<OnBeforeRequestDetails>();
+                        ////var callback = args.Length > 1 ? (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); }) : null;
+                        var details = ((JObject)args).ToObject<OnBeforeRequestDetails>();
+                        var callback = (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); });
 
-                            _onBeforeRequest?.Invoke(details, callback);
-                        });
+                        _onBeforeRequest?.Invoke(details, callback);
+                    });
 
                 BridgeConnector.Socket.Emit("register-webContents-session-webRequest-onBeforeRequest", Id, JObject.FromObject(filter));
             }

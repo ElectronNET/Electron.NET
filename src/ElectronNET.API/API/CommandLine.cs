@@ -8,7 +8,9 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class CommandLine
     {
-        internal CommandLine() { }
+        internal CommandLine()
+        {
+        }
 
         internal static CommandLine Instance
         {
@@ -66,7 +68,7 @@ namespace ElectronNET.API
         /// <param name="switchName">A command-line switch</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Whether the command-line switch is present.</returns>
-        public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken)) 
+        public async Task<bool> HasSwitchAsync(string switchName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
 

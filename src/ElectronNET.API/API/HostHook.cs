@@ -17,9 +17,11 @@ namespace ElectronNET.API
     {
         private static HostHook _electronHostHook;
         private static object _syncRoot = new object();
-        string oneCallguid = Guid.NewGuid().ToString();
+        private string oneCallguid = Guid.NewGuid().ToString();
 
-        internal HostHook() { }
+        internal HostHook()
+        {
+        }
 
         internal static HostHook Instance
         {

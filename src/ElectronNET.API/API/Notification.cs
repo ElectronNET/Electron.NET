@@ -17,7 +17,9 @@ namespace ElectronNET.API
         private static Notification _notification;
         private static object _syncRoot = new object();
 
-        internal Notification() { }
+        internal Notification()
+        {
+        }
 
         internal static Notification Instance
         {
@@ -61,9 +63,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventShow");
-                BridgeConnector.Socket.On("NotificationEventShow", (id) => {
-                    _notificationOptions.Single(x => x.ShowID == id.ToString()).OnShow();
-                });
+                BridgeConnector.Socket.On("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id.ToString()).OnShow(); });
             }
 
             if (notificationOptions.OnClick != null)
@@ -72,9 +72,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClick");
-                BridgeConnector.Socket.On("NotificationEventClick", (id) => {
-                    _notificationOptions.Single(x => x.ClickID == id.ToString()).OnClick();
-                });
+                BridgeConnector.Socket.On("NotificationEventClick", (id) => { _notificationOptions.Single(x => x.ClickID == id.ToString()).OnClick(); });
             }
 
             if (notificationOptions.OnClose != null)
@@ -83,9 +81,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClose");
-                BridgeConnector.Socket.On("NotificationEventClose", (id) => {
-                    _notificationOptions.Single(x => x.CloseID == id.ToString()).OnClose();
-                });
+                BridgeConnector.Socket.On("NotificationEventClose", (id) => { _notificationOptions.Single(x => x.CloseID == id.ToString()).OnClose(); });
             }
 
             if (notificationOptions.OnReply != null)
@@ -94,7 +90,8 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventReply");
-                BridgeConnector.Socket.On("NotificationEventReply", (args) => {
+                BridgeConnector.Socket.On("NotificationEventReply", (args) =>
+                {
                     var arguments = ((JArray)args).ToObject<string[]>();
                     _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnReply(arguments[1].ToString());
                 });
@@ -106,7 +103,8 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On("NotificationEventAction", (args) => {
+                BridgeConnector.Socket.On("NotificationEventAction", (args) =>
+                {
                     var arguments = ((JArray)args).ToObject<string[]>();
                     _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnAction(arguments[1].ToString());
                 });

@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 
-namespace ElectronNET.API.Entities {
+namespace ElectronNET.API.Entities
+{
     /// <summary>
     /// 
     /// </summary>
-    public class CookieDetails {
+    public class CookieDetails
+    {
         /// <summary>
         /// The URL to associate the cookie with. The callback will be rejected if the URL is invalid.
         /// </summary>
@@ -19,7 +21,7 @@ namespace ElectronNET.API.Entities {
         /// <summary>
         /// (optional) - The value of the cookie. Empty by default if omitted.
         /// </summary>
-        [DefaultValue("")] 
+        [DefaultValue("")]
         public string Value { get; set; }
 
         /// <summary>
@@ -31,13 +33,13 @@ namespace ElectronNET.API.Entities {
         /// <summary>
         /// (optional) - The path of the cookie. Empty by default if omitted.
         /// </summary>
-        [DefaultValue("")] 
+        [DefaultValue("")]
         public string Path { get; set; }
 
         /// <summary>
         /// (optional) - Whether the cookie is marked as secure. Defaults to false.
         /// </summary>
-        [DefaultValue(false)] 
+        [DefaultValue(false)]
         public bool Secure { get; set; }
 
         /// <summary>

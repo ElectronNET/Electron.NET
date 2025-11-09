@@ -15,7 +15,9 @@ namespace ElectronNET.API
         private static Shell _shell;
         private static object _syncRoot = new object();
 
-        internal Shell() { }
+        internal Shell()
+        {
+        }
 
         internal static Shell Instance
         {
@@ -44,10 +46,7 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () =>
-            {
-                BridgeConnector.Socket.Off("shell-showItemInFolderCompleted");
-            });
+            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () => { BridgeConnector.Socket.Off("shell-showItemInFolderCompleted"); });
 
             BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
 
@@ -67,7 +66,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-openPathCompleted");
 
-                taskCompletionSource.SetResult((string) errorMessage);
+                taskCompletionSource.SetResult((string)errorMessage);
             });
 
             BridgeConnector.Socket.Emit("shell-openPath", path);
@@ -101,7 +100,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-openExternalCompleted");
 
-                taskCompletionSource.SetResult((string) error);
+                taskCompletionSource.SetResult((string)error);
             });
 
             if (options == null)
@@ -129,7 +128,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-trashItem-completed");
 
-                taskCompletionSource.SetResult((bool) success);
+                taskCompletionSource.SetResult((bool)success);
             });
 
             BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
@@ -160,7 +159,7 @@ namespace ElectronNET.API
             {
                 BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
 
-                taskCompletionSource.SetResult((bool) success);
+                taskCompletionSource.SetResult((bool)success);
             });
 
             BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));

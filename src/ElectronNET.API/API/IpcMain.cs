@@ -17,17 +17,19 @@ namespace ElectronNET.API
         private static IpcMain _ipcMain;
         private static object _syncRoot = new object();
 
-        internal IpcMain() { }
+        internal IpcMain()
+        {
+        }
 
         internal static IpcMain Instance
         {
             get
             {
-                if(_ipcMain == null)
+                if (_ipcMain == null)
                 {
                     lock (_syncRoot)
                     {
-                        if(_ipcMain == null)
+                        if (_ipcMain == null)
                         {
                             _ipcMain = new IpcMain();
                         }
@@ -48,11 +50,11 @@ namespace ElectronNET.API
         {
             await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel).ConfigureAwait(false);
             BridgeConnector.Socket.Off(channel);
-            BridgeConnector.Socket.On(channel, (args) => 
+            BridgeConnector.Socket.On(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
-                if(objectArray.Count == 1)
+                if (objectArray.Count == 1)
                 {
                     listener(objectArray.First());
                 }
@@ -91,7 +93,8 @@ namespace ElectronNET.API
         public void OnSync(string channel, Func<object, object> listener)
         {
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) => {
+            BridgeConnector.Socket.On(channel, (args) =>
+            {
                 List<object> objectArray = FormatArguments(args);
                 object parameter;
                 if (objectArray.Count == 1)
@@ -158,19 +161,21 @@ namespace ElectronNET.API
 
             foreach (var parameterObject in data)
             {
-                if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
+                if (parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
                     jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
                     jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
                     objects.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
                 BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }
@@ -197,19 +202,21 @@ namespace ElectronNET.API
 
             foreach (var parameterObject in data)
             {
-                if(parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
+                if (parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
                 {
                     jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
                 {
                     jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                } else if(parameterObject.GetType().IsPrimitive || (parameterObject is string))
+                }
+                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
                 {
                     objects.Add(parameterObject);
                 }
             }
 
-            if(jobjects.Count > 0 || jarrays.Count > 0)
+            if (jobjects.Count > 0 || jarrays.Count > 0)
             {
                 BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
             }

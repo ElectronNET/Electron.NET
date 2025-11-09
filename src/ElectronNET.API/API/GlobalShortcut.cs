@@ -12,7 +12,9 @@ namespace ElectronNET.API
         private static GlobalShortcut _globalShortcut;
         private static object _syncRoot = new object();
 
-        internal GlobalShortcut() { }
+        internal GlobalShortcut()
+        {
+        }
 
         internal static GlobalShortcut Instance
         {

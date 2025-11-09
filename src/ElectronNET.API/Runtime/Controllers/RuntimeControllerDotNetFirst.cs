@@ -68,7 +68,6 @@
         private void SocketBridge_Ready(object sender, EventArgs e)
         {
             this.TransitionState(LifetimeState.Ready);
-
         }
 
         private void SocketBridge_Stopped(object sender, EventArgs e)
@@ -102,6 +101,5 @@
             this.electronProcess.Stop();
             return Task.CompletedTask;
         }
-
     }
 }
