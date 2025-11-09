@@ -24,7 +24,7 @@ using ElectronNET.Common;
 /// </summary>
 public class BrowserWindow : ApiBase
 {
-    protected override string SocketEventCompleteSuffix => "-completed";
+    protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashesLowerFirst;
 
     /// <summary>
     /// Gets the identifier.
@@ -749,11 +749,10 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        if (isWindows10())
-        {
-            x = x - 7;
-        }
-
+        ////if (isWindows10())
+        ////{
+        ////    x = x - 7;
+        ////}
         this.CallMethod2(x, y);
     }
 
@@ -767,11 +766,10 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        if (isWindows10())
-        {
-            x = x - 7;
-        }
-
+        ////if (isWindows10())
+        ////{
+        ////    x = x - 7;
+        ////}
         this.CallMethod3(x, y, animate);
     }
 
@@ -1140,7 +1138,17 @@ public class BrowserWindow : ApiBase
     /// passing null will turn current window into a top-level window.
     /// </summary>
     /// <param name="parent"></param>
-    public void SetParentWindow(BrowserWindow parent) => this.CallMethod1(JObject.FromObject(parent, _jsonSerializer));
+    public void SetParentWindow(BrowserWindow parent)
+    {
+        if (parent == null)
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, null);
+        }
+        else
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+        }
+    }
 
     /// <summary>
     /// The parent window.

@@ -1,7 +1,7 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Process metrics information.
     /// </summary>
     public class ProcessMetric
     {
@@ -21,11 +21,9 @@
         public CPUUsage Cpu { get; set; }
 
         /// <summary>
-        /// Creation time for this process. The time is represented as number of milliseconds since epoch.
-        /// Since the <see cref="PId"/> can be reused after a process dies, it is useful to use both the <see cref="PId"/>
-        /// and the <see cref="CreationTime"/> to uniquely identify a process.
+        /// Creation time for this process in milliseconds since Unix epoch. Can exceed Int32 range and may contain fractional milliseconds.
         /// </summary>
-        public int CreationTime { get; set; }
+        public double CreationTime { get; set; }
 
         /// <summary>
         /// Memory information for the process.

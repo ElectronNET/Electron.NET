@@ -11,6 +11,7 @@ let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let powerMonitor;
+let processInfo;
 let splashScreen, hostHook;
 let nativeTheme;
 let dock;
@@ -327,6 +328,7 @@ function startSocketApiBridge(port) {
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);
+        if (processInfo === undefined) processInfo = require('./api/process')(socket);
 
         socket.on('register-app-open-file', (id) => {
             global['electronsocket'] = socket;

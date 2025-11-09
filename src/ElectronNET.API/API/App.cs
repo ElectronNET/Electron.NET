@@ -18,7 +18,7 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class App : ApiBase
     {
-        protected override string SocketEventCompleteSuffix => "Completed";
+        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.NoDashUpperFirst;
 
         /// <summary>
         /// Emitted when all windows have been closed.
@@ -1306,7 +1306,20 @@ namespace ElectronNET.API
         {
             get
             {
-                return this.GetPropertyAsync<string>();
+                return Task.Run<string>(() =>
+                {
+                    var taskCompletionSource = new TaskCompletionSource<string>();
+
+                    BridgeConnector.Socket.On("appGetUserAgentFallbackCompleted", (result) =>
+                    {
+                        BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
+                        taskCompletionSource.SetResult((string)result);
+                    });
+
+                    BridgeConnector.Socket.Emit("appGetUserAgentFallback");
+
+                    return taskCompletionSource.Task;
+                });
             }
         }
 

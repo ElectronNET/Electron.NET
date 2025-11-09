@@ -1,0 +1,223 @@
+namespace ElectronNET.IntegrationTests.Tests
+{
+    using System.Runtime.InteropServices;
+    using ElectronNET.API;
+    using ElectronNET.API.Entities;
+
+    [Collection("ElectronCollection")]
+    public class BrowserWindowTests
+    {
+        private readonly ElectronFixture fx;
+
+        public BrowserWindowTests(ElectronFixture fx)
+        {
+            this.fx = fx;
+        }
+
+        [Fact]
+        public async Task Can_set_and_get_title()
+        {
+            const string title = "Integration Test Title";
+            this.fx.MainWindow.SetTitle(title);
+            var roundTrip = await this.fx.MainWindow.GetTitleAsync();
+            roundTrip.Should().Be(title);
+        }
+
+        [Fact]
+        public async Task Can_resize_and_get_size()
+        {
+            this.fx.MainWindow.SetSize(643, 482);
+            var size = await this.fx.MainWindow.GetSizeAsync();
+            size.Should().HaveCount(2);
+            size[0].Should().Be(643);
+            size[1].Should().Be(482);
+        }
+
+        [Fact]
+        public async Task Can_set_progress_bar_and_clear()
+        {
+            this.fx.MainWindow.SetProgressBar(0.5);
+            // No direct getter; rely on absence of error. Try changing again.
+            this.fx.MainWindow.SetProgressBar(-1); // clears
+            await Task.Delay(50);
+        }
+
+                [Fact]
+        public async Task Can_set_and_get_position()
+        {
+            this.fx.MainWindow.SetPosition(134, 246);
+            await Task.Delay(500);
+            var pos = await this.fx.MainWindow.GetPositionAsync();
+            pos.Should().BeEquivalentTo(new[] { 134, 246 });
+        }
+
+        [Fact]
+        public async Task Can_set_and_get_bounds()
+        {
+            var bounds = new Rectangle { X = 10, Y = 20, Width = 400, Height = 300 };
+            this.fx.MainWindow.SetBounds(bounds);
+            var round = await this.fx.MainWindow.GetBoundsAsync();
+
+            round.Should().BeEquivalentTo(bounds);
+            round.Width.Should().Be(400);
+            round.Height.Should().Be(300);
+        }
+
+        [Fact]
+        public async Task Can_set_and_get_content_bounds()
+        {
+            var bounds = new Rectangle { X = 0, Y = 0, Width = 300, Height = 200 };
+            this.fx.MainWindow.SetContentBounds(bounds);
+            var round = await this.fx.MainWindow.GetContentBoundsAsync();
+            round.Width.Should().BeGreaterThan(0);
+            round.Height.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task Show_hide_visibility_roundtrip()
+        {
+            this.fx.MainWindow.Show();
+            (await this.fx.MainWindow.IsVisibleAsync()).Should().BeTrue();
+            this.fx.MainWindow.Hide();
+            (await this.fx.MainWindow.IsVisibleAsync()).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task AlwaysOnTop_toggle_and_query()
+        {
+            this.fx.MainWindow.SetAlwaysOnTop(true);
+            (await this.fx.MainWindow.IsAlwaysOnTopAsync()).Should().BeTrue();
+            this.fx.MainWindow.SetAlwaysOnTop(false);
+            (await this.fx.MainWindow.IsAlwaysOnTopAsync()).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task MenuBar_auto_hide_and_visibility()
+        {
+            this.fx.MainWindow.SetAutoHideMenuBar(true);
+            (await this.fx.MainWindow.IsMenuBarAutoHideAsync()).Should().BeTrue();
+            this.fx.MainWindow.SetMenuBarVisibility(false);
+            (await this.fx.MainWindow.IsMenuBarVisibleAsync()).Should().BeFalse();
+            this.fx.MainWindow.SetMenuBarVisibility(true);
+            (await this.fx.MainWindow.IsMenuBarVisibleAsync()).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task ReadyToShow_event_fires_after_content_ready()
+        {
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false });
+            var tcs = new TaskCompletionSource();
+            window.OnReadyToShow += () => tcs.TrySetResult();
+
+            // Trigger a navigation and wait for DOM ready so the renderer paints, which emits ready-to-show
+            var domReadyTcs = new TaskCompletionSource();
+            window.WebContents.OnDomReady += () => domReadyTcs.TrySetResult();
+            await window.WebContents.LoadURLAsync("about:blank");
+            await domReadyTcs.Task;
+
+            var completed = await Task.WhenAny(tcs.Task, Task.Delay(3000));
+            completed.Should().Be(tcs.Task);
+
+            // Typical usage is to show once ready
+            window.Show();
+        }
+
+        [Fact]
+        public async Task PageTitleUpdated_event_fires_on_title_change()
+        {
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true });
+            var tcs = new TaskCompletionSource<string>();
+            window.OnPageTitleUpdated += title => tcs.TrySetResult(title);
+
+            // Navigate and wait for DOM ready, then change the document.title to trigger the event
+            var domReadyTcs = new TaskCompletionSource();
+            window.WebContents.OnDomReady += () => domReadyTcs.TrySetResult();
+            await window.WebContents.LoadURLAsync("about:blank");
+            await domReadyTcs.Task;
+            await window.WebContents.ExecuteJavaScriptAsync("document.title='NewTitle';");
+
+            // Wait for event up to a short timeout
+            var completed2 = await Task.WhenAny(tcs.Task, Task.Delay(3000));
+            completed2.Should().Be(tcs.Task);
+            (await tcs.Task).Should().Be("NewTitle");
+        }
+
+        [Fact]
+        public async Task Resize_event_fires_on_size_change()
+        {
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false });
+            var resized = false;
+            window.OnResize += () => resized = true;
+            window.SetSize(500, 400);
+            await Task.Delay(300);
+            resized.Should().BeTrue();
+        }
+
+                [Fact]
+        public async Task Progress_bar_and_always_on_top_toggle()
+        {
+            var win = this.fx.MainWindow;
+            win.SetProgressBar(0.5);
+            win.SetProgressBar(0.8, new ProgressBarOptions { Mode = ProgressBarMode.normal });
+            win.SetAlwaysOnTop(true);
+            (await win.IsAlwaysOnTopAsync()).Should().BeTrue();
+            win.SetAlwaysOnTop(false);
+            (await win.IsAlwaysOnTopAsync()).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task Menu_bar_visibility_and_auto_hide()
+        {
+            var win = this.fx.MainWindow;
+            win.SetAutoHideMenuBar(true);
+            (await win.IsMenuBarAutoHideAsync()).Should().BeTrue();
+            win.SetMenuBarVisibility(true);
+            (await win.IsMenuBarVisibleAsync()).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task Parent_child_relationship_roundtrip()
+        {
+            var child = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false, Width = 300, Height = 200 });
+            this.fx.MainWindow.SetParentWindow(null); // ensure top-level
+            child.SetParentWindow(this.fx.MainWindow);
+            var parent = await child.GetParentWindowAsync();
+            parent.Id.Should().Be(this.fx.MainWindow.Id);
+            var kids = await this.fx.MainWindow.GetChildWindowsAsync();
+            kids.Select(k => k.Id).Should().Contain(child.Id);
+            child.Destroy();
+        }
+
+        [Fact]
+        public async Task Represented_filename_and_edited_flags()
+        {
+            var win = this.fx.MainWindow;
+            var temp = Path.Combine(Path.GetTempPath(), "electronnet_test.txt");
+            File.WriteAllText(temp, "test");
+            win.SetRepresentedFilename(temp);
+            var represented = await win.GetRepresentedFilenameAsync();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                represented.Should().Be(temp);
+            }
+            else
+            {
+                // Non-macOS platforms may not support represented filename; empty is acceptable
+                represented.Should().BeEmpty();
+            }
+
+            win.SetDocumentEdited(true);
+            var edited = await win.IsDocumentEditedAsync();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                edited.Should().BeTrue();
+            }
+            else
+            {
+                edited.Should().BeFalse(); // unsupported on non-mac platforms
+            }
+
+            win.SetDocumentEdited(false);
+        }
+    }
+}

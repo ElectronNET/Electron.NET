@@ -444,10 +444,27 @@ module.exports = (socket, app) => {
         electronSocket.emit('browserWindow-getNativeWindowHandle-completed', nativeWindowHandle);
     });
     socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
-        getWindowById(id).setRepresentedFilename(filename);
+        const win = getWindowById(id);
+        try {
+            if (win && typeof win.setRepresentedFilename === 'function') {
+                win.setRepresentedFilename(filename);
+            }
+        }
+        catch (e) {
+            console.warn('setRepresentedFilename failed (likely unsupported platform):', e);
+        }
     });
     socket.on('browserWindowGetRepresentedFilename', (id) => {
-        const pathname = getWindowById(id).getRepresentedFilename();
+        const win = getWindowById(id);
+        let pathname = '';
+        try {
+            if (win && typeof win.getRepresentedFilename === 'function') {
+                pathname = win.getRepresentedFilename() || '';
+            }
+        }
+        catch (e) {
+            console.warn('getRepresentedFilename failed (likely unsupported platform):', e);
+        }
         electronSocket.emit('browserWindow-getRepresentedFilename-completed', pathname);
     });
     socket.on('browserWindowSetDocumentEdited', (id, edited) => {
@@ -507,8 +524,21 @@ module.exports = (socket, app) => {
     });
     socket.on('browserWindowSetThumbarButtons', (id, thumbarButtons) => {
         thumbarButtons.forEach(thumbarButton => {
-            const imagePath = path.join(__dirname.replace('api', ''), 'bin', thumbarButton.icon.toString());
-            thumbarButton.icon = electron_1.nativeImage.createFromPath(imagePath);
+            const originalIconPath = thumbarButton.icon.toString();
+            const path = require('path');
+            const fs = require('fs');
+            let imagePath = originalIconPath;
+            if (!path.isAbsolute(originalIconPath)) {
+                imagePath = path.join(__dirname.replace('api', ''), 'bin', originalIconPath);
+            }
+            const { nativeImage } = require('electron');
+            if (fs.existsSync(imagePath)) {
+                thumbarButton.icon = nativeImage.createFromPath(imagePath);
+            }
+            else {
+                // Fallback to empty image to avoid failure
+                thumbarButton.icon = nativeImage.createEmpty();
+            }
             thumbarButton.click = () => {
                 electronSocket.emit('thumbarButtonClicked', thumbarButton['id']);
             };
@@ -559,8 +589,14 @@ module.exports = (socket, app) => {
         getWindowById(id).setFocusable(focusable);
     });
     socket.on('browserWindowSetParentWindow', (id, parent) => {
+        const child = getWindowById(id);
+        if (!parent) {
+            // Clear parent: make this window top-level
+            child.setParentWindow(null);
+            return;
+        }
         const browserWindow = electron_1.BrowserWindow.fromId(parent.id);
-        getWindowById(id).setParentWindow(browserWindow);
+        child.setParentWindow(browserWindow);
     });
     socket.on('browserWindowGetParentWindow', (id) => {
         const browserWindow = getWindowById(id).getParentWindow();

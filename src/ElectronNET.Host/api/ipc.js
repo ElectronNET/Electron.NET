@@ -45,5 +45,30 @@ module.exports = (socket) => {
             view.webContents.send(channel, ...data);
         }
     });
+    // Integration helpers: programmatically click menu items from renderer tests
+    electron_1.ipcMain.on('integration-click-application-menu', (event, id) => {
+        try {
+            const menu = electron_1.Menu.getApplicationMenu();
+            const mi = menu ? menu.getMenuItemById(id) : null;
+            if (mi && typeof mi.click === 'function') {
+                const bw = electron_1.BrowserWindow.fromWebContents(event.sender);
+                mi.click(undefined, bw, undefined);
+            }
+        }
+        catch { /* ignore */ }
+    });
+    electron_1.ipcMain.on('integration-click-context-menu', (event, windowId, id) => {
+        var _a, _b;
+        try {
+            const entries = global['contextMenuItems'] || [];
+            const entry = entries.find((x) => x.browserWindowId === windowId);
+            const mi = (_b = (_a = entry === null || entry === void 0 ? void 0 : entry.menu) === null || _a === void 0 ? void 0 : _a.items) === null || _b === void 0 ? void 0 : _b.find((i) => i.id === id);
+            if (mi && typeof mi.click === 'function') {
+                const bw = electron_1.BrowserWindow.fromId(windowId);
+                mi.click(undefined, bw, undefined);
+            }
+        }
+        catch { /* ignore */ }
+    });
 };
 //# sourceMappingURL=ipc.js.map

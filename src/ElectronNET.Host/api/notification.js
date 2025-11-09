@@ -43,7 +43,7 @@ module.exports = (socket) => {
         notification.show();
     });
     socket.on('notificationIsSupported', () => {
-        const isSupported = electron_1.Notification.isSupported;
+        const isSupported = electron_1.Notification.isSupported();
         electronSocket.emit('notificationIsSupportedComplete', isSupported);
     });
 };

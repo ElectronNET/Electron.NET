@@ -9,6 +9,12 @@
 
     public abstract class ApiBase
     {
+        protected enum SocketEventNameTypes
+        {
+            DashesLowerFirst,
+            NoDashUpperFirst,
+        }
+
         internal const int PropertyTimeout = 1000;
 
         private readonly string objectName;
@@ -31,7 +37,7 @@
             }
         }
 
-        protected abstract string SocketEventCompleteSuffix { get; }
+        protected abstract SocketEventNameTypes SocketEventNameType { get; }
 
         protected ApiBase()
         {
@@ -128,7 +134,20 @@
                 this.tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 this.tcsTask = this.tcs.Task;
 
-                var eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}{apiBase.SocketEventCompleteSuffix}");
+                string eventName;
+
+                switch (apiBase.SocketEventNameType)
+                {
+                    case SocketEventNameTypes.DashesLowerFirst:
+                        eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}-completed");
+                        break;
+                    case SocketEventNameTypes.NoDashUpperFirst:
+                        eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}{s.StripAsync()}Completed");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
                 var messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
 
                 BridgeConnector.Socket.On<T>(eventName, (result) =>
