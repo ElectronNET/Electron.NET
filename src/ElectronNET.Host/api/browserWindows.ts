@@ -721,9 +721,14 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowSetParentWindow', (id, parent) => {
+        const child = getWindowById(id);
+        if (!parent) {
+            // Clear parent: make this window top-level
+            child.setParentWindow(null);
+            return;
+        }
         const browserWindow = BrowserWindow.fromId(parent.id);
-
-        getWindowById(id).setParentWindow(browserWindow);
+        child.setParentWindow(browserWindow);
     });
 
     socket.on('browserWindowGetParentWindow', (id) => {

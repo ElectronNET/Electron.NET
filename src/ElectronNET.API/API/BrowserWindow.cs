@@ -1140,7 +1140,17 @@ public class BrowserWindow : ApiBase
     /// passing null will turn current window into a top-level window.
     /// </summary>
     /// <param name="parent"></param>
-    public void SetParentWindow(BrowserWindow parent) => this.CallMethod1(JObject.FromObject(parent, _jsonSerializer));
+    public void SetParentWindow(BrowserWindow parent)
+    {
+        if (parent == null)
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, null);
+        }
+        else
+        {
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+        }
+    }
 
     /// <summary>
     /// The parent window.
