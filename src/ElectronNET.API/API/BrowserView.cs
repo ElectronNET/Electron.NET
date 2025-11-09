@@ -35,20 +35,20 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run<Rectangle>(() =>
-                {
-                    var taskCompletionSource = new TaskCompletionSource<Rectangle>();
+                var taskCompletionSource = new TaskCompletionSource<Rectangle>();
 
-                    BridgeConnector.Socket.On("browserView-getBounds-reply", (result) =>
+                Task.Run(() =>
+                {
+                    BridgeConnector.Socket.On<Rectangle>("browserView-getBounds-reply", (result) =>
                     {
                         BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult((Rectangle)result);
+                        taskCompletionSource.SetResult(result);
                     });
 
                     BridgeConnector.Socket.Emit("browserView-getBounds", Id);
+                });
 
-                    return taskCompletionSource.Task;
-                }).Result;
+                return taskCompletionSource.Task.GetAwaiter().GetResult();
             }
             set
             {
