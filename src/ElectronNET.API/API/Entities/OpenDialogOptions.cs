@@ -33,7 +33,6 @@ namespace ElectronNET.API.Entities
         /// Contains which features the dialog should use. The following values are supported:
         /// 'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'
         /// </summary>
-        [JsonPropertyName("properties")]
         public OpenDialogProperty[] Properties { get; set; }
 
         /// <summary>
