@@ -137,10 +137,26 @@ export = (socket: Socket) => {
     browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
   });
 
-  socket.on('webContents-session-clearAuthCache', async (id, guid) => {
-    const browserWindow = getWindowById(id);
-    await browserWindow.webContents.session.clearAuthCache();
-
+  socket.on('webContents-session-clearAuthCache', async (...args) => {
+    // Overload support: (id, guid) OR (id, options, guid)
+    const browserWindow = getWindowById(args[0]);
+    let guid: string;
+    if (args.length ===2) {
+      // No options
+      guid = args[1];
+      await browserWindow.webContents.session.clearAuthCache();
+    } else if (args.length ===3) {
+      const options = args[1];
+      guid = args[2];
+      try {
+        await browserWindow.webContents.session.clearAuthCache(options);
+      } catch {
+        // Fallback to clearing without options if Electron version rejects custom options
+        await browserWindow.webContents.session.clearAuthCache();
+      }
+    } else {
+      return; // invalid invocation
+    }
     electronSocket.emit('webContents-session-clearAuthCache-completed' + guid);
   });
 
