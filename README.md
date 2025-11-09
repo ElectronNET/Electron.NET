@@ -8,7 +8,7 @@
 
 ElectronNET.Core represents a fundamental modernization of Electron.NET, addressing years of accumulated pain points while preserving full API compatibility. This isn't just an update—it's a complete rethinking of how .NET developers build and debug cross-platform desktop applications with Electron.
 
-Read more: [**What's New in ElectronNET.Core**](wiki/What's-New)
+Read more: [**What's New in ElectronNET.Core**](../../wiki/What's-New)
 
 
 Build cross platform desktop applications with .NET 6/8 - from console apps to ASP.Net Core (Razor Pages, MVC) to Blazor
