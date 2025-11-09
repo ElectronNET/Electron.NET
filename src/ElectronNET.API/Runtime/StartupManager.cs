@@ -128,9 +128,21 @@
         {
             var buildInfo = new BuildInfo();
 
-            var attributes = Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
+            var electronAssembly = Assembly.GetEntryAssembly();
 
-            if (attributes?.Count > 0)
+            if (electronAssembly == null)
+            {
+                return buildInfo;
+            }
+
+            if (electronAssembly.GetName().Name == "testhost")
+            {
+                electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
+            }
+
+            var attributes = electronAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
+
+            if (attributes.Count > 0)
             {
                 buildInfo.ElectronExecutable = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronExecutable))?.Value;
                 buildInfo.ElectronVersion = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronVersion))?.Value;
