@@ -19,7 +19,9 @@ namespace ElectronNET.API
         private static WindowManager _windowManager;
         private static readonly object SyncRoot = new();
 
-        internal WindowManager() { }
+        internal WindowManager()
+        {
+        }
 
         internal static WindowManager Instance
         {
@@ -55,6 +57,7 @@ namespace ElectronNET.API
                 _isQuitOnWindowAllClosed = value;
             }
         }
+
         private bool _isQuitOnWindowAllClosed = true;
 
         /// <summary>

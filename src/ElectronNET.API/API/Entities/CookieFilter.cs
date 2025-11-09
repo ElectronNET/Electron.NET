@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ElectronNET.API.Entities 
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
     /// </summary>
-    public class CookieFilter 
+    public class CookieFilter
     {
         /// <summary>
         /// (optional) - Retrieves cookies which are associated with url.Empty implies retrieving cookies of all URLs.
@@ -38,6 +38,5 @@ namespace ElectronNET.API.Entities
         /// (optional) - Filters out session or persistent cookies.
         /// </summary>
         public bool Session { get; set; }
-
     }
 }

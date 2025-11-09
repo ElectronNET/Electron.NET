@@ -21,9 +21,9 @@ namespace ElectronNET.API.Entities
 
         private static readonly Dictionary<string, float> ScaleFactorPairs = new Dictionary<string, float>
         {
-            {"@2x",   2.0f}, {"@3x",     3.0f}, {"@1x",     1.0f}, {"@4x",   4.0f},
-            {"@5x",   5.0f}, {"@1.25x", 1.25f}, {"@1.33x", 1.33f}, {"@1.4x", 1.4f},
-            {"@1.5x", 1.5f}, {"@1.8x",   1.8f}, {"@2.5x",   2.5f}
+            { "@2x", 2.0f }, { "@3x", 3.0f }, { "@1x", 1.0f }, { "@4x", 4.0f },
+            { "@5x", 5.0f }, { "@1.25x", 1.25f }, { "@1.33x", 1.33f }, { "@1.4x", 1.4f },
+            { "@1.5x", 1.5f }, { "@1.8x", 1.8f }, { "@2.5x", 2.5f }
         };
 
         private static float? ExtractDpiFromFilePath(string filePath)
@@ -34,6 +34,7 @@ namespace ElectronNET.API.Entities
                 .Select(p => p.Value)
                 .FirstOrDefault();
         }
+
         private static Image BytesToImage(byte[] bytes)
         {
             var ms = new MemoryStream(bytes);
@@ -83,7 +84,7 @@ namespace ElectronNET.API.Entities
         /// <param name="dataUrl">A data URL with a base64 encoded image.</param>
         public static NativeImage CreateFromDataURL(string dataUrl)
         {
-            var images = new Dictionary<float,Image>();
+            var images = new Dictionary<float, Image>();
             var parsedDataUrl = Regex.Match(dataUrl, @"data:image/(?<type>.+?),(?<data>.+)");
             var actualData = parsedDataUrl.Groups["data"].Value;
             var binData = Convert.FromBase64String(actualData);
@@ -101,7 +102,7 @@ namespace ElectronNET.API.Entities
         /// <param name="path">The path of the image</param>
         public static NativeImage CreateFromPath(string path)
         {
-            var images = new Dictionary<float,Image>();
+            var images = new Dictionary<float, Image>();
             if (Regex.IsMatch(path, "(@.+?x)"))
             {
                 var dpi = ExtractDpiFromFilePath(path);
@@ -164,7 +165,7 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public NativeImage Crop(Rectangle rect)
         {
-            var images = new Dictionary<float,Image>();
+            var images = new Dictionary<float, Image>();
             foreach (var image in _images)
             {
                 images.Add(image.Key, Crop(rect.X, rect.Y, rect.Width, rect.Height, image.Key));
@@ -196,7 +197,7 @@ namespace ElectronNET.API.Entities
             if (options.Buffer.Length > 0)
             {
                 _images[options.ScaleFactor] =
-                    CreateFromBuffer(options.Buffer, new CreateFromBufferOptions {ScaleFactor = options.ScaleFactor})
+                    CreateFromBuffer(options.Buffer, new CreateFromBufferOptions { ScaleFactor = options.ScaleFactor })
                         .GetScale(options.ScaleFactor);
             }
             else if (!string.IsNullOrEmpty(options.DataUrl))
@@ -225,7 +226,7 @@ namespace ElectronNET.API.Entities
         /// </summary>
         public byte[] GetBitmap(BitmapOptions options)
         {
-            return ToBitmap(new ToBitmapOptions{ ScaleFactor = options.ScaleFactor });
+            return ToBitmap(new ToBitmapOptions { ScaleFactor = options.ScaleFactor });
         }
 
         /// <summary>
@@ -419,12 +420,13 @@ namespace ElectronNET.API.Entities
                     return codec;
                 }
             }
+
             return null;
         }
 
-        internal Dictionary<float,string> GetAllScaledImages()
+        internal Dictionary<float, string> GetAllScaledImages()
         {
-            var dict = new Dictionary<float,string>();
+            var dict = new Dictionary<float, string>();
             try
             {
                 foreach (var (scale, image) in _images)
@@ -436,7 +438,7 @@ namespace ElectronNET.API.Entities
             {
                 Console.WriteLine(ex);
             }
-            
+
             return dict;
         }
 

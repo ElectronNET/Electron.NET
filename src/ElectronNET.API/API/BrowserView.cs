@@ -59,7 +59,7 @@ namespace ElectronNET.API
         /// <summary>
         /// BrowserView
         /// </summary>
-        internal BrowserView(int id) 
+        internal BrowserView(int id)
         {
             Id = id;
 

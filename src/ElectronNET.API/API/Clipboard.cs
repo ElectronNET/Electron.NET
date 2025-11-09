@@ -14,7 +14,9 @@ namespace ElectronNET.API
         private static Clipboard _clipboard;
         private static object _syncRoot = new object();
 
-        internal Clipboard() { }
+        internal Clipboard()
+        {
+        }
 
         internal static Clipboard Instance
         {
@@ -253,14 +255,13 @@ namespace ElectronNET.API
                 var nativeImage = ((JObject)image).ToObject<NativeImage>();
 
                 taskCompletionSource.SetResult(nativeImage);
-                
             });
 
             BridgeConnector.Socket.Emit("clipboard-readImage", type);
-            
+
             return taskCompletionSource.Task;
         }
-        
+
         /// <summary>
         /// Writes an image to the clipboard.
         /// </summary>

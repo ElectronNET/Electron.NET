@@ -12,7 +12,9 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class Process
     {
-        internal Process() { }
+        internal Process()
+        {
+        }
 
         internal static Process Instance
         {
@@ -102,13 +104,13 @@ namespace ElectronNET.API
                 return taskCompletionSource.Task;
             }
         }
-    
-    
+
+
         /// <summary>
         /// The process.versions property returns an object listing the version strings of
         /// chrome and electron.
         /// </summary> 
-        public Task<ProcessVersions> VersionsAsync 
+        public Task<ProcessVersions> VersionsAsync
         {
             get
             {
@@ -124,8 +126,8 @@ namespace ElectronNET.API
                 return taskCompletionSource.Task;
             }
         }
-    
-    
+
+
         /// <summary>
         /// A Boolean. When app is started by being passed as parameter to the default app, this
         /// property is true in the main process, otherwise it is false.
@@ -269,6 +271,5 @@ namespace ElectronNET.API
                 return taskCompletionSource.Task;
             }
         }
-    
     }
 }

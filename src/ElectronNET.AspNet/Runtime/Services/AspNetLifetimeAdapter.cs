@@ -5,7 +5,7 @@
     using ElectronNET.Runtime.Services;
     using Microsoft.Extensions.Hosting;
 
-    internal  class AspNetLifetimeAdapter : LifetimeServiceBase
+    internal class AspNetLifetimeAdapter : LifetimeServiceBase
     {
         private readonly IHostApplicationLifetime lifetimeService;
 

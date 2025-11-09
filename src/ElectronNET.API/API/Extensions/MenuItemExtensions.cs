@@ -56,7 +56,7 @@ namespace ElectronNET.API.Extensions
                 var menuItem = menuItems[index];
                 if (menuItem?.Submenu?.Length > 0)
                 {
-                    if(menuItem.Type == MenuType.normal)
+                    if (menuItem.Type == MenuType.normal)
                     {
                         menuItem.Type = MenuType.submenu;
                     }

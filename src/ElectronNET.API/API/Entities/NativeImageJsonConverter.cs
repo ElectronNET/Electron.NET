@@ -26,6 +26,7 @@ namespace ElectronNET.API.Entities
                 var bytes = Convert.FromBase64String(item.Value);
                 newDictionary.Add(item.Key, Image.FromStream(new MemoryStream(bytes)));
             }
+
             return new NativeImage(newDictionary);
         }
 

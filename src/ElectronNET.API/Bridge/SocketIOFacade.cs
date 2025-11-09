@@ -33,10 +33,7 @@ internal class SocketIoFacade
 
     public void Connect()
     {
-        _socket.OnError += (sender, e) =>
-        {
-            Console.WriteLine($"BridgeConnector Error: {sender} {e}");
-        };
+        _socket.OnError += (sender, e) => { Console.WriteLine($"BridgeConnector Error: {sender} {e}"); };
 
         _socket.OnConnected += (_, _) =>
         {
@@ -57,10 +54,7 @@ internal class SocketIoFacade
     {
         lock (_lockObj)
         {
-            _socket.On(eventName, _ =>
-            {
-                Task.Run(action);
-            });
+            _socket.On(eventName, _ => { Task.Run(action); });
         }
     }
 
@@ -107,10 +101,10 @@ internal class SocketIoFacade
         lock (_lockObj)
         {
             _socket.On(eventName, (socketIoResponse) =>
-                {
-                    _socket.Off(eventName);
-                    Task.Run(() => action(socketIoResponse.GetValue<T>()));
-                });
+            {
+                _socket.Off(eventName);
+                Task.Run(() => action(socketIoResponse.GetValue<T>()));
+            });
         }
     }
 

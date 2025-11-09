@@ -15,7 +15,6 @@
         /// </summary>
         public void Cancel()
         {
-
         }
 
         /// <summary>
@@ -23,7 +22,6 @@
         /// </summary>
         public void Dispose()
         {
-
         }
     }
 }

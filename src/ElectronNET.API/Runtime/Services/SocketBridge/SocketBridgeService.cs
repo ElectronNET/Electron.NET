@@ -5,7 +5,7 @@
     using ElectronNET.API;
     using ElectronNET.Runtime.Data;
 
-    internal  class SocketBridgeService : LifetimeServiceBase
+    internal class SocketBridgeService : LifetimeServiceBase
     {
         private readonly int socketPort;
         private readonly string socketUrl;

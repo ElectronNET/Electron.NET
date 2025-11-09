@@ -9,26 +9,32 @@ public enum InputEventType
     /// 
     /// </summary>
     undefined,
+
     /// <summary>
     /// 
     /// </summary>
     mouseDown,
+
     /// <summary>
     /// 
     /// </summary>
     mouseUp,
+
     /// <summary>
     /// 
     /// </summary>
     mouseMove,
+
     /// <summary>
     /// 
     /// </summary>
     mouseEnter,
+
     /// <summary>
     /// 
     /// </summary>
     mouseLeave,
+
     /// <summary>
     /// 
     /// </summary>

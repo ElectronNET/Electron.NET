@@ -28,6 +28,6 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Gets or sets the dataURL
         /// </summary>
-        public string DataUrl { get; set; } 
+        public string DataUrl { get; set; }
     }
 }

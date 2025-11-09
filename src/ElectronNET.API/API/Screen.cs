@@ -51,7 +51,9 @@ namespace ElectronNET.API
         private static Screen _screen;
         private static object _syncRoot = new object();
 
-        internal Screen() { }
+        internal Screen()
+        {
+        }
 
         internal static Screen Instance
         {
@@ -76,7 +78,7 @@ namespace ElectronNET.API
         /// The current absolute position of the mouse pointer.
         /// </summary>
         /// <returns></returns>
-        public Task<Point> GetCursorScreenPointAsync() 
+        public Task<Point> GetCursorScreenPointAsync()
         {
             var taskCompletionSource = new TaskCompletionSource<Point>();
 

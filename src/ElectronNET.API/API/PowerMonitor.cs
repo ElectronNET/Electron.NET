@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ElectronNET.Common;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
@@ -75,7 +76,7 @@ namespace ElectronNET.API
         }
 
         private event Action _onBattery;
-        
+
         /// <summary>
         /// Emitted when the system is about to reboot or shut down. If the event handler
         /// invokes `e.preventDefault()`, Electron will attempt to delay system shutdown in
@@ -93,7 +94,9 @@ namespace ElectronNET.API
         private static PowerMonitor _powerMonitor;
         private static object _syncRoot = new object();
 
-        internal PowerMonitor() { }
+        internal PowerMonitor()
+        {
+        }
 
         internal static PowerMonitor Instance
         {

@@ -45,13 +45,14 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-app-window-all-closed", GetHashCode());
                 }
+
                 _windowAllClosed += value;
             }
             remove
             {
                 _windowAllClosed -= value;
 
-                if(_windowAllClosed == null)
+                if (_windowAllClosed == null)
                     BridgeConnector.Socket.Off("app-window-all-closed" + GetHashCode());
             }
         }
@@ -117,6 +118,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-app-before-quit", GetHashCode());
                 }
+
                 _beforeQuit += value;
             }
             remove
@@ -168,6 +170,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode());
                 }
+
                 _willQuit += value;
             }
             remove
@@ -194,7 +197,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.On("app-will-quit" + GetHashCode() + "quitting", async () =>
                     {
-                        if(_willQuit == null)
+                        if (_willQuit == null)
                         {
                             await this._quitting().ConfigureAwait(false);
                             Exit();
@@ -203,6 +206,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-app-will-quit", GetHashCode() + "quitting");
                 }
+
                 _quitting += value;
             }
             remove
@@ -276,11 +280,11 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the application has finished basic startup.
         /// </summary>
-        public event Action Ready 
+        public event Action Ready
         {
             add
             {
-                if(IsReady)
+                if (IsReady)
                 {
                     value();
                 }
@@ -298,19 +302,23 @@ namespace ElectronNET.API
         /// <summary>
         /// Application host fully started.
         /// </summary>
-        public bool IsReady 
-        { 
-            get { return _isReady; }
+        public bool IsReady
+        {
+            get
+            {
+                return _isReady;
+            }
             internal set
             {
                 _isReady = value;
 
-                if(value)
+                if (value)
                 {
                     _ready?.Invoke();
                 }
             }
         }
+
         private bool _isReady = false;
 
         /// <summary>
@@ -379,7 +387,7 @@ namespace ElectronNET.API
         }
 
 
-        internal App() 
+        internal App()
         {
             CommandLine = new CommandLine();
         }
@@ -392,7 +400,7 @@ namespace ElectronNET.API
                 {
                     lock (_syncRoot)
                     {
-                        if(_app == null)
+                        if (_app == null)
                         {
                             _app = new App();
                         }
@@ -541,7 +549,7 @@ namespace ElectronNET.API
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<string>();
-            using(cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.On("appGetPathCompleted", (path) =>
                 {
@@ -554,7 +562,7 @@ namespace ElectronNET.API
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
-            }  
+            }
         }
 
         /// <summary>
@@ -715,7 +723,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appSetAsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
+                    taskCompletionSource.SetResult((bool)success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
@@ -760,7 +768,7 @@ namespace ElectronNET.API
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default)
-        {           
+        {
             cancellationToken.ThrowIfCancellationRequested();
 
             var taskCompletionSource = new TaskCompletionSource<bool>();
@@ -769,7 +777,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appRemoveAsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
+                    taskCompletionSource.SetResult((bool)success);
                 });
 
                 BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
@@ -841,7 +849,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appIsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult((bool) success);
+                    taskCompletionSource.SetResult((bool)success);
                 });
 
                 BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
@@ -869,7 +877,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appSetUserTasksCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetUserTasksCompleted");
-                    taskCompletionSource.SetResult((bool) success);
+                    taskCompletionSource.SetResult((bool)success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetUserTasks", JArray.FromObject(userTasks, _jsonSerializer));
@@ -1066,7 +1074,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appImportCertificateCompleted", (result) =>
                 {
                     BridgeConnector.Socket.Off("appImportCertificateCompleted");
-                    taskCompletionSource.SetResult((int) result);
+                    taskCompletionSource.SetResult((int)result);
                 });
 
                 BridgeConnector.Socket.Emit("appImportCertificate", JObject.FromObject(options, _jsonSerializer));
@@ -1122,7 +1130,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("appSetBadgeCountCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetBadgeCountCompleted");
-                    taskCompletionSource.SetResult((bool) success);
+                    taskCompletionSource.SetResult((bool)success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetBadgeCount", count);
@@ -1183,7 +1191,7 @@ namespace ElectronNET.API
                 {
                     BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
 
-                    var result = ((JObject) loginItemSettings).ToObject<LoginItemSettings>();
+                    var result = ((JObject)loginItemSettings).ToObject<LoginItemSettings>();
 
                     taskCompletionSource.SetResult(result);
                 });
@@ -1310,6 +1318,7 @@ namespace ElectronNET.API
         private bool _preventQuit = false;
 
         private const string ModuleName = "app";
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module.
         /// </summary>
@@ -1317,6 +1326,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public void On(string eventName, Action action)
             => Events.Instance.On(ModuleName, eventName, action);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module.
         /// </summary>
@@ -1324,6 +1334,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public async Task On(string eventName, Action<object> action)
             => await Events.Instance.On(ModuleName, eventName, action).ConfigureAwait(false);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>
@@ -1331,6 +1342,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public void Once(string eventName, Action action)
             => Events.Instance.Once(ModuleName, eventName, action);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="App"/> module once.
         /// </summary>

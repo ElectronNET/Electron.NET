@@ -27,6 +27,7 @@ namespace ElectronNET.API.Extensions
                     return ((DescriptionAttribute)attrs[0]).Description;
                 }
             }
+
             //If we have no description attribute, just return the ToString of the enum
             return enumerationValue.ToString();
         }

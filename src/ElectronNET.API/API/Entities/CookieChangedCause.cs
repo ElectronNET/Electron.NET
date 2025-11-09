@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace ElectronNET.API.Entities {
+namespace ElectronNET.API.Entities
+{
     /// <summary>
     /// The cause of the change 
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum CookieChangedCause 
+    public enum CookieChangedCause
     {
         /// <summary>
         ///The cookie was changed directly by a consumer's action.

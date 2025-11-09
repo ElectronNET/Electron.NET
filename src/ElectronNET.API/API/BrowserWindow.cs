@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElectronNET.Common;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API;
@@ -96,8 +97,8 @@ public class BrowserWindow : ApiBase
     /// </summary>
     public event Action OnUnresponsive
     {
-            add => ApiEventManager.AddEvent("browserWindow-unresponsive", Id, _unresponsive, value);
-            remove => ApiEventManager.RemoveEvent("browserWindow-unresponsive", Id, _unresponsive, value);
+        add => ApiEventManager.AddEvent("browserWindow-unresponsive", Id, _unresponsive, value);
+        remove => ApiEventManager.RemoveEvent("browserWindow-unresponsive", Id, _unresponsive, value);
     }
 
     private event Action _unresponsive;
@@ -752,6 +753,7 @@ public class BrowserWindow : ApiBase
         {
             x = x - 7;
         }
+
         this.CallMethod2(x, y);
     }
 
@@ -769,6 +771,7 @@ public class BrowserWindow : ApiBase
         {
             x = x - 7;
         }
+
         this.CallMethod3(x, y, animate);
     }
 
@@ -906,7 +909,14 @@ public class BrowserWindow : ApiBase
     /// <value>
     /// The menu items.
     /// </value>
-    public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
+    public IReadOnlyCollection<MenuItem> MenuItems
+    {
+        get
+        {
+            return _items.AsReadOnly();
+        }
+    }
+
     private List<MenuItem> _items = new List<MenuItem>();
 
     /// <summary>
@@ -981,7 +991,14 @@ public class BrowserWindow : ApiBase
     /// <value>
     /// The thumbar buttons.
     /// </value>
-    public IReadOnlyCollection<ThumbarButton> ThumbarButtons { get { return _thumbarButtons.AsReadOnly(); } }
+    public IReadOnlyCollection<ThumbarButton> ThumbarButtons
+    {
+        get
+        {
+            return _thumbarButtons.AsReadOnly();
+        }
+    }
+
     private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
 
     /// <summary>

@@ -103,7 +103,7 @@
                 {
                     ElectronNetRuntime.ElectronProcessId = result;
 
-                Console.WriteLine("Electron Process ID: " + result);
+                    Console.WriteLine("Electron Process ID: " + result);
                 }
             }
         }
@@ -122,7 +122,6 @@
             }
 
             ElectronNetRuntime.ElectronExecutable = executable;
-
         }
 
         private BuildInfo GatherBuildInfo()

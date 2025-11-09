@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronNET.Common;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
@@ -88,7 +89,9 @@ namespace ElectronNET.API
         private static Tray _tray;
         private static readonly object _syncRoot = new();
 
-        internal Tray() { }
+        internal Tray()
+        {
+        }
 
         internal static Tray Instance
         {
@@ -239,6 +242,7 @@ namespace ElectronNET.API
         };
 
         private const string ModuleName = "tray";
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
@@ -246,6 +250,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public void On(string eventName, Action action)
             => Events.Instance.On(ModuleName, eventName, action);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module.
         /// </summary>
@@ -253,6 +258,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public async Task On<T>(string eventName, Action<T> action)
             => await Events.Instance.On(ModuleName, eventName, action).ConfigureAwait(false);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>
@@ -260,6 +266,7 @@ namespace ElectronNET.API
         /// <param name="action">The handler</param>
         public void Once(string eventName, Action action)
             => Events.Instance.Once(ModuleName, eventName, action);
+
         /// <summary>
         /// Subscribe to an unmapped event on the <see cref="Tray"/> module once.
         /// </summary>

@@ -14,7 +14,9 @@
 
         private LifetimeState state = LifetimeState.Uninitialized;
 
-        protected LifetimeServiceBase() { }
+        protected LifetimeServiceBase()
+        {
+        }
 
         public event EventHandler Starting;
 

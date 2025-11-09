@@ -16,7 +16,8 @@ namespace ElectronNET.API
         private readonly TextInfo _textInfo = new CultureInfo("en-US", false).TextInfo;
 
         private Events()
-        { }
+        {
+        }
 
         public static Events Instance
         {
@@ -94,6 +95,5 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Once(listener, action);
             await BridgeConnector.Socket.Emit(subscriber, eventName, listener).ConfigureAwait(false);
         }
-
     }
 }

@@ -60,7 +60,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("dock-bounce-completed", (id) =>
                 {
                     BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult((int) id);
+                    taskCompletionSource.SetResult((int)id);
                 });
 
                 BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
@@ -112,7 +112,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("dock-getBadge-completed", (text) =>
                 {
                     BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult((string) text);
+                    taskCompletionSource.SetResult((string)text);
                 });
 
                 BridgeConnector.Socket.Emit("dock-getBadge");
@@ -154,7 +154,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.On("dock-isVisible-completed", (isVisible) =>
                 {
                     BridgeConnector.Socket.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult((bool) isVisible);
+                    taskCompletionSource.SetResult((bool)isVisible);
                 });
 
                 BridgeConnector.Socket.Emit("dock-isVisible");
@@ -170,7 +170,14 @@ namespace ElectronNET.API
         /// <value>
         /// The menu items.
         /// </value>
-        public IReadOnlyCollection<MenuItem> MenuItems { get { return _items.AsReadOnly(); } }
+        public IReadOnlyCollection<MenuItem> MenuItems
+        {
+            get
+            {
+                return _items.AsReadOnly();
+            }
+        }
+
         private List<MenuItem> _items = new List<MenuItem>();
 
         /// <summary>
@@ -183,11 +190,11 @@ namespace ElectronNET.API
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("dockMenuItemClicked");
-            BridgeConnector.Socket.On("dockMenuItemClicked", (id) => {
+            BridgeConnector.Socket.On("dockMenuItemClicked", (id) =>
+            {
                 MenuItem menuItem = _items.GetMenuItem(id.ToString());
                 menuItem?.Click();
             });
-           
         }
 
         /// <summary>
