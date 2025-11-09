@@ -86,7 +86,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The show identifier.
         /// </value>
-        [JsonPropertyName("showID")]
+        [JsonInclude]
         internal string ShowID { get; set; }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The click identifier.
         /// </value>
-        [JsonPropertyName("clickID")]
+        [JsonInclude]
         internal string ClickID { get; set; }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The close identifier.
         /// </value>
-        [JsonPropertyName("closeID")]
+        [JsonInclude]
         internal string CloseID { get; set; }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The reply identifier.
         /// </value>
-        [JsonPropertyName("replyID")]
+        [JsonInclude]
         internal string ReplyID { get; set; }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The action identifier.
         /// </value>
-        [JsonPropertyName("actionID")]
+        [JsonInclude]
         internal string ActionID { get; set; }
 
         /// <summary>
