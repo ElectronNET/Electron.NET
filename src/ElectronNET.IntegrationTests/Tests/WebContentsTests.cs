@@ -26,7 +26,7 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             var wc = this.fx.MainWindow.WebContents;
             await wc.LoadURLAsync("https://example.com");
-            var title = await wc.ExecuteJavaScriptAsync("document.title");
+            var title = await wc.ExecuteJavaScriptAsync<string>("document.title");
             title.Should().NotBeNull();
         }
 

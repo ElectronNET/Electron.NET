@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -10,43 +11,43 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Canvas.
         /// </summary>
-        [JsonProperty("2d_canvas")]
+        [JsonPropertyName("2d_canvas")]
         public string Canvas { get; set; }
 
         /// <summary>
         /// Flash.
         /// </summary>
-        [JsonProperty("flash_3d")]
+        [JsonPropertyName("flash_3d")]
         public string Flash3D { get; set; }
 
         /// <summary>
         /// Flash Stage3D.
         /// </summary>
-        [JsonProperty("flash_stage3d")]
+        [JsonPropertyName("flash_stage3d")]
         public string FlashStage3D { get; set; }
 
         /// <summary>
         /// Flash Stage3D Baseline profile.
         /// </summary>
-        [JsonProperty("flash_stage3d_baseline")]
+        [JsonPropertyName("flash_stage3d_baseline")]
         public string FlashStage3dBaseline { get; set; }
 
         /// <summary>
         /// Compositing.
         /// </summary>
-        [JsonProperty("gpu_compositing")]
+        [JsonPropertyName("gpu_compositing")]
         public string GpuCompositing { get; set; }
 
         /// <summary>
         /// Multiple Raster Threads.
         /// </summary>
-        [JsonProperty("multiple_raster_threads")]
+        [JsonPropertyName("multiple_raster_threads")]
         public string MultipleRasterThreads { get; set; }
 
         /// <summary>
         /// Native GpuMemoryBuffers.
         /// </summary>
-        [JsonProperty("native_gpu_memory_buffers")]
+        [JsonPropertyName("native_gpu_memory_buffers")]
         public string NativeGpuMemoryBuffers { get; set; }
 
         /// <summary>
@@ -57,19 +58,19 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Video Decode.
         /// </summary>
-        [JsonProperty("video_decode")]
+        [JsonPropertyName("video_decode")]
         public string VideoDecode { get; set; }
 
         /// <summary>
         /// Video Encode.
         /// </summary>
-        [JsonProperty("video_encode")]
+        [JsonPropertyName("video_encode")]
         public string VideoEncode { get; set; }
 
         /// <summary>
         /// VPx Video Decode.
         /// </summary>
-        [JsonProperty("vpx_decode")]
+        [JsonPropertyName("vpx_decode")]
         public string VpxDecode { get; set; }
 
         /// <summary>

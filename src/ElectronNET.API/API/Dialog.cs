@@ -1,9 +1,6 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Entities;
 using System;
-using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -52,18 +49,17 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string[]>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showOpenDialogComplete" + guid, (filePaths) =>
+            BridgeConnector.Socket.On<JsonElement>("showOpenDialogComplete" + guid, (filePaths) =>
             {
                 BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
-
-                var result = ((JArray)filePaths).ToObject<string[]>();
+                var result = JsonSerializer.Deserialize<string[]>(filePaths, Serialization.ElectronJson.Options);
                 taskCompletionSource.SetResult(result);
             });
 
 
             BridgeConnector.Socket.Emit("showOpenDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer), guid);
+                browserWindow,
+                options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -79,16 +75,16 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showSaveDialogComplete" + guid, (filename) =>
+            BridgeConnector.Socket.On<JsonElement>("showSaveDialogComplete" + guid, (filename) =>
             {
                 BridgeConnector.Socket.Off("showSaveDialogComplete" + guid);
 
-                taskCompletionSource.SetResult(filename.ToString());
+                taskCompletionSource.SetResult(filename.GetString());
             });
 
             BridgeConnector.Socket.Emit("showSaveDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
+                browserWindow,
+                options,
                 guid);
 
             return taskCompletionSource.Task;
@@ -148,28 +144,34 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showMessageBoxComplete" + guid, (args) =>
+            BridgeConnector.Socket.On<JsonElement>("showMessageBoxComplete" + guid, (args) =>
             {
                 BridgeConnector.Socket.Off("showMessageBoxComplete" + guid);
 
-                var result = ((JArray)args);
+                // args is [response:int, checkboxChecked:boolean]
+                var arr = args.EnumerateArray();
+                var e = arr.GetEnumerator();
+                e.MoveNext();
+                var response = e.Current.GetInt32();
+                e.MoveNext();
+                var checkbox = e.Current.GetBoolean();
 
                 taskCompletionSource.SetResult(new MessageBoxResult
                 {
-                    Response = (int)result.First,
-                    CheckboxChecked = (bool)result.Last
+                    Response = response,
+                    CheckboxChecked = checkbox
                 });
             });
 
             if (browserWindow == null)
             {
-                BridgeConnector.Socket.Emit("showMessageBox", JObject.FromObject(messageBoxOptions, _jsonSerializer), guid);
+                BridgeConnector.Socket.Emit("showMessageBox", messageBoxOptions, guid);
             }
             else
             {
                 BridgeConnector.Socket.Emit("showMessageBox",
-                    JObject.FromObject(browserWindow, _jsonSerializer),
-                    JObject.FromObject(messageBoxOptions, _jsonSerializer),
+                    browserWindow,
+                    messageBoxOptions,
                     guid);
             }
 
@@ -223,18 +225,13 @@ namespace ElectronNET.API
             });
 
             BridgeConnector.Socket.Emit("showCertificateTrustDialog",
-                JObject.FromObject(browserWindow, _jsonSerializer),
-                JObject.FromObject(options, _jsonSerializer),
+                browserWindow,
+                options,
                 guid);
 
             return taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

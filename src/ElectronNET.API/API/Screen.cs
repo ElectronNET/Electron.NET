@@ -1,10 +1,9 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using ElectronNET.Common;
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -18,7 +17,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayAdded
         {
-            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => ((JObject)args).ToObject<Display>());
+            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => JsonSerializer.Deserialize(args, Serialization.ElectronJsonContext.Default.Display));
             remove => ApiEventManager.RemoveEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value);
         }
 
@@ -29,7 +28,7 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display> OnDisplayRemoved
         {
-            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => ((JObject)args).ToObject<Display>());
+            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => JsonSerializer.Deserialize(args, Serialization.ElectronJsonContext.Default.Display));
             remove => ApiEventManager.RemoveEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value);
         }
 
@@ -82,11 +81,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Point>();
 
-            BridgeConnector.Socket.On("screen-getCursorScreenPointCompleted", (point) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getCursorScreenPointCompleted", (point) =>
             {
                 BridgeConnector.Socket.Off("screen-getCursorScreenPointCompleted");
 
-                taskCompletionSource.SetResult(((JObject)point).ToObject<Point>());
+                taskCompletionSource.SetResult(JsonSerializer.Deserialize<Point>(point, Serialization.ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("screen-getCursorScreenPoint");
@@ -102,11 +101,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<int>();
 
-            BridgeConnector.Socket.On("screen-getMenuBarHeightCompleted", (height) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getMenuBarHeightCompleted", (height) =>
             {
                 BridgeConnector.Socket.Off("screen-getMenuBarHeightCompleted");
 
-                taskCompletionSource.SetResult(int.Parse(height.ToString()));
+                taskCompletionSource.SetResult(height.GetInt32());
             });
 
             BridgeConnector.Socket.Emit("screen-getMenuBarHeight");
@@ -122,11 +121,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On("screen-getPrimaryDisplayCompleted", (display) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getPrimaryDisplayCompleted", (display) =>
             {
                 BridgeConnector.Socket.Off("screen-getPrimaryDisplayCompleted");
 
-                taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
+                taskCompletionSource.SetResult(display.Deserialize(ElectronJsonContext.Default.Display));
             });
 
             BridgeConnector.Socket.Emit("screen-getPrimaryDisplay");
@@ -142,11 +141,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Display[]>();
 
-            BridgeConnector.Socket.On("screen-getAllDisplaysCompleted", (displays) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getAllDisplaysCompleted", (displays) =>
             {
                 BridgeConnector.Socket.Off("screen-getAllDisplaysCompleted");
 
-                taskCompletionSource.SetResult(((JArray)displays).ToObject<Display[]>());
+                taskCompletionSource.SetResult(displays.Deserialize<Display[]>(ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("screen-getAllDisplays");
@@ -162,14 +161,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On("screen-getDisplayNearestPointCompleted", (display) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getDisplayNearestPointCompleted", (display) =>
             {
                 BridgeConnector.Socket.Off("screen-getDisplayNearestPointCompleted");
 
-                taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
+                taskCompletionSource.SetResult(JsonSerializer.Deserialize(display, Serialization.ElectronJsonContext.Default.Display));
             });
 
-            BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", JObject.FromObject(point, _jsonSerializer));
+            BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", point);
 
             return taskCompletionSource.Task;
         }
@@ -183,23 +182,18 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On("screen-getDisplayMatching", (display) =>
+            BridgeConnector.Socket.On<JsonElement>("screen-getDisplayMatching", (display) =>
             {
                 BridgeConnector.Socket.Off("screen-getDisplayMatching");
 
-                taskCompletionSource.SetResult(((JObject)display).ToObject<Display>());
+                taskCompletionSource.SetResult(JsonSerializer.Deserialize(display, Serialization.ElectronJsonContext.Default.Display));
             });
 
-            BridgeConnector.Socket.Emit("screen-getDisplayMatching", JObject.FromObject(rectangle, _jsonSerializer));
+            BridgeConnector.Socket.Emit("screen-getDisplayMatching", rectangle);
 
             return taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

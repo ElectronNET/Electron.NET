@@ -1,11 +1,12 @@
 ﻿namespace ElectronNET.API
 {
+    using ElectronNET.Common;
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
+    using System.Text.Json;
     using System.Threading.Tasks;
-    using ElectronNET.Common;
 
     public abstract class ApiBase
     {
@@ -150,14 +151,25 @@
 
                 var messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
 
-                BridgeConnector.Socket.On<T>(eventName, (result) =>
+                BridgeConnector.Socket.On<JsonElement>(eventName, (result) =>
                 {
                     BridgeConnector.Socket.Off(eventName);
 
                     lock (this)
                     {
-                        this.tcs?.SetResult(result);
-                        this.tcs = null;
+                        try
+                        {
+                            var value = JsonSerializer.Deserialize<T>(result, Serialization.ElectronJson.Options);
+                            this.tcs?.SetResult(value);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.tcs?.TrySetException(ex);
+                        }
+                        finally
+                        {
+                            this.tcs = null;
+                        }
                     }
                 });
 
@@ -170,7 +182,7 @@
                     BridgeConnector.Socket.Emit(messageName);
                 }
 
-                System.Threading.Tasks.Task.Delay(ApiBase.PropertyTimeout).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(PropertyTimeout).ContinueWith(_ =>
                 {
                     if (this.tcs != null)
                     {

@@ -1,4 +1,4 @@
-﻿<template class="task-template">
+<template class="task-template">
     <section id="clipboard-section" class="section js-section u-category-system">
         <header class="section-header">
             <div class="section-wrapper">
@@ -145,7 +145,7 @@ copyBtn.addEventListener('click', () => {
 {
     var nativeImage = await Electron.Clipboard.ReadImageAsync();
     var mainWindow = Electron.WindowManager.BrowserWindows.First();
-    Electron.IpcMain.Send(mainWindow, "paste-image-from", JsonConvert.SerializeObject(nativeImage));
+    Electron.IpcMain.Send(mainWindow, "paste-image-from", JSON.stringify(nativeImage));
 });</code></pre>
                     <div class="demo-protip">
                         <h2>ProTip</h2>
@@ -295,3 +295,4 @@ copyBtn.addEventListener('click', () => {
 
     </section>
 </template>
+

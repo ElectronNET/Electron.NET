@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -11,7 +11,8 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Mode for the progress bar. Can be 'none' | 'normal' | 'indeterminate' | 'error' | 'paused'.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProgressBarMode Mode { get; set; }
     }
 }
+

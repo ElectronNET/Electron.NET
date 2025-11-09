@@ -1,12 +1,12 @@
 ﻿namespace ElectronNET
 {
-    using System;
-    using System.Collections.Immutable;
-    using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.Runtime;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
+    using System;
+    using System.Collections.Immutable;
+    using System.Threading.Tasks;
 
     public static class ElectronNetRuntime
     {

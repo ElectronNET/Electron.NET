@@ -1,9 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
 using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using System;
 
 namespace ElectronNET.API
 {
@@ -34,11 +30,15 @@ namespace ElectronNET.API
             {
                 if (_changed == null)
                 {
-                    BridgeConnector.Socket.On("webContents-session-cookies-changed" + Id, (args) =>
+                    BridgeConnector.Socket.On<System.Text.Json.JsonElement>("webContents-session-cookies-changed" + Id, (args) =>
                     {
-                        Cookie cookie = ((JArray)args)[0].ToObject<Cookie>();
-                        CookieChangedCause cause = ((JArray)args)[1].ToObject<CookieChangedCause>();
-                        bool removed = ((JArray)args)[2].ToObject<bool>();
+                        var e = args.EnumerateArray().GetEnumerator();
+                        e.MoveNext();
+                        var cookie = System.Text.Json.JsonSerializer.Deserialize<Cookie>(e.Current, Serialization.ElectronJson.Options);
+                        e.MoveNext();
+                        var cause = System.Text.Json.JsonSerializer.Deserialize<CookieChangedCause>(e.Current, Serialization.ElectronJson.Options);
+                        e.MoveNext();
+                        var removed = e.Current.GetBoolean();
                         _changed(cookie, cause, removed);
                     });
 
@@ -58,11 +58,6 @@ namespace ElectronNET.API
 
         private event Action<Cookie, CookieChangedCause, bool> _changed;
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

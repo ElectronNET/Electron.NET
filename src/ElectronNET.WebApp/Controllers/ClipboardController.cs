@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using System.Linq;
 using ElectronNET.API.Entities;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace ElectronNET.WebApp.Controllers
 {
@@ -39,7 +39,7 @@ namespace ElectronNET.WebApp.Controllers
                 {
                     var nativeImage = await Electron.Clipboard.ReadImageAsync();
                     var mainWindow = Electron.WindowManager.BrowserWindows.First();
-                    Electron.IpcMain.Send(mainWindow, "paste-image-from", JsonConvert.SerializeObject(nativeImage));
+                    Electron.IpcMain.Send(mainWindow, "paste-image-from", JsonSerializer.Serialize(nativeImage));
                 });
             }
 

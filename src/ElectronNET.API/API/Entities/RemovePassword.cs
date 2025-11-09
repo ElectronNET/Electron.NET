@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -28,7 +28,7 @@ namespace ElectronNET.API.Entities
         /// Scheme of the authentication. Can be basic, digest, ntlm, negotiate. 
         /// Must be provided if removing by origin.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Scheme Scheme { get; set; }
 
         /// <summary>
@@ -51,3 +51,5 @@ namespace ElectronNET.API.Entities
         }
     }
 }
+
+

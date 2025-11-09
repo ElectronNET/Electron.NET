@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using ElectronNET.Common;
+﻿using ElectronNET.Common;
+using System;
 
 // ReSharper disable InconsistentNaming
 

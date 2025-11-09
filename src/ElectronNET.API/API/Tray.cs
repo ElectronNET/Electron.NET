@@ -1,12 +1,9 @@
-﻿using ElectronNET.API.Entities;
+using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ElectronNET.Common;
 
 // ReSharper disable InconsistentNaming
 
@@ -140,7 +137,7 @@ namespace ElectronNET.API
         public async Task Show(string image, MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            await BridgeConnector.Socket.Emit("create-tray", image, JArray.FromObject(menuItems, this._jsonSerializer)).ConfigureAwait(false);
+            await BridgeConnector.Socket.Emit("create-tray", image, menuItems).ConfigureAwait(false);
             _items.Clear();
             _items.AddRange(menuItems);
 
@@ -212,7 +209,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public async Task DisplayBalloon(DisplayBalloonOptions options)
         {
-            await BridgeConnector.Socket.Emit("tray-displayBalloon", JObject.FromObject(options, this._jsonSerializer)).ConfigureAwait(false);
+            await BridgeConnector.Socket.Emit("tray-displayBalloon", options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -235,11 +232,7 @@ namespace ElectronNET.API
             return await taskCompletionSource.Task.ConfigureAwait(false);
         }
 
-        private readonly JsonSerializer _jsonSerializer = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
+
 
         private const string ModuleName = "tray";
 

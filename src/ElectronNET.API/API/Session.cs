@@ -1,8 +1,6 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Entities;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -59,7 +57,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -159,7 +157,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-clearStorageData-options", Id, JObject.FromObject(options, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-clearStorageData-options", Id, options, guid);
 
             return taskCompletionSource.Task;
         }
@@ -174,7 +172,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void CreateInterruptedDownload(CreateInterruptedDownloadOptions options)
         {
-            BridgeConnector.Socket.Emit("webContents-session-createInterruptedDownload", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-session-createInterruptedDownload", Id, options);
         }
 
         /// <summary>
@@ -192,7 +190,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void EnableNetworkEmulation(EnableNetworkEmulationOptions options)
         {
-            BridgeConnector.Socket.Emit("webContents-session-enableNetworkEmulation", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-session-enableNetworkEmulation", Id, options);
         }
 
         /// <summary>
@@ -213,9 +211,9 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-getBlobData-completed" + guid, (buffer) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-getBlobData-completed" + guid, (buffer) =>
             {
-                var result = ((JArray)buffer).ToObject<int[]>();
+                var result = JsonSerializer.Deserialize<int[]>(buffer, Serialization.ElectronJson.Options);
 
                 BridgeConnector.Socket.Off("webContents-session-getBlobData-completed" + guid);
                 taskCompletionSource.SetResult(result);
@@ -235,10 +233,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-getCacheSize-completed" + guid, (size) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-getCacheSize-completed" + guid, (size) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getCacheSize-completed" + guid);
-                taskCompletionSource.SetResult((int)size);
+                taskCompletionSource.SetResult(size.GetInt32());
             });
 
             BridgeConnector.Socket.Emit("webContents-session-getCacheSize", Id, guid);
@@ -255,9 +253,9 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-getPreloads-completed" + guid, (preloads) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-getPreloads-completed" + guid, (preloads) =>
             {
-                var result = ((JArray)preloads).ToObject<string[]>();
+                var result = JsonSerializer.Deserialize<string[]>(preloads, Serialization.ElectronJson.Options);
                 BridgeConnector.Socket.Off("webContents-session-getPreloads-completed" + guid);
                 taskCompletionSource.SetResult(result);
             });
@@ -276,10 +274,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-getUserAgent-completed" + guid, (userAgent) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-getUserAgent-completed" + guid, (userAgent) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getUserAgent-completed" + guid);
-                taskCompletionSource.SetResult(userAgent.ToString());
+                taskCompletionSource.SetResult(userAgent.GetString());
             });
 
             BridgeConnector.Socket.Emit("webContents-session-getUserAgent", Id, guid);
@@ -298,10 +296,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("webContents-session-resolveProxy-completed" + guid, (proxy) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-resolveProxy-completed" + guid, (proxy) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-resolveProxy-completed" + guid);
-                taskCompletionSource.SetResult(proxy.ToString());
+                taskCompletionSource.SetResult(proxy.GetString());
             });
 
             BridgeConnector.Socket.Emit("webContents-session-resolveProxy", Id, url, guid);
@@ -346,7 +344,7 @@ namespace ElectronNET.API
                 taskCompletionSource.SetResult(null);
             });
 
-            BridgeConnector.Socket.Emit("webContents-session-setProxy", Id, JObject.FromObject(config, _jsonSerializer), guid);
+            BridgeConnector.Socket.Emit("webContents-session-setProxy", Id, config, guid);
 
             return taskCompletionSource.Task;
         }
@@ -387,10 +385,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ChromeExtensionInfo[]>();
 
-            BridgeConnector.Socket.On("webContents-session-getAllExtensions-completed", (extensionslist) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-getAllExtensions-completed", (extensionslist) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getAllExtensions-completed");
-                var chromeExtensionInfos = ((JArray)extensionslist).ToObject<ChromeExtensionInfo[]>();
+                var chromeExtensionInfos = JsonSerializer.Deserialize<ChromeExtensionInfo[]>(extensionslist, Serialization.ElectronJson.Options);
 
                 taskCompletionSource.SetResult(chromeExtensionInfos);
             });
@@ -441,11 +439,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Extension>();
 
-            BridgeConnector.Socket.On("webContents-session-loadExtension-completed", (extension) =>
+            BridgeConnector.Socket.On<JsonElement>("webContents-session-loadExtension-completed", (extension) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-loadExtension-completed");
 
-                taskCompletionSource.SetResult(((JObject)extension).ToObject<Extension>());
+                taskCompletionSource.SetResult(JsonSerializer.Deserialize<Extension>(extension, Serialization.ElectronJson.Options));
             });
 
             BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess);
@@ -453,11 +451,6 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

@@ -1,10 +1,9 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using ElectronNET.Common;
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 // ReSharper disable InconsistentNaming
 
@@ -33,7 +32,7 @@ public class WebContents
     /// </summary>
     public event Action<bool> OnCrashed
     {
-        add => ApiEventManager.AddEvent("webContents-crashed", Id, _crashed, value, (args) => (bool)args);
+        add => ApiEventManager.AddEvent("webContents-crashed", Id, _crashed, value, (args) => args.GetBoolean());
         remove => ApiEventManager.RemoveEvent("webContents-crashed", Id, _crashed, value);
     }
 
@@ -102,7 +101,7 @@ public class WebContents
     /// </summary>
     public event Action<OnDidFailLoadInfo> OnDidFailLoad
     {
-        add => ApiEventManager.AddEvent("webContents-didFailLoad", Id, _didFailLoad, value, (args) => ((JObject)args).ToObject<OnDidFailLoadInfo>());
+        add => ApiEventManager.AddEvent("webContents-didFailLoad", Id, _didFailLoad, value, (args) => JsonSerializer.Deserialize<OnDidFailLoadInfo>(args, ElectronJson.Options));
         remove => ApiEventManager.RemoveEvent("webContents-didFailLoad", Id, _didFailLoad, value);
     }
 
@@ -113,7 +112,7 @@ public class WebContents
     /// </summary>
     public event Action<InputEvent> InputEvent
     {
-        add => ApiEventManager.AddEvent("webContents-input-event", Id, _inputEvent, value, (args) => ((JObject)args).ToObject<InputEvent>());
+        add => ApiEventManager.AddEvent("webContents-input-event", Id, _inputEvent, value, (args) => JsonSerializer.Deserialize<InputEvent>(args, ElectronJson.Options));
         remove => ApiEventManager.RemoveEvent("webContents-input-event", Id, _inputEvent, value);
     }
 
@@ -150,7 +149,7 @@ public class WebContents
     /// <param name="openDevToolsOptions"></param>
     public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
     {
-        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, JObject.FromObject(openDevToolsOptions, _jsonSerializer));
+        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, openDevToolsOptions);
     }
 
     /// <summary>
@@ -161,11 +160,11 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
 
-        BridgeConnector.Socket.On("webContents-getPrinters-completed", (printers) =>
+        BridgeConnector.Socket.On<JsonElement>("webContents-getPrinters-completed", (printers) =>
         {
             BridgeConnector.Socket.Off("webContents-getPrinters-completed");
 
-            taskCompletionSource.SetResult(((Newtonsoft.Json.Linq.JArray)printers).ToObject<PrinterInfo[]>());
+            taskCompletionSource.SetResult(JsonSerializer.Deserialize<PrinterInfo[]>(printers, ElectronJson.Options));
         });
 
         BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
@@ -182,10 +181,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On("webContents-print-completed", (success) =>
+        BridgeConnector.Socket.On<JsonElement>("webContents-print-completed", (success) =>
         {
             BridgeConnector.Socket.Off("webContents-print-completed");
-            taskCompletionSource.SetResult((bool)success);
+            taskCompletionSource.SetResult(success.GetBoolean());
         });
 
         if (options == null)
@@ -194,7 +193,7 @@ public class WebContents
         }
         else
         {
-            BridgeConnector.Socket.Emit("webContents-print", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("webContents-print", Id, options);
         }
 
         return taskCompletionSource.Task;
@@ -213,10 +212,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On("webContents-printToPDF-completed", (success) =>
+        BridgeConnector.Socket.On<JsonElement>("webContents-printToPDF-completed", (success) =>
         {
             BridgeConnector.Socket.Off("webContents-printToPDF-completed");
-            taskCompletionSource.SetResult((bool)success);
+            taskCompletionSource.SetResult(success.GetBoolean());
         });
 
         if (options == null)
@@ -225,7 +224,7 @@ public class WebContents
         }
         else
         {
-            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, JObject.FromObject(options, _jsonSerializer), path);
+            BridgeConnector.Socket.Emit("webContents-printToPDF", Id, options, path);
         }
 
         return taskCompletionSource.Task;
@@ -247,14 +246,14 @@ public class WebContents
     /// Code execution will be suspended until web page stop loading.
     /// </para>
     /// </remarks>
-    public Task<object> ExecuteJavaScriptAsync(string code, bool userGesture = false)
+    public Task<T> ExecuteJavaScriptAsync<T>(string code, bool userGesture = false)
     {
-        var taskCompletionSource = new TaskCompletionSource<object>();
+        var taskCompletionSource = new TaskCompletionSource<T>();
 
-        BridgeConnector.Socket.On("webContents-executeJavaScript-completed", (result) =>
+        BridgeConnector.Socket.On<JsonElement>("webContents-executeJavaScript-completed", (result) =>
         {
             BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
-            taskCompletionSource.SetResult(result);
+            taskCompletionSource.SetResult(result.Deserialize<T>(ElectronJson.Options));
         });
 
         BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
@@ -272,10 +271,10 @@ public class WebContents
         var taskCompletionSource = new TaskCompletionSource<string>();
 
         var eventString = "webContents-getUrl" + Id;
-        BridgeConnector.Socket.On(eventString, (url) =>
+        BridgeConnector.Socket.On<JsonElement>(eventString, (url) =>
         {
             BridgeConnector.Socket.Off(eventString);
-            taskCompletionSource.SetResult((string)url);
+            taskCompletionSource.SetResult(url.GetString());
         });
 
         BridgeConnector.Socket.Emit("webContents-getUrl", Id);
@@ -324,13 +323,13 @@ public class WebContents
             taskCompletionSource.SetResult(null);
         });
 
-        BridgeConnector.Socket.On("webContents-loadURL-error" + Id, (error) =>
+        BridgeConnector.Socket.On<JsonElement>("webContents-loadURL-error" + Id, (error) =>
         {
             BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            taskCompletionSource.SetException(new InvalidOperationException(error.ToString()));
+            taskCompletionSource.SetException(new InvalidOperationException(error.GetString()));
         });
 
-        BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, JObject.FromObject(options, _jsonSerializer));
+        BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, options);
 
         return taskCompletionSource.Task;
     }
@@ -347,10 +346,5 @@ public class WebContents
         BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
     }
 
-    private readonly JsonSerializer _jsonSerializer = new()
-    {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore,
-        DefaultValueHandling = DefaultValueHandling.Ignore
-    };
+
 }

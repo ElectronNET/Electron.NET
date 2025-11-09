@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace ElectronNET.API.Entities
 {
     using ElectronNET.Converter;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// 
@@ -76,7 +75,9 @@ namespace ElectronNET.API.Entities
         /// `touchScrollStarted`, `pointerDown`, `pointerUp`, `pointerMove`,
         /// `pointerRawUpdate`, `pointerCancel` or `pointerCausedUaAction`.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public InputEventType Type { get; set; }
     }
 }
+
+

@@ -1,10 +1,10 @@
 ﻿namespace ElectronNET.Runtime.Services.ElectronProcess
 {
+    using ElectronNET.Runtime.Data;
     using System;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Threading.Tasks;
-    using ElectronNET.Runtime.Data;
 
     /// <summary>
     /// Launches and manages the Electron app process.

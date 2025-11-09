@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -52,7 +52,9 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// One of the following: "task" | "separator" | "file"
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JumpListItemType Type { get; set; }
     }
 }
+
+

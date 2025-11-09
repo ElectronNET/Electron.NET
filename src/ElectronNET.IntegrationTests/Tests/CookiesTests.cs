@@ -18,7 +18,7 @@ namespace ElectronNET.IntegrationTests.Tests
             // Navigate to example.com so cookie domain matches
             await this.fx.MainWindow.WebContents.LoadURLAsync("https://example.com");
             // Set via renderer for now
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("document.cookie='integration_cookie=1;path=/';");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("document.cookie='integration_cookie=1;path=/';");
             await Task.Delay(500);
             changed.Should().BeTrue();
         }

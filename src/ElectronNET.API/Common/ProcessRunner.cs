@@ -18,7 +18,7 @@
     ///     and .net versions and on every platform where .net runs. This is just the innermost core, that's why
     ///     there are many dead ends, but it has all the crucial parts.
     /// </remarks>
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IDisposable" />
     [SuppressMessage("ReSharper", "SuspiciousLockOverSynchronizationPrimitive")]
     public class ProcessRunner : IDisposable
     {

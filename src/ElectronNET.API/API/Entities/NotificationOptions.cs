@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {

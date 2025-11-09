@@ -1,8 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using ElectronNET.API.Entities;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -49,10 +47,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On("process-execPath-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-execPath-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-execPath-Completed");
-                    taskCompletionSource.SetResult(result.ToString());
+                    taskCompletionSource.SetResult(result.GetString());
                 });
 
                 BridgeConnector.Socket.Emit("process-execPath");
@@ -73,10 +71,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string[]>();
 
-                BridgeConnector.Socket.On("process-argv-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-argv-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-argv-Completed");
-                    taskCompletionSource.SetResult(((JArray)result).ToObject<string[]>());
+                    taskCompletionSource.SetResult(JsonSerializer.Deserialize<string[]>(result, Serialization.ElectronJson.Options));
                 });
 
                 BridgeConnector.Socket.Emit("process-argv");
@@ -94,10 +92,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On("process-type-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-type-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-type-Completed");
-                    taskCompletionSource.SetResult(result.ToString());
+                    taskCompletionSource.SetResult(result.GetString());
                 });
 
                 BridgeConnector.Socket.Emit("process-type");
@@ -116,10 +114,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<ProcessVersions>();
 
-                BridgeConnector.Socket.On("process-versions-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-versions-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-versions-Completed");
-                    taskCompletionSource.SetResult(((JObject)result).ToObject<ProcessVersions>());
+                    taskCompletionSource.SetResult(JsonSerializer.Deserialize<ProcessVersions>(result, Serialization.ElectronJson.Options));
                 });
 
                 BridgeConnector.Socket.Emit("process-versions");
@@ -138,10 +136,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<bool>();
 
-                BridgeConnector.Socket.On("process-defaultApp-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-defaultApp-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-defaultApp-Completed");
-                    taskCompletionSource.SetResult(bool.Parse(result.ToString()));
+                    taskCompletionSource.SetResult(result.GetBoolean());
                 });
 
                 BridgeConnector.Socket.Emit("process-defaultApp");
@@ -159,10 +157,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<bool>();
 
-                BridgeConnector.Socket.On("process-isMainFrame-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-isMainFrame-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-isMainFrame-Completed");
-                    taskCompletionSource.SetResult(bool.Parse(result.ToString()));
+                    taskCompletionSource.SetResult(result.GetBoolean());
                 });
 
                 BridgeConnector.Socket.Emit("process-isMainFrame");
@@ -179,10 +177,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On("process-resourcesPath-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-resourcesPath-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-resourcesPath-Completed");
-                    taskCompletionSource.SetResult(result.ToString());
+                    taskCompletionSource.SetResult(result.GetString());
                 });
 
                 BridgeConnector.Socket.Emit("process-resourcesPath");
@@ -200,10 +198,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<double>();
 
-                BridgeConnector.Socket.On("process-uptime-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-uptime-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-uptime-Completed");
-                    taskCompletionSource.SetResult(double.Parse(result.ToString()));
+                    taskCompletionSource.SetResult(result.GetDouble());
                 });
 
                 BridgeConnector.Socket.Emit("process-uptime");
@@ -220,10 +218,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<int>();
 
-                BridgeConnector.Socket.On("process-pid-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-pid-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-pid-Completed");
-                    taskCompletionSource.SetResult(int.Parse(result.ToString()));
+                    taskCompletionSource.SetResult(result.GetInt32());
                 });
 
                 BridgeConnector.Socket.Emit("process-pid");
@@ -241,10 +239,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On("process-arch-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-arch-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-arch-Completed");
-                    taskCompletionSource.SetResult(result.ToString());
+                    taskCompletionSource.SetResult(result.GetString());
                 });
 
                 BridgeConnector.Socket.Emit("process-arch");
@@ -261,10 +259,10 @@ namespace ElectronNET.API
             {
                 var taskCompletionSource = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On("process-platform-Completed", (result) =>
+                BridgeConnector.Socket.On<JsonElement>("process-platform-Completed", (result) =>
                 {
                     BridgeConnector.Socket.Off("process-platform-Completed");
-                    taskCompletionSource.SetResult(result.ToString());
+                    taskCompletionSource.SetResult(result.GetString());
                 });
 
                 BridgeConnector.Socket.Emit("process-platform");

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// Provide metadata about the current loaded Chrome extension

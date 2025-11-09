@@ -41,7 +41,7 @@
         /// <summary>
         /// Unique identifier associated with the display.
         /// </summary>
-        public string Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// true for an internal display and false for an external display.

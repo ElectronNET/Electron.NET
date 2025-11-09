@@ -1,18 +1,18 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// The cause of the change 
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CookieChangedCause
     {
         /// <summary>
         ///The cookie was changed directly by a consumer's action.
         /// </summary>
-        [JsonProperty("explicit")]
+        [JsonPropertyName("explicit")]
         @explicit,
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         ///   The cookie was overwritten with an already-expired expiration date.
         /// </summary>
-        [JsonProperty("expired_overwrite")]
+        [JsonPropertyName("expired_overwrite")]
         expiredOverwrite
     }
 }

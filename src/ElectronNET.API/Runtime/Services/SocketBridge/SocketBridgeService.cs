@@ -1,9 +1,9 @@
 ﻿namespace ElectronNET.Runtime.Services.SocketBridge
 {
-    using System;
-    using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.Runtime.Data;
+    using System;
+    using System.Threading.Tasks;
 
     internal class SocketBridgeService : LifetimeServiceBase
     {

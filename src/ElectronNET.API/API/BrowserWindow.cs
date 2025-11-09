@@ -1,23 +1,17 @@
-﻿using ElectronNET.API.Entities;
+using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using ElectronNET.Common;
 
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API;
 
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using ElectronNET.Common;
+using System.Text.Json;
 
 /// <summary>
 /// Create and control browser windows.
@@ -469,7 +463,7 @@ public class BrowserWindow : ApiBase
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
     /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
     public void SetAspectRatio(double aspectRatio, Size extraSize) =>
-        this.CallMethod2(aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+        this.CallMethod2(aspectRatio, extraSize);
 
     /// <summary>
     /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
@@ -486,7 +480,7 @@ public class BrowserWindow : ApiBase
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
     /// <param name="extraSize">The extra size not to be included while maintaining the aspect ratio.</param>
     public void SetAspectRatio(int aspectRatio, Size extraSize) =>
-        this.CallMethod2(aspectRatio, JObject.FromObject(extraSize, _jsonSerializer));
+        this.CallMethod2(aspectRatio, extraSize);
 
     /// <summary>
     /// Uses Quick Look to preview a file at a given path.
@@ -515,14 +509,14 @@ public class BrowserWindow : ApiBase
     /// Resizes and moves the window to the supplied bounds
     /// </summary>
     /// <param name="bounds"></param>
-    public void SetBounds(Rectangle bounds) => this.CallMethod1(JObject.FromObject(bounds, _jsonSerializer));
+    public void SetBounds(Rectangle bounds) => this.CallMethod1(bounds);
 
     /// <summary>
     /// Resizes and moves the window to the supplied bounds
     /// </summary>
     /// <param name="bounds"></param>
     /// <param name="animate"></param>
-    public void SetBounds(Rectangle bounds, bool animate) => this.CallMethod2(JObject.FromObject(bounds, _jsonSerializer), animate);
+    public void SetBounds(Rectangle bounds, bool animate) => this.CallMethod2(bounds, animate);
 
     /// <summary>
     /// Gets the bounds asynchronous.
@@ -534,14 +528,14 @@ public class BrowserWindow : ApiBase
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
     /// </summary>
     /// <param name="bounds"></param>
-    public void SetContentBounds(Rectangle bounds) => this.CallMethod1(JObject.FromObject(bounds, _jsonSerializer));
+    public void SetContentBounds(Rectangle bounds) => this.CallMethod1(bounds);
 
     /// <summary>
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
     /// </summary>
     /// <param name="bounds"></param>
     /// <param name="animate"></param>
-    public void SetContentBounds(Rectangle bounds, bool animate) => this.CallMethod2(JObject.FromObject(bounds, _jsonSerializer), animate);
+    public void SetContentBounds(Rectangle bounds, bool animate) => this.CallMethod2(bounds, animate);
 
     /// <summary>
     /// Gets the content bounds asynchronous.
@@ -749,10 +743,10 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        ////if (isWindows10())
-        ////{
-        ////    x = x - 7;
-        ////}
+        //if (isWindows10())
+        //{
+        //    x = x - 7;
+        //}
         this.CallMethod2(x, y);
     }
 
@@ -766,10 +760,11 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        ////if (isWindows10())
-        ////{
-        ////    x = x - 7;
-        ////}
+        //if (isWindows10())
+        //{
+        //    x = x - 7;
+        //}
+
         this.CallMethod3(x, y, animate);
     }
 
@@ -894,7 +889,7 @@ public class BrowserWindow : ApiBase
     /// </summary>
     /// <param name="url"></param>
     /// <param name="options"></param>
-    public void LoadURL(string url, LoadURLOptions options) => this.CallMethod2(url, JObject.FromObject(options, _jsonSerializer));
+    public void LoadURL(string url, LoadURLOptions options) => this.CallMethod2(url, options);
 
     /// <summary>
     /// Same as webContents.reload.
@@ -925,13 +920,13 @@ public class BrowserWindow : ApiBase
     public void SetMenu(MenuItem[] menuItems)
     {
         menuItems.AddMenuItemsId();
-        this.CallMethod1(JArray.FromObject(menuItems, _jsonSerializer));
+        this.CallMethod1(menuItems);
         _items.AddRange(menuItems);
 
         BridgeConnector.Socket.Off("windowMenuItemClicked");
-        BridgeConnector.Socket.On("windowMenuItemClicked", (id) =>
+        BridgeConnector.Socket.On<JsonElement>("windowMenuItemClicked", (id) =>
         {
-            MenuItem menuItem = _items.GetMenuItem(id.ToString());
+            MenuItem menuItem = _items.GetMenuItem(id.GetString());
             menuItem?.Click();
         });
     }
@@ -967,7 +962,7 @@ public class BrowserWindow : ApiBase
     /// <param name="progress"></param>
     /// <param name="progressBarOptions"></param>
     public void SetProgressBar(double progress, ProgressBarOptions progressBarOptions) =>
-        this.CallMethod2(progress, JObject.FromObject(progressBarOptions, _jsonSerializer));
+        this.CallMethod2(progress, progressBarOptions);
 
     /// <summary>
     /// Sets whether the window should have a shadow. On Windows and Linux does nothing.
@@ -1015,22 +1010,22 @@ public class BrowserWindow : ApiBase
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On("browserWindowSetThumbarButtons-completed", (success) =>
+        BridgeConnector.Socket.On<JsonElement>("browserWindowSetThumbarButtons-completed", (success) =>
         {
             BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
 
-            taskCompletionSource.SetResult((bool)success);
+            taskCompletionSource.SetResult(success.GetBoolean());
         });
 
         thumbarButtons.AddThumbarButtonsId();
-        BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, JArray.FromObject(thumbarButtons, _jsonSerializer));
+        BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, thumbarButtons);
         _thumbarButtons.Clear();
         _thumbarButtons.AddRange(thumbarButtons);
 
         BridgeConnector.Socket.Off("thumbarButtonClicked");
-        BridgeConnector.Socket.On("thumbarButtonClicked", (id) =>
+        BridgeConnector.Socket.On<JsonElement>("thumbarButtonClicked", (id) =>
         {
-            ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.ToString());
+            ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.GetString());
             thumbarButton?.Click();
         });
 
@@ -1058,7 +1053,7 @@ public class BrowserWindow : ApiBase
     /// If one of those properties is not set, then neither will be used.
     /// </summary>
     /// <param name="options"></param>
-    public void SetAppDetails(AppDetailsOptions options) => this.CallMethod1(JObject.FromObject(options, _jsonSerializer));
+    public void SetAppDetails(AppDetailsOptions options) => this.CallMethod1(options);
 
     /// <summary>
     /// Same as webContents.showDefinitionForSelection().
@@ -1146,7 +1141,7 @@ public class BrowserWindow : ApiBase
         }
         else
         {
-            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, JObject.FromObject(parent, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserWindowSetParentWindow", Id, parent);
         }
     }
 
@@ -1210,10 +1205,4 @@ public class BrowserWindow : ApiBase
         // This message name does not match the default ApiBase naming convention.
         BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
     }
-
-    private readonly JsonSerializer _jsonSerializer = new()
-    {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore
-    };
 }

@@ -1,14 +1,13 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
     /// <summary>
-    /// A BrowserView can be used to embed additional web content into a BrowserWindow. 
-    /// It is like a child window, except that it is positioned relative to its owning window. 
+    /// A BrowserView can be used to embed additional web content into a BrowserWindow.
+    /// It is like a child window, except that it is positioned relative to its owning window.
     /// It is meant to be an alternative to the webview tag.
     /// </summary>
     public class BrowserView
@@ -16,9 +15,6 @@ namespace ElectronNET.API
         /// <summary>
         /// Gets the identifier.
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
         public int Id { get; internal set; }
 
         /// <summary>
@@ -28,7 +24,6 @@ namespace ElectronNET.API
 
         /// <summary>
         /// Resizes and moves the view to the supplied bounds relative to the window.
-        /// 
         /// (experimental)
         /// </summary>
         public Rectangle Bounds
@@ -39,10 +34,10 @@ namespace ElectronNET.API
 
                 Task.Run(() =>
                 {
-                    BridgeConnector.Socket.On<Rectangle>("browserView-getBounds-reply", (result) =>
+                    BridgeConnector.Socket.On<JsonElement>("browserView-getBounds-reply", (result) =>
                     {
                         BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult(result);
+                        taskCompletionSource.SetResult(result.Deserialize(ElectronJsonContext.Default.Rectangle));
                     });
 
                     BridgeConnector.Socket.Emit("browserView-getBounds", Id);
@@ -52,7 +47,7 @@ namespace ElectronNET.API
             }
             set
             {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, JObject.FromObject(value, _jsonSerializer));
+                BridgeConnector.Socket.Emit("browserView-setBounds", Id, value);
             }
         }
 
@@ -74,12 +69,11 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         public void SetAutoResize(AutoResizeOptions options)
         {
-            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("browserView-setAutoResize", Id, options);
         }
 
         /// <summary>
         /// Color in #aarrggbb or #argb form. The alpha channel is optional.
-        /// 
         /// (experimental)
         /// </summary>
         /// <param name="color">Color in #aarrggbb or #argb form. The alpha channel is optional.</param>
@@ -87,11 +81,6 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("browserView-setBackgroundColor", Id, color);
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
     }
 }
+

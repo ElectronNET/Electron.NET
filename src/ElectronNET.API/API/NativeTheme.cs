@@ -1,8 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using ElectronNET.API.Entities;
+﻿using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
 using ElectronNET.Common;
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -108,11 +109,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ThemeSourceMode>();
 
-            BridgeConnector.Socket.On("nativeTheme-themeSource-getCompleted", (themeSource) =>
+            BridgeConnector.Socket.On<JsonElement>("nativeTheme-themeSource-getCompleted", (themeSource) =>
             {
                 BridgeConnector.Socket.Off("nativeTheme-themeSource-getCompleted");
 
-                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), (string)themeSource, true);
+                var themeSourceValue = (ThemeSourceMode)Enum.Parse(typeof(ThemeSourceMode), themeSource.GetString(), true);
 
                 taskCompletionSource.SetResult(themeSourceValue);
             });
@@ -131,11 +132,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) =>
+            BridgeConnector.Socket.On<JsonElement>("nativeTheme-shouldUseDarkColors-completed", (shouldUseDarkColors) =>
             {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseDarkColors-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseDarkColors);
+                taskCompletionSource.SetResult(shouldUseDarkColors.GetBoolean());
             });
 
             BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
@@ -151,11 +152,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) =>
+            BridgeConnector.Socket.On<JsonElement>("nativeTheme-shouldUseHighContrastColors-completed", (shouldUseHighContrastColors) =>
             {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseHighContrastColors-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseHighContrastColors);
+                taskCompletionSource.SetResult(shouldUseHighContrastColors.GetBoolean());
             });
 
             BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
@@ -171,11 +172,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) =>
+            BridgeConnector.Socket.On<JsonElement>("nativeTheme-shouldUseInvertedColorScheme-completed", (shouldUseInvertedColorScheme) =>
             {
                 BridgeConnector.Socket.Off("nativeTheme-shouldUseInvertedColorScheme-completed");
 
-                taskCompletionSource.SetResult((bool)shouldUseInvertedColorScheme);
+                taskCompletionSource.SetResult(shouldUseInvertedColorScheme.GetBoolean());
             });
 
             BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");

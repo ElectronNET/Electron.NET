@@ -1,54 +1,45 @@
 ﻿namespace ElectronNET.Converter;
 
+using ElectronNET.API.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// 
 /// </summary>
 public class ModifierTypeListConverter : JsonConverter<List<ModifierType>>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="reader"></param>
-    /// <param name="objectType"></param>
-    /// <param name="existingValue"></param>
-    /// <param name="hasExistingValue"></param>
-    /// <param name="serializer"></param>
-    /// <returns></returns>
-    public override List<ModifierType> ReadJson(JsonReader reader, Type objectType, List<ModifierType> existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override List<ModifierType> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var token = JToken.Load(reader);
-
-        if (token.Type == JTokenType.Null)
+        if (reader.TokenType == JsonTokenType.Null)
         {
             return null;
         }
 
-
-        return token.ToObject<List<string>>().Select(m => (ModifierType)Enum.Parse(typeof(ModifierType), m)).ToList();
+        var list = new List<ModifierType>();
+        if (reader.TokenType != JsonTokenType.StartArray)
+        {
+            throw new JsonException("Expected array for ModifierType list");
+        }
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndArray) break;
+            if (reader.TokenType != JsonTokenType.String) throw new JsonException("Expected string enum value");
+            var s = reader.GetString();
+            list.Add((ModifierType)Enum.Parse(typeof(ModifierType), s, ignoreCase: true));
+        }
+        return list;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="value"></param>
-    /// <param name="serializer"></param>
-    public override void WriteJson(JsonWriter writer, List<ModifierType> value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, List<ModifierType> value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-
         foreach (var modifier in value)
         {
-            writer.WriteValue(modifier.ToString());
+            writer.WriteStringValue(modifier.ToString());
         }
-
         writer.WriteEndArray();
     }
 }

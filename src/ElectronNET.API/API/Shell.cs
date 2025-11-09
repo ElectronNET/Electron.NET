@@ -1,9 +1,7 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using System.Threading.Tasks;
+using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -62,11 +60,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("shell-openPathCompleted", (errorMessage) =>
+            BridgeConnector.Socket.On<JsonElement>("shell-openPathCompleted", (errorMessage) =>
             {
                 BridgeConnector.Socket.Off("shell-openPathCompleted");
 
-                taskCompletionSource.SetResult((string)errorMessage);
+                taskCompletionSource.SetResult(errorMessage.GetString());
             });
 
             BridgeConnector.Socket.Emit("shell-openPath", path);
@@ -96,11 +94,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("shell-openExternalCompleted", (error) =>
+            BridgeConnector.Socket.On<JsonElement>("shell-openExternalCompleted", (error) =>
             {
                 BridgeConnector.Socket.Off("shell-openExternalCompleted");
 
-                taskCompletionSource.SetResult((string)error);
+                taskCompletionSource.SetResult(error.GetString());
             });
 
             if (options == null)
@@ -109,7 +107,7 @@ namespace ElectronNET.API
             }
             else
             {
-                BridgeConnector.Socket.Emit("shell-openExternal", url, JObject.FromObject(options, _jsonSerializer));
+                BridgeConnector.Socket.Emit("shell-openExternal", url, options);
             }
 
             return taskCompletionSource.Task;
@@ -124,11 +122,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-trashItem-completed", (success) =>
+            BridgeConnector.Socket.On<JsonElement>("shell-trashItem-completed", (success) =>
             {
                 BridgeConnector.Socket.Off("shell-trashItem-completed");
 
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult(success.GetBoolean());
             });
 
             BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
@@ -155,14 +153,14 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("shell-writeShortcutLinkCompleted", (success) =>
+            BridgeConnector.Socket.On<JsonElement>("shell-writeShortcutLinkCompleted", (success) =>
             {
                 BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
 
-                taskCompletionSource.SetResult((bool)success);
+                taskCompletionSource.SetResult(success.GetBoolean());
             });
 
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), JObject.FromObject(options, _jsonSerializer));
+            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), options);
 
             return taskCompletionSource.Task;
         }
@@ -177,12 +175,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
 
-            BridgeConnector.Socket.On("shell-readShortcutLinkCompleted", (shortcutDetails) =>
+            BridgeConnector.Socket.On<JsonElement>("shell-readShortcutLinkCompleted", (shortcutDetails) =>
             {
                 BridgeConnector.Socket.Off("shell-readShortcutLinkCompleted");
 
-                var shortcutObject = shortcutDetails as JObject;
-                var details = shortcutObject?.ToObject<ShortcutDetails>();
+                var details = JsonSerializer.Deserialize<ShortcutDetails>(shortcutDetails, Serialization.ElectronJson.Options);
 
                 taskCompletionSource.SetResult(details);
             });
@@ -192,11 +189,6 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private readonly JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

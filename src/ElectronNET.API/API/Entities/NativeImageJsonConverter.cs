@@ -1,25 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
-    internal class NativeImageJsonConverter : JsonConverter
+    internal class NativeImageJsonConverter : JsonConverter<NativeImage>
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, NativeImage value, JsonSerializerOptions options)
         {
-            if (value is NativeImage nativeImage)
+            if (value is null)
             {
-                var scaledImages = nativeImage.GetAllScaledImages();
-                serializer.Serialize(writer, scaledImages);
+                writer.WriteNullValue();
+                return;
             }
+
+            var scaledImages = value.GetAllScaledImages();
+            JsonSerializer.Serialize(writer, scaledImages, Serialization.ElectronJson.Options);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override NativeImage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var dict = serializer.Deserialize<Dictionary<float, string>>(reader);
+            var dict = JsonSerializer.Deserialize<Dictionary<float, string>>(ref reader, Serialization.ElectronJson.Options);
             var newDictionary = new Dictionary<float, Image>();
             foreach (var item in dict)
             {
@@ -29,7 +33,6 @@ namespace ElectronNET.API.Entities
 
             return new NativeImage(newDictionary);
         }
-
-        public override bool CanConvert(Type objectType) => objectType == typeof(NativeImage);
     }
 }
+
