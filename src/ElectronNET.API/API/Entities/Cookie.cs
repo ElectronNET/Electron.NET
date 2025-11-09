@@ -1,12 +1,14 @@
-﻿namespace ElectronNET.API.Entities {
+﻿namespace ElectronNET.API.Entities
+{
     /// <summary>
     /// 
     /// </summary>
-    public class Cookie {
+    public class Cookie
+    {
         /// <summary>
         /// The name of the cookie.
         /// </summary>
-        public string Name { get; set;}
+        public string Name { get; set; }
 
         /// <summary>
         /// The value of the cookie.
@@ -26,7 +28,7 @@
         /// <summary>
         /// (optional) - The path of the cookie.
         /// </summary>
-        public string Path  { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// (optional) - Whether the cookie is marked as secure.
@@ -36,7 +38,7 @@
         /// <summary>
         /// (optional) - Whether the cookie is marked as HTTP only.
         /// </summary>
-        public bool HttpOnly  { get; set; }
+        public bool HttpOnly { get; set; }
 
         /// <summary>
         /// (optional) - Whether the cookie is a session cookie or a persistent cookie with an expiration date.
