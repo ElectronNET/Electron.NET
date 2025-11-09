@@ -566,12 +566,26 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     socket.on('browserWindowSetRepresentedFilename', (id, filename) => {
-        getWindowById(id).setRepresentedFilename(filename);
+        const win = getWindowById(id);
+        try {
+            if (win && typeof win.setRepresentedFilename === 'function') {
+                win.setRepresentedFilename(filename);
+            }
+        } catch (e) {
+            console.warn('setRepresentedFilename failed (likely unsupported platform):', e);
+        }
     });
 
     socket.on('browserWindowGetRepresentedFilename', (id) => {
-        const pathname = getWindowById(id).getRepresentedFilename();
-
+        const win = getWindowById(id);
+        let pathname = '';
+        try {
+            if (win && typeof win.getRepresentedFilename === 'function') {
+                pathname = win.getRepresentedFilename() || '';
+            }
+        } catch (e) {
+            console.warn('getRepresentedFilename failed (likely unsupported platform):', e);
+        }
         electronSocket.emit('browserWindow-getRepresentedFilename-completed', pathname);
     });
 
