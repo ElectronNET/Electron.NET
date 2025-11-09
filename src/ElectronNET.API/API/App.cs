@@ -18,7 +18,7 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class App : ApiBase
     {
-        protected override string SocketEventCompleteSuffix => "Completed";
+        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.NoDashUpperFirst;
 
         /// <summary>
         /// Emitted when all windows have been closed.

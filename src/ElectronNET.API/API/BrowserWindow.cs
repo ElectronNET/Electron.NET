@@ -24,7 +24,7 @@ using ElectronNET.Common;
 /// </summary>
 public class BrowserWindow : ApiBase
 {
-    protected override string SocketEventCompleteSuffix => "-completed";
+    protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashesLowerFirst;
 
     /// <summary>
     /// Gets the identifier.
