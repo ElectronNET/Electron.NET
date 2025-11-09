@@ -749,11 +749,10 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        if (isWindows10())
-        {
-            x = x - 7;
-        }
-
+        ////if (isWindows10())
+        ////{
+        ////    x = x - 7;
+        ////}
         this.CallMethod2(x, y);
     }
 
@@ -767,11 +766,10 @@ public class BrowserWindow : ApiBase
     {
         // Workaround Windows 10 / Electron Bug
         // https://github.com/electron/electron/issues/4045
-        if (isWindows10())
-        {
-            x = x - 7;
-        }
-
+        ////if (isWindows10())
+        ////{
+        ////    x = x - 7;
+        ////}
         this.CallMethod3(x, y, animate);
     }
 
