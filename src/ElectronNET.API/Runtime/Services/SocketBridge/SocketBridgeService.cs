@@ -40,7 +40,10 @@
         private void Connect()
         {
             this.socket.Connect();
-            this.TransitionState(LifetimeState.Started);
+            if (this.State < LifetimeState.Started)
+            {
+                this.TransitionState(LifetimeState.Started);
+            }
         }
 
         private void Socket_BridgeDisconnected(object sender, EventArgs e)
