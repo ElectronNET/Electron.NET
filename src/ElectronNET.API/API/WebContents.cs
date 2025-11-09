@@ -160,11 +160,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
 
-        BridgeConnector.Socket.On<JsonElement>("webContents-getPrinters-completed", (printers) =>
+        BridgeConnector.Socket.On<PrinterInfo[]>("webContents-getPrinters-completed", (printers) =>
         {
             BridgeConnector.Socket.Off("webContents-getPrinters-completed");
-
-            taskCompletionSource.SetResult(printers.Deserialize<PrinterInfo[]>(ElectronJson.Options));
+            taskCompletionSource.SetResult(printers);
         });
 
         BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
@@ -181,10 +180,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<JsonElement>("webContents-print-completed", (success) =>
+        BridgeConnector.Socket.On<bool>("webContents-print-completed", (success) =>
         {
             BridgeConnector.Socket.Off("webContents-print-completed");
-            taskCompletionSource.SetResult(success.GetBoolean());
+            taskCompletionSource.SetResult(success);
         });
 
         if (options == null)
@@ -212,10 +211,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<JsonElement>("webContents-printToPDF-completed", (success) =>
+        BridgeConnector.Socket.On<bool>("webContents-printToPDF-completed", (success) =>
         {
             BridgeConnector.Socket.Off("webContents-printToPDF-completed");
-            taskCompletionSource.SetResult(success.GetBoolean());
+            taskCompletionSource.SetResult(success);
         });
 
         if (options == null)
@@ -250,10 +249,10 @@ public class WebContents
     {
         var taskCompletionSource = new TaskCompletionSource<T>();
 
-        BridgeConnector.Socket.On<JsonElement>("webContents-executeJavaScript-completed", (result) =>
+        BridgeConnector.Socket.On<T>("webContents-executeJavaScript-completed", (result) =>
         {
             BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
-            taskCompletionSource.SetResult(result.Deserialize<T>(ElectronJson.Options));
+            taskCompletionSource.SetResult(result);
         });
 
         BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
@@ -271,10 +270,10 @@ public class WebContents
         var taskCompletionSource = new TaskCompletionSource<string>();
 
         var eventString = "webContents-getUrl" + Id;
-        BridgeConnector.Socket.On<JsonElement>(eventString, (url) =>
+        BridgeConnector.Socket.On<string>(eventString, (url) =>
         {
             BridgeConnector.Socket.Off(eventString);
-            taskCompletionSource.SetResult(url.GetString());
+            taskCompletionSource.SetResult(url);
         });
 
         BridgeConnector.Socket.Emit("webContents-getUrl", Id);
@@ -323,10 +322,10 @@ public class WebContents
             taskCompletionSource.SetResult(null);
         });
 
-        BridgeConnector.Socket.On<JsonElement>("webContents-loadURL-error" + Id, (error) =>
+        BridgeConnector.Socket.On<string>("webContents-loadURL-error" + Id, (error) =>
         {
             BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            taskCompletionSource.SetException(new InvalidOperationException(error.GetString()));
+            taskCompletionSource.SetException(new InvalidOperationException(error));
         });
 
         BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, options);

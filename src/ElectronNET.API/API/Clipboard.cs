@@ -45,11 +45,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readText-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readText-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readText-Completed");
 
-                taskCompletionSource.SetResult(text.GetString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readText", type);
@@ -76,11 +76,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readHTML-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readHTML-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readHTML-Completed");
 
-                taskCompletionSource.SetResult(text.GetString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readHTML", type);
@@ -107,11 +107,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readRTF-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readRTF-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readRTF-Completed");
 
-                taskCompletionSource.SetResult(text.GetString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readRTF", type);
@@ -139,11 +139,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ReadBookmark>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readBookmark-Completed", (bookmark) =>
+            BridgeConnector.Socket.On<ReadBookmark>("clipboard-readBookmark-Completed", (result) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readBookmark-Completed");
-
-                taskCompletionSource.SetResult(bookmark.Deserialize<ReadBookmark>(ElectronJson.Options));
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readBookmark");
@@ -176,11 +175,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readFindText-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readFindText-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readFindText-Completed");
-
-                taskCompletionSource.SetResult(text.GetString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readFindText");
@@ -216,11 +214,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string[]>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-availableFormats-Completed", (formats) =>
+            BridgeConnector.Socket.On<string[]>("clipboard-availableFormats-Completed", (formats) =>
             {
                 BridgeConnector.Socket.Off("clipboard-availableFormats-Completed");
-
-                taskCompletionSource.SetResult(formats.Deserialize<string[]>(ElectronJson.Options));
+                taskCompletionSource.SetResult(formats);
             });
 
             BridgeConnector.Socket.Emit("clipboard-availableFormats", type);
@@ -247,13 +244,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<NativeImage>();
 
-            BridgeConnector.Socket.On<JsonElement>("clipboard-readImage-Completed", (image) =>
+            BridgeConnector.Socket.On<NativeImage>("clipboard-readImage-Completed", (result) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readImage-Completed");
-
-                var nativeImage = image.Deserialize<NativeImage>(ElectronJson.Options);
-
-                taskCompletionSource.SetResult(nativeImage);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readImage", type);

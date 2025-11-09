@@ -62,7 +62,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventShow");
-                BridgeConnector.Socket.On<JsonElement>("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id.GetString()).OnShow(); });
+                BridgeConnector.Socket.On<string>("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id).OnShow(); });
             }
 
             if (notificationOptions.OnClick != null)
@@ -71,7 +71,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClick");
-                BridgeConnector.Socket.On<JsonElement>("NotificationEventClick", (id) => { _notificationOptions.Single(x => x.ClickID == id.GetString()).OnClick(); });
+                BridgeConnector.Socket.On<string>("NotificationEventClick", (id) => { _notificationOptions.Single(x => x.ClickID == id).OnClick(); });
             }
 
             if (notificationOptions.OnClose != null)
@@ -80,7 +80,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClose");
-                BridgeConnector.Socket.On<JsonElement>("NotificationEventClose", (id) => { _notificationOptions.Single(x => x.CloseID == id.GetString()).OnClose(); });
+                BridgeConnector.Socket.On<string>("NotificationEventClose", (id) => { _notificationOptions.Single(x => x.CloseID == id).OnClose(); });
             }
 
             if (notificationOptions.OnReply != null)
@@ -89,10 +89,9 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventReply");
-                BridgeConnector.Socket.On<JsonElement>("NotificationEventReply", (args) =>
+                BridgeConnector.Socket.On<string[]>("NotificationEventReply", (args) =>
                 {
-                    var arguments = args.Deserialize<string[]>(ElectronJson.Options);
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0]).OnReply(arguments[1]);
+                    _notificationOptions.Single(x => x.ReplyID == args[0]).OnReply(args[1]);
                 });
             }
 
@@ -102,10 +101,9 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On<JsonElement>("NotificationEventAction", (args) =>
+                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) =>
                 {
-                    var arguments = args.Deserialize<string[]>(ElectronJson.Options);
-                    _notificationOptions.Single(x => x.ActionID == arguments[0]).OnAction(arguments[1]);
+                    _notificationOptions.Single(x => x.ActionID == args[0]).OnAction(args[1]);
                 });
             }
 
@@ -123,10 +121,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<JsonElement>("notificationIsSupportedComplete", (isSupported) =>
+            BridgeConnector.Socket.On<bool>("notificationIsSupportedComplete", (isSupported) =>
             {
                 BridgeConnector.Socket.Off("notificationIsSupportedComplete");
-                taskCompletionSource.SetResult(isSupported.GetBoolean());
+                taskCompletionSource.SetResult(isSupported);
             });
 
             BridgeConnector.Socket.Emit("notificationIsSupported");

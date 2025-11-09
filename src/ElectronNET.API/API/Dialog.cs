@@ -50,11 +50,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string[]>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("showOpenDialogComplete" + guid, (filePaths) =>
+            BridgeConnector.Socket.On<string[]>("showOpenDialogComplete" + guid, (filePaths) =>
             {
                 BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
-                var result = filePaths.Deserialize<string[]>(ElectronJson.Options);
-                taskCompletionSource.SetResult(result);
+                taskCompletionSource.SetResult(filePaths);
             });
 
 
@@ -76,11 +75,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("showSaveDialogComplete" + guid, (filename) =>
+            BridgeConnector.Socket.On<string>("showSaveDialogComplete" + guid, (filename) =>
             {
                 BridgeConnector.Socket.Off("showSaveDialogComplete" + guid);
-
-                taskCompletionSource.SetResult(filename.GetString());
+                taskCompletionSource.SetResult(filename);
             });
 
             BridgeConnector.Socket.Emit("showSaveDialog",

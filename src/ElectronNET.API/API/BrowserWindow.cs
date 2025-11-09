@@ -924,9 +924,9 @@ public class BrowserWindow : ApiBase
         _items.AddRange(menuItems);
 
         BridgeConnector.Socket.Off("windowMenuItemClicked");
-        BridgeConnector.Socket.On<JsonElement>("windowMenuItemClicked", (id) =>
+        BridgeConnector.Socket.On<string>("windowMenuItemClicked", (id) =>
         {
-            MenuItem menuItem = _items.GetMenuItem(id.GetString());
+            MenuItem menuItem = _items.GetMenuItem(id);
             menuItem?.Click();
         });
     }
@@ -1010,11 +1010,11 @@ public class BrowserWindow : ApiBase
     {
         var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<JsonElement>("browserWindowSetThumbarButtons-completed", (success) =>
+        BridgeConnector.Socket.On<bool>("browserWindowSetThumbarButtons-completed", (success) =>
         {
             BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
 
-            taskCompletionSource.SetResult(success.GetBoolean());
+            taskCompletionSource.SetResult(success);
         });
 
         thumbarButtons.AddThumbarButtonsId();
@@ -1023,9 +1023,9 @@ public class BrowserWindow : ApiBase
         _thumbarButtons.AddRange(thumbarButtons);
 
         BridgeConnector.Socket.Off("thumbarButtonClicked");
-        BridgeConnector.Socket.On<JsonElement>("thumbarButtonClicked", (id) =>
+        BridgeConnector.Socket.On<string>("thumbarButtonClicked", (id) =>
         {
-            ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id.GetString());
+            ThumbarButton thumbarButton = _thumbarButtons.GetThumbarButton(id);
             thumbarButton?.Click();
         });
 

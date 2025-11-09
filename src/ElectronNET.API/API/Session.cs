@@ -212,10 +212,8 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-getBlobData-completed" + guid, (buffer) =>
+            BridgeConnector.Socket.On<int[]>("webContents-session-getBlobData-completed" + guid, (result) =>
             {
-                var result = buffer.Deserialize<int[]>(ElectronJson.Options);
-
                 BridgeConnector.Socket.Off("webContents-session-getBlobData-completed" + guid);
                 taskCompletionSource.SetResult(result);
             });
@@ -234,10 +232,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-getCacheSize-completed" + guid, (size) =>
+            BridgeConnector.Socket.On<int>("webContents-session-getCacheSize-completed" + guid, (size) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getCacheSize-completed" + guid);
-                taskCompletionSource.SetResult(size.GetInt32());
+                taskCompletionSource.SetResult(size);
             });
 
             BridgeConnector.Socket.Emit("webContents-session-getCacheSize", Id, guid);
@@ -254,9 +252,8 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string[]>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-getPreloads-completed" + guid, (preloads) =>
+            BridgeConnector.Socket.On<string[]>("webContents-session-getPreloads-completed" + guid, (result) =>
             {
-                var result = preloads.Deserialize<string[]>(ElectronJson.Options);
                 BridgeConnector.Socket.Off("webContents-session-getPreloads-completed" + guid);
                 taskCompletionSource.SetResult(result);
             });
@@ -275,10 +272,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-getUserAgent-completed" + guid, (userAgent) =>
+            BridgeConnector.Socket.On<string>("webContents-session-getUserAgent-completed" + guid, (userAgent) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getUserAgent-completed" + guid);
-                taskCompletionSource.SetResult(userAgent.GetString());
+                taskCompletionSource.SetResult(userAgent);
             });
 
             BridgeConnector.Socket.Emit("webContents-session-getUserAgent", Id, guid);
@@ -297,10 +294,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-resolveProxy-completed" + guid, (proxy) =>
+            BridgeConnector.Socket.On<string>("webContents-session-resolveProxy-completed" + guid, (proxy) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-resolveProxy-completed" + guid);
-                taskCompletionSource.SetResult(proxy.GetString());
+                taskCompletionSource.SetResult(proxy);
             });
 
             BridgeConnector.Socket.Emit("webContents-session-resolveProxy", Id, url, guid);
@@ -386,12 +383,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ChromeExtensionInfo[]>();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-getAllExtensions-completed", (extensionslist) =>
+            BridgeConnector.Socket.On<ChromeExtensionInfo[]>("webContents-session-getAllExtensions-completed", (extensionslist) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-getAllExtensions-completed");
-                var chromeExtensionInfos = extensionslist.Deserialize<ChromeExtensionInfo[]>(ElectronJson.Options);
-
-                taskCompletionSource.SetResult(chromeExtensionInfos);
+                taskCompletionSource.SetResult(extensionslist);
             });
 
             BridgeConnector.Socket.Emit("webContents-session-getAllExtensions", Id);
@@ -440,11 +435,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<Extension>();
 
-            BridgeConnector.Socket.On<JsonElement>("webContents-session-loadExtension-completed", (extension) =>
+            BridgeConnector.Socket.On<Extension>("webContents-session-loadExtension-completed", (extension) =>
             {
                 BridgeConnector.Socket.Off("webContents-session-loadExtension-completed");
-
-                taskCompletionSource.SetResult(extension.Deserialize<Extension>(ElectronJson.Options));
+                taskCompletionSource.SetResult(extension);
             });
 
             BridgeConnector.Socket.Emit("webContents-session-loadExtension", Id, path, allowFileAccess);

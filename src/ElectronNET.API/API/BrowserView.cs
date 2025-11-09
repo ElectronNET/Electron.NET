@@ -34,10 +34,10 @@ namespace ElectronNET.API
 
                 Task.Run(() =>
                 {
-                    BridgeConnector.Socket.On<JsonElement>("browserView-getBounds-reply", (result) =>
+                    BridgeConnector.Socket.On<Rectangle>("browserView-getBounds-reply", (result) =>
                     {
                         BridgeConnector.Socket.Off("browserView-getBounds-reply");
-                        taskCompletionSource.SetResult(result.Deserialize(ElectronJsonContext.Default.Rectangle));
+                        taskCompletionSource.SetResult(result);
                     });
 
                     BridgeConnector.Socket.Emit("browserView-getBounds", Id);

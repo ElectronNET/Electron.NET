@@ -53,9 +53,9 @@ namespace ElectronNET.API
                 _shortcuts.Add(accelerator, function);
 
                 BridgeConnector.Socket.Off("globalShortcut-pressed");
-                BridgeConnector.Socket.On<JsonElement>("globalShortcut-pressed", (shortcut) =>
+                BridgeConnector.Socket.On<string>("globalShortcut-pressed", (shortcut) =>
                 {
-                    if (_shortcuts.TryGetValue(shortcut.GetString(), out var action))
+                    if (_shortcuts.TryGetValue(shortcut, out var action))
                     {
                         action();
                     }
@@ -75,11 +75,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<JsonElement>("globalShortcut-isRegisteredCompleted", (isRegistered) =>
+            BridgeConnector.Socket.On<bool>("globalShortcut-isRegisteredCompleted", (isRegistered) =>
             {
                 BridgeConnector.Socket.Off("globalShortcut-isRegisteredCompleted");
 
-                taskCompletionSource.SetResult(isRegistered.GetBoolean());
+                taskCompletionSource.SetResult(isRegistered);
             });
 
             BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);

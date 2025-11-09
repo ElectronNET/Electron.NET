@@ -48,10 +48,10 @@ namespace ElectronNET.API
         /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.On<JsonElement>(socketEventName + "Error" + oneCallguid, (result) =>
+            BridgeConnector.Socket.On<string>(socketEventName + "Error" + oneCallguid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + oneCallguid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.GetString());
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
             });
 
             BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
@@ -69,10 +69,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>(socketEventName + "Error" + guid, (result) =>
+            BridgeConnector.Socket.On<string>(socketEventName + "Error" + guid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.GetString());
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
                 taskCompletionSource.SetException(new Exception($"Host Hook Exception {result}"));
             });
 
@@ -89,7 +89,6 @@ namespace ElectronNET.API
                 catch (Exception exception)
                 {
                     taskCompletionSource.SetException(exception);
-                    //throw new InvalidCastException("Return value does not match with the generic type.", exception);
                 }
 
                 taskCompletionSource.SetResult(data);

@@ -98,27 +98,22 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
 
-            BridgeConnector.Socket.On<JsonElement>("BrowserWindowCreated", (id) =>
+            BridgeConnector.Socket.On<int>("BrowserWindowCreated", (id) =>
             {
                 BridgeConnector.Socket.Off("BrowserWindowCreated");
-
-                var browserWindowId = id.GetInt32();
-
-                var browserWindow = new BrowserWindow(browserWindowId);
+                var browserWindow = new BrowserWindow(id);
                 _browserWindows.Add(browserWindow);
 
                 taskCompletionSource.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.On<JsonElement>("BrowserWindowClosed", (ids) =>
+            BridgeConnector.Socket.On<int[]>("BrowserWindowClosed", (ids) =>
             {
                 BridgeConnector.Socket.Off("BrowserWindowClosed");
 
-                var browserWindowIds = ids.Deserialize<int[]>(ElectronJson.Options);
-
                 for (int index = 0; index < _browserWindows.Count; index++)
                 {
-                    if (!browserWindowIds.Contains(_browserWindows[index].Id))
+                    if (!ids.Contains(_browserWindows[index].Id))
                     {
                         _browserWindows.RemoveAt(index);
                     }
@@ -187,12 +182,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<BrowserView>();
 
-            BridgeConnector.Socket.On<JsonElement>("BrowserViewCreated", (id) =>
+            BridgeConnector.Socket.On<int>("BrowserViewCreated", (id) =>
             {
                 BridgeConnector.Socket.Off("BrowserViewCreated");
-
-                var browserViewId = id.GetInt32();
-                BrowserView browserView = new(browserViewId);
+                BrowserView browserView = new(id);
 
                 _browserViews.Add(browserView);
 

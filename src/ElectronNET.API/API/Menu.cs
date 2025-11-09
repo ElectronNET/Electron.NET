@@ -70,9 +70,9 @@ namespace ElectronNET.API
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("menuItemClicked");
-            BridgeConnector.Socket.On<JsonElement>("menuItemClicked", (id) =>
+            BridgeConnector.Socket.On<string>("menuItemClicked", (id) =>
             {
-                MenuItem menuItem = _menuItems.GetMenuItem(id.GetString());
+                MenuItem menuItem = _menuItems.GetMenuItem(id);
                 menuItem.Click?.Invoke();
             });
         }

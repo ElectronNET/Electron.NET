@@ -547,11 +547,11 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appGetPathCompleted", (path) =>
+                BridgeConnector.Socket.On<string>("appGetPathCompleted", (path) =>
                 {
                     BridgeConnector.Socket.Off("appGetPathCompleted");
 
-                    taskCompletionSource.SetResult(path.GetString());
+                    taskCompletionSource.SetResult(path);
                 });
 
                 BridgeConnector.Socket.Emit("appGetPath", pathName.GetDescription());
@@ -716,10 +716,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appSetAsDefaultProtocolClientCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appSetAsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetAsDefaultProtocolClient", protocol, path, args);
@@ -770,10 +770,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appRemoveAsDefaultProtocolClientCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appRemoveAsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appRemoveAsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Emit("appRemoveAsDefaultProtocolClient", protocol, path, args);
@@ -842,10 +842,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appIsDefaultProtocolClientCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appIsDefaultProtocolClientCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appIsDefaultProtocolClientCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Emit("appIsDefaultProtocolClient", protocol, path, args);
@@ -870,10 +870,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appSetUserTasksCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appSetUserTasksCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetUserTasksCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetUserTasks", userTasks);
@@ -943,10 +943,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appRequestSingleInstanceLockCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appRequestSingleInstanceLockCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appRequestSingleInstanceLockCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Off("secondInstance");
@@ -1069,10 +1069,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appImportCertificateCompleted", (result) =>
+                BridgeConnector.Socket.On<int>("appImportCertificateCompleted", (result) =>
                 {
                     BridgeConnector.Socket.Off("appImportCertificateCompleted");
-                    taskCompletionSource.SetResult(result.GetInt32());
+                    taskCompletionSource.SetResult(result);
                 });
 
                 BridgeConnector.Socket.Emit("appImportCertificate", options);
@@ -1125,10 +1125,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appSetBadgeCountCompleted", (success) =>
+                BridgeConnector.Socket.On<bool>("appSetBadgeCountCompleted", (success) =>
                 {
                     BridgeConnector.Socket.Off("appSetBadgeCountCompleted");
-                    taskCompletionSource.SetResult(success.GetBoolean());
+                    taskCompletionSource.SetResult(success);
                 });
 
                 BridgeConnector.Socket.Emit("appSetBadgeCount", count);
@@ -1185,12 +1185,9 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<LoginItemSettings>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("appGetLoginItemSettingsCompleted", (loginItemSettings) =>
+                BridgeConnector.Socket.On<LoginItemSettings>("appGetLoginItemSettingsCompleted", (result) =>
                 {
                     BridgeConnector.Socket.Off("appGetLoginItemSettingsCompleted");
-
-                    var result = loginItemSettings.Deserialize<LoginItemSettings>(ElectronJson.Options);
-
                     taskCompletionSource.SetResult(result);
                 });
 
@@ -1308,10 +1305,10 @@ namespace ElectronNET.API
                 {
                     var taskCompletionSource = new TaskCompletionSource<string>();
 
-                    BridgeConnector.Socket.On<JsonElement>("appGetUserAgentFallbackCompleted", (result) =>
+                    BridgeConnector.Socket.On<string>("appGetUserAgentFallbackCompleted", (result) =>
                     {
                         BridgeConnector.Socket.Off("appGetUserAgentFallbackCompleted");
-                        taskCompletionSource.SetResult(result.GetString());
+                        taskCompletionSource.SetResult(result);
                     });
 
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");

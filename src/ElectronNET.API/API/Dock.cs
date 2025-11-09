@@ -56,10 +56,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<int>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("dock-bounce-completed", (id) =>
+                BridgeConnector.Socket.On<int>("dock-bounce-completed", (id) =>
                 {
                     BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult(id.GetInt32());
+                    taskCompletionSource.SetResult(id);
                 });
 
                 BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
@@ -108,10 +108,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("dock-getBadge-completed", (text) =>
+                BridgeConnector.Socket.On<string>("dock-getBadge-completed", (text) =>
                 {
                     BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult(text.GetString());
+                    taskCompletionSource.SetResult(text);
                 });
 
                 BridgeConnector.Socket.Emit("dock-getBadge");
@@ -150,10 +150,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("dock-isVisible-completed", (isVisible) =>
+                BridgeConnector.Socket.On<bool>("dock-isVisible-completed", (isVisible) =>
                 {
                     BridgeConnector.Socket.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult(isVisible.GetBoolean());
+                    taskCompletionSource.SetResult(isVisible);
                 });
 
                 BridgeConnector.Socket.Emit("dock-isVisible");
@@ -189,9 +189,9 @@ namespace ElectronNET.API
             _items.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("dockMenuItemClicked");
-            BridgeConnector.Socket.On<JsonElement>("dockMenuItemClicked", (id) =>
+            BridgeConnector.Socket.On<string>("dockMenuItemClicked", (id) =>
             {
-                MenuItem menuItem = _items.GetMenuItem(id.GetString());
+                MenuItem menuItem = _items.GetMenuItem(id);
                 menuItem?.Click();
             });
         }
@@ -207,10 +207,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<Menu>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<JsonElement>("dock-getMenu-completed", (menu) =>
+                BridgeConnector.Socket.On<Menu>("dock-getMenu-completed", (menu) =>
                 {
                     BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(menu.Deserialize<Menu>(ElectronJson.Options));
+                    taskCompletionSource.SetResult(menu);
                 });
 
                 BridgeConnector.Socket.Emit("dock-getMenu");

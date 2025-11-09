@@ -152,7 +152,7 @@
 
                 var messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
 
-                BridgeConnector.Socket.On<JsonElement>(eventName, (result) =>
+                BridgeConnector.Socket.On<T>(eventName, (result) =>
                 {
                     BridgeConnector.Socket.Off(eventName);
 
@@ -160,7 +160,7 @@
                     {
                         try
                         {
-                            var value = result.Deserialize<T>(ElectronJson.Options);
+                            var value = result;
                             this.tcs?.SetResult(value);
                         }
                         catch (Exception ex)
