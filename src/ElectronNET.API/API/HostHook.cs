@@ -48,9 +48,8 @@ namespace ElectronNET.API
         /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.On<string>(socketEventName + "Error" + oneCallguid, (result) =>
+            BridgeConnector.Socket.Once<string>(socketEventName + "Error" + oneCallguid, (result) =>
             {
-                BridgeConnector.Socket.Off(socketEventName + "Error" + oneCallguid);
                 Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
             });
 
@@ -66,20 +65,18 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<T> CallAsync<T>(string socketEventName, params dynamic[] arguments)
         {
-            var taskCompletionSource = new TaskCompletionSource<T>();
+            var tcs = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<string>(socketEventName + "Error" + guid, (result) =>
+            BridgeConnector.Socket.Once<string>(socketEventName + "Error" + guid, (result) =>
             {
-                BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
                 Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
-                taskCompletionSource.SetException(new Exception($"Host Hook Exception {result}"));
+                tcs.SetException(new Exception($"Host Hook Exception {result}"));
             });
 
-            BridgeConnector.Socket.On<JsonElement>(socketEventName + "Complete" + guid, (result) =>
+            BridgeConnector.Socket.Once<JsonElement>(socketEventName + "Complete" + guid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
-                BridgeConnector.Socket.Off(socketEventName + "Complete" + guid);
                 T data = default;
 
                 try
@@ -88,15 +85,15 @@ namespace ElectronNET.API
                 }
                 catch (Exception exception)
                 {
-                    taskCompletionSource.SetException(exception);
+                    tcs.SetException(exception);
                 }
 
-                taskCompletionSource.SetResult(data);
+                tcs.SetResult(data);
             });
 
             BridgeConnector.Socket.Emit(socketEventName, arguments, guid);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
 

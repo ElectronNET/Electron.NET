@@ -119,17 +119,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<bool> IsSupportedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<bool>("notificationIsSupportedComplete", (isSupported) =>
-            {
-                BridgeConnector.Socket.Off("notificationIsSupportedComplete");
-                taskCompletionSource.SetResult(isSupported);
-            });
-
+            BridgeConnector.Socket.Once<bool>("notificationIsSupportedComplete", tcs.SetResult);
             BridgeConnector.Socket.Emit("notificationIsSupported");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
 

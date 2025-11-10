@@ -152,10 +152,8 @@
 
                 var messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
 
-                BridgeConnector.Socket.On<T>(eventName, (result) =>
+                BridgeConnector.Socket.Once<T>(eventName, (result) =>
                 {
-                    BridgeConnector.Socket.Off(eventName);
-
                     lock (this)
                     {
                         try

@@ -43,13 +43,13 @@ namespace ElectronNET.API
         /// <param name="fullPath">The full path to the directory / file.</param>
         public Task ShowItemInFolderAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource<object>();
 
-            BridgeConnector.Socket.On("shell-showItemInFolderCompleted", () => { BridgeConnector.Socket.Off("shell-showItemInFolderCompleted"); });
-
+            // Is this really useful?
+            BridgeConnector.Socket.Once("shell-showItemInFolderCompleted", () => { });
             BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -59,17 +59,12 @@ namespace ElectronNET.API
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
         public Task<string> OpenPathAsync(string path)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("shell-openPathCompleted", (errorMessage) =>
-            {
-                BridgeConnector.Socket.Off("shell-openPathCompleted");
-                taskCompletionSource.SetResult(errorMessage);
-            });
-
+            BridgeConnector.Socket.Once<string>("shell-openPathCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("shell-openPath", path);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -92,13 +87,9 @@ namespace ElectronNET.API
         /// <returns>The error message corresponding to the failure if a failure occurred, otherwise <see cref="string.Empty"/>.</returns>
         public Task<string> OpenExternalAsync(string url, OpenExternalOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("shell-openExternalCompleted", (error) =>
-            {
-                BridgeConnector.Socket.Off("shell-openExternalCompleted");
-                taskCompletionSource.SetResult(error);
-            });
+            BridgeConnector.Socket.Once<string>("shell-openExternalCompleted", tcs.SetResult);
 
             if (options == null)
             {
@@ -109,7 +100,7 @@ namespace ElectronNET.API
                 BridgeConnector.Socket.Emit("shell-openExternal", url, options);
             }
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -119,17 +110,12 @@ namespace ElectronNET.API
         /// <returns> Whether the item was successfully moved to the trash.</returns>
         public Task<bool> TrashItemAsync(string fullPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<bool>("shell-trashItem-completed", (success) =>
-            {
-                BridgeConnector.Socket.Off("shell-trashItem-completed");
-                taskCompletionSource.SetResult(success);
-            });
-
+            BridgeConnector.Socket.Once<bool>("shell-trashItem-completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("shell-trashItem", fullPath);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -149,17 +135,12 @@ namespace ElectronNET.API
         /// <returns>Whether the shortcut was created successfully.</returns>
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<bool>("shell-writeShortcutLinkCompleted", (success) =>
-            {
-                BridgeConnector.Socket.Off("shell-writeShortcutLinkCompleted");
-                taskCompletionSource.SetResult(success);
-            });
-
+            BridgeConnector.Socket.Once<bool>("shell-writeShortcutLinkCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), options);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -170,17 +151,12 @@ namespace ElectronNET.API
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
         public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
-            var taskCompletionSource = new TaskCompletionSource<ShortcutDetails>();
+            var tcs = new TaskCompletionSource<ShortcutDetails>();
 
-            BridgeConnector.Socket.On<ShortcutDetails>("shell-readShortcutLinkCompleted", (shortcutDetails) =>
-            {
-                BridgeConnector.Socket.Off("shell-readShortcutLinkCompleted");
-                taskCompletionSource.SetResult(shortcutDetails);
-            });
-
+            BridgeConnector.Socket.Once<ShortcutDetails>("shell-readShortcutLinkCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("shell-readShortcutLink", shortcutPath);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
 

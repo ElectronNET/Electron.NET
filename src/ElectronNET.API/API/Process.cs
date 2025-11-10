@@ -46,16 +46,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On<string>("process-execPath-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-execPath-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string>("process-execPath-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-execPath");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -70,16 +66,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string[]>();
+                var tcs = new TaskCompletionSource<string[]>();
 
-                BridgeConnector.Socket.On<string[]>("process-argv-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-argv-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string[]>("process-argv-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-argv");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -91,16 +83,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On<string>("process-type-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-type-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string>("process-type-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-type");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -113,16 +101,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<ProcessVersions>();
+                var tcs = new TaskCompletionSource<ProcessVersions>();
 
-                BridgeConnector.Socket.On<ProcessVersions>("process-versions-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-versions-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<ProcessVersions>("process-versions-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-versions");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -135,16 +119,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<bool>();
+                var tcs = new TaskCompletionSource<bool>();
 
-                BridgeConnector.Socket.On<bool>("process-defaultApp-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-defaultApp-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<bool>("process-defaultApp-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-defaultApp");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -156,16 +136,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<bool>();
+                var tcs = new TaskCompletionSource<bool>();
 
-                BridgeConnector.Socket.On<bool>("process-isMainFrame-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-isMainFrame-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<bool>("process-isMainFrame-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-isMainFrame");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -176,16 +152,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On<string>("process-resourcesPath-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-resourcesPath-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string>("process-resourcesPath-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-resourcesPath");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -197,16 +169,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<double>();
+                var tcs = new TaskCompletionSource<double>();
 
-                BridgeConnector.Socket.On<double>("process-uptime-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-uptime-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<double>("process-uptime-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-uptime");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -217,16 +185,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<int>();
+                var tcs = new TaskCompletionSource<int>();
 
-                BridgeConnector.Socket.On<int>("process-pid-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-pid-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<int>("process-pid-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-pid");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -238,16 +202,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On<string>("process-arch-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-arch-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string>("process-arch-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-arch");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
 
@@ -258,16 +218,12 @@ namespace ElectronNET.API
         {
             get
             {
-                var taskCompletionSource = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>();
 
-                BridgeConnector.Socket.On<string>("process-platform-Completed", (result) =>
-                {
-                    BridgeConnector.Socket.Off("process-platform-Completed");
-                    taskCompletionSource.SetResult(result);
-                });
-
+                BridgeConnector.Socket.Once<string>("process-platform-Completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("process-platform");
-                return taskCompletionSource.Task;
+
+                return tcs.Task;
             }
         }
     }

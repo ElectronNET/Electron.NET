@@ -96,21 +96,18 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<BrowserWindow> CreateWindowAsync(BrowserWindowOptions options, string loadUrl = "http://localhost")
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserWindow>();
+            var tcs = new TaskCompletionSource<BrowserWindow>();
 
-            BridgeConnector.Socket.On<int>("BrowserWindowCreated", (id) =>
+            BridgeConnector.Socket.Once<int>("BrowserWindowCreated", (id) =>
             {
-                BridgeConnector.Socket.Off("BrowserWindowCreated");
                 var browserWindow = new BrowserWindow(id);
                 _browserWindows.Add(browserWindow);
 
-                taskCompletionSource.SetResult(browserWindow);
+                tcs.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.On<int[]>("BrowserWindowClosed", (ids) =>
+            BridgeConnector.Socket.Once<int[]>("BrowserWindowClosed", (ids) =>
             {
-                BridgeConnector.Socket.Off("BrowserWindowClosed");
-
                 for (int index = 0; index < _browserWindows.Count; index++)
                 {
                     if (!ids.Contains(_browserWindows[index].Id))
@@ -152,7 +149,7 @@ namespace ElectronNET.API
                 await BridgeConnector.Socket.Emit("createBrowserWindow", options, loadUrl).ConfigureAwait(false);
             }
 
-            return await taskCompletionSource.Task.ConfigureAwait(false);
+            return await tcs.Task.ConfigureAwait(false);
         }
 
         private bool IsWindows10()
@@ -180,21 +177,20 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<BrowserView> CreateBrowserViewAsync(BrowserViewConstructorOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<BrowserView>();
+            var tcs = new TaskCompletionSource<BrowserView>();
 
-            BridgeConnector.Socket.On<int>("BrowserViewCreated", (id) =>
+            BridgeConnector.Socket.Once<int>("BrowserViewCreated", (id) =>
             {
-                BridgeConnector.Socket.Off("BrowserViewCreated");
                 BrowserView browserView = new(id);
 
                 _browserViews.Add(browserView);
 
-                taskCompletionSource.SetResult(browserView);
+                tcs.SetResult(browserView);
             });
 
             await BridgeConnector.Socket.Emit("createBrowserView", options).ConfigureAwait(false);
 
-            return await taskCompletionSource.Task.ConfigureAwait(false);
+            return await tcs.Task.ConfigureAwait(false);
         }
 
     }

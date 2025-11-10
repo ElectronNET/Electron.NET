@@ -48,7 +48,7 @@ namespace ElectronNET.API
         {
             await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel).ConfigureAwait(false);
             BridgeConnector.Socket.Off(channel);
-            BridgeConnector.Socket.On<System.Text.Json.JsonElement>(channel, (args) =>
+            BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
@@ -63,7 +63,7 @@ namespace ElectronNET.API
             });
         }
 
-        private static List<object> FormatArguments(System.Text.Json.JsonElement args)
+        private static List<object> FormatArguments(JsonElement args)
         {
             var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
             objectArray.RemoveAll(item => item is null);
@@ -82,7 +82,7 @@ namespace ElectronNET.API
         public void OnSync(string channel, Func<object, object> listener)
         {
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
-            BridgeConnector.Socket.On<System.Text.Json.JsonElement>(channel, (args) =>
+            BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
                 object parameter;
@@ -109,7 +109,7 @@ namespace ElectronNET.API
         public void Once(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.Once<System.Text.Json.JsonElement>(channel, (args) =>
+            BridgeConnector.Socket.Once<JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 

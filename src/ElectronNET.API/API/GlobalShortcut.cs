@@ -73,18 +73,12 @@ namespace ElectronNET.API
         /// <returns>Whether this application has registered accelerator.</returns>
         public Task<bool> IsRegisteredAsync(string accelerator)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<bool>("globalShortcut-isRegisteredCompleted", (isRegistered) =>
-            {
-                BridgeConnector.Socket.Off("globalShortcut-isRegisteredCompleted");
-
-                taskCompletionSource.SetResult(isRegistered);
-            });
-
+            BridgeConnector.Socket.Once<bool>("globalShortcut-isRegisteredCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
