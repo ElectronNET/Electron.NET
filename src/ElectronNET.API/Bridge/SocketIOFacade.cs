@@ -86,7 +86,7 @@ internal class SocketIoFacade
         {
             _socket.On(eventName, _ =>
             {
-                _socket.Off(eventName);
+                this.Off(eventName);
                 Task.Run(action);
             });
         }
@@ -98,7 +98,7 @@ internal class SocketIoFacade
         {
             _socket.On(eventName, (socketIoResponse) =>
             {
-                _socket.Off(eventName);
+                this.Off(eventName);
                 Task.Run(() => action(socketIoResponse.GetValue<T>()));
             });
         }
