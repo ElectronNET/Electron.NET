@@ -61,7 +61,7 @@
         /// <summary>
         /// Output device's pixel scale factor.
         /// </summary>
-        public int ScaleFactor { get; set; }
+        public double ScaleFactor { get; set; }
 
         /// <summary>
         /// Can be available, unavailable, unknown.
