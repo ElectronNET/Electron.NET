@@ -62,7 +62,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventShow");
-                BridgeConnector.Socket.Once<string>("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id).OnShow(); });
+                BridgeConnector.Socket.On<string>("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id).OnShow(); });
             }
 
             if (notificationOptions.OnClick != null)

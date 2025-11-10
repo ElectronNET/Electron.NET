@@ -168,7 +168,7 @@ namespace ElectronNET.API
                 {
                     var tcs = new TaskCompletionSource<SemVer>();
 
-                    BridgeConnector.Socket.On<SemVer>("autoUpdater-currentVersion-get-reply", tcs.SetResult);
+                    BridgeConnector.Socket.Once<SemVer>("autoUpdater-currentVersion-get-reply", tcs.SetResult);
                     BridgeConnector.Socket.Emit("autoUpdater-currentVersion-get");
 
                     return tcs.Task;
@@ -201,7 +201,7 @@ namespace ElectronNET.API
                 {
                     var tcs = new TaskCompletionSource<string>();
 
-                    BridgeConnector.Socket.On<string>("autoUpdater-channel-get-reply", tcs.SetResult);
+                    BridgeConnector.Socket.Once<string>("autoUpdater-channel-get-reply", tcs.SetResult);
                     BridgeConnector.Socket.Emit("autoUpdater-channel-get");
 
                     return tcs.Task;
@@ -221,7 +221,7 @@ namespace ElectronNET.API
                 {
                     var tcs = new TaskCompletionSource<Dictionary<string, string>>();
 
-                    BridgeConnector.Socket.On<Dictionary<string, string>>("autoUpdater-requestHeaders-get-reply", tcs.SetResult);
+                    BridgeConnector.Socket.Once<Dictionary<string, string>>("autoUpdater-requestHeaders-get-reply", tcs.SetResult);
                     BridgeConnector.Socket.Emit("autoUpdater-requestHeaders-get");
                     
                     return tcs.Task;
@@ -441,7 +441,7 @@ namespace ElectronNET.API
             var tcs = new TaskCompletionSource<string>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<string>("autoUpdaterGetFeedURLComplete" + guid, tcs.SetResult);
+            BridgeConnector.Socket.Once<string>("autoUpdaterGetFeedURLComplete" + guid, tcs.SetResult);
             BridgeConnector.Socket.Emit("autoUpdaterGetFeedURL", guid);
 
             return tcs.Task;
