@@ -16,7 +16,7 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             var tcs = new TaskCompletionSource<string>();
             await Electron.IpcMain.On("ipc-on-test", obj => tcs.TrySetResult(obj?.ToString() ?? string.Empty));
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("require('electron').ipcRenderer.send('ipc-on-test','payload123')");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.send('ipc-on-test','payload123')");
             var result = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
             result.Should().Be("payload123");
         }
@@ -26,7 +26,7 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             var count = 0;
             Electron.IpcMain.Once("ipc-once-test", _ => count++);
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("const {ipcRenderer}=require('electron'); ipcRenderer.send('ipc-once-test','a'); ipcRenderer.send('ipc-once-test','b');");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("const {ipcRenderer}=require('electron'); ipcRenderer.send('ipc-once-test','a'); ipcRenderer.send('ipc-once-test','b');");
             await Task.Delay(500);
             count.Should().Be(1);
         }
@@ -37,7 +37,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var fired = false;
             await Electron.IpcMain.On("ipc-remove-test", _ => fired = true);
             Electron.IpcMain.RemoveAllListeners("ipc-remove-test");
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("require('electron').ipcRenderer.send('ipc-remove-test','x')");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.send('ipc-remove-test','x')");
             await Task.Delay(400);
             fired.Should().BeFalse();
         }
@@ -45,12 +45,12 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact]
         public async Task Ipc_OnSync_returns_value()
         {
-            Electron.IpcMain.OnSync("ipc-sync-test", obj =>
+            Electron.IpcMain.OnSync("ipc-sync-test", (obj) =>
             {
                 obj.Should().NotBeNull();
                 return "pong";
             });
-            var ret = await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("require('electron').ipcRenderer.sendSync('ipc-sync-test','ping')");
+            var ret = await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.sendSync('ipc-sync-test','ping')");
             ret.Should().Be("pong");
         }
 
@@ -58,12 +58,12 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task Ipc_Send_from_main_reaches_renderer()
         {
             // Listener: store raw arg; if Electron packs differently we will normalize later
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync(@"(function(){ const {ipcRenderer}=require('electron'); ipcRenderer.once('main-to-render',(e,arg)=>{ globalThis.__mainToRender = arg;}); return 'ready'; })();");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>(@"(function(){ const {ipcRenderer}=require('electron'); ipcRenderer.once('main-to-render',(e,arg)=>{ globalThis.__mainToRender = arg;}); return 'ready'; })();");
             Electron.IpcMain.Send(this.fx.MainWindow, "main-to-render", "hello-msg");
             string value = "";
             for (int i = 0; i < 20; i++)
             {
-                var jsVal = await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync("globalThis.__mainToRender === undefined ? '' : (typeof globalThis.__mainToRender === 'string' ? globalThis.__mainToRender : JSON.stringify(globalThis.__mainToRender))");
+                var jsVal = await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("globalThis.__mainToRender === undefined ? '' : (typeof globalThis.__mainToRender === 'string' ? globalThis.__mainToRender : JSON.stringify(globalThis.__mainToRender))");
                 value = jsVal?.ToString() ?? "";
                 if (!string.IsNullOrEmpty(value))
                 {

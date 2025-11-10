@@ -2,11 +2,12 @@
 // ReSharper disable once CheckNamespace
 namespace ElectronNET.API;
 
+using ElectronNET.API.Serialization;
+using SocketIO.Serializer.SystemTextJson;
 using System;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using SocketIO.Serializer.NewtonsoftJson;
 using SocketIO = SocketIOClient.SocketIO;
 
 internal class SocketIoFacade
@@ -17,14 +18,9 @@ internal class SocketIoFacade
     public SocketIoFacade(string uri)
     {
         _socket = new SocketIO(uri);
-        var jsonSerializer = new NewtonsoftJsonSerializer(new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        });
-
-        _socket.Serializer = jsonSerializer;
+        _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
+        // Use default System.Text.Json serializer from SocketIOClient.
+        // Outgoing args are normalized to camelCase via SerializeArg in Emit.
     }
 
     public event EventHandler BridgeDisconnected;
@@ -70,14 +66,14 @@ internal class SocketIoFacade
         }
     }
 
-    // TODO: Remove this method when SocketIoClient supports object deserialization
+    // Keep object overload for compatibility; value will be a JsonElement boxed as object.
     public void On(string eventName, Action<object> action)
     {
         lock (_lockObj)
         {
             _socket.On(eventName, response =>
             {
-                var value = response.GetValue<object>();
+                var value = (object)response.GetValue<JsonElement>();
                 ////Console.WriteLine($"Called Event {eventName} - data {value}");
                 Task.Run(() => action(value));
             });

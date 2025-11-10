@@ -1,11 +1,13 @@
 ﻿namespace ElectronNET.API
 {
+    using ElectronNET.API.Serialization;
+    using ElectronNET.Common;
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
+    using System.Text.Json;
     using System.Threading.Tasks;
-    using ElectronNET.Common;
 
     public abstract class ApiBase
     {
@@ -156,8 +158,19 @@
 
                     lock (this)
                     {
-                        this.tcs?.SetResult(result);
-                        this.tcs = null;
+                        try
+                        {
+                            var value = result;
+                            this.tcs?.SetResult(value);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.tcs?.TrySetException(ex);
+                        }
+                        finally
+                        {
+                            this.tcs = null;
+                        }
                     }
                 });
 
@@ -170,7 +183,7 @@
                     BridgeConnector.Socket.Emit(messageName);
                 }
 
-                System.Threading.Tasks.Task.Delay(ApiBase.PropertyTimeout).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(PropertyTimeout).ContinueWith(_ =>
                 {
                     if (this.tcs != null)
                     {

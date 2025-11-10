@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Serialization;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -50,7 +48,7 @@ namespace ElectronNET.API
         {
             await BridgeConnector.Socket.Emit("registerIpcMainChannel", channel).ConfigureAwait(false);
             BridgeConnector.Socket.Off(channel);
-            BridgeConnector.Socket.On(channel, (args) =>
+            BridgeConnector.Socket.On<System.Text.Json.JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
@@ -65,19 +63,10 @@ namespace ElectronNET.API
             });
         }
 
-        private List<object> FormatArguments(object args)
+        private static List<object> FormatArguments(System.Text.Json.JsonElement args)
         {
-            List<object> objectArray = ((JArray)args).ToObject<object[]>().ToList();
-
-            for (int index = 0; index < objectArray.Count; index++)
-            {
-                var item = objectArray[index];
-                if (item == null)
-                {
-                    objectArray.Remove(item);
-                }
-            }
-
+            var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
+            objectArray.RemoveAll(item => item is null);
             return objectArray;
         }
 
@@ -93,7 +82,7 @@ namespace ElectronNET.API
         public void OnSync(string channel, Func<object, object> listener)
         {
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
-            BridgeConnector.Socket.On(channel, (args) =>
+            BridgeConnector.Socket.On<System.Text.Json.JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
                 object parameter;
@@ -120,7 +109,7 @@ namespace ElectronNET.API
         public void Once(string channel, Action<object> listener)
         {
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
-            BridgeConnector.Socket.Once<object>(channel, (args) =>
+            BridgeConnector.Socket.Once<System.Text.Json.JsonElement>(channel, (args) =>
             {
                 List<object> objectArray = FormatArguments(args);
 
@@ -155,34 +144,7 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserWindow browserWindow, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
-
-            foreach (var parameterObject in data)
-            {
-                if (parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
-                {
-                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                }
-                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
-                {
-                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                }
-                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
-                {
-                    objects.Add(parameterObject);
-                }
-            }
-
-            if (jobjects.Count > 0 || jarrays.Count > 0)
-            {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
-            }
-            else
-            {
-                BridgeConnector.Socket.Emit("sendToIpcRenderer", JObject.FromObject(browserWindow, _jsonSerializer), channel, data);
-            }
+            BridgeConnector.Socket.Emit("sendToIpcRenderer", browserWindow, channel, data);
         }
 
         /// <summary>
@@ -196,41 +158,9 @@ namespace ElectronNET.API
         /// <param name="data">Arguments data.</param>
         public void Send(BrowserView browserView, string channel, params object[] data)
         {
-            List<JObject> jobjects = new List<JObject>();
-            List<JArray> jarrays = new List<JArray>();
-            List<object> objects = new List<object>();
-
-            foreach (var parameterObject in data)
-            {
-                if (parameterObject.GetType().IsArray || parameterObject.GetType().IsGenericType && parameterObject is IEnumerable)
-                {
-                    jarrays.Add(JArray.FromObject(parameterObject, _jsonSerializer));
-                }
-                else if (parameterObject.GetType().IsClass && !parameterObject.GetType().IsPrimitive && !(parameterObject is string))
-                {
-                    jobjects.Add(JObject.FromObject(parameterObject, _jsonSerializer));
-                }
-                else if (parameterObject.GetType().IsPrimitive || (parameterObject is string))
-                {
-                    objects.Add(parameterObject);
-                }
-            }
-
-            if (jobjects.Count > 0 || jarrays.Count > 0)
-            {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, jarrays.ToArray(), jobjects.ToArray(), objects.ToArray());
-            }
-            else
-            {
-                BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
-            }
+            BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

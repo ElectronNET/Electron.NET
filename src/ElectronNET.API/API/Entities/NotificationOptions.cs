@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -86,7 +86,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The show identifier.
         /// </value>
-        [JsonProperty]
+        [JsonInclude]
         internal string ShowID { get; set; }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The click identifier.
         /// </value>
-        [JsonProperty]
+        [JsonInclude]
         internal string ClickID { get; set; }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The close identifier.
         /// </value>
-        [JsonProperty]
+        [JsonInclude]
         internal string CloseID { get; set; }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The reply identifier.
         /// </value>
-        [JsonProperty]
+        [JsonInclude]
         internal string ReplyID { get; set; }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The action identifier.
         /// </value>
-        [JsonProperty]
+        [JsonInclude]
         internal string ActionID { get; set; }
 
         /// <summary>

@@ -1,8 +1,8 @@
 ﻿namespace ElectronNET.Common
 {
-    using System;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services;
+    using System;
 
     internal static class Extensions
     {

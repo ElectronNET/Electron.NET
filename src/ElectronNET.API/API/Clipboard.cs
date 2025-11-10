@@ -1,7 +1,6 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -46,11 +45,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("clipboard-readText-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readText-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readText-Completed");
 
-                taskCompletionSource.SetResult(text.ToString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readText", type);
@@ -77,11 +76,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("clipboard-readHTML-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readHTML-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readHTML-Completed");
 
-                taskCompletionSource.SetResult(text.ToString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readHTML", type);
@@ -108,11 +107,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("clipboard-readRTF-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readRTF-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readRTF-Completed");
 
-                taskCompletionSource.SetResult(text.ToString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readRTF", type);
@@ -140,11 +139,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<ReadBookmark>();
 
-            BridgeConnector.Socket.On("clipboard-readBookmark-Completed", (bookmark) =>
+            BridgeConnector.Socket.On<ReadBookmark>("clipboard-readBookmark-Completed", (result) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readBookmark-Completed");
-
-                taskCompletionSource.SetResult(((JObject)bookmark).ToObject<ReadBookmark>());
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readBookmark");
@@ -177,11 +175,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On("clipboard-readFindText-Completed", (text) =>
+            BridgeConnector.Socket.On<string>("clipboard-readFindText-Completed", (text) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readFindText-Completed");
-
-                taskCompletionSource.SetResult(text.ToString());
+                taskCompletionSource.SetResult(text);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readFindText");
@@ -217,11 +214,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<string[]>();
 
-            BridgeConnector.Socket.On("clipboard-availableFormats-Completed", (formats) =>
+            BridgeConnector.Socket.On<string[]>("clipboard-availableFormats-Completed", (formats) =>
             {
                 BridgeConnector.Socket.Off("clipboard-availableFormats-Completed");
-
-                taskCompletionSource.SetResult(((JArray)formats).ToObject<string[]>());
+                taskCompletionSource.SetResult(formats);
             });
 
             BridgeConnector.Socket.Emit("clipboard-availableFormats", type);
@@ -236,7 +232,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void Write(Data data, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-write", JObject.FromObject(data, _jsonSerializer), type);
+            BridgeConnector.Socket.Emit("clipboard-write", data, type);
         }
 
         /// <summary>
@@ -248,13 +244,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<NativeImage>();
 
-            BridgeConnector.Socket.On("clipboard-readImage-Completed", (image) =>
+            BridgeConnector.Socket.On<NativeImage>("clipboard-readImage-Completed", (result) =>
             {
                 BridgeConnector.Socket.Off("clipboard-readImage-Completed");
-
-                var nativeImage = ((JObject)image).ToObject<NativeImage>();
-
-                taskCompletionSource.SetResult(nativeImage);
+                taskCompletionSource.SetResult(result);
             });
 
             BridgeConnector.Socket.Emit("clipboard-readImage", type);
@@ -269,14 +262,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void WriteImage(NativeImage image, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonConvert.SerializeObject(image), type);
+            BridgeConnector.Socket.Emit("clipboard-writeImage", JsonSerializer.Serialize(image, ElectronJson.Options), type);
         }
-
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
     }
 }

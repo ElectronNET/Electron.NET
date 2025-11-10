@@ -48,7 +48,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx.MainWindow.SetPosition(134, 246);
             await Task.Delay(500);
             var pos = await this.fx.MainWindow.GetPositionAsync();
-            pos.Should().BeEquivalentTo(new[] { 134, 246 });
+            pos.Should().BeEquivalentTo([134, 246]);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace ElectronNET.IntegrationTests.Tests
             window.WebContents.OnDomReady += () => domReadyTcs.TrySetResult();
             await window.WebContents.LoadURLAsync("about:blank");
             await domReadyTcs.Task;
-            await window.WebContents.ExecuteJavaScriptAsync("document.title='NewTitle';");
+            await window.WebContents.ExecuteJavaScriptAsync<string>("document.title='NewTitle';");
 
             // Wait for event up to a short timeout
             var completed2 = await Task.WhenAny(tcs.Task, Task.Delay(3000));

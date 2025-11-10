@@ -16,7 +16,7 @@
         private ProcessWindowStyle windowStyle;
 
         /// <summary>
-        ///     Default constructor.  At least the <see cref='System.Diagnostics.ProcessStartInfo.FileName'/>
+        ///     Default constructor.  At least the <see cref='ProcessStartInfo.FileName'/>
         ///     property must be set before starting the process.
         /// </summary>
         public RunnerParams()

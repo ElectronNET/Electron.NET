@@ -1,13 +1,13 @@
 ﻿namespace ElectronNET.Runtime.Controllers
 {
-    using System;
-    using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
     using ElectronNET.Runtime.Services.ElectronProcess;
     using ElectronNET.Runtime.Services.SocketBridge;
+    using System;
+    using System.Threading.Tasks;
 
     internal class RuntimeControllerDotNetFirst : RuntimeControllerBase
     {

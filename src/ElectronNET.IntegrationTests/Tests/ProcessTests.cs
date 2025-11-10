@@ -10,7 +10,7 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             // Use renderer to fetch process info and round-trip
             var execPath = await Electron.WindowManager.CreateWindowAsync(new API.Entities.BrowserWindowOptions { Show = false });
-            var result = await execPath.WebContents.ExecuteJavaScriptAsync("process.execPath && process.platform ? 'ok' : 'fail'");
+            var result = await execPath.WebContents.ExecuteJavaScriptAsync<string>("process.execPath && process.platform ? 'ok' : 'fail'");
             result.Should().Be("ok");
         }
 

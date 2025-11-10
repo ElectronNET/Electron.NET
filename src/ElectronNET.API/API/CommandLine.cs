@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -75,10 +76,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("appCommandLineHasSwitchCompleted", (result) =>
+                BridgeConnector.Socket.On<bool>("appCommandLineHasSwitchCompleted", (result) =>
                 {
                     BridgeConnector.Socket.Off("appCommandLineHasSwitchCompleted");
-                    taskCompletionSource.SetResult((bool)result);
+                    taskCompletionSource.SetResult(result);
                 });
 
                 BridgeConnector.Socket.Emit("appCommandLineHasSwitch", switchName);
@@ -103,10 +104,10 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<string>();
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On("appCommandLineGetSwitchValueCompleted", (result) =>
+                BridgeConnector.Socket.On<string>("appCommandLineGetSwitchValueCompleted", (result) =>
                 {
                     BridgeConnector.Socket.Off("appCommandLineGetSwitchValueCompleted");
-                    taskCompletionSource.SetResult((string)result);
+                    taskCompletionSource.SetResult(result);
                 });
 
                 BridgeConnector.Socket.Emit("appCommandLineGetSwitchValue", switchName);

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -10,7 +11,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The default style
         /// </summary>
-        [JsonProperty("default")]
+        [JsonPropertyName("default")]
         defaultStyle,
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -13,7 +13,6 @@ namespace ElectronNET.API.Entities
         ///  displays the same icon as "info", unless you set an icon using the "icon"
         ///  option. On macOS, both "warning" and "error" display the same warning icon.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public MessageBoxType Type { get; set; }
 
         /// <summary>
@@ -99,3 +98,5 @@ namespace ElectronNET.API.Entities
         }
     }
 }
+
+

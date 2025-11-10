@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -52,11 +53,11 @@ namespace ElectronNET.API
                 _shortcuts.Add(accelerator, function);
 
                 BridgeConnector.Socket.Off("globalShortcut-pressed");
-                BridgeConnector.Socket.On("globalShortcut-pressed", (shortcut) =>
+                BridgeConnector.Socket.On<string>("globalShortcut-pressed", (shortcut) =>
                 {
-                    if (_shortcuts.ContainsKey(shortcut.ToString()))
+                    if (_shortcuts.TryGetValue(shortcut, out var action))
                     {
-                        _shortcuts[shortcut.ToString()]();
+                        action();
                     }
                 });
 
@@ -74,11 +75,11 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("globalShortcut-isRegisteredCompleted", (isRegistered) =>
+            BridgeConnector.Socket.On<bool>("globalShortcut-isRegisteredCompleted", (isRegistered) =>
             {
                 BridgeConnector.Socket.Off("globalShortcut-isRegisteredCompleted");
 
-                taskCompletionSource.SetResult((bool)isRegistered);
+                taskCompletionSource.SetResult(isRegistered);
             });
 
             BridgeConnector.Socket.Emit("globalShortcut-isRegistered", accelerator);

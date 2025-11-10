@@ -1,10 +1,9 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -50,7 +49,7 @@ namespace ElectronNET.API
         {
             GenerateIDsForDefinedActions(notificationOptions);
 
-            BridgeConnector.Socket.Emit("createNotification", JObject.FromObject(notificationOptions, _jsonSerializer));
+            BridgeConnector.Socket.Emit("createNotification", notificationOptions);
         }
 
         private static void GenerateIDsForDefinedActions(NotificationOptions notificationOptions)
@@ -63,7 +62,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventShow");
-                BridgeConnector.Socket.On("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id.ToString()).OnShow(); });
+                BridgeConnector.Socket.On<string>("NotificationEventShow", (id) => { _notificationOptions.Single(x => x.ShowID == id).OnShow(); });
             }
 
             if (notificationOptions.OnClick != null)
@@ -72,7 +71,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClick");
-                BridgeConnector.Socket.On("NotificationEventClick", (id) => { _notificationOptions.Single(x => x.ClickID == id.ToString()).OnClick(); });
+                BridgeConnector.Socket.On<string>("NotificationEventClick", (id) => { _notificationOptions.Single(x => x.ClickID == id).OnClick(); });
             }
 
             if (notificationOptions.OnClose != null)
@@ -81,7 +80,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventClose");
-                BridgeConnector.Socket.On("NotificationEventClose", (id) => { _notificationOptions.Single(x => x.CloseID == id.ToString()).OnClose(); });
+                BridgeConnector.Socket.On<string>("NotificationEventClose", (id) => { _notificationOptions.Single(x => x.CloseID == id).OnClose(); });
             }
 
             if (notificationOptions.OnReply != null)
@@ -90,10 +89,9 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventReply");
-                BridgeConnector.Socket.On("NotificationEventReply", (args) =>
+                BridgeConnector.Socket.On<string[]>("NotificationEventReply", (args) =>
                 {
-                    var arguments = ((JArray)args).ToObject<string[]>();
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnReply(arguments[1].ToString());
+                    _notificationOptions.Single(x => x.ReplyID == args[0]).OnReply(args[1]);
                 });
             }
 
@@ -103,10 +101,9 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On("NotificationEventAction", (args) =>
+                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) =>
                 {
-                    var arguments = ((JArray)args).ToObject<string[]>();
-                    _notificationOptions.Single(x => x.ReplyID == arguments[0].ToString()).OnAction(arguments[1].ToString());
+                    _notificationOptions.Single(x => x.ActionID == args[0]).OnAction(args[1]);
                 });
             }
 
@@ -124,10 +121,10 @@ namespace ElectronNET.API
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On("notificationIsSupportedComplete", (isSupported) =>
+            BridgeConnector.Socket.On<bool>("notificationIsSupportedComplete", (isSupported) =>
             {
                 BridgeConnector.Socket.Off("notificationIsSupportedComplete");
-                taskCompletionSource.SetResult((bool)isSupported);
+                taskCompletionSource.SetResult(isSupported);
             });
 
             BridgeConnector.Socket.Emit("notificationIsSupported");
@@ -135,11 +132,6 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }

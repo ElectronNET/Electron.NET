@@ -1,7 +1,7 @@
-﻿using ElectronNET.Converter;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using ElectronNET.Converter;
+
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -213,7 +213,6 @@ namespace ElectronNET.API.Entities
         /// The style of window title bar. Default is default. Possible values are:
         /// 'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover'
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
@@ -256,7 +255,6 @@ namespace ElectronNET.API.Entities
         /// appearance-based, light, dark, titlebar, selection, menu, popover, sidebar,
         /// medium-light or ultra-dark.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public Vibrancy Vibrancy { get; set; }
 
         /// <summary>
@@ -294,3 +292,7 @@ namespace ElectronNET.API.Entities
         public string ProxyCredentials { get; set; }
     }
 }
+
+
+
+

@@ -1,11 +1,10 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Collections.Generic;
+using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
-using System.Linq;
+using ElectronNET.API.Serialization;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text.Json;
 
 namespace ElectronNET.API
 {
@@ -67,13 +66,13 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setApplicationMenu", JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("menu-setApplicationMenu", new[] { menuItems });
             _menuItems.AddRange(menuItems);
 
             BridgeConnector.Socket.Off("menuItemClicked");
-            BridgeConnector.Socket.On("menuItemClicked", (id) =>
+            BridgeConnector.Socket.On<string>("menuItemClicked", (id) =>
             {
-                MenuItem menuItem = _menuItems.GetMenuItem(id.ToString());
+                MenuItem menuItem = _menuItems.GetMenuItem(id);
                 menuItem.Click?.Invoke();
             });
         }
@@ -98,7 +97,7 @@ namespace ElectronNET.API
             menuItems.AddMenuItemsId();
             menuItems.AddSubmenuTypes();
 
-            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, JArray.FromObject(menuItems, _jsonSerializer));
+            BridgeConnector.Socket.Emit("menu-setContextMenu", browserWindow.Id, menuItems);
 
             if (!_contextMenuItems.ContainsKey(browserWindow.Id))
             {
@@ -108,10 +107,14 @@ namespace ElectronNET.API
             }
 
             BridgeConnector.Socket.Off("contextMenuItemClicked");
-            BridgeConnector.Socket.On("contextMenuItemClicked", (results) =>
+            BridgeConnector.Socket.On<JsonElement>("contextMenuItemClicked", (results) =>
             {
-                var id = ((JArray)results).First.ToString();
-                var browserWindowId = (int)((JArray)results).Last;
+                var arr = results.EnumerateArray();
+                var e = arr.GetEnumerator();
+                e.MoveNext();
+                var id = e.Current.GetString();
+                e.MoveNext();
+                var browserWindowId = e.Current.GetInt32();
 
                 MenuItem menuItem = _contextMenuItems[browserWindowId].GetMenuItem(id);
                 menuItem.Click?.Invoke();
@@ -127,10 +130,6 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id);
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
+
     }
 }

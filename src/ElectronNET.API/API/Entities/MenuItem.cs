@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -21,13 +19,11 @@ namespace ElectronNET.API.Entities
         /// Define the action of the menu item, when specified the click property will be
         /// ignored.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public MenuRole Role { get; set; }
 
         /// <summary>
         /// Can be normal, separator, submenu, checkbox or radio.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public MenuType Type { get; set; }
 
 
@@ -101,3 +97,5 @@ namespace ElectronNET.API.Entities
         public string Position { get; set; }
     }
 }
+
+

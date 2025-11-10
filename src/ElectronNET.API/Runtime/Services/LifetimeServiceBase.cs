@@ -1,9 +1,9 @@
 ﻿namespace ElectronNET.Runtime.Services
 {
+    using ElectronNET.Runtime.Data;
     using System;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
-    using ElectronNET.Runtime.Data;
 
     public abstract class LifetimeServiceBase
     {

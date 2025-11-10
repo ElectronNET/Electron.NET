@@ -1,8 +1,8 @@
 ﻿namespace ElectronNET.Runtime
 {
+    using ElectronNET.Runtime.Data;
     using System;
     using System.Threading.Tasks;
-    using ElectronNET.Runtime.Data;
 
     public interface IElectronNetRuntimeController
     {

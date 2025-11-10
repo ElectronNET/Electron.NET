@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElectronNET.API.Entities
+﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// Docs: https://electronjs.org/docs/api/structures/extension

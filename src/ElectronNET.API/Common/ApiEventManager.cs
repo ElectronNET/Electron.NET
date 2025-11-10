@@ -1,7 +1,9 @@
-﻿using System;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
-using Newtonsoft.Json.Linq;
+using ElectronNET.API.Serialization;
+using System;
+using System.Linq;
+using System.Text.Json;
 
 namespace ElectronNET.Common;
 
@@ -24,11 +26,11 @@ internal static class ApiEventManager
         if (callback == null) BridgeConnector.Socket.Off(eventName + id);
     }
 
-    internal static void AddEvent<T>(string eventName, object id, Action<T> callback, Action<T> value, Func<object, T> converter, string suffix = "")
+    internal static void AddEvent<T>(string eventName, object id, Action<T> callback, Action<T> value, Func<JsonElement, T> converter, string suffix = "")
     {
         if (callback == null)
         {
-            BridgeConnector.Socket.On(eventName + id, (args) =>
+            BridgeConnector.Socket.On<JsonElement>(eventName + id, (args) =>
             {
                 var converted = converter.Invoke(args);
                 callback(converted);
@@ -60,11 +62,11 @@ internal static class ApiEventManager
     {
         if (callback == null)
         {
-            BridgeConnector.Socket.On<dynamic>(eventName + id, (result) =>
+            BridgeConnector.Socket.On<JsonElement>(eventName + id, (result) =>
             {
-                var args = ((JArray)result).ToObject<object[]>();
-                var trayClickEventArgs = ((JObject)args[0]).ToObject<TrayClickEventArgs>();
-                var bounds = ((JObject)args[1]).ToObject<Rectangle>();
+                var array = result.EnumerateArray().ToArray();
+                var trayClickEventArgs = array[0].Deserialize(ElectronJsonContext.Default.TrayClickEventArgs);
+                var bounds = array[1].Deserialize(ElectronJsonContext.Default.Rectangle);
                 callback(trayClickEventArgs, bounds);
             });
             BridgeConnector.Socket.Emit($"register-{eventName}", id);
@@ -82,10 +84,11 @@ internal static class ApiEventManager
     {
         if (callback == null)
         {
-            BridgeConnector.Socket.On(eventName + id, (args) =>
+            BridgeConnector.Socket.On<JsonElement>(eventName + id, (args) =>
             {
-                var display = ((JArray)args).First.ToObject<Display>();
-                var metrics = ((JArray)args).Last.ToObject<string[]>();
+                var arr = args.EnumerateArray().ToArray();
+                var display = arr[0].Deserialize(ElectronJsonContext.Default.Display);
+                var metrics = arr[1].Deserialize<string[]>(ElectronJson.Options);
                 callback(display, metrics);
             });
             BridgeConnector.Socket.Emit($"register-{eventName}", id);
@@ -99,3 +102,4 @@ internal static class ApiEventManager
         if (callback == null) BridgeConnector.Socket.Off(eventName + id);
     }
 }
+

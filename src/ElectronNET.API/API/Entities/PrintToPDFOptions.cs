@@ -1,5 +1,5 @@
-﻿using ElectronNET.Converter;
-using Newtonsoft.Json;
+using ElectronNET.Converter;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities;
 

@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+using ElectronNET.API.Serialization;
 using System;
+using System.Text.Json;
 
 namespace ElectronNET.API.Entities
 {
@@ -33,18 +34,17 @@ namespace ElectronNET.API.Entities
         {
             if (_onBeforeRequest == null)
             {
-                BridgeConnector.Socket.On($"webContents-session-webRequest-onBeforeRequest{Id}",
+                BridgeConnector.Socket.On<System.Text.Json.JsonElement>($"webContents-session-webRequest-onBeforeRequest{Id}",
                     (args) =>
                     {
-                        ////var details = ((JObject)args[0]).ToObject<OnBeforeRequestDetails>();
-                        ////var callback = args.Length > 1 ? (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); }) : null;
-                        var details = ((JObject)args).ToObject<OnBeforeRequestDetails>();
+                        //// var details0 = args[0].Deserialize<OnBeforeRequestDetails>(ElectronNET.ElectronJson.Options);
+                        var details = args.Deserialize<OnBeforeRequestDetails>(ElectronJson.Options);
                         var callback = (Action<object>)((response) => { BridgeConnector.Socket.Emit($"webContents-session-webRequest-onBeforeRequest-response{Id}", response); });
 
                         _onBeforeRequest?.Invoke(details, callback);
                     });
 
-                BridgeConnector.Socket.Emit("register-webContents-session-webRequest-onBeforeRequest", Id, JObject.FromObject(filter));
+                BridgeConnector.Socket.Emit("register-webContents-session-webRequest-onBeforeRequest", Id, filter);
             }
 
             _onBeforeRequest += listener;

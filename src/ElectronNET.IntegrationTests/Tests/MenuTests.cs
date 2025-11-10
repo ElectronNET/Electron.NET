@@ -29,7 +29,7 @@ namespace ElectronNET.IntegrationTests.Tests
             };
             Electron.Menu.SetApplicationMenu(items);
             var targetId = items[0].Submenu[0].Id;
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync($"require('electron').ipcRenderer.send('integration-click-application-menu','{targetId}')");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>($"require('electron').ipcRenderer.send('integration-click-application-menu','{targetId}')");
             for (int i = 0; i < 20 && !clicked; i++)
             {
                 await Task.Delay(100);
@@ -48,7 +48,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var ctxId = ctxItems[0].Id;
             // simulate popup then click
             Electron.Menu.ContextMenuPopup(win);
-            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync($"require('electron').ipcRenderer.send('integration-click-context-menu',{win.Id},'{ctxId}')");
+            await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>($"require('electron').ipcRenderer.send('integration-click-context-menu',{win.Id},'{ctxId}')");
             for (int i = 0; i < 20 && !ctxClicked; i++)
             {
                 await Task.Delay(100);

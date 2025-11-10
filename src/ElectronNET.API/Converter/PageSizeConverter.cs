@@ -1,43 +1,46 @@
-﻿using ElectronNET.API.Entities;
-using Newtonsoft.Json;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Serialization;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.Converter;
 
 public class PageSizeConverter : JsonConverter<PageSize>
 {
-    public override PageSize ReadJson(JsonReader reader, Type objectType, PageSize existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override PageSize Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType == JsonToken.String)
+        if (reader.TokenType == JsonTokenType.String)
         {
-            return (string)reader.Value;
+            return reader.GetString();
         }
-        else if (reader.TokenType == JsonToken.StartObject)
+        else if (reader.TokenType == JsonTokenType.StartObject)
         {
-            return serializer.Deserialize<PageSize>(reader);
+            return JsonSerializer.Deserialize<PageSize>(ref reader, ElectronJson.Options);
         }
         else
         {
-            throw new JsonSerializationException("Invalid value for PageSize. Expected true, false, or an object.");
+            throw new JsonException("Invalid value for PageSize. Expected string or an object.");
         }
     }
 
-    public override void WriteJson(JsonWriter writer, PageSize value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, PageSize value, JsonSerializerOptions options)
     {
         if (value is null)
         {
-            writer.WriteUndefined();
+            return;
         }
 
         var str = (string)value;
 
         if (str is not null)
         {
-            writer.WriteValue(str);
+            writer.WriteStringValue(str);
         }
         else
         {
-            serializer.Serialize(writer, value);
+            JsonSerializer.Serialize(writer, value, ElectronJson.Options);
         }
     }
 }
+

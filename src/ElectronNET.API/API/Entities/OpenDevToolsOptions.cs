@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
+using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
@@ -13,7 +13,7 @@ namespace ElectronNET.API.Entities
         /// detach.Defaults to last used dock state.In undocked mode it's possible to dock
         /// back.In detach mode it's not.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public DevToolsMode Mode { get; set; }
     }
 }
+

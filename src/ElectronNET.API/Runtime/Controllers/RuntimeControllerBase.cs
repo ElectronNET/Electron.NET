@@ -1,10 +1,10 @@
 ﻿namespace ElectronNET.Runtime.Controllers
 {
-    using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.Runtime.Services;
     using ElectronNET.Runtime.Services.ElectronProcess;
     using ElectronNET.Runtime.Services.SocketBridge;
+    using System.Threading.Tasks;
 
     internal abstract class RuntimeControllerBase : LifetimeServiceBase, IElectronNetRuntimeController
     {

@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using ElectronNET.API.Serialization;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -49,10 +48,10 @@ namespace ElectronNET.API
         /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.On(socketEventName + "Error" + oneCallguid, (result) =>
+            BridgeConnector.Socket.On<string>(socketEventName + "Error" + oneCallguid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + oneCallguid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
             });
 
             BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
@@ -70,14 +69,14 @@ namespace ElectronNET.API
             var taskCompletionSource = new TaskCompletionSource<T>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On(socketEventName + "Error" + guid, (result) =>
+            BridgeConnector.Socket.On<string>(socketEventName + "Error" + guid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result.ToString());
+                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
                 taskCompletionSource.SetException(new Exception($"Host Hook Exception {result}"));
             });
 
-            BridgeConnector.Socket.On(socketEventName + "Complete" + guid, (result) =>
+            BridgeConnector.Socket.On<JsonElement>(socketEventName + "Complete" + guid, (result) =>
             {
                 BridgeConnector.Socket.Off(socketEventName + "Error" + guid);
                 BridgeConnector.Socket.Off(socketEventName + "Complete" + guid);
@@ -85,31 +84,11 @@ namespace ElectronNET.API
 
                 try
                 {
-                    if (result.GetType().IsValueType || result is string)
-                    {
-                        data = (T)result;
-                    }
-                    else
-                    {
-                        var token = JToken.Parse(result.ToString());
-                        if (token is JArray)
-                        {
-                            data = token.ToObject<T>();
-                        }
-                        else if (token is JObject)
-                        {
-                            data = token.ToObject<T>();
-                        }
-                        else
-                        {
-                            data = (T)result;
-                        }
-                    }
+                    data = result.Deserialize<T>(ElectronJson.Options);
                 }
                 catch (Exception exception)
                 {
                     taskCompletionSource.SetException(exception);
-                    //throw new InvalidCastException("Return value does not match with the generic type.", exception);
                 }
 
                 taskCompletionSource.SetResult(data);
@@ -120,11 +99,6 @@ namespace ElectronNET.API
             return taskCompletionSource.Task;
         }
 
-        private JsonSerializer _jsonSerializer = new JsonSerializer()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Ignore
-        };
+
     }
 }
