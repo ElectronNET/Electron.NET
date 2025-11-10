@@ -1008,14 +1008,9 @@ public class BrowserWindow : ApiBase
     /// <returns>Whether the buttons were added successfully.</returns>
     public Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
     {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
+        var tcs = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<bool>("browserWindowSetThumbarButtons-completed", (success) =>
-        {
-            BridgeConnector.Socket.Off("browserWindowSetThumbarButtons-completed");
-
-            taskCompletionSource.SetResult(success);
-        });
+        BridgeConnector.Socket.Once<bool>("browserWindowSetThumbarButtons-completed", tcs.SetResult);
 
         thumbarButtons.AddThumbarButtonsId();
         BridgeConnector.Socket.Emit("browserWindowSetThumbarButtons", Id, thumbarButtons);
@@ -1029,7 +1024,7 @@ public class BrowserWindow : ApiBase
             thumbarButton?.Click();
         });
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>

@@ -43,18 +43,12 @@ namespace ElectronNET.API
         /// <returns>The content in the clipboard as plain text.</returns>
         public Task<string> ReadTextAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("clipboard-readText-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readText-Completed");
-
-                taskCompletionSource.SetResult(text);
-            });
-
+            BridgeConnector.Socket.Once<string>("clipboard-readText-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readText", type);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -74,18 +68,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadHTMLAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("clipboard-readHTML-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readHTML-Completed");
-
-                taskCompletionSource.SetResult(text);
-            });
-
+            BridgeConnector.Socket.Once<string>("clipboard-readHTML-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readHTML", type);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -105,18 +93,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadRTFAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("clipboard-readRTF-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readRTF-Completed");
-
-                taskCompletionSource.SetResult(text);
-            });
-
+            BridgeConnector.Socket.Once<string>("clipboard-readRTF-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readRTF", type);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -137,17 +119,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<ReadBookmark> ReadBookmarkAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<ReadBookmark>();
+            var tcs = new TaskCompletionSource<ReadBookmark>();
 
-            BridgeConnector.Socket.On<ReadBookmark>("clipboard-readBookmark-Completed", (result) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readBookmark-Completed");
-                taskCompletionSource.SetResult(result);
-            });
-
+            BridgeConnector.Socket.Once<ReadBookmark>("clipboard-readBookmark-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readBookmark");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -173,17 +150,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string> ReadFindTextAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
 
-            BridgeConnector.Socket.On<string>("clipboard-readFindText-Completed", (text) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readFindText-Completed");
-                taskCompletionSource.SetResult(text);
-            });
-
+            BridgeConnector.Socket.Once<string>("clipboard-readFindText-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readFindText");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -212,17 +184,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<string[]> AvailableFormatsAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
+            var tcs = new TaskCompletionSource<string[]>();
 
-            BridgeConnector.Socket.On<string[]>("clipboard-availableFormats-Completed", (formats) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-availableFormats-Completed");
-                taskCompletionSource.SetResult(formats);
-            });
-
+            BridgeConnector.Socket.Once<string[]>("clipboard-availableFormats-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-availableFormats", type);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -242,17 +209,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<NativeImage> ReadImageAsync(string type = "")
         {
-            var taskCompletionSource = new TaskCompletionSource<NativeImage>();
+            var tcs = new TaskCompletionSource<NativeImage>();
 
-            BridgeConnector.Socket.On<NativeImage>("clipboard-readImage-Completed", (result) =>
-            {
-                BridgeConnector.Socket.Off("clipboard-readImage-Completed");
-                taskCompletionSource.SetResult(result);
-            });
-
+            BridgeConnector.Socket.Once<NativeImage>("clipboard-readImage-Completed", tcs.SetResult);
             BridgeConnector.Socket.Emit("clipboard-readImage", type);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>

@@ -322,7 +322,7 @@
         /// <paramref name="cancellationToken"/> has been triggered.
         /// This method does not end the process itself.</remarks>
         /// <returns>true, if the process has exited, false if the process is still running.</returns>
-        public async Task<bool> WaitForExitAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> WaitForExitAsync(CancellationToken cancellationToken = default)
         {
             var proc = this.process;
 

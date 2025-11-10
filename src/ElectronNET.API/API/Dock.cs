@@ -53,18 +53,13 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<int>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            var tcs = new TaskCompletionSource<int>();
+            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<int>("dock-bounce-completed", (id) =>
-                {
-                    BridgeConnector.Socket.Off("dock-bounce-completed");
-                    taskCompletionSource.SetResult(id);
-                });
-
+                BridgeConnector.Socket.Once<int>("dock-bounce-completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
 
-                return await taskCompletionSource.Task
+                return await tcs.Task
                     .ConfigureAwait(false);
             }
         }
@@ -105,18 +100,13 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            var tcs = new TaskCompletionSource<string>();
+            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<string>("dock-getBadge-completed", (text) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getBadge-completed");
-                    taskCompletionSource.SetResult(text);
-                });
-
+                BridgeConnector.Socket.Once<string>("dock-getBadge-completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("dock-getBadge");
 
-                return await taskCompletionSource.Task
+                return await tcs.Task
                     .ConfigureAwait(false);
             }
         }
@@ -147,18 +137,13 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            var tcs = new TaskCompletionSource<bool>();
+            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<bool>("dock-isVisible-completed", (isVisible) =>
-                {
-                    BridgeConnector.Socket.Off("dock-isVisible-completed");
-                    taskCompletionSource.SetResult(isVisible);
-                });
-
+                BridgeConnector.Socket.Once<bool>("dock-isVisible-completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("dock-isVisible");
 
-                return await taskCompletionSource.Task
+                return await tcs.Task
                     .ConfigureAwait(false);
             }
         }
@@ -204,18 +189,13 @@ namespace ElectronNET.API
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var taskCompletionSource = new TaskCompletionSource<Menu>();
-            using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
+            var tcs = new TaskCompletionSource<Menu>();
+            using (cancellationToken.Register(() => tcs.TrySetCanceled()))
             {
-                BridgeConnector.Socket.On<Menu>("dock-getMenu-completed", (menu) =>
-                {
-                    BridgeConnector.Socket.Off("dock-getMenu-completed");
-                    taskCompletionSource.SetResult(menu);
-                });
-
+                BridgeConnector.Socket.Once<Menu>("dock-getMenu-completed", tcs.SetResult);
                 BridgeConnector.Socket.Emit("dock-getMenu");
 
-                return await taskCompletionSource.Task
+                return await tcs.Task
                     .ConfigureAwait(false);
             }
         }

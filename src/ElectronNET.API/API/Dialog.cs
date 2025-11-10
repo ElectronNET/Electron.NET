@@ -47,21 +47,16 @@ namespace ElectronNET.API
         /// <returns>An array of file paths chosen by the user</returns>
         public Task<string[]> ShowOpenDialogAsync(BrowserWindow browserWindow, OpenDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string[]>();
+            var tcs = new TaskCompletionSource<string[]>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<string[]>("showOpenDialogComplete" + guid, (filePaths) =>
-            {
-                BridgeConnector.Socket.Off("showOpenDialogComplete" + guid);
-                taskCompletionSource.SetResult(filePaths);
-            });
+            BridgeConnector.Socket.Once<string[]>("showOpenDialogComplete" + guid, tcs.SetResult);
+            BridgeConnector.Socket.Emit("showOpenDialog", 
+                browserWindow, 
+                options, 
+                guid);
 
-
-            BridgeConnector.Socket.Emit("showOpenDialog",
-                browserWindow,
-                options, guid);
-
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -72,21 +67,16 @@ namespace ElectronNET.API
         /// <returns>Returns String, the path of the file chosen by the user, if a callback is provided it returns an empty string.</returns>
         public Task<string> ShowSaveDialogAsync(BrowserWindow browserWindow, SaveDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<string>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<string>("showSaveDialogComplete" + guid, (filename) =>
-            {
-                BridgeConnector.Socket.Off("showSaveDialogComplete" + guid);
-                taskCompletionSource.SetResult(filename);
-            });
-
+            BridgeConnector.Socket.Once<string>("showSaveDialogComplete" + guid, tcs.SetResult);
             BridgeConnector.Socket.Emit("showSaveDialog",
                 browserWindow,
                 options,
                 guid);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -140,13 +130,11 @@ namespace ElectronNET.API
         /// <returns>The API call will be asynchronous and the result will be passed via MessageBoxResult.</returns>
         public Task<MessageBoxResult> ShowMessageBoxAsync(BrowserWindow browserWindow, MessageBoxOptions messageBoxOptions)
         {
-            var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
+            var tcs = new TaskCompletionSource<MessageBoxResult>();
             var guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On<JsonElement>("showMessageBoxComplete" + guid, (args) =>
+            BridgeConnector.Socket.Once<JsonElement>("showMessageBoxComplete" + guid, (args) =>
             {
-                BridgeConnector.Socket.Off("showMessageBoxComplete" + guid);
-
                 // args is [response:int, checkboxChecked:boolean]
                 var arr = args.EnumerateArray();
                 var e = arr.GetEnumerator();
@@ -155,7 +143,7 @@ namespace ElectronNET.API
                 e.MoveNext();
                 var checkbox = e.Current.GetBoolean();
 
-                taskCompletionSource.SetResult(new MessageBoxResult
+                tcs.SetResult(new MessageBoxResult
                 {
                     Response = response,
                     CheckboxChecked = checkbox
@@ -174,7 +162,7 @@ namespace ElectronNET.API
                     guid);
             }
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -214,21 +202,16 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
-            var taskCompletionSource = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource<object>();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.On("showCertificateTrustDialogComplete" + guid, () =>
-            {
-                BridgeConnector.Socket.Off("showCertificateTrustDialogComplete" + guid);
-                taskCompletionSource.SetResult(null);
-            });
-
+            BridgeConnector.Socket.Once("showCertificateTrustDialogComplete" + guid, () => tcs.SetResult(null));
             BridgeConnector.Socket.Emit("showCertificateTrustDialog",
                 browserWindow,
                 options,
                 guid);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
 

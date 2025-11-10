@@ -79,17 +79,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Point> GetCursorScreenPointAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Point>();
+            var tcs = new TaskCompletionSource<Point>();
 
-            BridgeConnector.Socket.On<Point>("screen-getCursorScreenPointCompleted", (point) =>
-            {
-                BridgeConnector.Socket.Off("screen-getCursorScreenPointCompleted");
-                taskCompletionSource.SetResult(point);
-            });
-
+            BridgeConnector.Socket.Once<Point>("screen-getCursorScreenPointCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getCursorScreenPoint");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -98,17 +93,12 @@ namespace ElectronNET.API
         /// <returns>The height of the menu bar in pixels.</returns>
         public Task<int> GetMenuBarHeightAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<int>();
+            var tcs = new TaskCompletionSource<int>();
 
-            BridgeConnector.Socket.On<int>("screen-getMenuBarHeightCompleted", (height) =>
-            {
-                BridgeConnector.Socket.Off("screen-getMenuBarHeightCompleted");
-                taskCompletionSource.SetResult(height);
-            });
-
+            BridgeConnector.Socket.Once<int>("screen-getMenuBarHeightCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getMenuBarHeight");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -117,17 +107,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task<Display> GetPrimaryDisplayAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var tcs = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On<Display>("screen-getPrimaryDisplayCompleted", (display) =>
-            {
-                BridgeConnector.Socket.Off("screen-getPrimaryDisplayCompleted");
-                taskCompletionSource.SetResult(display);
-            });
-
+            BridgeConnector.Socket.Once<Display>("screen-getPrimaryDisplayCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getPrimaryDisplay");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -136,17 +121,12 @@ namespace ElectronNET.API
         /// <returns>An array of displays that are currently available.</returns>
         public Task<Display[]> GetAllDisplaysAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<Display[]>();
+            var tcs = new TaskCompletionSource<Display[]>();
 
-            BridgeConnector.Socket.On<Display[]>("screen-getAllDisplaysCompleted", (displays) =>
-            {
-                BridgeConnector.Socket.Off("screen-getAllDisplaysCompleted");
-                taskCompletionSource.SetResult(displays);
-            });
-
+            BridgeConnector.Socket.Once<Display[]>("screen-getAllDisplaysCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getAllDisplays");
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -155,17 +135,12 @@ namespace ElectronNET.API
         /// <returns>The display nearest the specified point.</returns>
         public Task<Display> GetDisplayNearestPointAsync(Point point)
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var tcs = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On<Display>("screen-getDisplayNearestPointCompleted", (display) =>
-            {
-                BridgeConnector.Socket.Off("screen-getDisplayNearestPointCompleted");
-                taskCompletionSource.SetResult(display);
-            });
-
+            BridgeConnector.Socket.Once<Display>("screen-getDisplayNearestPointCompleted", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", point);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
         /// <summary>
@@ -175,17 +150,12 @@ namespace ElectronNET.API
         /// <returns>The display that most closely intersects the provided bounds.</returns>
         public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle)
         {
-            var taskCompletionSource = new TaskCompletionSource<Display>();
+            var tcs = new TaskCompletionSource<Display>();
 
-            BridgeConnector.Socket.On<Display>("screen-getDisplayMatching", (display) =>
-            {
-                BridgeConnector.Socket.Off("screen-getDisplayMatching");
-                taskCompletionSource.SetResult(display);
-            });
-
+            BridgeConnector.Socket.Once<Display>("screen-getDisplayMatching", tcs.SetResult);
             BridgeConnector.Socket.Emit("screen-getDisplayMatching", rectangle);
 
-            return taskCompletionSource.Task;
+            return tcs.Task;
         }
 
 

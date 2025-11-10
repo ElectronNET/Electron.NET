@@ -218,18 +218,12 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<bool> IsDestroyedAsync()
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<bool>();
 
-            BridgeConnector.Socket.On<bool>("tray-isDestroyedCompleted", (isDestroyed) =>
-            {
-                BridgeConnector.Socket.Off("tray-isDestroyedCompleted");
-
-                taskCompletionSource.SetResult(isDestroyed);
-            });
-
+            BridgeConnector.Socket.Once<bool>("tray-isDestroyedCompleted", tcs.SetResult);
             await BridgeConnector.Socket.Emit("tray-isDestroyed").ConfigureAwait(false);
 
-            return await taskCompletionSource.Task.ConfigureAwait(false);
+            return await tcs.Task.ConfigureAwait(false);
         }
 
 

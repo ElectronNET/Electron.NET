@@ -158,17 +158,12 @@ public class WebContents
     /// <returns>printers</returns>
     public Task<PrinterInfo[]> GetPrintersAsync()
     {
-        var taskCompletionSource = new TaskCompletionSource<PrinterInfo[]>();
+        var tcs = new TaskCompletionSource<PrinterInfo[]>();
 
-        BridgeConnector.Socket.On<PrinterInfo[]>("webContents-getPrinters-completed", (printers) =>
-        {
-            BridgeConnector.Socket.Off("webContents-getPrinters-completed");
-            taskCompletionSource.SetResult(printers);
-        });
-
+        BridgeConnector.Socket.Once<PrinterInfo[]>("webContents-getPrinters-completed", tcs.SetResult);
         BridgeConnector.Socket.Emit("webContents-getPrinters", Id);
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -178,13 +173,9 @@ public class WebContents
     /// <returns>success</returns>
     public Task<bool> PrintAsync(PrintOptions options = null)
     {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
+        var tcs = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<bool>("webContents-print-completed", (success) =>
-        {
-            BridgeConnector.Socket.Off("webContents-print-completed");
-            taskCompletionSource.SetResult(success);
-        });
+        BridgeConnector.Socket.Once<bool>("webContents-print-completed", tcs.SetResult);
 
         if (options == null)
         {
@@ -195,7 +186,7 @@ public class WebContents
             BridgeConnector.Socket.Emit("webContents-print", Id, options);
         }
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -209,13 +200,9 @@ public class WebContents
     /// <returns>success</returns>
     public Task<bool> PrintToPDFAsync(string path, PrintToPDFOptions options = null)
     {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
+        var tcs = new TaskCompletionSource<bool>();
 
-        BridgeConnector.Socket.On<bool>("webContents-printToPDF-completed", (success) =>
-        {
-            BridgeConnector.Socket.Off("webContents-printToPDF-completed");
-            taskCompletionSource.SetResult(success);
-        });
+        BridgeConnector.Socket.Once<bool>("webContents-printToPDF-completed", tcs.SetResult);
 
         if (options == null)
         {
@@ -226,7 +213,7 @@ public class WebContents
             BridgeConnector.Socket.Emit("webContents-printToPDF", Id, options, path);
         }
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -247,17 +234,12 @@ public class WebContents
     /// </remarks>
     public Task<T> ExecuteJavaScriptAsync<T>(string code, bool userGesture = false)
     {
-        var taskCompletionSource = new TaskCompletionSource<T>();
+        var tcs = new TaskCompletionSource<T>();
 
-        BridgeConnector.Socket.On<T>("webContents-executeJavaScript-completed", (result) =>
-        {
-            BridgeConnector.Socket.Off("webContents-executeJavaScript-completed");
-            taskCompletionSource.SetResult(result);
-        });
-
+        BridgeConnector.Socket.Once<T>("webContents-executeJavaScript-completed", tcs.SetResult);
         BridgeConnector.Socket.Emit("webContents-executeJavaScript", Id, code, userGesture);
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -267,18 +249,12 @@ public class WebContents
     /// <returns>URL of the loaded page</returns>
     public Task<string> GetUrl()
     {
-        var taskCompletionSource = new TaskCompletionSource<string>();
+        var tcs = new TaskCompletionSource<string>();
 
-        var eventString = "webContents-getUrl" + Id;
-        BridgeConnector.Socket.On<string>(eventString, (url) =>
-        {
-            BridgeConnector.Socket.Off(eventString);
-            taskCompletionSource.SetResult(url);
-        });
-
+        BridgeConnector.Socket.Once<string>("webContents-getUrl", tcs.SetResult);
         BridgeConnector.Socket.Emit("webContents-getUrl", Id);
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -313,24 +289,22 @@ public class WebContents
     /// <param name="options"></param>
     public Task LoadURLAsync(string url, LoadURLOptions options)
     {
-        var taskCompletionSource = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource<object>();
 
-        BridgeConnector.Socket.On("webContents-loadURL-complete" + Id, () =>
+        BridgeConnector.Socket.Once("webContents-loadURL-complete" + Id, () =>
         {
-            BridgeConnector.Socket.Off("webContents-loadURL-complete" + Id);
             BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            taskCompletionSource.SetResult(null);
+            tcs.SetResult(null);
         });
 
-        BridgeConnector.Socket.On<string>("webContents-loadURL-error" + Id, (error) =>
+        BridgeConnector.Socket.Once<string>("webContents-loadURL-error" + Id, (error) =>
         {
-            BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            taskCompletionSource.SetException(new InvalidOperationException(error));
+            tcs.SetException(new InvalidOperationException(error));
         });
 
         BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, options);
 
-        return taskCompletionSource.Task;
+        return tcs.Task;
     }
 
     /// <summary>
@@ -344,6 +318,4 @@ public class WebContents
     {
         BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
     }
-
-
 }

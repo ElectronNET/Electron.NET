@@ -34,7 +34,7 @@ namespace ElectronNET.API.Entities
         {
             if (_onBeforeRequest == null)
             {
-                BridgeConnector.Socket.On<System.Text.Json.JsonElement>($"webContents-session-webRequest-onBeforeRequest{Id}",
+                BridgeConnector.Socket.On<JsonElement>($"webContents-session-webRequest-onBeforeRequest{Id}",
                     (args) =>
                     {
                         //// var details0 = args[0].Deserialize<OnBeforeRequestDetails>(ElectronNET.ElectronJson.Options);
