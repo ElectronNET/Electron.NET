@@ -32,7 +32,7 @@ export = (socket: Socket) => {
         ipcMain.removeAllListeners(channel);
     });
 
-    socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
+    socket.on('sendToIpcRenderer', (browserWindow, channel, data) => {
         const window = BrowserWindow.fromId(browserWindow.id);
 
         if (window) {
@@ -40,7 +40,7 @@ export = (socket: Socket) => {
         }
     });
 
-    socket.on('sendToIpcRendererBrowserView', (id, channel, ...data) => {
+    socket.on('sendToIpcRendererBrowserView', (id, channel, data) => {
         const browserViews: BrowserView[] = (global['browserViews'] = global['browserViews'] || []) as BrowserView[];
         let view: BrowserView = null;
         for (let i = 0; i < browserViews.length; i++) {
