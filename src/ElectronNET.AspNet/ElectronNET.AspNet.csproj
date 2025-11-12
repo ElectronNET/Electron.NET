@@ -3,7 +3,7 @@
   <Import Project="..\common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
     <PackageOutputPath>..\..\artifacts</PackageOutputPath>
     <PackageId>$(PackageNamePrefix).AspNet</PackageId>
     <Title>$(PackageId)</Title>
@@ -20,10 +20,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
     <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0|AnyCPU'">
+    <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
     <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+    <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0|AnyCPU'">
     <NoWarn>1701;1702;4014;CS4014;CA1416;CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>

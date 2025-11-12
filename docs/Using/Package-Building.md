@@ -28,7 +28,7 @@ Add publish profiles to `Properties/PublishProfiles/`:
     <Platform>Any CPU</Platform>
     <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
     <PublishProtocol>FileSystem</PublishProtocol>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
@@ -48,7 +48,7 @@ Add publish profiles to `Properties/PublishProfiles/`:
     <Platform>Any CPU</Platform>
     <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
     <PublishProtocol>FileSystem</PublishProtocol>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
@@ -68,7 +68,7 @@ Add publish profiles to `Properties/PublishProfiles/`:
     <Platform>Any CPU</Platform>
     <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
     <PublishProtocol>FileSystem</PublishProtocol>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
@@ -89,7 +89,7 @@ Add publish profiles to `Properties/PublishProfiles/`:
     <Platform>Any CPU</Platform>
     <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
     <PublishProtocol>FileSystem</PublishProtocol>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>

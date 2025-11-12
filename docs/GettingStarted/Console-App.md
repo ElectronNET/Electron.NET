@@ -49,12 +49,12 @@ Add the Electron.NET configuration to your `.csproj` file:
 ```xml
 <PropertyGroup>
   <OutputType>Exe</OutputType>
-  <TargetFramework>net8.0</TargetFramework>
+  <TargetFramework>net10.0</TargetFramework>
   <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 </PropertyGroup>
 
 <ItemGroup>
-  <PackageReference Include="ElectronNET.Core" Version="1.0.0" />
+  <PackageReference Include="ElectronNET.Core" Version="0.1.0" />
 </ItemGroup>
 ```
 
