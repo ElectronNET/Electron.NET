@@ -45,7 +45,9 @@ namespace ElectronNET.API
                 _click -= value;
 
                 if (_click == null)
+                {
                     BridgeConnector.Socket.Off("tray-click" + GetHashCode());
+                }
             }
         }
 
@@ -77,7 +79,9 @@ namespace ElectronNET.API
                 _rightClick -= value;
 
                 if (_rightClick == null)
+                {
                     BridgeConnector.Socket.Off("tray-right-click" + GetHashCode());
+                }
             }
         }
 
@@ -109,7 +113,9 @@ namespace ElectronNET.API
                 _doubleClick -= value;
 
                 if (_doubleClick == null)
+                {
                     BridgeConnector.Socket.Off("tray-double-click" + GetHashCode());
+                }
             }
         }
 

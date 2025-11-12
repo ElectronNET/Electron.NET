@@ -63,7 +63,9 @@ namespace ElectronNET.API
                 _onDisplayMetricsChanged -= value;
 
                 if (_onDisplayMetricsChanged == null)
+                {
                     BridgeConnector.Socket.Off("screen-display-metrics-changed" + GetHashCode());
+                }
             }
         }
 
