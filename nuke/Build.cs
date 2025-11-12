@@ -3,6 +3,7 @@ using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitHub;
 using Nuke.Common.Tools.NuGet;
@@ -15,7 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 // ReSharper disable ArrangeThisQualifier
@@ -116,7 +116,7 @@ class Build : NukeBuild
     Target Restore => _ => _
         .Executes(() =>
         {
-            DotNetRestore(s => s.SetProjectFile(Solution.Path));
+            DotNetRestore(s => s.SetProjectFile(Solution));
         });
 
     Target Compile => _ => _
@@ -124,7 +124,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetBuild(s => s
-                .SetProjectFile(Solution.Path)
+                .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
                 .SetProperty("GeneratePackageOnBuild", "True")
                 .SetProperty("VersionPostFix", VersionPostFix ?? string.Empty));
@@ -134,18 +134,17 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            // There aren't any yet
-        });
+            var TestProject = SourceDirectory / "ElectronNET.IntegrationTests" / "ElectronNET.IntegrationTests.csproj";
 
-    Target CreatePackages => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            // Packages are created on build
+            DotNetTest(s => s
+                .SetProjectFile(TestProject)
+                .SetConfiguration(Configuration)
+                .When(_ => GitHubActions.Instance is not null, x => x.SetLoggers("GitHubActions"))
+            );
         });
 
     Target PublishPackages => _ => _
-        .DependsOn(CreatePackages)
+        .DependsOn(Compile)
         .DependsOn(RunUnitTests)
         .Executes(() =>
         {
@@ -240,7 +239,7 @@ class Build : NukeBuild
 
     Target Package => _ => _
         .DependsOn(RunUnitTests)
-        .DependsOn(CreatePackages);
+        .DependsOn(Compile);
 
     Target Default => _ => _
         .DependsOn(Package);
