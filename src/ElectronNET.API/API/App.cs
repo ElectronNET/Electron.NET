@@ -1,7 +1,5 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
-using ElectronNET.API.Serialization;
-using ElectronNET.Common;
 using System;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -17,7 +15,8 @@ namespace ElectronNET.API
     /// </summary>
     public sealed class App : ApiBase
     {
-        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.NoDashUpperFirst;
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.NoDashUpperFirst;
+        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
 
         /// <summary>
         /// Emitted when all windows have been closed.
@@ -224,44 +223,36 @@ namespace ElectronNET.API
         /// </summary>
         public event Action BrowserWindowBlur
         {
-            add => ApiEventManager.AddEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
-            remove => ApiEventManager.RemoveEvent("app-browser-window-blur", GetHashCode(), _browserWindowBlur, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action _browserWindowBlur;
 
         /// <summary>
         /// Emitted when a <see cref="BrowserWindow"/> gets focused.
         /// </summary>
         public event Action BrowserWindowFocus
         {
-            add => ApiEventManager.AddEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
-            remove => ApiEventManager.RemoveEvent("app-browser-window-focus", GetHashCode(), _browserWindowFocus, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action _browserWindowFocus;
 
         /// <summary>
         /// Emitted when a new <see cref="BrowserWindow"/> is created.
         /// </summary>
         public event Action BrowserWindowCreated
         {
-            add => ApiEventManager.AddEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
-            remove => ApiEventManager.RemoveEvent("app-browser-window-created", GetHashCode(), _browserWindowCreated, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action _browserWindowCreated;
 
         /// <summary>
         /// Emitted when a new <see cref="WebContents"/> is created.
         /// </summary>
         public event Action WebContentsCreated
         {
-            add => ApiEventManager.AddEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
-            remove => ApiEventManager.RemoveEvent("app-web-contents-created", GetHashCode(), _webContentsCreated, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action _webContentsCreated;
 
         /// <summary>
         /// Emitted when Chrome’s accessibility support changes. This event fires when assistive technologies, such as
@@ -270,11 +261,9 @@ namespace ElectronNET.API
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
         public event Action<bool> AccessibilitySupportChanged
         {
-            add => ApiEventManager.AddEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value, (args) => args.GetBoolean());
-            remove => ApiEventManager.RemoveEvent("app-accessibility-support-changed", GetHashCode(), _accessibilitySupportChanged, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action<bool> _accessibilitySupportChanged;
 
         /// <summary>
         /// Emitted when the application has finished basic startup.
@@ -329,11 +318,9 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenFile
         {
-            add => ApiEventManager.AddEvent("app-open-file", GetHashCode(), _openFile, value, (args) => args.ToString());
-            remove => ApiEventManager.RemoveEvent("app-open-file", GetHashCode(), _openFile, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action<string> _openFile;
 
 
         /// <summary>
@@ -342,11 +329,9 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<string> OpenUrl
         {
-            add => ApiEventManager.AddEvent("app-open-url", GetHashCode(), _openUrl, value, (args) => args.ToString());
-            remove => ApiEventManager.RemoveEvent("app-open-url", GetHashCode(), _openUrl, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action<string> _openUrl;
 
         /// <summary>
         /// A <see cref="string"/> property that indicates the current application's name, which is the name in the

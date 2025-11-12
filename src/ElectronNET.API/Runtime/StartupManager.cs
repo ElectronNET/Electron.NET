@@ -1,13 +1,13 @@
 ﻿namespace ElectronNET.Runtime
 {
-    using ElectronNET.Runtime.Controllers;
-    using ElectronNET.Runtime.Data;
-    using ElectronNET.Runtime.Helpers;
     using System;
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using ElectronNET.Runtime.Controllers;
+    using ElectronNET.Runtime.Data;
+    using ElectronNET.Runtime.Helpers;
 
     internal class StartupManager
     {
@@ -135,7 +135,7 @@
                 return buildInfo;
             }
 
-            if (electronAssembly.GetName().Name == "testhost")
+            if (electronAssembly.GetName().Name == "testhost" || electronAssembly.GetName().Name == "ReSharperTestRunner")
             {
                 electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
             }

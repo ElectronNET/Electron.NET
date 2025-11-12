@@ -6,7 +6,7 @@ export = (socket: Socket) => {
     electronSocket = socket;
     socket.on('clipboard-readText', (type) => {
         const text = clipboard.readText(type);
-        electronSocket.emit('clipboard-readText-Completed', text);
+        electronSocket.emit('clipboard-readText-completed', text);
     });
 
     socket.on('clipboard-writeText', (text, type) => {
@@ -15,7 +15,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-readHTML', (type) => {
         const content = clipboard.readHTML(type);
-        electronSocket.emit('clipboard-readHTML-Completed', content);
+        electronSocket.emit('clipboard-readHTML-completed', content);
     });
 
     socket.on('clipboard-writeHTML', (markup, type) => {
@@ -24,7 +24,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-readRTF', (type) => {
         const content = clipboard.readRTF(type);
-        electronSocket.emit('clipboard-readRTF-Completed', content);
+        electronSocket.emit('clipboard-readRTF-completed', content);
     });
 
     socket.on('clipboard-writeRTF', (text, type) => {
@@ -33,7 +33,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-readBookmark', () => {
         const bookmark = clipboard.readBookmark();
-        electronSocket.emit('clipboard-readBookmark-Completed', bookmark);
+        electronSocket.emit('clipboard-readBookmark-completed', bookmark);
     });
 
     socket.on('clipboard-writeBookmark', (title, url, type) => {
@@ -42,7 +42,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-readFindText', () => {
         const content = clipboard.readFindText();
-        electronSocket.emit('clipboard-readFindText-Completed', content);
+        electronSocket.emit('clipboard-readFindText-completed', content);
     });
 
     socket.on('clipboard-writeFindText', (text) => {
@@ -55,7 +55,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-availableFormats', (type) => {
         const formats = clipboard.availableFormats(type);
-        electronSocket.emit('clipboard-availableFormats-Completed', formats);
+        electronSocket.emit('clipboard-availableFormats-completed', formats);
     });
 
     socket.on('clipboard-write', (data, type) => {
@@ -64,7 +64,7 @@ export = (socket: Socket) => {
 
     socket.on('clipboard-readImage', (type) => {
         const image = clipboard.readImage(type);
-        electronSocket.emit('clipboard-readImage-Completed', { 1: image.toPNG().toString('base64') });
+        electronSocket.emit('clipboard-readImage-completed', { 1: image.toPNG().toString('base64') });
     });
 
     socket.on('clipboard-writeImage', (data, type) => {

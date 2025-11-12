@@ -1,9 +1,7 @@
 using ElectronNET.API.Entities;
-using ElectronNET.API.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -11,8 +9,9 @@ namespace ElectronNET.API
     /// <summary>
     /// Create OS desktop notifications
     /// </summary>
-    public sealed class Notification
+    public sealed class Notification: ApiBase
     {
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.NoDashUpperFirst;
         private static Notification _notification;
         private static object _syncRoot = new object();
 
@@ -117,16 +116,6 @@ namespace ElectronNET.API
         /// Whether or not desktop notifications are supported on the current system.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsSupportedAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.Once<bool>("notificationIsSupportedComplete", tcs.SetResult);
-            BridgeConnector.Socket.Emit("notificationIsSupported");
-
-            return tcs.Task;
-        }
-
-
+        public Task<bool> IsSupportedAsync() => GetPropertyAsync<bool>();
     }
 }

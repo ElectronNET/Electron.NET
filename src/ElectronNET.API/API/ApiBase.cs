@@ -1,37 +1,49 @@
-﻿namespace ElectronNET.API
+﻿// ReSharper disable InconsistentNaming
+namespace ElectronNET.API
 {
-    using ElectronNET.API.Serialization;
-    using ElectronNET.Common;
+    using Common;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
-    using System.Text.Json;
     using System.Threading.Tasks;
 
     public abstract class ApiBase
     {
-        protected enum SocketEventNameTypes
+        protected enum SocketTaskEventNameTypes
         {
             DashesLowerFirst,
-            NoDashUpperFirst,
+            NoDashUpperFirst
+        }
+        protected enum SocketTaskMessageNameTypes
+        {
+            DashesLowerFirst,
+            NoDashUpperFirst
         }
 
-        internal const int PropertyTimeout = 1000;
+        protected enum SocketEventNameTypes
+        {
+            DashedLower,
+            CamelCase,
+        }
+
+        private const int PropertyTimeout = 1000;
 
         private readonly string objectName;
-        private readonly ConcurrentDictionary<string, PropertyGetter> propertyGetters = new ConcurrentDictionary<string, PropertyGetter>();
-        private readonly ConcurrentDictionary<string, string> propertyEventNames = new ConcurrentDictionary<string, string>();
-        private readonly ConcurrentDictionary<string, string> propertyMessageNames = new ConcurrentDictionary<string, string>();
-        private readonly ConcurrentDictionary<string, string> methodMessageNames = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, PropertyGetter> propertyGetters;
+        private readonly ConcurrentDictionary<string, string> propertyEventNames = new();
+        private readonly ConcurrentDictionary<string, string> propertyMessageNames = new();
+        private readonly ConcurrentDictionary<string, string> methodMessageNames = new();
+        private static readonly ConcurrentDictionary<string, EventContainer> eventContainers = new();
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, PropertyGetter>> AllPropertyGetters = new();
+
         private readonly object objLock = new object();
 
         public virtual int Id
         {
-            get
-            {
-                return -1;
-            }
+            get => -1;
 
             // ReSharper disable once ValueParameterNotUsed
             protected set
@@ -39,11 +51,14 @@
             }
         }
 
-        protected abstract SocketEventNameTypes SocketEventNameType { get; }
+        protected abstract SocketTaskEventNameTypes SocketTaskEventNameType { get; }
+        protected virtual SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.NoDashUpperFirst;
+        protected virtual SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
 
         protected ApiBase()
         {
             this.objectName = this.GetType().Name.LowerFirst();
+            propertyGetters = AllPropertyGetters.GetOrAdd(objectName, _ => new ConcurrentDictionary<string, PropertyGetter>());
         }
 
         protected void CallMethod0([CallerMemberName] string callerName = null)
@@ -98,7 +113,7 @@
             }
         }
 
-        protected Task<T> GetPropertyAsync<T>([CallerMemberName] string callerName = null)
+        protected Task<T> GetPropertyAsync<T>(object arg = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
 
@@ -106,7 +121,7 @@
             {
                 return this.propertyGetters.GetOrAdd(callerName, _ =>
                 {
-                    var getter = new PropertyGetter<T>(this, callerName, PropertyTimeout);
+                    var getter = new PropertyGetter<T>(this, callerName, PropertyTimeout, arg);
 
                     getter.Task<T>().ContinueWith(_ =>
                     {
@@ -120,6 +135,98 @@
                 }).Task<T>();
             }
         }
+        
+        protected void AddEvent(Action value, int? id = null, [CallerMemberName] string callerName = null)
+        {
+            Debug.Assert(callerName != null, nameof(callerName) + " != null");
+            var eventName = EventName(callerName);
+            
+            var eventKey = EventKey(eventName, id);
+
+            lock (objLock)
+            {
+                var container = eventContainers.GetOrAdd(eventKey, _ =>
+                {
+                    var container = new EventContainer();
+                    BridgeConnector.Socket.On(eventKey, container.OnEventAction);
+                    BridgeConnector.Socket.Emit($"register-{eventName}", id);
+                    return container;
+                });
+
+                container.Register(value);
+            }
+        }
+         
+        protected void RemoveEvent(Action value, int? id = null, [CallerMemberName] string callerName = null)
+        {
+            Debug.Assert(callerName != null, nameof(callerName) + " != null");
+            var eventName = EventName(callerName);
+            var eventKey = EventKey(eventName, id);
+
+            lock (objLock)
+            {
+                if (eventContainers.TryGetValue(eventKey, out var container) && !container.Unregister(value))
+                {
+                    BridgeConnector.Socket.Off(eventKey);
+                    eventContainers.TryRemove(eventKey, out _);
+                }
+            }
+        }
+       
+        protected void AddEvent<T>(Action<T> value, int? id = null, [CallerMemberName] string callerName = null)
+        {
+            Debug.Assert(callerName != null, nameof(callerName) + " != null");
+            
+            var eventName = EventName(callerName);
+            var eventKey = EventKey(eventName, id);
+
+            lock (objLock)
+            {
+                var container = eventContainers.GetOrAdd(eventKey, _ =>
+                {
+                    var container = new EventContainer();
+                    BridgeConnector.Socket.On<T>(eventKey, container.OnEventActionT);
+                    BridgeConnector.Socket.Emit($"register-{eventName}", id);
+                    return container;
+                });
+
+                container.Register(value);
+            }
+        }
+
+        protected void RemoveEvent<T>(Action<T> value, int? id = null, [CallerMemberName] string callerName = null)
+        {
+            Debug.Assert(callerName != null, nameof(callerName) + " != null");
+            var eventName = EventName(callerName);
+            var eventKey = EventKey(eventName, id);
+
+            lock (objLock)
+            {
+                if (eventContainers.TryGetValue(eventKey, out var container) && !container.Unregister(value))
+                {
+                    BridgeConnector.Socket.Off(eventKey);
+                    eventContainers.TryRemove(eventKey, out _);
+                }
+            }
+        }
+
+        private string EventName(string callerName)
+        {
+            switch (SocketEventNameType)
+            {
+                case SocketEventNameTypes.DashedLower:
+                    return $"{objectName}-{callerName.ToDashedEventName()}";
+                case SocketEventNameTypes.CamelCase:
+                    return $"{objectName}-{callerName.ToCamelCaseEventName()}";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
+        private string EventKey(string eventName, int? id)
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0}{1:D}", eventName, id);
+        }
 
         internal abstract class PropertyGetter
         {
@@ -131,26 +238,37 @@
             private readonly Task<T> tcsTask;
             private TaskCompletionSource<T> tcs;
 
-            public PropertyGetter(ApiBase apiBase, string callerName, int timeoutMs)
+            public PropertyGetter(ApiBase apiBase, string callerName, int timeoutMs, object arg = null)
             {
                 this.tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 this.tcsTask = this.tcs.Task;
 
                 string eventName;
+                string messageName;
 
-                switch (apiBase.SocketEventNameType)
+                switch (apiBase.SocketTaskEventNameType)
                 {
-                    case SocketEventNameTypes.DashesLowerFirst:
+                    case SocketTaskEventNameTypes.DashesLowerFirst:
                         eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}-completed");
                         break;
-                    case SocketEventNameTypes.NoDashUpperFirst:
+                    case SocketTaskEventNameTypes.NoDashUpperFirst:
                         eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}{s.StripAsync()}Completed");
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
-                var messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
+                
+                switch (apiBase.SocketTaskMessageNameType)
+                {
+                    case SocketTaskMessageNameTypes.DashesLowerFirst:
+                        messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}");
+                        break;
+                    case SocketTaskMessageNameTypes.NoDashUpperFirst:
+                        messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
                 BridgeConnector.Socket.Once<T>(eventName, (result) =>
                 {
@@ -171,14 +289,14 @@
                         }
                     }
                 });
-
-                if (apiBase.Id >= 0)
+                
+                if (arg != null)
                 {
-                    BridgeConnector.Socket.Emit(messageName, apiBase.Id);
+                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id, arg) :  BridgeConnector.Socket.Emit(messageName, arg);
                 }
                 else
                 {
-                    BridgeConnector.Socket.Emit(messageName);
+                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) :  BridgeConnector.Socket.Emit(messageName);
                 }
 
                 System.Threading.Tasks.Task.Delay(PropertyTimeout).ContinueWith(_ =>
@@ -201,6 +319,54 @@
             public override Task<T1> Task<T1>()
             {
                 return this.tcsTask as Task<T1>;
+            }
+        }
+        
+        [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
+        private class EventContainer
+        {
+            private Action eventAction;
+            private Delegate eventActionT;
+
+            private Action<T> GetEventActionT<T>()
+            {
+                return (Action<T>)eventActionT;
+            }
+
+            private void SetEventActionT<T>(Action<T> actionT)
+            {
+                eventActionT = actionT;
+            }
+
+            public void OnEventAction() => eventAction?.Invoke();
+
+            public void OnEventActionT<T>(T p) => GetEventActionT<T>()?.Invoke(p);
+
+            public void Register(Action receiver)
+            {
+                eventAction += receiver;
+            }
+
+            public void Register<T>(Action<T> receiver)
+            {
+                var actionT = GetEventActionT<T>();
+                actionT += receiver;
+                SetEventActionT(actionT);
+            }
+
+            public bool Unregister(Action receiver)
+            {
+                eventAction -= receiver;
+                return this.eventAction != null;
+            }
+
+            public bool Unregister<T>(Action<T> receiver)
+            {
+                var actionT = GetEventActionT<T>();
+                actionT -= receiver;
+                SetEventActionT(actionT);
+
+                return actionT != null;
             }
         }
     }

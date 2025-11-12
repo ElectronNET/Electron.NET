@@ -10,15 +10,13 @@ using System.Threading.Tasks;
 
 namespace ElectronNET.API;
 
-using ElectronNET.Common;
-using System.Text.Json;
-
 /// <summary>
 /// Create and control browser windows.
 /// </summary>
 public class BrowserWindow : ApiBase
 {
-    protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashesLowerFirst;
+    protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
+    protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
 
     /// <summary>
     /// Gets the identifier.
@@ -34,33 +32,27 @@ public class BrowserWindow : ApiBase
     /// </summary>
     public event Action OnReadyToShow
     {
-        add => ApiEventManager.AddEvent("browserWindow-ready-to-show", Id, _readyToShow, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-ready-to-show", Id, _readyToShow, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _readyToShow;
 
     /// <summary>
     /// Emitted when the document changed its title.
     /// </summary>
     public event Action<string> OnPageTitleUpdated
     {
-        add => ApiEventManager.AddEvent("browserWindow-page-title-updated", Id, _pageTitleUpdated, value, (args) => args.ToString());
-        remove => ApiEventManager.RemoveEvent("browserWindow-page-title-updated", Id, _pageTitleUpdated, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action<string> _pageTitleUpdated;
 
     /// <summary>
     /// Emitted when the window is going to be closed.
     /// </summary>
     public event Action OnClose
     {
-        add => ApiEventManager.AddEvent("browserWindow-close", Id, _close, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-close", Id, _close, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _close;
 
     /// <summary>
     /// Emitted when the window is closed. 
@@ -69,143 +61,117 @@ public class BrowserWindow : ApiBase
     /// </summary>
     public event Action OnClosed
     {
-        add => ApiEventManager.AddEvent("browserWindow-closed", Id, _closed, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-closed", Id, _closed, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _closed;
 
     /// <summary>
     /// Emitted when window session is going to end due to force shutdown or machine restart or session log off.
     /// </summary>
     public event Action OnSessionEnd
     {
-        add => ApiEventManager.AddEvent("browserWindow-session-end", Id, _sessionEnd, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-session-end", Id, _sessionEnd, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _sessionEnd;
 
     /// <summary>
     /// Emitted when the web page becomes unresponsive.
     /// </summary>
     public event Action OnUnresponsive
     {
-        add => ApiEventManager.AddEvent("browserWindow-unresponsive", Id, _unresponsive, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-unresponsive", Id, _unresponsive, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _unresponsive;
 
     /// <summary>
     /// Emitted when the unresponsive web page becomes responsive again.
     /// </summary>
     public event Action OnResponsive
     {
-        add => ApiEventManager.AddEvent("browserWindow-responsive", Id, _responsive, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-responsive", Id, _responsive, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _responsive;
 
     /// <summary>
     /// Emitted when the window loses focus.
     /// </summary>
     public event Action OnBlur
     {
-        add => ApiEventManager.AddEvent("browserWindow-blur", Id, _blur, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-blur", Id, _blur, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _blur;
 
     /// <summary>
     /// Emitted when the window gains focus.
     /// </summary>
     public event Action OnFocus
     {
-        add => ApiEventManager.AddEvent("browserWindow-focus", Id, _focus, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-focus", Id, _focus, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _focus;
 
     /// <summary>
     /// Emitted when the window is shown.
     /// </summary>
     public event Action OnShow
     {
-        add => ApiEventManager.AddEvent("browserWindow-show", Id, _show, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-show", Id, _show, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _show;
 
     /// <summary>
     /// Emitted when the window is hidden.
     /// </summary>
     public event Action OnHide
     {
-        add => ApiEventManager.AddEvent("browserWindow-hide", Id, _hide, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-hide", Id, _hide, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _hide;
 
     /// <summary>
     /// Emitted when window is maximized.
     /// </summary>
     public event Action OnMaximize
     {
-        add => ApiEventManager.AddEvent("browserWindow-maximize", Id, _maximize, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-maximize", Id, _maximize, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _maximize;
 
     /// <summary>
     /// Emitted when the window exits from a maximized state.
     /// </summary>
     public event Action OnUnmaximize
     {
-        add => ApiEventManager.AddEvent("browserWindow-unmaximize", Id, _unmaximize, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-unmaximize", Id, _unmaximize, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _unmaximize;
 
     /// <summary>
     /// Emitted when the window is minimized.
     /// </summary>
     public event Action OnMinimize
     {
-        add => ApiEventManager.AddEvent("browserWindow-minimize", Id, _minimize, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-minimize", Id, _minimize, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _minimize;
 
     /// <summary>
     /// Emitted when the window is restored from a minimized state.
     /// </summary>
     public event Action OnRestore
     {
-        add => ApiEventManager.AddEvent("browserWindow-restore", Id, _restore, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-restore", Id, _restore, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _restore;
 
     /// <summary>
     /// Emitted when the window is being resized.
     /// </summary>
     public event Action OnResize
     {
-        add => ApiEventManager.AddEvent("browserWindow-resize", Id, _resize, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-resize", Id, _resize, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _resize;
 
     /// <summary>
     /// Emitted when the window is being moved to a new position.
@@ -214,66 +180,54 @@ public class BrowserWindow : ApiBase
     /// </summary>
     public event Action OnMove
     {
-        add => ApiEventManager.AddEvent("browserWindow-move", Id, _move, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-move", Id, _move, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _move;
 
     /// <summary>
     /// macOS: Emitted once when the window is moved to a new position.
     /// </summary>
     public event Action OnMoved
     {
-        add => ApiEventManager.AddEvent("browserWindow-moved", Id, _moved, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-moved", Id, _moved, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _moved;
 
     /// <summary>
     /// Emitted when the window enters a full-screen state.
     /// </summary>
     public event Action OnEnterFullScreen
     {
-        add => ApiEventManager.AddEvent("browserWindow-enter-full-screen", Id, _enterFullScreen, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-enter-full-screen", Id, _enterFullScreen, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _enterFullScreen;
 
     /// <summary>
     /// Emitted when the window leaves a full-screen state.
     /// </summary>
     public event Action OnLeaveFullScreen
     {
-        add => ApiEventManager.AddEvent("browserWindow-leave-full-screen", Id, _leaveFullScreen, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-leave-full-screen", Id, _leaveFullScreen, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _leaveFullScreen;
 
     /// <summary>
     /// Emitted when the window enters a full-screen state triggered by HTML API.
     /// </summary>
     public event Action OnEnterHtmlFullScreen
     {
-        add => ApiEventManager.AddEvent("browserWindow-enter-html-full-screen", Id, _enterHtmlFullScreen, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-enter-html-full-screen", Id, _enterHtmlFullScreen, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _enterHtmlFullScreen;
 
     /// <summary>
     /// Emitted when the window leaves a full-screen state triggered by HTML API.
     /// </summary>
     public event Action OnLeaveHtmlFullScreen
     {
-        add => ApiEventManager.AddEvent("browserWindow-leave-html-full-screen", Id, _leaveHtmlFullScreen, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-leave-html-full-screen", Id, _leaveHtmlFullScreen, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _leaveHtmlFullScreen;
 
     /// <summary>
     /// Emitted when an App Command is invoked. These are typically related to 
@@ -286,55 +240,45 @@ public class BrowserWindow : ApiBase
     /// </summary>
     public event Action<string> OnAppCommand
     {
-        add => ApiEventManager.AddEvent("browserWindow-app-command", Id, _appCommand, value, (args) => args.ToString());
-        remove => ApiEventManager.RemoveEvent("browserWindow-app-command", Id, _appCommand, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action<string> _appCommand;
 
     /// <summary>
     /// Emitted on 3-finger swipe. Possible directions are up, right, down, left.
     /// </summary>
     public event Action<string> OnSwipe
     {
-        add => ApiEventManager.AddEvent("browserWindow-swipe", Id, _swipe, value, (args) => args.ToString());
-        remove => ApiEventManager.RemoveEvent("browserWindow-swipe", Id, _swipe, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action<string> _swipe;
 
     /// <summary>
     /// Emitted when the window opens a sheet.
     /// </summary>
     public event Action OnSheetBegin
     {
-        add => ApiEventManager.AddEvent("browserWindow-sheet-begin", Id, _sheetBegin, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-sheet-begin", Id, _sheetBegin, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _sheetBegin;
 
     /// <summary>
     /// Emitted when the window has closed a sheet.
     /// </summary>
     public event Action OnSheetEnd
     {
-        add => ApiEventManager.AddEvent("browserWindow-sheet-end", Id, _sheetEnd, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-sheet-end", Id, _sheetEnd, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _sheetEnd;
 
     /// <summary>
     /// Emitted when the native new tab button is clicked.
     /// </summary>
     public event Action OnNewWindowForTab
     {
-        add => ApiEventManager.AddEvent("browserWindow-new-window-for-tab", Id, _newWindowForTab, value);
-        remove => ApiEventManager.RemoveEvent("browserWindow-new-window-for-tab", Id, _newWindowForTab, value);
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
     }
-
-    private event Action _newWindowForTab;
 
     internal BrowserWindow(int id)
     {

@@ -25,31 +25,31 @@ export = (socket: Socket) => {
 
     socket.on('screen-getCursorScreenPoint', () => {
         const point = screen.getCursorScreenPoint();
-        electronSocket.emit('screen-getCursorScreenPointCompleted', point);
+        electronSocket.emit('screen-getCursorScreenPoint-completed', point);
     });
 
-    socket.on('screen-getMenuBarHeight', () => {
+    socket.on('screen-getMenuBarWorkArea', () => {
         const height = screen.getPrimaryDisplay().workArea;
-        electronSocket.emit('screen-getMenuBarHeightCompleted', height);
+        electronSocket.emit('screen-getMenuBarWorkArea-completed', height);
     });
 
     socket.on('screen-getPrimaryDisplay', () => {
         const display = screen.getPrimaryDisplay();
-        electronSocket.emit('screen-getPrimaryDisplayCompleted', display);
+        electronSocket.emit('screen-getPrimaryDisplay-completed', display);
     });
 
     socket.on('screen-getAllDisplays', () => {
         const display = screen.getAllDisplays();
-        electronSocket.emit('screen-getAllDisplaysCompleted', display);
+        electronSocket.emit('screen-getAllDisplays-completed', display);
     });
 
     socket.on('screen-getDisplayNearestPoint', (point) => {
         const display = screen.getDisplayNearestPoint(point);
-        electronSocket.emit('screen-getDisplayNearestPointCompleted', display);
+        electronSocket.emit('screen-getDisplayNearestPoint-completed', display);
     });
 
     socket.on('screen-getDisplayMatching', (rectangle) => {
         const display = screen.getDisplayMatching(rectangle);
-        electronSocket.emit('screen-getDisplayMatchingCompleted', display);
+        electronSocket.emit('screen-getDisplayMatching-completed', display);
     });
 };

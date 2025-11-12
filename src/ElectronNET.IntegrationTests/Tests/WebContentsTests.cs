@@ -71,5 +71,12 @@ namespace ElectronNET.IntegrationTests.Tests
             var ok = await this.fx.MainWindow.WebContents.PrintAsync(new PrintOptions { Silent = true, PrintBackground = true });
             ok.Should().BeTrue();
         }
+        
+        [Fact]
+        public async Task GetPrintersAsync_check()
+        {
+            var info = await fx.MainWindow.WebContents.GetPrintersAsync();
+            info.Should().NotBeNull();
+        }
     }
 }

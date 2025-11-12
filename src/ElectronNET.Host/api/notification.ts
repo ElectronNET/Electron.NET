@@ -53,6 +53,6 @@ export = (socket: Socket) => {
 
     socket.on('notificationIsSupported', () => {
         const isSupported = Notification.isSupported();
-        electronSocket.emit('notificationIsSupportedComplete', isSupported);
+        electronSocket.emit('notificationIsSupportedCompleted', isSupported);
     });
 };

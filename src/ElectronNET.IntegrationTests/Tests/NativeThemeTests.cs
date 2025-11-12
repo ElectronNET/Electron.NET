@@ -14,14 +14,20 @@ namespace ElectronNET.IntegrationTests.Tests
             // Force light
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Light);
             var useDarkAfterLight = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
+            var themeSourceLight = await Electron.NativeTheme.GetThemeSourceAsync();
             // Force dark
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Dark);
             var useDarkAfterDark = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
+            var themeSourceDark = await Electron.NativeTheme.GetThemeSourceAsync();
             // Restore system
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.System);
+            var themeSourceSystem = await Electron.NativeTheme.GetThemeSourceAsync();
             // Assertions are tolerant (platform dependent)
             useDarkAfterLight.Should().BeFalse("forcing Light should result in light colors");
             useDarkAfterDark.Should().BeTrue("forcing Dark should result in dark colors");
+            themeSourceLight.Should().Be(ThemeSourceMode.Light);
+            themeSourceDark.Should().Be(ThemeSourceMode.Dark);
+            themeSourceSystem.Should().Be(ThemeSourceMode.System);
         }
 
         [Fact]
@@ -38,6 +44,20 @@ namespace ElectronNET.IntegrationTests.Tests
             }
 
             fired.Should().BeTrue();
+        }
+        
+        [Fact]
+        public async Task Should_use_high_contrast_colors_check()
+        {
+            var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
+            metrics.Should().Be(false);
+        }
+        
+        [Fact]
+        public async Task Should_use_inverted_colors_check()
+        {
+            var metrics = await Electron.NativeTheme.ShouldUseInvertedColorSchemeAsync();
+            metrics.Should().Be(false);
         }
     }
 }
