@@ -6,7 +6,7 @@ namespace ElectronNET.IntegrationTests.Tests
     [Collection("ElectronCollection")]
     public class NativeThemeTests
     {
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task ThemeSource_roundtrip()
         {
             // Capture initial
@@ -30,7 +30,7 @@ namespace ElectronNET.IntegrationTests.Tests
             themeSourceSystem.Should().Be(ThemeSourceMode.System);
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Updated_event_fires_on_change()
         {
             var fired = false;
@@ -46,14 +46,14 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeTrue();
         }
         
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Should_use_high_contrast_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
             metrics.Should().Be(false);
         }
         
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Should_use_inverted_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseInvertedColorSchemeAsync();

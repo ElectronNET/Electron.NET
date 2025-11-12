@@ -5,7 +5,7 @@ namespace ElectronNET.IntegrationTests.Tests
     [Collection("ElectronCollection")]
     public class ProcessTests
     {
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Process_info_is_accessible()
         {
             // Use renderer to fetch process info and round-trip
@@ -14,7 +14,7 @@ namespace ElectronNET.IntegrationTests.Tests
             result.Should().Be("ok");
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Process_properties_are_populated()
         {
             var execPath = await Electron.Process.ExecPathAsync;

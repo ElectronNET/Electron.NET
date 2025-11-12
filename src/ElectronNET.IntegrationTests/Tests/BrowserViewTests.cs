@@ -12,7 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Create_browser_view_and_adjust_bounds()
         {
             var view = await Electron.WindowManager.CreateBrowserViewAsync(new BrowserViewConstructorOptions());

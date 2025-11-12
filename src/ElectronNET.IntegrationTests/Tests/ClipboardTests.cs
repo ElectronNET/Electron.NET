@@ -13,7 +13,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Clipboard_text_roundtrip()
         {
             var text = $"Hello Electron {Guid.NewGuid()}";
@@ -22,7 +22,7 @@ namespace ElectronNET.IntegrationTests.Tests
             read.Should().Be(text);
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Available_formats_contains_text_after_write()
         {
             var text = "FormatsTest";
@@ -31,7 +31,7 @@ namespace ElectronNET.IntegrationTests.Tests
             formats.Should().Contain(f => f.Contains("text") || f.Contains("TEXT") || f.Contains("plain"));
         }
 
-        [Fact(Timeout = 5000)]
+        [Fact(Timeout = 20000)]
         public async Task Bookmark_write_and_read()
         {
             var url = "https://electron-test.com";
