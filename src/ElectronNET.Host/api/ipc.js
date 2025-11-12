@@ -26,13 +26,13 @@ module.exports = (socket) => {
     socket.on('removeAllListenersIpcMainChannel', (channel) => {
         electron_1.ipcMain.removeAllListeners(channel);
     });
-    socket.on('sendToIpcRenderer', (browserWindow, channel, ...data) => {
+    socket.on('sendToIpcRenderer', (browserWindow, channel, data) => {
         const window = electron_1.BrowserWindow.fromId(browserWindow.id);
         if (window) {
             window.webContents.send(channel, ...data);
         }
     });
-    socket.on('sendToIpcRendererBrowserView', (id, channel, ...data) => {
+    socket.on('sendToIpcRendererBrowserView', (id, channel, data) => {
         const browserViews = (global['browserViews'] = global['browserViews'] || []);
         let view = null;
         for (let i = 0; i < browserViews.length; i++) {
