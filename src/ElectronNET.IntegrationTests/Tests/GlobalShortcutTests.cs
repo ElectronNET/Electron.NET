@@ -6,7 +6,7 @@ namespace ElectronNET.IntegrationTests.Tests
     [Collection("ElectronCollection")]
     public class GlobalShortcutTests
     {
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_register_and_unregister()
         {
             var accel = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Cmd+Alt+G" : "Ctrl+Alt+G";

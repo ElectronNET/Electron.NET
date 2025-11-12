@@ -12,7 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Session_preloads_roundtrip()
         {
             var session = this.fx.MainWindow.WebContents.Session;
@@ -23,7 +23,7 @@ namespace ElectronNET.IntegrationTests.Tests
             preloadsAfter.Should().Contain("/tmp/preload_dummy.js");
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Session_proxy_set_and_resolve()
         {
             var session = this.fx.MainWindow.WebContents.Session;
@@ -34,7 +34,7 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Session_clear_cache_and_storage_completes()
         {
             var session = this.fx.MainWindow.WebContents.Session;
@@ -46,7 +46,7 @@ namespace ElectronNET.IntegrationTests.Tests
             ua.Should().NotBeNullOrWhiteSpace();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Session_preloads_set_multiple_and_clear()
         {
             var session = this.fx.MainWindow.WebContents.Session;
@@ -59,7 +59,7 @@ namespace ElectronNET.IntegrationTests.Tests
             empty.Should().NotContain("/tmp/a.js");
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Clear_auth_cache_overloads()
         {
             var session = this.fx.MainWindow.WebContents.Session;
@@ -67,29 +67,29 @@ namespace ElectronNET.IntegrationTests.Tests
             await session.ClearAuthCacheAsync(new RemovePassword("password") { Origin = "https://example.com", Username = "user", Password = "pw", Realm = "realm", Scheme = Scheme.basic });
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Clear_storage_with_options()
         {
             var session = this.fx.MainWindow.WebContents.Session;
             await session.ClearStorageDataAsync(new ClearStorageDataOptions { Storages = new[] { "cookies" }, Quotas = new[] { "temporary" } });
         }
 
-        [Fact]
-        public void Enable_disable_network_emulation()
+        [Fact(Timeout = 5000)]
+        public async Task Enable_disable_network_emulation()
         {
             var session = this.fx.MainWindow.WebContents.Session;
             session.EnableNetworkEmulation(new EnableNetworkEmulationOptions { Offline = false, Latency = 10, DownloadThroughput = 50000, UploadThroughput = 20000 });
             session.DisableNetworkEmulation();
         }
 
-        [Fact]
-        public void Flush_storage_data_does_not_throw()
+        [Fact(Timeout = 5000)]
+        public async Task Flush_storage_data_does_not_throw()
         {
             var session = this.fx.MainWindow.WebContents.Session;
             session.FlushStorageData();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Set_user_agent_affects_new_navigation()
         {
             var session = this.fx.MainWindow.WebContents.Session;

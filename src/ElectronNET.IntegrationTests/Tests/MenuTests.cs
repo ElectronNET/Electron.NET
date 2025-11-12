@@ -12,7 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task ApplicationMenu_click_invokes_handler()
         {
             var clicked = false;
@@ -38,7 +38,7 @@ namespace ElectronNET.IntegrationTests.Tests
             clicked.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task ContextMenu_popup_registers_items()
         {
             var win = this.fx.MainWindow;

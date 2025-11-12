@@ -13,7 +13,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task SetThumbarButtons_returns_success()
         {
             var btn = new ThumbarButton("icon.png") { Tooltip = "Test" };
@@ -21,7 +21,7 @@ namespace ElectronNET.IntegrationTests.Tests
             success.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Thumbar_button_click_invokes_callback()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

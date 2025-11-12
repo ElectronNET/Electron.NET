@@ -17,7 +17,7 @@ namespace ElectronNET.IntegrationTests.Tests
             return ReferenceEquals(completed, all) && all.IsCompletedSuccessfully;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task BrowserWindow_OnResize_multiple_handlers_called()
         {
             var win = this.fx.MainWindow;
@@ -41,7 +41,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task WebContents_OnDomReady_multiple_handlers_called()
         {
             var wc = this.fx.MainWindow.WebContents;

@@ -17,7 +17,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_app_path()
         {
             var path = await Electron.App.GetAppPathAsync();
@@ -25,7 +25,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(path).Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_version_and_locale()
         {
             var version = await Electron.App.GetVersionAsync();
@@ -34,7 +34,7 @@ namespace ElectronNET.IntegrationTests.Tests
             locale.Should().NotBeNullOrWhiteSpace();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_special_paths()
         {
             var userData = await Electron.App.GetPathAsync(PathName.UserData);
@@ -47,7 +47,7 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Badge_count_roundtrip_where_supported()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -68,7 +68,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_app_metrics()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
@@ -76,29 +76,29 @@ namespace ElectronNET.IntegrationTests.Tests
             metrics.Length.Should().BeGreaterThan(0);
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_gpu_feature_status()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();
             status.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_login_item_settings()
         {
             var settings = await Electron.App.GetLoginItemSettingsAsync();
             settings.Should().NotBeNull();
         }
 
-        [Fact]
-        public void Can_set_app_logs_path()
+        [Fact(Timeout = 5000)]
+        public async Task Can_set_app_logs_path()
         {
             var tempDir = Path.Combine(Path.GetTempPath(), "ElectronLogsTest" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempDir);
             Electron.App.SetAppLogsPath(tempDir);
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task CommandLine_append_and_query_switch()
         {
             var switchName = "integration-switch";
@@ -107,7 +107,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await Electron.App.CommandLine.GetSwitchValueAsync(switchName)).Should().Be("value123");
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Accessibility_support_toggle()
         {
             Electron.App.SetAccessibilitySupportEnabled(true);
@@ -116,7 +116,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.SetAccessibilitySupportEnabled(false);
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task UserAgentFallback_roundtrip()
         {
             var original = await Electron.App.UserAgentFallbackAsync;
@@ -126,7 +126,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.UserAgentFallback = original; // restore
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task BadgeCount_set_and_reset_where_supported()
         {
             await Electron.App.SetBadgeCountAsync(2);
@@ -136,14 +136,14 @@ namespace ElectronNET.IntegrationTests.Tests
             await Electron.App.SetBadgeCountAsync(0);
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task App_metrics_have_cpu_info()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
             metrics[0].Cpu.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task App_badge_count_roundtrip()
         {
             // Set then get (non-mac platforms treat as no-op but should return0 or set value)
@@ -154,7 +154,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (count ==3 || count ==0).Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task App_gpu_feature_status_has_some_fields()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();

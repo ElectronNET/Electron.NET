@@ -12,6 +12,7 @@
 - Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
 - Added `TitleBarOverlay` property to `BrowserWindowOptions` (#909)
 - Added `RoundedCorners` property to `BrowserWindowOptions`
+- Added .NET 10 as an explicit target
 
 # 0.0.18
 

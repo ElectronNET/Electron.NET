@@ -12,7 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_get_url_after_navigation()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -21,7 +21,7 @@ namespace ElectronNET.IntegrationTests.Tests
             url.Should().Contain("example.com");
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task ExecuteJavaScript_returns_title()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -30,7 +30,7 @@ namespace ElectronNET.IntegrationTests.Tests
             title.Should().NotBeNull();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task DomReady_event_fires()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -41,7 +41,7 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_print_to_pdf()
         {
             var html = "data:text/html,<html><body><h1>PDF Test</h1><p>Electron.NET</p></body></html>";
@@ -63,7 +63,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task Can_basic_print()
         {
             var html = "data:text/html,<html><body><h2>Print Test</h2></body></html>";
@@ -72,7 +72,7 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().BeTrue();
         }
         
-        [Fact]
+        [Fact(Timeout = 5000)]
         public async Task GetPrintersAsync_check()
         {
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
