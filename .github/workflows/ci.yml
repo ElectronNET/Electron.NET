@@ -22,13 +22,6 @@ jobs:
           8.0.x
           10.0.x
 
-    - name: Setup virtual environment
-      run: |
-        export DISPLAY=:99
-        echo "DISPLAY=:99" >> $GITHUB_ENV
-        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-        sleep 30
-
     - name: Build
       run: ./build.sh
 
