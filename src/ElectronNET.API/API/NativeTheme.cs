@@ -1,17 +1,19 @@
-﻿using ElectronNET.API.Entities;
-using ElectronNET.API.Extensions;
-using ElectronNET.Common;
-using System;
-using System.Text.Json;
+﻿using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Extensions;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Read and respond to changes in Chromium's native color theme.
     /// </summary>
-    public sealed class NativeTheme
+    public sealed class NativeTheme: ApiBase
     {
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
+        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
+        protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+
         private static NativeTheme _nativeTheme;
         private static object _syncRoot = new object();
 
@@ -105,58 +107,26 @@ namespace ElectronNET.API
         /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<ThemeSourceMode> GetThemeSourceAsync()
-        {
-            var tcs = new TaskCompletionSource<ThemeSourceMode>();
-
-            BridgeConnector.Socket.Once<ThemeSourceMode>("nativeTheme-themeSource-getCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("nativeTheme-themeSource-get");
-
-            return tcs.Task;
-        }
+        public Task<ThemeSourceMode> GetThemeSourceAsync() => GetPropertyAsync<ThemeSourceMode>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has a dark mode enabled or is
         /// being instructed to show a dark-style UI. If you want to modify this value you
         /// should use <see cref="SetThemeSource"/>.
         /// </summary>
-        public Task<bool> ShouldUseDarkColorsAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.Once<bool>("nativeTheme-shouldUseDarkColors-completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseDarkColors");
-
-            return tcs.Task;
-        }
+        public Task<bool> ShouldUseDarkColorsAsync() => GetPropertyAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
-        public Task<bool> ShouldUseHighContrastColorsAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.Once<bool>("nativeTheme-shouldUseHighContrastColors-completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseHighContrastColors");
-
-            return tcs.Task;
-        }
+        public Task<bool> ShouldUseHighContrastColorsAsync() => GetPropertyAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
-        public Task<bool> ShouldUseInvertedColorSchemeAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            BridgeConnector.Socket.Once<bool>("nativeTheme-shouldUseInvertedColorScheme-completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("nativeTheme-shouldUseInvertedColorScheme");
-
-            return tcs.Task;
-        }
+        public Task<bool> ShouldUseInvertedColorSchemeAsync() => GetPropertyAsync<bool>();
 
         /// <summary>
         /// Emitted when something in the underlying NativeTheme has changed. This normally means that either the value of <see cref="ShouldUseDarkColorsAsync"/>,
@@ -164,10 +134,8 @@ namespace ElectronNET.API
         /// </summary>
         public event Action Updated
         {
-            add => ApiEventManager.AddEvent("nativeTheme-updated", GetHashCode(), _updated, value);
-            remove => ApiEventManager.RemoveEvent("nativeTheme-updated", GetHashCode(), _updated, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action _updated;
     }
 }

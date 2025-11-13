@@ -1,38 +1,38 @@
 using ElectronNET.API.Entities;
-using ElectronNET.API.Serialization;
-using ElectronNET.Common;
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ElectronNET.API.Serialization;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Retrieve information about screen size, displays, cursor position, etc.
     /// </summary>
-    public sealed class Screen
+    public sealed class Screen: ApiBase
     {
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
+        protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+        protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
+
         /// <summary>
         /// Emitted when an new Display has been added.
         /// </summary>
         public event Action<Display> OnDisplayAdded
         {
-            add => ApiEventManager.AddEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value, (args) => args.Deserialize(ElectronJsonContext.Default.Display));
-            remove => ApiEventManager.RemoveEvent("screen-display-added", GetHashCode(), _onDisplayAdded, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action<Display> _onDisplayAdded;
 
         /// <summary>
         /// Emitted when oldDisplay has been removed.
         /// </summary>
         public event Action<Display> OnDisplayRemoved
         {
-            add => ApiEventManager.AddEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value, (args) => args.Deserialize(ElectronJsonContext.Default.Display));
-            remove => ApiEventManager.RemoveEvent("screen-display-removed", GetHashCode(), _onDisplayRemoved, value);
+            add => AddEvent(value, GetHashCode());
+            remove => RemoveEvent(value, GetHashCode());
         }
-
-        private event Action<Display> _onDisplayRemoved;
 
         /// <summary>
         /// Emitted when one or more metrics change in a display. 
@@ -41,8 +41,32 @@ namespace ElectronNET.API
         /// </summary>
         public event Action<Display, string[]> OnDisplayMetricsChanged
         {
-            add => ApiEventManager.AddScreenEvent("screen-display-metrics-changed", GetHashCode(), _onDisplayMetricsChanged, value);
-            remove => ApiEventManager.RemoveScreenEvent("screen-display-metrics-changed", GetHashCode(), _onDisplayMetricsChanged, value);
+            add
+            {
+                if (_onDisplayMetricsChanged == null)
+                {
+                    BridgeConnector.Socket.On<JsonElement>("screen-display-metrics-changed" + GetHashCode(), (args) =>
+                    {
+                        var arr = args.EnumerateArray().ToArray();
+                        var display = arr[0].Deserialize(ElectronJsonContext.Default.Display);
+                        var metrics = arr[1].Deserialize<string[]>(ElectronJson.Options);
+
+                        _onDisplayMetricsChanged(display, metrics);
+                    });
+
+                    BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode());
+                }
+                _onDisplayMetricsChanged += value;
+            }
+            remove
+            {
+                _onDisplayMetricsChanged -= value;
+
+                if (_onDisplayMetricsChanged == null)
+                {
+                    BridgeConnector.Socket.Off("screen-display-metrics-changed" + GetHashCode());
+                }
+            }
         }
 
         private event Action<Display, string[]> _onDisplayMetricsChanged;
@@ -77,87 +101,37 @@ namespace ElectronNET.API
         /// The current absolute position of the mouse pointer.
         /// </summary>
         /// <returns></returns>
-        public Task<Point> GetCursorScreenPointAsync()
-        {
-            var tcs = new TaskCompletionSource<Point>();
-
-            BridgeConnector.Socket.Once<Point>("screen-getCursorScreenPointCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getCursorScreenPoint");
-
-            return tcs.Task;
-        }
+        public Task<Point> GetCursorScreenPointAsync() => GetPropertyAsync<Point>();
 
         /// <summary>
         /// macOS: The height of the menu bar in pixels.
         /// </summary>
         /// <returns>The height of the menu bar in pixels.</returns>
-        public Task<int> GetMenuBarHeightAsync()
-        {
-            var tcs = new TaskCompletionSource<int>();
-
-            BridgeConnector.Socket.Once<int>("screen-getMenuBarHeightCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getMenuBarHeight");
-
-            return tcs.Task;
-        }
+        public Task<Rectangle> GetMenuBarWorkAreaAsync() => GetPropertyAsync<Rectangle>();
 
         /// <summary>
         /// The primary display.
         /// </summary>
         /// <returns></returns>
-        public Task<Display> GetPrimaryDisplayAsync()
-        {
-            var tcs = new TaskCompletionSource<Display>();
-
-            BridgeConnector.Socket.Once<Display>("screen-getPrimaryDisplayCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getPrimaryDisplay");
-
-            return tcs.Task;
-        }
+        public Task<Display> GetPrimaryDisplayAsync() => GetPropertyAsync<Display>();
 
         /// <summary>
         /// An array of displays that are currently available.
         /// </summary>
         /// <returns>An array of displays that are currently available.</returns>
-        public Task<Display[]> GetAllDisplaysAsync()
-        {
-            var tcs = new TaskCompletionSource<Display[]>();
-
-            BridgeConnector.Socket.Once<Display[]>("screen-getAllDisplaysCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getAllDisplays");
-
-            return tcs.Task;
-        }
+        public Task<Display[]> GetAllDisplaysAsync() => GetPropertyAsync<Display[]>();
 
         /// <summary>
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
-        public Task<Display> GetDisplayNearestPointAsync(Point point)
-        {
-            var tcs = new TaskCompletionSource<Display>();
-
-            BridgeConnector.Socket.Once<Display>("screen-getDisplayNearestPointCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getDisplayNearestPoint", point);
-
-            return tcs.Task;
-        }
+        public Task<Display> GetDisplayNearestPointAsync(Point point) => GetPropertyAsync<Display>(point);
 
         /// <summary>
         /// The display that most closely intersects the provided bounds.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle)
-        {
-            var tcs = new TaskCompletionSource<Display>();
-
-            BridgeConnector.Socket.Once<Display>("screen-getDisplayMatching", tcs.SetResult);
-            BridgeConnector.Socket.Emit("screen-getDisplayMatching", rectangle);
-
-            return tcs.Task;
-        }
-
-
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => GetPropertyAsync<Display>(rectangle);
     }
 }

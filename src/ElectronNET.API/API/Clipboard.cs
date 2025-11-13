@@ -2,14 +2,18 @@ using ElectronNET.API.Entities;
 using ElectronNET.API.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
+// ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Perform copy and paste operations on the system clipboard.
     /// </summary>
-    public sealed class Clipboard
+    public sealed class Clipboard: ApiBase
     {
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
+        protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+
         private static Clipboard _clipboard;
         private static object _syncRoot = new object();
 
@@ -41,15 +45,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns>The content in the clipboard as plain text.</returns>
-        public Task<string> ReadTextAsync(string type = "")
-        {
-            var tcs = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.Once<string>("clipboard-readText-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readText", type);
-
-            return tcs.Task;
-        }
+        public Task<string> ReadTextAsync(string type = "") => GetPropertyAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard as plain text.
@@ -66,15 +62,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadHTMLAsync(string type = "")
-        {
-            var tcs = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.Once<string>("clipboard-readHTML-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readHTML", type);
-
-            return tcs.Task;
-        }
+        public Task<string> ReadHTMLAsync(string type = "") => GetPropertyAsync<string>(type);
 
         /// <summary>
         /// Writes markup to the clipboard.
@@ -91,15 +79,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadRTFAsync(string type = "")
-        {
-            var tcs = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.Once<string>("clipboard-readRTF-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readRTF", type);
-
-            return tcs.Task;
-        }
+        public Task<string> ReadRTFAsync(string type = "") => GetPropertyAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard in RTF.
@@ -108,7 +88,7 @@ namespace ElectronNET.API
         /// <param name="type"></param>
         public void WriteRTF(string text, string type = "")
         {
-            BridgeConnector.Socket.Emit("clipboard-writeHTML", text, type);
+            BridgeConnector.Socket.Emit("clipboard-writeRTF", text, type);
         }
 
         /// <summary>
@@ -117,15 +97,7 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
-        public Task<ReadBookmark> ReadBookmarkAsync()
-        {
-            var tcs = new TaskCompletionSource<ReadBookmark>();
-
-            BridgeConnector.Socket.Once<ReadBookmark>("clipboard-readBookmark-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readBookmark");
-
-            return tcs.Task;
-        }
+        public Task<ReadBookmark> ReadBookmarkAsync() => GetPropertyAsync<ReadBookmark>();
 
         /// <summary>
         /// Writes the title and url into the clipboard as a bookmark.
@@ -148,15 +120,7 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
-        public Task<string> ReadFindTextAsync()
-        {
-            var tcs = new TaskCompletionSource<string>();
-
-            BridgeConnector.Socket.Once<string>("clipboard-readFindText-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readFindText");
-
-            return tcs.Task;
-        }
+        public Task<string> ReadFindTextAsync() => GetPropertyAsync<string>();
 
         /// <summary>
         /// macOS: Writes the text into the find pasteboard as plain text. This method uses 
@@ -182,15 +146,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string[]> AvailableFormatsAsync(string type = "")
-        {
-            var tcs = new TaskCompletionSource<string[]>();
-
-            BridgeConnector.Socket.Once<string[]>("clipboard-availableFormats-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-availableFormats", type);
-
-            return tcs.Task;
-        }
+        public Task<string[]> AvailableFormatsAsync(string type = "") => GetPropertyAsync<string[]>(type);
 
         /// <summary>
         /// Writes data to the clipboard.
@@ -207,15 +163,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<NativeImage> ReadImageAsync(string type = "")
-        {
-            var tcs = new TaskCompletionSource<NativeImage>();
-
-            BridgeConnector.Socket.Once<NativeImage>("clipboard-readImage-Completed", tcs.SetResult);
-            BridgeConnector.Socket.Emit("clipboard-readImage", type);
-
-            return tcs.Task;
-        }
+        public Task<NativeImage> ReadImageAsync(string type = "") => GetPropertyAsync<NativeImage>(type);
 
         /// <summary>
         /// Writes an image to the clipboard.

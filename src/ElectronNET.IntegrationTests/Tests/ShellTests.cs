@@ -5,7 +5,7 @@ namespace ElectronNET.IntegrationTests.Tests
     [Collection("ElectronCollection")]
     public class ShellTests
     {
-        [Fact]
+        [Fact(Timeout = 20000)]
         public async Task OpenExternal_invalid_scheme_returns_error_or_empty()
         {
             var error = await Electron.Shell.OpenExternalAsync("mailto:test@example.com");

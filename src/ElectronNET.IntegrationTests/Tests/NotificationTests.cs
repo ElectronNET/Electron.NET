@@ -6,7 +6,7 @@ namespace ElectronNET.IntegrationTests.Tests
     [Collection("ElectronCollection")]
     public class NotificationTests
     {
-        [Fact]
+        [Fact(Timeout = 20000)]
         public async Task Notification_create_check()
         {
             var tcs = new TaskCompletionSource();
@@ -21,7 +21,7 @@ namespace ElectronNET.IntegrationTests.Tests
             tcs.Task.IsCompletedSuccessfully.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Timeout = 20000)]
         public async Task Notification_is_supported_check()
         {
             var supported = await Electron.Notification.IsSupportedAsync();

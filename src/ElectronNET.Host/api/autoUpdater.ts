@@ -43,101 +43,101 @@ export = (socket: Socket) => {
 
     // Properties *****
 
-    socket.on('autoUpdater-autoDownload-get', () => {
-        electronSocket.emit('autoUpdater-autoDownload-get-reply', autoUpdater.autoDownload);
+    socket.on('autoUpdater-autoDownload', () => {
+        electronSocket.emit('autoUpdater-autoDownload-completed', autoUpdater.autoDownload);
     });
 
     socket.on('autoUpdater-autoDownload-set', (value) => {
         autoUpdater.autoDownload = value;
     });
 
-    socket.on('autoUpdater-autoInstallOnAppQuit-get', () => {
-        electronSocket.emit('autoUpdater-autoInstallOnAppQuit-get-reply', autoUpdater.autoInstallOnAppQuit);
+    socket.on('autoUpdater-autoInstallOnAppQuit', () => {
+        electronSocket.emit('autoUpdater-autoInstallOnAppQuit-completed', autoUpdater.autoInstallOnAppQuit);
     });
 
     socket.on('autoUpdater-autoInstallOnAppQuit-set', (value) => {
         autoUpdater.autoInstallOnAppQuit = value;
     });
 
-    socket.on('autoUpdater-allowPrerelease-get', () => {
-        electronSocket.emit('autoUpdater-allowPrerelease-get-reply', autoUpdater.allowPrerelease);
+    socket.on('autoUpdater-allowPrerelease', () => {
+        electronSocket.emit('autoUpdater-allowPrerelease-completed', autoUpdater.allowPrerelease);
     });
 
     socket.on('autoUpdater-allowPrerelease-set', (value) => {
         autoUpdater.allowPrerelease = value;
     });
 
-    socket.on('autoUpdater-fullChangelog-get', () => {
-        electronSocket.emit('autoUpdater-fullChangelog-get-reply', autoUpdater.fullChangelog);
+    socket.on('autoUpdater-fullChangelog', () => {
+        electronSocket.emit('autoUpdater-fullChangelog-completed', autoUpdater.fullChangelog);
     });
 
     socket.on('autoUpdater-fullChangelog-set', (value) => {
         autoUpdater.fullChangelog = value;
     });
 
-    socket.on('autoUpdater-allowDowngrade-get', () => {
-        electronSocket.emit('autoUpdater-allowDowngrade-get-reply', autoUpdater.allowDowngrade);
+    socket.on('autoUpdater-allowDowngrade', () => {
+        electronSocket.emit('autoUpdater-allowDowngrade-completed', autoUpdater.allowDowngrade);
     });
 
     socket.on('autoUpdater-allowDowngrade-set', (value) => {
         autoUpdater.allowDowngrade = value;
     });
 
-    socket.on('autoUpdater-updateConfigPath-get', () => {
-        electronSocket.emit('autoUpdater-updateConfigPath-get-reply', autoUpdater.updateConfigPath || '');
+    socket.on('autoUpdater-updateConfigPath', () => {
+        electronSocket.emit('autoUpdater-updateConfigPath-completed', autoUpdater.updateConfigPath || '');
     });
 
     socket.on('autoUpdater-updateConfigPath-set', (value) => {
         autoUpdater.updateConfigPath = value;
     });
 
-    socket.on('autoUpdater-currentVersion-get', () => {
-        electronSocket.emit('autoUpdater-currentVersion-get-reply', autoUpdater.currentVersion);
+    socket.on('autoUpdater-currentVersion', () => {
+        electronSocket.emit('autoUpdater-currentVersion-completed', autoUpdater.currentVersion);
     });
 
-    socket.on('autoUpdater-channel-get', () => {
-        electronSocket.emit('autoUpdater-channel-get-reply', autoUpdater.channel || '');
+    socket.on('autoUpdater-channel', () => {
+        electronSocket.emit('autoUpdater-channel-completed', autoUpdater.channel || '');
     });
 
     socket.on('autoUpdater-channel-set', (value) => {
         autoUpdater.channel = value;
     });
 
-    socket.on('autoUpdater-requestHeaders-get', () => {
-        electronSocket.emit('autoUpdater-requestHeaders-get-reply', autoUpdater.requestHeaders);
+    socket.on('autoUpdater-requestHeaders', () => {
+        electronSocket.emit('autoUpdater-requestHeaders-completed', autoUpdater.requestHeaders);
     });
 
     socket.on('autoUpdater-requestHeaders-set', (value) => {
         autoUpdater.requestHeaders = value;
     });
 
-    socket.on('autoUpdaterCheckForUpdatesAndNotify', async (guid) => {
+    socket.on('autoUpdater-checkForUpdatesAndNotify', async (guid) => {
         autoUpdater.checkForUpdatesAndNotify().then((updateCheckResult) => {
-            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyComplete' + guid, updateCheckResult);
+            electronSocket.emit('autoUpdater-checkForUpdatesAndNotify-completed' + guid, updateCheckResult);
         }).catch((error) => {
-            electronSocket.emit('autoUpdaterCheckForUpdatesAndNotifyError' + guid, error);
+            electronSocket.emit('autoUpdater-checkForUpdatesAndNotifyError' + guid, error);
         });
     });
 
-    socket.on('autoUpdaterCheckForUpdates', async (guid) => {
+    socket.on('autoUpdater-checkForUpdates', async (guid) => {
         autoUpdater.checkForUpdates().then((updateCheckResult) => {
-            electronSocket.emit('autoUpdaterCheckForUpdatesComplete' + guid, updateCheckResult);
+            electronSocket.emit('autoUpdater-checkForUpdates-completed' + guid, updateCheckResult);
         }).catch((error) => {
-            electronSocket.emit('autoUpdaterCheckForUpdatesError' + guid, error);
+            electronSocket.emit('autoUpdater-checkForUpdatesError' + guid, error);
         });
     });
 
-    socket.on('autoUpdaterQuitAndInstall', async (isSilent, isForceRunAfter) => {
+    socket.on('autoUpdater-quitAndInstall', async (isSilent, isForceRunAfter) => {
         autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
     });
 
-    socket.on('autoUpdaterDownloadUpdate', async (guid) => {
+    socket.on('autoUpdater-downloadUpdate', async (guid) => {
         const downloadedPath = await autoUpdater.downloadUpdate();
-        electronSocket.emit('autoUpdaterDownloadUpdateComplete' + guid, downloadedPath);
+        electronSocket.emit('autoUpdater-downloadUpdate-completed' + guid, downloadedPath);
     });
 
-    socket.on('autoUpdaterGetFeedURL', async (guid) => {
+    socket.on('autoUpdater-getFeedURL', async (guid) => {
         const feedUrl = await autoUpdater.getFeedURL();
-        electronSocket.emit('autoUpdaterGetFeedURLComplete' + guid, feedUrl || '');
+        electronSocket.emit('autoUpdater-getFeedURL-completed' + guid, feedUrl || '');
     });
 };

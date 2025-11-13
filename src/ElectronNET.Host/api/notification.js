@@ -44,7 +44,7 @@ module.exports = (socket) => {
     });
     socket.on('notificationIsSupported', () => {
         const isSupported = electron_1.Notification.isSupported();
-        electronSocket.emit('notificationIsSupportedComplete', isSupported);
+        electronSocket.emit('notificationIsSupportedCompleted', isSupported);
     });
 };
 //# sourceMappingURL=notification.js.map

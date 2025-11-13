@@ -22,11 +22,11 @@ const browserViewApi = (socket) => {
         browserViews.push(browserView);
         electronSocket.emit('BrowserViewCreated', browserView['id']);
     });
-    socket.on('browserView-getBounds', (id) => {
+    socket.on('browserView-bounds', (id) => {
         const bounds = getBrowserViewById(id).getBounds();
-        electronSocket.emit('browserView-getBounds-reply', bounds);
+        electronSocket.emit('browserView-bounds-completed', bounds);
     });
-    socket.on('browserView-setBounds', (id, bounds) => {
+    socket.on('browserView-bounds-set', (id, bounds) => {
         getBrowserViewById(id).setBounds(bounds);
     });
     socket.on('browserView-setAutoResize', (id, options) => {

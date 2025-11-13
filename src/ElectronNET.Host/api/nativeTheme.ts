@@ -23,10 +23,10 @@ export = (socket: Socket) => {
         electronSocket.emit('nativeTheme-shouldUseInvertedColorScheme-completed', shouldUseInvertedColorScheme);
     });
 
-    socket.on('nativeTheme-themeSource-get', () => {
+    socket.on('nativeTheme-getThemeSource', () => {
         const themeSource = nativeTheme.themeSource;
 
-        electronSocket.emit('nativeTheme-themeSource-getCompleted', themeSource);
+        electronSocket.emit('nativeTheme-getThemeSource-completed', themeSource);
     });
 
     socket.on('nativeTheme-themeSource', (themeSource) => {

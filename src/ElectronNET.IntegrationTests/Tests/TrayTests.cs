@@ -12,7 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact]
+        [Fact(Timeout = 20000)]
         public async Task Can_create_tray_and_destroy()
         {
             //await Electron.Tray.Show("assets/icon.png");

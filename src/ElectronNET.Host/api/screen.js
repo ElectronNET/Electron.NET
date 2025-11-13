@@ -20,27 +20,27 @@ module.exports = (socket) => {
     });
     socket.on('screen-getCursorScreenPoint', () => {
         const point = electron_1.screen.getCursorScreenPoint();
-        electronSocket.emit('screen-getCursorScreenPointCompleted', point);
+        electronSocket.emit('screen-getCursorScreenPoint-completed', point);
     });
-    socket.on('screen-getMenuBarHeight', () => {
+    socket.on('screen-getMenuBarWorkArea', () => {
         const height = electron_1.screen.getPrimaryDisplay().workArea;
-        electronSocket.emit('screen-getMenuBarHeightCompleted', height);
+        electronSocket.emit('screen-getMenuBarWorkArea-completed', height);
     });
     socket.on('screen-getPrimaryDisplay', () => {
         const display = electron_1.screen.getPrimaryDisplay();
-        electronSocket.emit('screen-getPrimaryDisplayCompleted', display);
+        electronSocket.emit('screen-getPrimaryDisplay-completed', display);
     });
     socket.on('screen-getAllDisplays', () => {
         const display = electron_1.screen.getAllDisplays();
-        electronSocket.emit('screen-getAllDisplaysCompleted', display);
+        electronSocket.emit('screen-getAllDisplays-completed', display);
     });
     socket.on('screen-getDisplayNearestPoint', (point) => {
         const display = electron_1.screen.getDisplayNearestPoint(point);
-        electronSocket.emit('screen-getDisplayNearestPointCompleted', display);
+        electronSocket.emit('screen-getDisplayNearestPoint-completed', display);
     });
     socket.on('screen-getDisplayMatching', (rectangle) => {
         const display = electron_1.screen.getDisplayMatching(rectangle);
-        electronSocket.emit('screen-getDisplayMatchingCompleted', display);
+        electronSocket.emit('screen-getDisplayMatching-completed', display);
     });
 };
 //# sourceMappingURL=screen.js.map

@@ -1,6 +1,4 @@
 using ElectronNET.API.Entities;
-using ElectronNET.API.Serialization;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ElectronNET.API
@@ -10,12 +8,14 @@ namespace ElectronNET.API
     /// It is like a child window, except that it is positioned relative to its owning window.
     /// It is meant to be an alternative to the webview tag.
     /// </summary>
-    public class BrowserView
+    public class BrowserView: ApiBase
     {
+        protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
+        protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
         /// <summary>
         /// Gets the identifier.
         /// </summary>
-        public int Id { get; internal set; }
+        public override int Id { get; protected set; }
 
         /// <summary>
         /// Render and control web pages.
@@ -30,19 +30,11 @@ namespace ElectronNET.API
         {
             get
             {
-                var tcs = new TaskCompletionSource<Rectangle>();
-
-                Task.Run(() =>
-                {
-                    BridgeConnector.Socket.Once<Rectangle>("browserView-getBounds-reply", tcs.SetResult);
-                    BridgeConnector.Socket.Emit("browserView-getBounds", Id);
-                });
-
-                return tcs.Task.GetAwaiter().GetResult();
+                return Task.Run(() => GetPropertyAsync<Rectangle>()).Result;
             }
             set
             {
-                BridgeConnector.Socket.Emit("browserView-setBounds", Id, value);
+                BridgeConnector.Socket.Emit("browserView-bounds-set", Id, value);
             }
         }
 
