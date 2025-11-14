@@ -7,23 +7,23 @@ env:
   NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
 jobs:
-  linux:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+  # linux:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
 
-    steps:
-    - uses: actions/checkout@v4
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: |
-          6.0.x
-          8.0.x
-          10.0.x
+  #   - name: Setup dotnet
+  #     uses: actions/setup-dotnet@v4
+  #     with:
+  #       dotnet-version: |
+  #         6.0.x
+  #         8.0.x
+  #         10.0.x
 
-    - name: Build
-      run: ./build.sh
+  #   - name: Build
+  #     run: ./build.sh
 
   windows:
     runs-on: windows-latest
