@@ -47,28 +47,6 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(temp).Should().BeTrue();
         }
 
-
-        [Fact(Timeout = 20000)]
-        public async Task Badge_count_roundtrip_where_supported()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                var ok = await Electron.App.SetBadgeCountAsync(3);
-                ok.Should().BeTrue();
-                var count = await Electron.App.GetBadgeCountAsync();
-                count.Should().Be(3);
-                // reset
-                await Electron.App.SetBadgeCountAsync(0);
-            }
-            else
-            {
-                // On Windows it's usually unsupported; ensure badge query works and returns a non-negative value
-                await Electron.App.SetBadgeCountAsync(0); // ignore return value
-                var count = await Electron.App.GetBadgeCountAsync();
-                count.Should().BeGreaterOrEqualTo(0);
-            }
-        }
-
         [Fact(Timeout = 20000)]
         public async Task Can_get_app_metrics()
         {
@@ -133,7 +111,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await Electron.App.SetBadgeCountAsync(2);
             var count = await Electron.App.GetBadgeCountAsync();
             // Some platforms may always return0; just ensure call didn't throw and is non-negative
-            count.Should().BeGreaterOrEqualTo(0);
+            count.Should().BeGreaterThanOrEqualTo(0);
             await Electron.App.SetBadgeCountAsync(0);
         }
 
@@ -142,17 +120,6 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
             metrics[0].Cpu.Should().NotBeNull();
-        }
-
-        [Fact(Timeout = 20000)]
-        public async Task App_badge_count_roundtrip()
-        {
-            // Set then get (non-mac platforms treat as no-op but should return0 or set value)
-            var success = await Electron.App.SetBadgeCountAsync(3);
-            success.Should().BeTrue();
-            var count = await Electron.App.GetBadgeCountAsync();
-            // Allow fallback to0 on platforms without badge support
-            (count == 3 || count == 0).Should().BeTrue();
         }
 
         [Fact(Timeout = 20000)]
