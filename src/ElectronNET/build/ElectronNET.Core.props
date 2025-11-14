@@ -4,7 +4,7 @@
   <PropertyGroup Label="ElectronNetCommon">
     <ElectronVersion>30.4.0</ElectronVersion>
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
     <ElectronSingleInstance>true</ElectronSingleInstance>
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
