@@ -127,6 +127,11 @@ namespace ElectronNET.API.Entities
         public bool SkipTaskbar { get; set; }
 
         /// <summary>
+        /// Determines if Blazor is used. Will disable "module" and "process" globals. Default is false.
+        /// </summary>
+        public bool IsRunningBlazor { get; set; }
+
+        /// <summary>
         /// The kiosk mode. Default is false.
         /// </summary>
         public bool Kiosk { get; set; }

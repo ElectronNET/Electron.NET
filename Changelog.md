@@ -1,3 +1,9 @@
+# 0.2.0
+
+## ElectronNET.Core
+
+- Added `IsRunningBlazor` option to `BrowserWindowOptions` (#926)
+
 # 0.1.0
 
 ## ElectronNET.Core

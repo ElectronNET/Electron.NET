@@ -69,7 +69,7 @@
     <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ElectronNET.Core" Version="0.1.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
   </ItemGroup>
 
   <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />

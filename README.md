@@ -58,22 +58,22 @@ To do so, use the `UseElectron` extension method on a `WebApplicationBuilder`, a
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-    public static void Main(string[] args)
-    {
-        WebHost.CreateDefaultBuilder(args)
-            .UseElectron(args, ElectronAppReady)
-            .UseStartup<Startup>()
-            .Build()
-            .Run();
-    }
+public static void Main(string[] args)
+{
+    WebHost.CreateDefaultBuilder(args)
+        .UseElectron(args, ElectronAppReady)
+        .UseStartup<Startup>()
+        .Build()
+        .Run();
+}
 
-    public static async Task ElectronAppReady()
-    {
-        var browserWindow = await Electron.WindowManager.CreateWindowAsync(
-            new BrowserWindowOptions { Show = false });
+public static async Task ElectronAppReady()
+{
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+        new BrowserWindowOptions { Show = false });
 
-        browserWindow.OnReadyToShow += () => browserWindow.Show();
-    }
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+}
 ```
 
 ### Minimal API Example
@@ -112,6 +112,56 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.Run();
 ```
+
+### Blazor
+
+For a project with Blazor you can use:
+
+```cs
+using ElectronNET.API;
+using ElectronNET.API.Entities;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddRazorComponents()
+    .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddElectron(); // <-- might be useful to set up DI
+
+builder.UseElectron(args, async () =>
+{
+    var options = new BrowserWindowOptions {
+        Show = false,
+        AutoHideMenuBar = true,
+        IsRunningBlazor = true, // <-- crucial
+    };
+    var browserWindow = await Electron.WindowManager.CreateWindowAsync(options);
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+}
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<BlazorApp.Components.App>()
+    .AddInteractiveWebAssemblyRenderMode();
+
+app.Run();
+```
+
+The `IsRunningBlazor` option makes sure to set up the renderer in a way that Blazor can just run without any interference. This includes things such as HMR for development.
 
 ## 🚀 Starting and Debugging the Application
 
