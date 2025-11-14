@@ -5,13 +5,19 @@
 - Updated `PrintToPDFOptions` to also allow specifying the `PageSize` with an object (#769)
 - Updated splashscreen image to have 0 margin (#622)
 - Updated the IPC API w.r.t. naming and consistency (#905) @agracio
+- Updated the IPC bridge w.r.t. synchronization and thread-safety (#918) @agracio
+- Updated serialization to use `System.Text.Json` replacing `Newtonsoft.Json` (#917) @Denny09310
+- Fixed parameter handling for the `sendToIpcRenderer` function (#922) @softworkz
+- Fixed synchronization on removing event handlers (#921) @softworkz
 - Fixed creation of windows with `contextIsolation` enabled (#906) @NimbusFox
 - Fixed single instance behavior using the `ElectronSingleInstance` property (#901)
 - Fixed potential race conditions (#908) @softworkz
 - Added option to use `ElectronSplashScreen` with an HTML file (#799)
 - Added option to provide floating point value as aspect ratios with `SetAspectRatio` (#793)
+- Added option to provide `TitleBarOverlay` as an object (#911) @Denny09310
 - Added `TitleBarOverlay` property to `BrowserWindowOptions` (#909)
 - Added `RoundedCorners` property to `BrowserWindowOptions`
+- Added integration tests and robustness checks (#913) @softworkz
 - Added .NET 10 as an explicit target
 
 # 0.0.18
