@@ -1,16 +1,16 @@
-using ElectronNET.API.Entities;
-using ElectronNET.API.Extensions;
-using ElectronNET.API.Serialization;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Extensions;
 
 namespace ElectronNET.API
 {
     /// <summary>
     /// Control your app in the macOS dock.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public sealed class Dock
     {
         private static Dock _dock;
