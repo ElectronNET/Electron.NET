@@ -105,7 +105,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task ReadyToShow_event_fires_after_content_ready()
         {
-            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false });
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false }, "about:blank");
             var tcs = new TaskCompletionSource();
             window.OnReadyToShow += () => tcs.TrySetResult();
 
@@ -125,7 +125,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task PageTitleUpdated_event_fires_on_title_change()
         {
-            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true });
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
             var tcs = new TaskCompletionSource<string>();
             window.OnPageTitleUpdated += title => tcs.TrySetResult(title);
 
@@ -145,7 +145,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task Resize_event_fires_on_size_change()
         {
-            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false });
+            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false }, "about:blank");
             var resized = false;
             window.OnResize += () => resized = true;
             window.SetSize(500, 400);
@@ -178,7 +178,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task Parent_child_relationship_roundtrip()
         {
-            var child = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false, Width = 300, Height = 200 });
+            var child = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false, Width = 300, Height = 200 }, "about:blank");
             this.fx.MainWindow.SetParentWindow(null); // ensure top-level
             child.SetParentWindow(this.fx.MainWindow);
             var parent = await child.GetParentWindowAsync();

@@ -22,7 +22,7 @@ namespace ElectronNET.IntegrationTests
                 Show = false,
                 Width = 800,
                 Height = 600,
-            });
+            }, "about:blank");
 
             // Clear potential cache side-effects
             await this.MainWindow.WebContents.Session.ClearCacheAsync();
