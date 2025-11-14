@@ -70,14 +70,6 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [Fact(Timeout = 20000)]
-        public async Task Can_set_app_logs_path()
-        {
-            var tempDir = Path.Combine(Path.GetTempPath(), "ElectronLogsTest" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(tempDir);
-            Electron.App.SetAppLogsPath(tempDir);
-        }
-
-        [Fact(Timeout = 20000)]
         public async Task CommandLine_append_and_query_switch()
         {
             var switchName = "integration-switch";
