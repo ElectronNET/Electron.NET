@@ -5,6 +5,7 @@
     using System;
     using System.ComponentModel;
     using System.IO;
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -42,6 +43,11 @@
                 var electrondir = Path.Combine(dir.FullName, ".electron");
                 startCmd = Path.Combine(electrondir, "node_modules", "electron", "dist", "electron");
 
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    startCmd = Path.Combine(electrondir, "node_modules", "electron", "dist", "Electron.app", "Contents", "MacOS", "Electron");
+                }
+
                 args = $"main.js -unpackeddotnet --trace-warnings -electronforcedport={this.socketPort:D} " + this.extraArguments;
                 workingDir = electrondir;
             }
@@ -68,22 +74,40 @@
 
         private async Task StartInternal(string startCmd, string args, string directoriy)
         {
-            await Task.Delay(10).ConfigureAwait(false);
-
-            this.process = new ProcessRunner("ElectronRunner");
-            this.process.ProcessExited += this.Process_Exited;
-            this.process.Run(startCmd, args, directoriy);
-
-            await Task.Delay(500).ConfigureAwait(false);
-
-            if (!this.process.IsRunning)
+            try
             {
-                Task.Run(() => this.TransitionState(LifetimeState.Stopped));
+                await Task.Delay(10).ConfigureAwait(false);
 
-                throw new Exception("Failed to launch the Electron process.");
+                Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
+                Console.Error.WriteLine("[StartInternal]: args: {0}", args);
+
+                this.process = new ProcessRunner("ElectronRunner");
+                this.process.ProcessExited += this.Process_Exited;
+                this.process.Run(startCmd, args, directoriy);
+
+                await Task.Delay(500).ConfigureAwait(false);
+
+                Console.Error.WriteLine("[StartInternal]: after run:");
+
+                if (!this.process.IsRunning)
+                {
+                    Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardError);
+                    Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardOutput);
+
+                    Task.Run(() => this.TransitionState(LifetimeState.Stopped));
+
+                    throw new Exception("Failed to launch the Electron process.");
+                }
+
+                this.TransitionState(LifetimeState.Ready);
             }
-
-            this.TransitionState(LifetimeState.Ready);
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("[StartInternal]: Exception: " + this.process?.StandardError);
+                Console.Error.WriteLine("[StartInternal]: Exception: " + this.process?.StandardOutput);
+                Console.Error.WriteLine("[StartInternal]: Exception: " + ex);
+                throw;
+            }
         }
 
         private void Process_Exited(object sender, EventArgs e)
