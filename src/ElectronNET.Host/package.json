@@ -6,23 +6,27 @@
     "url": "https://github.com/ElectronNET/Electron.NET"
   },
   "main": "main.js",
-  "author": "Gregor Biswanger, Florian Rappl",
-  "license": "MIT",
+  "type": "commonjs",
   "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "start": "tsc -p ."
   },
+  "keywords": [],
+  "author": "Gregor Biswanger, Florian Rappl",
+  "license": "MIT",
   "dependencies": {
-  "dasherize": "^2.0.0",
-  "electron-updater": "^6.6.2",
-  "image-size": "^1.2.1",
-  "portscanner": "^2.2.0",
-  "socket.io": "^4.8.1",
-  "electron-host-hook": "file:./ElectronHostHook"
+    "dasherize": "^2.0.0",
+    "electron-host-hook": "file:./ElectronHostHook",
+    "image-size": "^1.2.1",
+    "portscanner": "^2.2.0",
+    "electron-updater": "^6.6.2",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
-  "@types/node": "^22.18",
-  "electron": "^30.0.3",
-  "eslint": "^9.37.0",
-  "typescript": "^5.9.3"
+    "@types/node": "^22.18",
+    "electron": "^30.0.3",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
   }
 }

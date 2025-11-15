@@ -1,13 +1,29 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2019",
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "newLine": "crlf"
-  },
   "exclude": [
     "node_modules",
     "ElectronHostHook"
+  ],
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "lib": ["es2020"],
+    "types": ["node"],
+    "sourceMap": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "isolatedModules": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "electron-updater": ["node_modules/electron-updater/dist/index.d.ts"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "types-shims.d.ts",
+    "globals.d.ts"
   ]
 }
