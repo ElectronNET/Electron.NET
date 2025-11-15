@@ -37,8 +37,8 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Note: On Windows and Linux an open dialog can not be both a file selector 
-        /// and a directory selector, so if you set properties to ['openFile', 'openDirectory'] 
+        /// Note: On Windows and Linux an open dialog can not be both a file selector
+        /// and a directory selector, so if you set properties to ['openFile', 'openDirectory']
         /// on these platforms, a directory selector will be shown.
         /// </summary>
         /// <param name="browserWindow">The browserWindow argument allows the dialog to attach itself to a parent window, making it modal.</param>
@@ -50,9 +50,9 @@ namespace ElectronNET.API
             var guid = Guid.NewGuid().ToString();
 
             BridgeConnector.Socket.Once<string[]>("showOpenDialogComplete" + guid, tcs.SetResult);
-            BridgeConnector.Socket.Emit("showOpenDialog", 
-                browserWindow, 
-                options, 
+            BridgeConnector.Socket.Emit("showOpenDialog",
+                browserWindow,
+                options,
                 guid);
 
             return tcs.Task;
@@ -167,9 +167,9 @@ namespace ElectronNET.API
         /// <summary>
         /// Displays a modal dialog that shows an error message.
         /// 
-        /// This API can be called safely before the ready event the app module emits, 
-        /// it is usually used to report errors in early stage of startup.If called 
-        /// before the app readyevent on Linux, the message will be emitted to stderr, 
+        /// This API can be called safely before the ready event the app module emits,
+        /// it is usually used to report errors in early stage of startup.If called
+        /// before the app readyevent on Linux, the message will be emitted to stderr,
         /// and no GUI dialog will appear.
         /// </summary>
         /// <param name="title">The title to display in the error box.</param>
@@ -181,7 +181,7 @@ namespace ElectronNET.API
 
         /// <summary>
         /// On macOS, this displays a modal dialog that shows a message and certificate information,
-        /// and gives the user the option of trusting/importing the certificate. If you provide a 
+        /// and gives the user the option of trusting/importing the certificate. If you provide a
         /// browserWindow argument the dialog will be attached to the parent window, making it modal.
         /// </summary>
         /// <param name="options"></param>
@@ -193,7 +193,7 @@ namespace ElectronNET.API
 
         /// <summary>
         /// On macOS, this displays a modal dialog that shows a message and certificate information,
-        /// and gives the user the option of trusting/importing the certificate. If you provide a 
+        /// and gives the user the option of trusting/importing the certificate. If you provide a
         /// browserWindow argument the dialog will be attached to the parent window, making it modal.
         /// </summary>
         /// <param name="browserWindow"></param>
@@ -212,7 +212,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }

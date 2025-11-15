@@ -20,7 +20,7 @@ namespace ElectronNET.API.Entities
         AppData,
 
         /// <summary>
-        /// The directory for storing your app’s configuration files, 
+        /// The directory for storing your app’s configuration files,
         /// which by default it is the appData directory appended with your app’s name.
         /// </summary>
         [Description("userData")]

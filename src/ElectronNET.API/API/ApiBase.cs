@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
+
 namespace ElectronNET.API
 {
     using Common;
@@ -17,6 +18,7 @@ namespace ElectronNET.API
             DashesLowerFirst,
             NoDashUpperFirst
         }
+
         protected enum SocketTaskMessageNameTypes
         {
             DashesLowerFirst,

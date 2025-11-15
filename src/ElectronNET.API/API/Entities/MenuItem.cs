@@ -9,7 +9,7 @@ namespace ElectronNET.API.Entities
     public class MenuItem
     {
         /// <summary>
-        /// Will be called with click(menuItem, browserWindow, event) when the menu item is 
+        /// Will be called with click(menuItem, browserWindow, event) when the menu item is
         /// clicked.
         /// </summary>
         [JsonIgnore]
@@ -97,5 +97,3 @@ namespace ElectronNET.API.Entities
         public string Position { get; set; }
     }
 }
-
-

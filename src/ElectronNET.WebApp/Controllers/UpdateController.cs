@@ -31,7 +31,7 @@ namespace ElectronNET.WebApp.Controllers
                 {
                     // Electron.NET CLI Command for deploy:
                     // electronize build /target win /electron-params --publish=always
-          
+
                     var currentVersion = await Electron.App.GetVersionAsync();
                     var updateCheckResult = await Electron.AutoUpdater.CheckForUpdatesAndNotifyAsync();
                     var availableVersion = updateCheckResult.UpdateInfo.Version;

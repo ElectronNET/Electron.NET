@@ -5,7 +5,7 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using System.Drawing;
     using ElectronNET.API.Entities;
-    
+
     [SupportedOSPlatform("Windows")]
     public class NativeImageTests
     {

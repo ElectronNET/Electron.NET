@@ -10,7 +10,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Retrieve information about screen size, displays, cursor position, etc.
     /// </summary>
-    public sealed class Screen: ApiBase
+    public sealed class Screen : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
@@ -35,8 +35,8 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Emitted when one or more metrics change in a display. 
-        /// The changedMetrics is an array of strings that describe the changes. 
+        /// Emitted when one or more metrics change in a display.
+        /// The changedMetrics is an array of strings that describe the changes.
         /// Possible changes are bounds, workArea, scaleFactor and rotation.
         /// </summary>
         public event Action<Display, string[]> OnDisplayMetricsChanged
@@ -56,6 +56,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode());
                 }
+
                 _onDisplayMetricsChanged += value;
             }
             remove

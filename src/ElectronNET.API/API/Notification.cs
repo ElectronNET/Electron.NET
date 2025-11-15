@@ -9,7 +9,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Create OS desktop notifications
     /// </summary>
-    public sealed class Notification: ApiBase
+    public sealed class Notification : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.NoDashUpperFirst;
         private static Notification _notification;
@@ -88,10 +88,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventReply");
-                BridgeConnector.Socket.On<string[]>("NotificationEventReply", (args) =>
-                {
-                    _notificationOptions.Single(x => x.ReplyID == args[0]).OnReply(args[1]);
-                });
+                BridgeConnector.Socket.On<string[]>("NotificationEventReply", (args) => { _notificationOptions.Single(x => x.ReplyID == args[0]).OnReply(args[1]); });
             }
 
             if (notificationOptions.OnAction != null)
@@ -100,10 +97,7 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) =>
-                {
-                    _notificationOptions.Single(x => x.ActionID == args[0]).OnAction(args[1]);
-                });
+                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) => { _notificationOptions.Single(x => x.ActionID == args[0]).OnAction(args[1]); });
             }
 
             if (isActionDefined)

@@ -1,10 +1,9 @@
-
 using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// The cause of the change 
+    /// The cause of the change
     /// </summary>
     public enum CookieChangedCause
     {

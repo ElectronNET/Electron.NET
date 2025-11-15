@@ -9,10 +9,11 @@ namespace ElectronNET.API
     /// Electron's process object is extended from the Node.js process object. It adds the
     /// events, properties, and methods.
     /// </summary>
-    public sealed class Process: ApiBase
+    public sealed class Process : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+
         internal Process()
         {
         }
@@ -43,7 +44,7 @@ namespace ElectronNET.API
         /// <summary>
         /// The process.execPath property returns the absolute pathname of the executable that
         /// started the Node.js process. Symbolic links, if any, are resolved.
-        /// </summary> 
+        /// </summary>
         public Task<string> ExecPathAsync => this.InvokeAsync<string>();
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace ElectronNET.API
         /// <summary>
         /// The process.versions property returns an object listing the version strings of
         /// chrome and electron.
-        /// </summary> 
+        /// </summary>
         public Task<ProcessVersions> VersionsAsync => this.InvokeAsync<ProcessVersions>();
 
         /// <summary>

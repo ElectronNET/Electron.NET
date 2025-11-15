@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\common.props" />
+    <Import Project="..\common.props" />
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <IsPackable>False</IsPackable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.2" />
-  </ItemGroup>
-
-
-    
-  <PropertyGroup>
-
-    <_DllTargetPath>$(MSBuildThisFileDirectory)\..\ElectronNET\build</_DllTargetPath>
-
-  </PropertyGroup>
-
-  <Target BeforeTargets="AfterBuild" Name="CopyToBuildFolder">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>False</IsPackable>
+    </PropertyGroup>
 
     <ItemGroup>
-      <OutputFiles Include="$(OutDir)**\*.dll"></OutputFiles>
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.2" />
     </ItemGroup>
 
-    <Message Text="Copy ElectronNET.Build.dll to destination: $(_DllTargetPath)" Importance="high"/>
 
-    <Copy SourceFiles="@(OutputFiles)" 
-          DestinationFolder="$(_DllTargetPath)\%(RecursiveDir)" 
-          OverwriteReadOnlyFiles="true"></Copy>
 
-  </Target>
+    <PropertyGroup>
+
+        <_DllTargetPath>$(MSBuildThisFileDirectory)\..\ElectronNET\build</_DllTargetPath>
+
+    </PropertyGroup>
+
+    <Target BeforeTargets="AfterBuild" Name="CopyToBuildFolder">
+
+        <ItemGroup>
+            <OutputFiles Include="$(OutDir)**\*.dll"></OutputFiles>
+        </ItemGroup>
+
+        <Message Text="Copy ElectronNET.Build.dll to destination: $(_DllTargetPath)" Importance="high"/>
+
+        <Copy SourceFiles="@(OutputFiles)"
+              DestinationFolder="$(_DllTargetPath)\%(RecursiveDir)"
+              OverwriteReadOnlyFiles="true"></Copy>
+
+    </Target>
 
 </Project>

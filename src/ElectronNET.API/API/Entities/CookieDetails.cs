@@ -49,7 +49,7 @@ namespace ElectronNET.API.Entities
         public bool HttpOnly { get; set; }
 
         /// <summary>
-        /// (optional) - The expiration date of the cookie as the number of seconds since the UNIX epoch. 
+        /// (optional) - The expiration date of the cookie as the number of seconds since the UNIX epoch.
         /// If omitted then the cookie becomes a session cookie and will not be retained between sessions.
         /// </summary>
         [DefaultValue(0)]

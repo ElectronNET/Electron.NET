@@ -1,4 +1,3 @@
-
 using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
@@ -25,7 +24,7 @@ namespace ElectronNET.API.Entities
         public string Realm { get; set; }
 
         /// <summary>
-        /// Scheme of the authentication. Can be basic, digest, ntlm, negotiate. 
+        /// Scheme of the authentication. Can be basic, digest, ntlm, negotiate.
         /// Must be provided if removing by origin.
         /// </summary>
         public Scheme Scheme { get; set; }
@@ -50,5 +49,3 @@ namespace ElectronNET.API.Entities
         }
     }
 }
-
-

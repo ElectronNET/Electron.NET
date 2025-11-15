@@ -8,7 +8,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Allows you to execute native JavaScript/TypeScript code from the host process.
     /// 
-    /// It is only possible if the Electron.NET CLI has previously added an 
+    /// It is only possible if the Electron.NET CLI has previously added an
     /// ElectronHostHook directory:
     /// <c>electronize add HostHook</c>
     /// </summary>
@@ -48,10 +48,7 @@ namespace ElectronNET.API
         /// <param name="arguments">Optional parameters.</param>
         public void Call(string socketEventName, params dynamic[] arguments)
         {
-            BridgeConnector.Socket.Once<string>(socketEventName + "Error" + oneCallguid, (result) =>
-            {
-                Electron.Dialog.ShowErrorBox("Host Hook Exception", result);
-            });
+            BridgeConnector.Socket.Once<string>(socketEventName + "Error" + oneCallguid, (result) => { Electron.Dialog.ShowErrorBox("Host Hook Exception", result); });
 
             BridgeConnector.Socket.Emit(socketEventName, arguments, oneCallguid);
         }
@@ -95,7 +92,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }

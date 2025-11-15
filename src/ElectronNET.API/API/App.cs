@@ -58,7 +58,7 @@ namespace ElectronNET.API
         private event Action _windowAllClosed;
 
         /// <summary>
-        /// Emitted before the application starts closing its windows. 
+        /// Emitted before the application starts closing its windows.
         /// <para/>
         /// Note: If application quit was initiated by <see cref="AutoUpdater.QuitAndInstall"/> then <see cref="BeforeQuit"/>
         /// is emitted after emitting close event on all windows and closing them.
@@ -399,7 +399,6 @@ namespace ElectronNET.API
         private static object _syncRoot = new object();
 
 
-
         /// <summary>
         /// Try to close all windows. The <see cref="BeforeQuit"/> event will be emitted first. If all windows are successfully
         /// closed, the <see cref="WillQuit"/> event will be emitted and by default the application will terminate. This method
@@ -558,7 +557,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// The version of the loaded application. If no version is found in the application’s package.json file, 
+        /// The version of the loaded application. If no version is found in the application’s package.json file,
         /// the version of the current bundle or executable is returned.
         /// </summary>
         /// <returns>The version of the loaded application.</returns>
@@ -1245,7 +1244,7 @@ namespace ElectronNET.API
                 return Task.Run(() =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<string>();
-                    
+
                     BridgeConnector.Socket.Once<string>("appGetUserAgentFallbackCompleted", taskCompletionSource.SetResult);
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 

@@ -11,7 +11,7 @@
         public int WorkingSetSize { get; set; }
 
         /// <summary>
-        /// The maximum amount of memory that has ever been pinned to actual physical RAM. 
+        /// The maximum amount of memory that has ever been pinned to actual physical RAM.
         /// </summary>
         public int PeakWorkingSetSize { get; set; }
 

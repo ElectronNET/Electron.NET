@@ -27,7 +27,7 @@ public class BrowserWindow : ApiBase
     public override int Id { get; protected set; }
 
     /// <summary>
-    /// Emitted when the web page has been rendered (while not being shown) and 
+    /// Emitted when the web page has been rendered (while not being shown) and
     /// window can be displayed without a visual flash.
     /// </summary>
     public event Action OnReadyToShow
@@ -55,8 +55,8 @@ public class BrowserWindow : ApiBase
     }
 
     /// <summary>
-    /// Emitted when the window is closed. 
-    /// After you have received this event you should remove the 
+    /// Emitted when the window is closed.
+    /// After you have received this event you should remove the
     /// reference to the window and avoid using it any more.
     /// </summary>
     public event Action OnClosed
@@ -230,12 +230,12 @@ public class BrowserWindow : ApiBase
     }
 
     /// <summary>
-    /// Emitted when an App Command is invoked. These are typically related to 
-    /// keyboard media keys or browser commands, as well as the “Back” button 
+    /// Emitted when an App Command is invoked. These are typically related to
+    /// keyboard media keys or browser commands, as well as the “Back” button
     /// built into some mice on Windows.
     /// 
-    /// Commands are lowercased, underscores are replaced with hyphens, 
-    /// and the APPCOMMAND_ prefix is stripped off.e.g.APPCOMMAND_BROWSER_BACKWARD 
+    /// Commands are lowercased, underscores are replaced with hyphens,
+    /// and the APPCOMMAND_ prefix is stripped off.e.g.APPCOMMAND_BROWSER_BACKWARD
     /// is emitted as browser-backward.
     /// </summary>
     public event Action<string> OnAppCommand
@@ -287,15 +287,15 @@ public class BrowserWindow : ApiBase
     }
 
     /// <summary>
-    /// Force closing the window, the unload and beforeunload event won’t be 
-    /// emitted for the web page, and close event will also not be emitted 
+    /// Force closing the window, the unload and beforeunload event won’t be
+    /// emitted for the web page, and close event will also not be emitted
     /// for this window, but it guarantees the closed event will be emitted.
     /// </summary>
     public void Destroy() => this.CallMethod0();
 
     /// <summary>
-    /// Try to close the window. This has the same effect as a user manually 
-    /// clicking the close button of the window. The web page may cancel the close though. 
+    /// Try to close the window. This has the same effect as a user manually
+    /// clicking the close button of the window. The web page may cancel the close though.
     /// </summary>
     public void Close() => this.CallMethod0();
 
@@ -393,7 +393,7 @@ public class BrowserWindow : ApiBase
     public Task<bool> IsFullScreenAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
-    /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
+    /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space,
     /// specified in pixels, not included within the aspect ratio calculations. This API already takes into
     /// account the difference between a window’s size and its content size.
     ///
@@ -401,7 +401,7 @@ public class BrowserWindow : ApiBase
     /// of controls on the left edge, 25 pixels of controls on the right edge and 50 pixels of controls below
     /// the player. In order to maintain a 16:9 aspect ratio (standard aspect ratio for HD @1920x1080) within
     /// the player itself we would call this function with arguments of 16/9 and[40, 50]. The second argument
-    /// doesn’t care where the extra width and height are within the content view–only that they exist. Just 
+    /// doesn’t care where the extra width and height are within the content view–only that they exist. Just
     /// sum any extra width and height areas you have within the overall content view.
     /// </summary>
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
@@ -410,7 +410,7 @@ public class BrowserWindow : ApiBase
         this.CallMethod2(aspectRatio, extraSize);
 
     /// <summary>
-    /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
+    /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space,
     /// specified in pixels, not included within the aspect ratio calculations. This API already takes into
     /// account the difference between a window’s size and its content size.
     ///
@@ -418,7 +418,7 @@ public class BrowserWindow : ApiBase
     /// of controls on the left edge, 25 pixels of controls on the right edge and 50 pixels of controls below
     /// the player. In order to maintain a 16:9 aspect ratio (standard aspect ratio for HD @1920x1080) within
     /// the player itself we would call this function with arguments of 16/9 and[40, 50]. The second argument
-    /// doesn’t care where the extra width and height are within the content view–only that they exist. Just 
+    /// doesn’t care where the extra width and height are within the content view–only that they exist. Just
     /// sum any extra width and height areas you have within the overall content view.
     /// </summary>
     /// <param name="aspectRatio">The aspect ratio to maintain for some portion of the content view.</param>
@@ -429,18 +429,18 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Uses Quick Look to preview a file at a given path.
     /// </summary>
-    /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as 
-    /// Quick Look uses the file name and file extension on the path to determine the content type of the 
+    /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as
+    /// Quick Look uses the file name and file extension on the path to determine the content type of the
     /// file to open.</param>
     public void PreviewFile(string path) => this.CallMethod1(path);
 
     /// <summary>
     /// Uses Quick Look to preview a file at a given path.
     /// </summary>
-    /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as 
-    /// Quick Look uses the file name and file extension on the path to determine the content type of the 
+    /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as
+    /// Quick Look uses the file name and file extension on the path to determine the content type of the
     /// file to open.</param>
-    /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is 
+    /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is
     /// purely visual and does not affect the content type of the file. Defaults to path.</param>
     public void PreviewFile(string path, string displayname) => this.CallMethod2(path, displayname);
 
@@ -636,34 +636,34 @@ public class BrowserWindow : ApiBase
     public Task<bool> IsClosableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
-    /// Sets whether the window should show always on top of other windows. 
-    /// After setting this, the window is still a normal window, not a toolbox 
+    /// Sets whether the window should show always on top of other windows.
+    /// After setting this, the window is still a normal window, not a toolbox
     /// window which can not be focused on.
     /// </summary>
     /// <param name="flag"></param>
     public void SetAlwaysOnTop(bool flag) => this.CallMethod1(flag);
 
     /// <summary>
-    /// Sets whether the window should show always on top of other windows. 
-    /// After setting this, the window is still a normal window, not a toolbox 
+    /// Sets whether the window should show always on top of other windows.
+    /// After setting this, the window is still a normal window, not a toolbox
     /// window which can not be focused on.
     /// </summary>
     /// <param name="flag"></param>
-    /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
-    /// status, pop-up-menu and screen-saver. The default is floating. 
+    /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu,
+    /// status, pop-up-menu and screen-saver. The default is floating.
     /// See the macOS docs</param>
     public void SetAlwaysOnTop(bool flag, OnTopLevel level) => this.CallMethod2(flag, level.GetDescription());
 
     /// <summary>
-    /// Sets whether the window should show always on top of other windows. 
-    /// After setting this, the window is still a normal window, not a toolbox 
+    /// Sets whether the window should show always on top of other windows.
+    /// After setting this, the window is still a normal window, not a toolbox
     /// window which can not be focused on.
     /// </summary>
     /// <param name="flag"></param>
-    /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu, 
-    /// status, pop-up-menu and screen-saver. The default is floating. 
+    /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu,
+    /// status, pop-up-menu and screen-saver. The default is floating.
     /// See the macOS docs</param>
-    /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level. 
+    /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level.
     /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
     public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel) => this.CallMethod3(flag, level.GetDescription(), relativeLevel);
 
@@ -738,16 +738,16 @@ public class BrowserWindow : ApiBase
     public Task<string> GetTitleAsync() => this.InvokeAsync<string>();
 
     /// <summary>
-    /// Changes the attachment point for sheets on macOS. 
-    /// By default, sheets are attached just below the window frame, 
+    /// Changes the attachment point for sheets on macOS.
+    /// By default, sheets are attached just below the window frame,
     /// but you may want to display them beneath a HTML-rendered toolbar.
     /// </summary>
     /// <param name="offsetY"></param>
     public void SetSheetOffset(float offsetY) => this.CallMethod1(offsetY);
 
     /// <summary>
-    /// Changes the attachment point for sheets on macOS. 
-    /// By default, sheets are attached just below the window frame, 
+    /// Changes the attachment point for sheets on macOS.
+    /// By default, sheets are attached just below the window frame,
     /// but you may want to display them beneath a HTML-rendered toolbar.
     /// </summary>
     /// <param name="offsetY"></param>
@@ -785,7 +785,7 @@ public class BrowserWindow : ApiBase
     public Task<string> GetNativeWindowHandle() => this.InvokeAsync<string>();
 
     /// <summary>
-    /// Sets the pathname of the file the window represents, 
+    /// Sets the pathname of the file the window represents,
     /// and the icon of the file will show in window’s title bar.
     /// </summary>
     /// <param name="filename"></param>
@@ -798,7 +798,7 @@ public class BrowserWindow : ApiBase
     public Task<string> GetRepresentedFilenameAsync() => this.InvokeAsync<string>();
 
     /// <summary>
-    /// Specifies whether the window’s document has been edited, 
+    /// Specifies whether the window’s document has been edited,
     /// and the icon in title bar will become gray when set to true.
     /// </summary>
     /// <param name="edited"></param>
@@ -821,14 +821,14 @@ public class BrowserWindow : ApiBase
     public void BlurWebView() => this.CallMethod0();
 
     /// <summary>
-    /// The url can be a remote address (e.g. http://) or 
+    /// The url can be a remote address (e.g. http://) or
     /// a path to a local HTML file using the file:// protocol.
     /// </summary>
     /// <param name="url"></param>
     public void LoadURL(string url) => this.CallMethod1(url);
 
     /// <summary>
-    /// The url can be a remote address (e.g. http://) or 
+    /// The url can be a remote address (e.g. http://) or
     /// a path to a local HTML file using the file:// protocol.
     /// </summary>
     /// <param name="url"></param>
@@ -857,7 +857,7 @@ public class BrowserWindow : ApiBase
     private List<MenuItem> _items = new List<MenuItem>();
 
     /// <summary>
-    /// Sets the menu as the window’s menu bar, 
+    /// Sets the menu as the window’s menu bar,
     /// setting it to null will remove the menu bar.
     /// </summary>
     /// <param name="menuItems"></param>
@@ -939,11 +939,11 @@ public class BrowserWindow : ApiBase
     private List<ThumbarButton> _thumbarButtons = new List<ThumbarButton>();
 
     /// <summary>
-    /// Add a thumbnail toolbar with a specified set of buttons to the thumbnail 
-    /// image of a window in a taskbar button layout. Returns a Boolean object 
+    /// Add a thumbnail toolbar with a specified set of buttons to the thumbnail
+    /// image of a window in a taskbar button layout. Returns a Boolean object
     /// indicates whether the thumbnail has been added successfully.
     /// 
-    /// The number of buttons in thumbnail toolbar should be no greater than 7 due 
+    /// The number of buttons in thumbnail toolbar should be no greater than 7 due
     /// to the limited room.Once you setup the thumbnail toolbar, the toolbar cannot
     /// be removed due to the platform’s limitation.But you can call the API with an
     /// empty array to clean the buttons.
@@ -988,7 +988,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Sets the properties for the window’s taskbar button.
     /// 
-    /// Note: relaunchCommand and relaunchDisplayName must always be set together. 
+    /// Note: relaunchCommand and relaunchDisplayName must always be set together.
     /// If one of those properties is not set, then neither will be used.
     /// </summary>
     /// <param name="options"></param>
@@ -1000,7 +1000,7 @@ public class BrowserWindow : ApiBase
     public void ShowDefinitionForSelection() => this.CallMethod0();
 
     /// <summary>
-    /// Sets whether the window menu bar should hide itself automatically. 
+    /// Sets whether the window menu bar should hide itself automatically.
     /// Once set the menu bar will only show when users press the single Alt key.
     /// 
     /// If the menu bar is already visible, calling setAutoHideMenuBar(true) won’t hide it immediately.
@@ -1046,7 +1046,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Makes the window ignore all mouse events.
     /// 
-    /// All mouse events happened in this window will be passed to the window 
+    /// All mouse events happened in this window will be passed to the window
     /// below this window, but if this window has focus, it will still receive keyboard events.
     /// </summary>
     /// <param name="ignore"></param>
@@ -1055,7 +1055,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Prevents the window contents from being captured by other apps.
     /// 
-    /// On macOS it sets the NSWindow’s sharingType to NSWindowSharingNone. 
+    /// On macOS it sets the NSWindow’s sharingType to NSWindowSharingNone.
     /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
     /// </summary>
     /// <param name="enable"></param>
@@ -1068,7 +1068,7 @@ public class BrowserWindow : ApiBase
     public void SetFocusable(bool focusable) => this.CallMethod1(focusable);
 
     /// <summary>
-    /// Sets parent as current window’s parent window, 
+    /// Sets parent as current window’s parent window,
     /// passing null will turn current window into a top-level window.
     /// </summary>
     /// <param name="parent"></param>
@@ -1120,11 +1120,11 @@ public class BrowserWindow : ApiBase
     public void SetAutoHideCursor(bool autoHide) => this.CallMethod1(autoHide);
 
     /// <summary>
-    /// Adds a vibrancy effect to the browser window. 
+    /// Adds a vibrancy effect to the browser window.
     /// Passing null or an empty string will remove the vibrancy effect on the window.
     /// </summary>
-    /// <param name="type">Can be appearance-based, light, dark, titlebar, selection, 
-    /// menu, popover, sidebar, medium-light or ultra-dark. 
+    /// <param name="type">Can be appearance-based, light, dark, titlebar, selection,
+    /// menu, popover, sidebar, medium-light or ultra-dark.
     /// See the macOS documentation for more details.</param>
     public void SetVibrancy(Vibrancy type) => this.CallMethod1(type.GetDescription());
 
@@ -1134,8 +1134,8 @@ public class BrowserWindow : ApiBase
     public WebContents WebContents { get; internal set; }
 
     /// <summary>
-    /// A BrowserView can be used to embed additional web content into a BrowserWindow. 
-    /// It is like a child window, except that it is positioned relative to its owning window. 
+    /// A BrowserView can be used to embed additional web content into a BrowserWindow.
+    /// It is like a child window, except that it is positioned relative to its owning window.
     /// It is meant to be an alternative to the webview tag.
     /// </summary>
     /// <param name="browserView"></param>

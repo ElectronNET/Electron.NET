@@ -7,13 +7,13 @@ namespace ElectronNET.API
     /// <summary>
     /// Monitor power state changes..
     /// </summary>
-    public sealed class PowerMonitor: ApiBase
+    public sealed class PowerMonitor : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
 
         /// <summary>
-        /// Emitted when the system is about to lock the screen. 
+        /// Emitted when the system is about to lock the screen.
         /// </summary>
         public event Action OnLockScreen
         {
@@ -22,7 +22,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Emitted when the system is about to unlock the screen. 
+        /// Emitted when the system is about to unlock the screen.
         /// </summary>
         public event Action OnUnLockScreen
         {

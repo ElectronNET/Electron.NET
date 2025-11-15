@@ -140,7 +140,7 @@
         /// <summary>
         /// Allows you to execute native JavaScript/TypeScript code from the host process.
         /// 
-        /// It is only possible if the Electron.NET CLI has previously added an 
+        /// It is only possible if the Electron.NET CLI has previously added an
         /// ElectronHostHook directory:
         /// <c>electronize add HostHook</c>
         /// </summary>
@@ -153,7 +153,7 @@
         }
 
         /// <summary>
-        /// Allows you to execute native Lock and Unlock process.       
+        /// Allows you to execute native Lock and Unlock process.
         /// </summary>
         public static PowerMonitor PowerMonitor
         {

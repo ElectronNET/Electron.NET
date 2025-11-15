@@ -7,6 +7,7 @@ namespace ElectronNET.IntegrationTests.Tests
     public class BrowserViewTests
     {
         private readonly ElectronFixture fx;
+
         public BrowserViewTests(ElectronFixture fx)
         {
             this.fx = fx;

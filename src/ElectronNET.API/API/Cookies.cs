@@ -59,7 +59,5 @@ namespace ElectronNET.API
         }
 
         private event Action<Cookie, CookieChangedCause, bool> _changed;
-
-
     }
 }

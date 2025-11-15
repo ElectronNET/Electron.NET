@@ -37,7 +37,7 @@ export = (socket: Socket) => {
             electronSocket.emit('process-isMainFrame-completed', false);
             return;
         }
-        electronSocket.emit('process-isMainFrame-completed', process.isMainFrame);        
+        electronSocket.emit('process-isMainFrame-completed', process.isMainFrame);
     });
 
     socket.on('process-resourcesPath', () => {
