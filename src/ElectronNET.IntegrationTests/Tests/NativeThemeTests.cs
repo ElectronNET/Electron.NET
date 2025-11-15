@@ -13,15 +13,19 @@ namespace ElectronNET.IntegrationTests.Tests
             // Capture initial
             _ = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             // Force light
+            await Task.Delay(50);
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Light);
+            await Task.Delay(500);
             var useDarkAfterLight = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceLight = await Electron.NativeTheme.GetThemeSourceAsync();
             // Force dark
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Dark);
+            await Task.Delay(500);
             var useDarkAfterDark = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceDark = await Electron.NativeTheme.GetThemeSourceAsync();
             // Restore system
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.System);
+            await Task.Delay(500);
             var themeSourceSystem = await Electron.NativeTheme.GetThemeSourceAsync();
             // Assertions are tolerant (platform dependent)
             useDarkAfterLight.Should().BeFalse("forcing Light should result in light colors");

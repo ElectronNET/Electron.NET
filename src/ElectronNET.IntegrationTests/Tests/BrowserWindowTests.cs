@@ -99,10 +99,13 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task MenuBar_auto_hide_and_visibility()
         {
             this.fx.MainWindow.SetAutoHideMenuBar(true);
+            await Task.Delay(500);
             (await this.fx.MainWindow.IsMenuBarAutoHideAsync()).Should().BeTrue();
             this.fx.MainWindow.SetMenuBarVisibility(false);
+            await Task.Delay(500);
             (await this.fx.MainWindow.IsMenuBarVisibleAsync()).Should().BeFalse();
             this.fx.MainWindow.SetMenuBarVisibility(true);
+            await Task.Delay(500);
             (await this.fx.MainWindow.IsMenuBarVisibleAsync()).Should().BeTrue();
         }
 
@@ -202,10 +205,16 @@ namespace ElectronNET.IntegrationTests.Tests
             var temp = Path.Combine(Path.GetTempPath(), "electronnet_test.txt");
             File.WriteAllText(temp, "test");
             win.SetRepresentedFilename(temp);
+
+            await Task.Delay(500);
+
             var represented = await win.GetRepresentedFilenameAsync();
             represented.Should().Be(temp);
 
             win.SetDocumentEdited(true);
+
+            await Task.Delay(500);
+
             var edited = await win.IsDocumentEditedAsync();
             edited.Should().BeTrue();
 
