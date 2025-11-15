@@ -42,6 +42,10 @@
     <TypeScriptUseNodeJS>true</TypeScriptUseNodeJS>
     <TypeScriptTSConfig>ElectronHostHook/tsconfig.json</TypeScriptTSConfig>
   </PropertyGroup>
+  <PropertyGroup>
+    <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="publish\**" />
     <Content Remove="publish\**" />
