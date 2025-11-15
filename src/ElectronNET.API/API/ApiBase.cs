@@ -29,15 +29,15 @@ namespace ElectronNET.API
             CamelCase,
         }
 
-        private const int PropertyTimeout = 1000;
+        private const int InvocationTimeout = 1000;
 
         private readonly string objectName;
-        private readonly ConcurrentDictionary<string, PropertyGetter> propertyGetters;
-        private readonly ConcurrentDictionary<string, string> propertyEventNames = new();
-        private readonly ConcurrentDictionary<string, string> propertyMessageNames = new();
+        private readonly ConcurrentDictionary<string, Invocator> invocators;
+        private readonly ConcurrentDictionary<string, string> invocationEventNames = new();
+        private readonly ConcurrentDictionary<string, string> invocationMessageNames = new();
         private readonly ConcurrentDictionary<string, string> methodMessageNames = new();
         private static readonly ConcurrentDictionary<string, EventContainer> eventContainers = new();
-        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, PropertyGetter>> AllPropertyGetters = new();
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Invocator>> AllInvocators = new();
 
         private readonly object objLock = new object();
 
@@ -58,7 +58,7 @@ namespace ElectronNET.API
         protected ApiBase()
         {
             this.objectName = this.GetType().Name.LowerFirst();
-            propertyGetters = AllPropertyGetters.GetOrAdd(objectName, _ => new ConcurrentDictionary<string, PropertyGetter>());
+            this.invocators = AllInvocators.GetOrAdd(objectName, _ => new ConcurrentDictionary<string, Invocator>());
         }
 
         protected void CallMethod0([CallerMemberName] string callerName = null)
@@ -113,21 +113,21 @@ namespace ElectronNET.API
             }
         }
 
-        protected Task<T> GetPropertyAsync<T>(object arg = null, [CallerMemberName] string callerName = null)
+        protected Task<T> InvokeAsync<T>(object arg = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
 
             lock (this.objLock)
             {
-                return this.propertyGetters.GetOrAdd(callerName, _ =>
+                return this.invocators.GetOrAdd(callerName, _ =>
                 {
-                    var getter = new PropertyGetter<T>(this, callerName, PropertyTimeout, arg);
+                    var getter = new Invocator<T>(this, callerName, InvocationTimeout, arg);
 
                     getter.Task<T>().ContinueWith(_ =>
                     {
                         lock (this.objLock)
                         {
-                            return this.propertyGetters.TryRemove(callerName, out var _);
+                            return this.invocators.TryRemove(callerName, out var _);
                         }
                     });
 
@@ -228,17 +228,17 @@ namespace ElectronNET.API
             return string.Format(CultureInfo.InvariantCulture, "{0}{1:D}", eventName, id);
         }
 
-        internal abstract class PropertyGetter
+        internal abstract class Invocator
         {
             public abstract Task<T> Task<T>();
         }
 
-        internal class PropertyGetter<T> : PropertyGetter
+        internal class Invocator<T> : Invocator
         {
             private readonly Task<T> tcsTask;
             private TaskCompletionSource<T> tcs;
 
-            public PropertyGetter(ApiBase apiBase, string callerName, int timeoutMs, object arg = null)
+            public Invocator(ApiBase apiBase, string callerName, int timeoutMs, object arg = null)
             {
                 this.tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 this.tcsTask = this.tcs.Task;
@@ -249,10 +249,10 @@ namespace ElectronNET.API
                 switch (apiBase.SocketTaskEventNameType)
                 {
                     case SocketTaskEventNameTypes.DashesLowerFirst:
-                        eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}-completed");
+                        eventName = apiBase.invocationEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}-completed");
                         break;
                     case SocketTaskEventNameTypes.NoDashUpperFirst:
-                        eventName = apiBase.propertyEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}{s.StripAsync()}Completed");
+                        eventName = apiBase.invocationEventNames.GetOrAdd(callerName, s => $"{apiBase.objectName}{s.StripAsync()}Completed");
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -261,10 +261,10 @@ namespace ElectronNET.API
                 switch (apiBase.SocketTaskMessageNameType)
                 {
                     case SocketTaskMessageNameTypes.DashesLowerFirst:
-                        messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}");
+                        messageName = apiBase.invocationMessageNames.GetOrAdd(callerName, s => $"{apiBase.objectName}-{s.StripAsync().LowerFirst()}");
                         break;
                     case SocketTaskMessageNameTypes.NoDashUpperFirst:
-                        messageName = apiBase.propertyMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
+                        messageName = apiBase.invocationMessageNames.GetOrAdd(callerName, s => apiBase.objectName + s.StripAsync());
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -299,7 +299,7 @@ namespace ElectronNET.API
                     _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) :  BridgeConnector.Socket.Emit(messageName);
                 }
 
-                System.Threading.Tasks.Task.Delay(PropertyTimeout).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(InvocationTimeout).ContinueWith(_ =>
                 {
                     if (this.tcs != null)
                     {

@@ -45,7 +45,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns>The content in the clipboard as plain text.</returns>
-        public Task<string> ReadTextAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadTextAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard as plain text.
@@ -62,7 +62,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadHTMLAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadHTMLAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes markup to the clipboard.
@@ -79,7 +79,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadRTFAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadRTFAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard in RTF.
@@ -97,7 +97,7 @@ namespace ElectronNET.API
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
-        public Task<ReadBookmark> ReadBookmarkAsync() => GetPropertyAsync<ReadBookmark>();
+        public Task<ReadBookmark> ReadBookmarkAsync() => this.InvokeAsync<ReadBookmark>();
 
         /// <summary>
         /// Writes the title and url into the clipboard as a bookmark.
@@ -120,7 +120,7 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
-        public Task<string> ReadFindTextAsync() => GetPropertyAsync<string>();
+        public Task<string> ReadFindTextAsync() => this.InvokeAsync<string>();
 
         /// <summary>
         /// macOS: Writes the text into the find pasteboard as plain text. This method uses 
@@ -146,7 +146,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string[]> AvailableFormatsAsync(string type = "") => GetPropertyAsync<string[]>(type);
+        public Task<string[]> AvailableFormatsAsync(string type = "") => this.InvokeAsync<string[]>(type);
 
         /// <summary>
         /// Writes data to the clipboard.
@@ -163,7 +163,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<NativeImage> ReadImageAsync(string type = "") => GetPropertyAsync<NativeImage>(type);
+        public Task<NativeImage> ReadImageAsync(string type = "") => this.InvokeAsync<NativeImage>(type);
 
         /// <summary>
         /// Writes an image to the clipboard.

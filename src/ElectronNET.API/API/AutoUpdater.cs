@@ -23,7 +23,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -40,7 +40,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -58,7 +58,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -74,7 +74,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -91,7 +91,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -106,7 +106,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<string>()).Result;
+                return Task.Run(() => this.InvokeAsync<string>()).Result;
             }
         }
 
@@ -117,7 +117,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<SemVer>());
+                return Task.Run(() => this.InvokeAsync<SemVer>());
             }
         }
 
@@ -142,7 +142,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<string>());
+                return Task.Run(() => this.InvokeAsync<string>());
             }
         }
 
@@ -165,7 +165,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<Dictionary<string, string>>());
+                return Task.Run(() => this.InvokeAsync<Dictionary<string, string>>());
             }
         }
 

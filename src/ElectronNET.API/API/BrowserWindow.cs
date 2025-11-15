@@ -313,13 +313,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is focused.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFocusedAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsFocusedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Whether the window is destroyed.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsDestroyedAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsDestroyedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Shows and gives focus to the window.
@@ -340,13 +340,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is visible to the user.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsVisibleAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsVisibleAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Whether current window is a modal window.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsModalAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsModalAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Maximizes the window. This will also show (but not focus) the window if it isn’t being displayed already.
@@ -362,7 +362,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is maximized.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMaximizedAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMaximizedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Minimizes the window. On some platforms the minimized window will be shown in the Dock.
@@ -378,7 +378,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is minimized.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMinimizedAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMinimizedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should be in fullscreen mode.
@@ -390,7 +390,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is in fullscreen mode.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFullScreenAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsFullScreenAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// This will make a window maintain an aspect ratio. The extra size allows a developer to have space, 
@@ -466,7 +466,7 @@ public class BrowserWindow : ApiBase
     /// Gets the bounds asynchronous.
     /// </summary>
     /// <returns></returns>
-    public Task<Rectangle> GetBoundsAsync() => this.GetPropertyAsync<Rectangle>();
+    public Task<Rectangle> GetBoundsAsync() => this.InvokeAsync<Rectangle>();
 
     /// <summary>
     /// Resizes and moves the window’s client area (e.g. the web page) to the supplied bounds.
@@ -485,7 +485,7 @@ public class BrowserWindow : ApiBase
     /// Gets the content bounds asynchronous.
     /// </summary>
     /// <returns></returns>
-    public Task<Rectangle> GetContentBoundsAsync() => this.GetPropertyAsync<Rectangle>();
+    public Task<Rectangle> GetContentBoundsAsync() => this.InvokeAsync<Rectangle>();
 
     /// <summary>
     /// Resizes the window to width and height.
@@ -506,7 +506,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetSizeAsync() => this.GetPropertyAsync<int[]>();
+    public Task<int[]> GetSizeAsync() => this.InvokeAsync<int[]>();
 
     /// <summary>
     /// Resizes the window’s client area (e.g. the web page) to width and height.
@@ -527,7 +527,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s client area’s width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetContentSizeAsync() => this.GetPropertyAsync<int[]>();
+    public Task<int[]> GetContentSizeAsync() => this.InvokeAsync<int[]>();
 
     /// <summary>
     /// Sets the minimum size of window to width and height.
@@ -540,7 +540,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s minimum width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetMinimumSizeAsync() => this.GetPropertyAsync<int[]>();
+    public Task<int[]> GetMinimumSizeAsync() => this.InvokeAsync<int[]>();
 
     /// <summary>
     /// Sets the maximum size of window to width and height.
@@ -553,7 +553,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s maximum width and height.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetMaximumSizeAsync() => this.GetPropertyAsync<int[]>();
+    public Task<int[]> GetMaximumSizeAsync() => this.InvokeAsync<int[]>();
 
     /// <summary>
     /// Sets whether the window can be manually resized by user.
@@ -565,7 +565,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window can be manually resized by user.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsResizableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsResizableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be moved by user. On Linux does nothing.
@@ -579,7 +579,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMovableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMovableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually minimized by user. On Linux does nothing.
@@ -593,7 +593,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMinimizableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMinimizableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually maximized by user. On Linux does nothing.
@@ -607,7 +607,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsMaximizableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMaximizableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
@@ -619,7 +619,7 @@ public class BrowserWindow : ApiBase
     /// Whether the maximize/zoom window button toggles fullscreen mode or maximizes the window.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsFullScreenableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsFullScreenableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually closed by user. On Linux does nothing.
@@ -633,7 +633,7 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
-    public Task<bool> IsClosableAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsClosableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should show always on top of other windows. 
@@ -671,7 +671,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window is always on top of other windows.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsAlwaysOnTopAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsAlwaysOnTopAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Moves window to the center of the screen.
@@ -721,7 +721,7 @@ public class BrowserWindow : ApiBase
     /// Contains the window’s current position.
     /// </summary>
     /// <returns></returns>
-    public Task<int[]> GetPositionAsync() => this.GetPropertyAsync<int[]>();
+    public Task<int[]> GetPositionAsync() => this.InvokeAsync<int[]>();
 
     /// <summary>
     /// Changes the title of native window to title.
@@ -735,7 +735,7 @@ public class BrowserWindow : ApiBase
     /// Note: The title of web page can be different from the title of the native window.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetTitleAsync() => this.GetPropertyAsync<string>();
+    public Task<string> GetTitleAsync() => this.InvokeAsync<string>();
 
     /// <summary>
     /// Changes the attachment point for sheets on macOS. 
@@ -776,13 +776,13 @@ public class BrowserWindow : ApiBase
     /// Whether the window is in kiosk mode.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsKioskAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsKioskAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Returns the native type of the handle is HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.
     /// </summary>
     /// <returns>string of the native handle obtained, HWND on Windows, NSView* on macOS, and Window (unsigned long) on Linux.</returns>
-    public Task<string> GetNativeWindowHandle() => this.GetPropertyAsync<string>();
+    public Task<string> GetNativeWindowHandle() => this.InvokeAsync<string>();
 
     /// <summary>
     /// Sets the pathname of the file the window represents, 
@@ -795,7 +795,7 @@ public class BrowserWindow : ApiBase
     /// The pathname of the file the window represents.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetRepresentedFilenameAsync() => this.GetPropertyAsync<string>();
+    public Task<string> GetRepresentedFilenameAsync() => this.InvokeAsync<string>();
 
     /// <summary>
     /// Specifies whether the window’s document has been edited, 
@@ -808,7 +808,7 @@ public class BrowserWindow : ApiBase
     /// Whether the window’s document has been edited.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsDocumentEditedAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsDocumentEditedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Focuses the on web view.
@@ -920,7 +920,7 @@ public class BrowserWindow : ApiBase
     /// On Windows and Linux always returns true.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> HasShadowAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> HasShadowAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Gets the thumbar buttons.
@@ -1012,7 +1012,7 @@ public class BrowserWindow : ApiBase
     /// Whether menu bar automatically hides itself.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMenuBarAutoHideAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMenuBarAutoHideAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the menu bar should be visible. If the menu bar is auto-hide,
@@ -1025,7 +1025,7 @@ public class BrowserWindow : ApiBase
     /// Whether the menu bar is visible.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsMenuBarVisibleAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsMenuBarVisibleAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window should be visible on all workspaces.
@@ -1041,7 +1041,7 @@ public class BrowserWindow : ApiBase
     /// Note: This API always returns false on Windows.
     /// </summary>
     /// <returns></returns>
-    public Task<bool> IsVisibleOnAllWorkspacesAsync() => this.GetPropertyAsync<bool>();
+    public Task<bool> IsVisibleOnAllWorkspacesAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Makes the window ignore all mouse events.
@@ -1090,7 +1090,7 @@ public class BrowserWindow : ApiBase
     /// <returns></returns>
     public async Task<BrowserWindow> GetParentWindowAsync()
     {
-        var browserWindowId = await this.GetPropertyAsync<int>().ConfigureAwait(false);
+        var browserWindowId = await this.InvokeAsync<int>().ConfigureAwait(false);
         var browserWindow = Electron.WindowManager.BrowserWindows.ToList().Single(x => x.Id == browserWindowId);
         return browserWindow;
     }
@@ -1101,7 +1101,7 @@ public class BrowserWindow : ApiBase
     /// <returns></returns>
     public async Task<List<BrowserWindow>> GetChildWindowsAsync()
     {
-        var browserWindowIds = await this.GetPropertyAsync<int[]>().ConfigureAwait(false);
+        var browserWindowIds = await this.InvokeAsync<int[]>().ConfigureAwait(false);
         var browserWindows = new List<BrowserWindow>();
 
         foreach (var id in browserWindowIds)

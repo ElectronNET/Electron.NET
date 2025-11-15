@@ -107,26 +107,26 @@ namespace ElectronNET.API
         /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<ThemeSourceMode> GetThemeSourceAsync() => GetPropertyAsync<ThemeSourceMode>();
+        public Task<ThemeSourceMode> GetThemeSourceAsync() => this.InvokeAsync<ThemeSourceMode>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has a dark mode enabled or is
         /// being instructed to show a dark-style UI. If you want to modify this value you
         /// should use <see cref="SetThemeSource"/>.
         /// </summary>
-        public Task<bool> ShouldUseDarkColorsAsync() => GetPropertyAsync<bool>();
+        public Task<bool> ShouldUseDarkColorsAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
-        public Task<bool> ShouldUseHighContrastColorsAsync() => GetPropertyAsync<bool>();
+        public Task<bool> ShouldUseHighContrastColorsAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
-        public Task<bool> ShouldUseInvertedColorSchemeAsync() => GetPropertyAsync<bool>();
+        public Task<bool> ShouldUseInvertedColorSchemeAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// Emitted when something in the underlying NativeTheme has changed. This normally means that either the value of <see cref="ShouldUseDarkColorsAsync"/>,
