@@ -37,6 +37,12 @@
     <ParallelizeTestCollections>false</ParallelizeTestCollections>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
 
 </Project>
