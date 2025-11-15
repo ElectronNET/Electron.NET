@@ -55,39 +55,42 @@ namespace ElectronNET.WebApp
                     });
             });
 
-            Electron.Dock.SetMenu(new[]
+            if (System.OperatingSystem.IsMacOS())
             {
-                new MenuItem
+                Electron.Dock.SetMenu(new[]
                 {
-                    Type = MenuType.normal,
-                    Label = "MenuItem",
-                    Click = () =>
+                    new MenuItem
                     {
-                        Electron.Notification.Show(new NotificationOptions(
-                            "Dock MenuItem Click",
-                            "A menu item added to the Dock was selected;"));
-                    },
-                },
-                new MenuItem
-                {
-                    Type = MenuType.submenu,
-                    Label = "SubMenu",
-                    Submenu = new[]
-                    {
-                        new MenuItem
+                        Type = MenuType.normal,
+                        Label = "MenuItem",
+                        Click = () =>
                         {
-                            Type = MenuType.normal,
-                            Label = "Sub MenuItem",
-                            Click = () =>
-                            {
-                                Electron.Notification.Show(new NotificationOptions(
-                                    "Dock Sub MenuItem Click",
-                                    "A menu item added to the Dock was selected;"));
-                            },
+                            Electron.Notification.Show(new NotificationOptions(
+                                "Dock MenuItem Click",
+                                "A menu item added to the Dock was selected;"));
                         },
+                    },
+                    new MenuItem
+                    {
+                        Type = MenuType.submenu,
+                        Label = "SubMenu",
+                        Submenu = new[]
+                        {
+                            new MenuItem
+                            {
+                                Type = MenuType.normal,
+                                Label = "Sub MenuItem",
+                                Click = () =>
+                                {
+                                    Electron.Notification.Show(new NotificationOptions(
+                                        "Dock Sub MenuItem Click",
+                                        "A menu item added to the Dock was selected;"));
+                                },
+                            },
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 }
