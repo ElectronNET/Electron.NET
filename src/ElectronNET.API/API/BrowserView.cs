@@ -30,7 +30,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<Rectangle>()).Result;
+                return Task.Run(() => this.InvokeAsync<Rectangle>()).Result;
             }
             set
             {

@@ -139,19 +139,19 @@ public class WebContents: ApiBase
     /// Get system printers.
     /// </summary>
     /// <returns>printers</returns>
-    public Task<PrinterInfo[]> GetPrintersAsync() => GetPropertyAsync<PrinterInfo[]>();
+    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsync<PrinterInfo[]>();
 
     /// <summary>
     /// Prints window's web page.
     /// </summary>
     /// <param name="options"></param>
     /// <returns>success</returns>
-    public Task<bool> PrintAsync(PrintOptions options) => GetPropertyAsync<bool>(options);
+    public Task<bool> PrintAsync(PrintOptions options) => this.InvokeAsync<bool>(options);
     /// <summary>
     /// Prints window's web page.
     /// </summary>
     /// <returns>success</returns>
-    public Task<bool> PrintAsync() => GetPropertyAsync<bool>(string.Empty);
+    public Task<bool> PrintAsync() => this.InvokeAsync<bool>(string.Empty);
 
     /// <summary>
     /// Prints window's web page as PDF with Chromium's preview printing custom

@@ -366,7 +366,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return this.GetPropertyAsync<string>();
+                return this.InvokeAsync<string>();
             }
         }
 
@@ -501,7 +501,7 @@ namespace ElectronNET.API
         public async Task<string> GetAppPathAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -565,7 +565,7 @@ namespace ElectronNET.API
         public async Task<string> GetVersionAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -579,7 +579,7 @@ namespace ElectronNET.API
         public async Task<string> GetLocaleAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -850,7 +850,7 @@ namespace ElectronNET.API
         public async Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<JumpListSettings>().ConfigureAwait(false);
+            return await this.InvokeAsync<JumpListSettings>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -941,7 +941,7 @@ namespace ElectronNET.API
         public async Task<bool> HasSingleInstanceLockAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -980,7 +980,7 @@ namespace ElectronNET.API
         public async Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1043,7 +1043,7 @@ namespace ElectronNET.API
         public async Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<ProcessMetric[]>().ConfigureAwait(false);
+            return await this.InvokeAsync<ProcessMetric[]>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1055,7 +1055,7 @@ namespace ElectronNET.API
         public async Task<GPUFeatureStatus> GetGpuFeatureStatusAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<GPUFeatureStatus>().ConfigureAwait(false);
+            return await this.InvokeAsync<GPUFeatureStatus>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1090,7 +1090,7 @@ namespace ElectronNET.API
         public async Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<int>().ConfigureAwait(false);
+            return await this.InvokeAsync<int>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1105,7 +1105,7 @@ namespace ElectronNET.API
         public async Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1166,7 +1166,7 @@ namespace ElectronNET.API
         public async Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>

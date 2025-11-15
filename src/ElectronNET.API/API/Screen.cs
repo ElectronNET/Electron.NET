@@ -101,37 +101,37 @@ namespace ElectronNET.API
         /// The current absolute position of the mouse pointer.
         /// </summary>
         /// <returns></returns>
-        public Task<Point> GetCursorScreenPointAsync() => GetPropertyAsync<Point>();
+        public Task<Point> GetCursorScreenPointAsync() => this.InvokeAsync<Point>();
 
         /// <summary>
         /// macOS: The height of the menu bar in pixels.
         /// </summary>
         /// <returns>The height of the menu bar in pixels.</returns>
-        public Task<Rectangle> GetMenuBarWorkAreaAsync() => GetPropertyAsync<Rectangle>();
+        public Task<Rectangle> GetMenuBarWorkAreaAsync() => this.InvokeAsync<Rectangle>();
 
         /// <summary>
         /// The primary display.
         /// </summary>
         /// <returns></returns>
-        public Task<Display> GetPrimaryDisplayAsync() => GetPropertyAsync<Display>();
+        public Task<Display> GetPrimaryDisplayAsync() => this.InvokeAsync<Display>();
 
         /// <summary>
         /// An array of displays that are currently available.
         /// </summary>
         /// <returns>An array of displays that are currently available.</returns>
-        public Task<Display[]> GetAllDisplaysAsync() => GetPropertyAsync<Display[]>();
+        public Task<Display[]> GetAllDisplaysAsync() => this.InvokeAsync<Display[]>();
 
         /// <summary>
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
-        public Task<Display> GetDisplayNearestPointAsync(Point point) => GetPropertyAsync<Display>(point);
+        public Task<Display> GetDisplayNearestPointAsync(Point point) => this.InvokeAsync<Display>(point);
 
         /// <summary>
         /// The display that most closely intersects the provided bounds.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => GetPropertyAsync<Display>(rectangle);
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => this.InvokeAsync<Display>(rectangle);
     }
 }

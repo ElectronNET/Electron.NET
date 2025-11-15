@@ -116,6 +116,6 @@ namespace ElectronNET.API
         /// Whether or not desktop notifications are supported on the current system.
         /// </summary>
         /// <returns></returns>
-        public Task<bool> IsSupportedAsync() => GetPropertyAsync<bool>();
+        public Task<bool> IsSupportedAsync() => this.InvokeAsync<bool>();
     }
 }
