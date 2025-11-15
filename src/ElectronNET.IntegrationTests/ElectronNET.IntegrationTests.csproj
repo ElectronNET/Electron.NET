@@ -5,7 +5,7 @@
     <ElectronNetDevMode>true</ElectronNetDevMode>
   </PropertyGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.props" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -37,6 +37,6 @@
     <ParallelizeTestCollections>false</ParallelizeTestCollections>
   </PropertyGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
 
 </Project>

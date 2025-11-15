@@ -5,7 +5,7 @@
     <ElectronNetDevMode>true</ElectronNetDevMode>
   </PropertyGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.props" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -72,6 +72,6 @@
     <PackageReference Include="ElectronNET.Core" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
   </ItemGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
 
 </Project>
