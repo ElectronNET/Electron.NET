@@ -58,7 +58,7 @@ namespace ElectronNET.API
         protected ApiBase()
         {
             this.objectName = this.GetType().Name.LowerFirst();
-            this.invocators = AllInvocators.GetOrAdd(objectName, _ => new ConcurrentDictionary<string, Invocator>());
+            this.invocators = AllInvocators.GetOrAdd(this.objectName, _ => new ConcurrentDictionary<string, Invocator>());
         }
 
         protected void CallMethod0([CallerMemberName] string callerName = null)
@@ -135,15 +135,15 @@ namespace ElectronNET.API
                 }).Task<T>();
             }
         }
-        
+
         protected void AddEvent(Action value, int? id = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
-            var eventName = EventName(callerName);
-            
-            var eventKey = EventKey(eventName, id);
+            var eventName = this.EventName(callerName);
 
-            lock (objLock)
+            var eventKey = this.EventKey(eventName, id);
+
+            lock (this.objLock)
             {
                 var container = eventContainers.GetOrAdd(eventKey, _ =>
                 {
@@ -156,14 +156,14 @@ namespace ElectronNET.API
                 container.Register(value);
             }
         }
-         
+
         protected void RemoveEvent(Action value, int? id = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
-            var eventName = EventName(callerName);
-            var eventKey = EventKey(eventName, id);
+            var eventName = this.EventName(callerName);
+            var eventKey = this.EventKey(eventName, id);
 
-            lock (objLock)
+            lock (this.objLock)
             {
                 if (eventContainers.TryGetValue(eventKey, out var container) && !container.Unregister(value))
                 {
@@ -172,15 +172,15 @@ namespace ElectronNET.API
                 }
             }
         }
-       
+
         protected void AddEvent<T>(Action<T> value, int? id = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
-            
-            var eventName = EventName(callerName);
-            var eventKey = EventKey(eventName, id);
 
-            lock (objLock)
+            var eventName = this.EventName(callerName);
+            var eventKey = this.EventKey(eventName, id);
+
+            lock (this.objLock)
             {
                 var container = eventContainers.GetOrAdd(eventKey, _ =>
                 {
@@ -197,10 +197,10 @@ namespace ElectronNET.API
         protected void RemoveEvent<T>(Action<T> value, int? id = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
-            var eventName = EventName(callerName);
-            var eventKey = EventKey(eventName, id);
+            var eventName = this.EventName(callerName);
+            var eventKey = this.EventKey(eventName, id);
 
-            lock (objLock)
+            lock (this.objLock)
             {
                 if (eventContainers.TryGetValue(eventKey, out var container) && !container.Unregister(value))
                 {
@@ -212,17 +212,17 @@ namespace ElectronNET.API
 
         private string EventName(string callerName)
         {
-            switch (SocketEventNameType)
+            switch (this.SocketEventNameType)
             {
                 case SocketEventNameTypes.DashedLower:
-                    return $"{objectName}-{callerName.ToDashedEventName()}";
+                    return $"{this.objectName}-{callerName.ToDashedEventName()}";
                 case SocketEventNameTypes.CamelCase:
-                    return $"{objectName}-{callerName.ToCamelCaseEventName()}";
+                    return $"{this.objectName}-{callerName.ToCamelCaseEventName()}";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         private string EventKey(string eventName, int? id)
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}{1:D}", eventName, id);
@@ -257,7 +257,7 @@ namespace ElectronNET.API
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                
+
                 switch (apiBase.SocketTaskMessageNameType)
                 {
                     case SocketTaskMessageNameTypes.DashesLowerFirst:
@@ -289,14 +289,14 @@ namespace ElectronNET.API
                         }
                     }
                 });
-                
+
                 if (arg != null)
                 {
-                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id, arg) :  BridgeConnector.Socket.Emit(messageName, arg);
+                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id, arg) : BridgeConnector.Socket.Emit(messageName, arg);
                 }
                 else
                 {
-                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) :  BridgeConnector.Socket.Emit(messageName);
+                    _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) : BridgeConnector.Socket.Emit(messageName);
                 }
 
                 System.Threading.Tasks.Task.Delay(InvocationTimeout).ContinueWith(_ =>
@@ -321,7 +321,7 @@ namespace ElectronNET.API
                 return this.tcsTask as Task<T1>;
             }
         }
-        
+
         [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
         private class EventContainer
         {
@@ -330,41 +330,41 @@ namespace ElectronNET.API
 
             private Action<T> GetEventActionT<T>()
             {
-                return (Action<T>)eventActionT;
+                return (Action<T>)this.eventActionT;
             }
 
             private void SetEventActionT<T>(Action<T> actionT)
             {
-                eventActionT = actionT;
+                this.eventActionT = actionT;
             }
 
-            public void OnEventAction() => eventAction?.Invoke();
+            public void OnEventAction() => this.eventAction?.Invoke();
 
-            public void OnEventActionT<T>(T p) => GetEventActionT<T>()?.Invoke(p);
+            public void OnEventActionT<T>(T p) => this.GetEventActionT<T>()?.Invoke(p);
 
             public void Register(Action receiver)
             {
-                eventAction += receiver;
+                this.eventAction += receiver;
             }
 
             public void Register<T>(Action<T> receiver)
             {
-                var actionT = GetEventActionT<T>();
+                var actionT = this.GetEventActionT<T>();
                 actionT += receiver;
-                SetEventActionT(actionT);
+                this.SetEventActionT(actionT);
             }
 
             public bool Unregister(Action receiver)
             {
-                eventAction -= receiver;
+                this.eventAction -= receiver;
                 return this.eventAction != null;
             }
 
             public bool Unregister<T>(Action<T> receiver)
             {
-                var actionT = GetEventActionT<T>();
+                var actionT = this.GetEventActionT<T>();
                 actionT -= receiver;
-                SetEventActionT(actionT);
+                this.SetEventActionT(actionT);
 
                 return actionT != null;
             }
