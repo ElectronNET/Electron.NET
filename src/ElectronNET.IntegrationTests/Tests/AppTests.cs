@@ -1,10 +1,10 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
-    using System.Runtime.InteropServices;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using System;
     using System.IO;
+    using System.Runtime.Versioning;
     using System.Threading.Tasks;
 
     [Collection("ElectronCollection")]
@@ -62,7 +62,9 @@ namespace ElectronNET.IntegrationTests.Tests
             status.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Can_get_login_item_settings()
         {
             var settings = await Electron.App.GetLoginItemSettingsAsync();
@@ -78,7 +80,9 @@ namespace ElectronNET.IntegrationTests.Tests
             (await Electron.App.CommandLine.GetSwitchValueAsync(switchName)).Should().Be("value123");
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Accessibility_support_toggle()
         {
             Electron.App.SetAccessibilitySupportEnabled(true);
@@ -97,7 +101,9 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.UserAgentFallback = original; // restore
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("macOS")]
         public async Task BadgeCount_set_and_reset_where_supported()
         {
             await Electron.App.SetBadgeCountAsync(2);

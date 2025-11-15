@@ -1,5 +1,6 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using System.Runtime.Versioning;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
 
@@ -46,14 +47,18 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Should_use_high_contrast_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
             metrics.Should().Be(false);
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Should_use_inverted_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseInvertedColorSchemeAsync();

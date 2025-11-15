@@ -1,8 +1,10 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
     using System.Runtime.InteropServices;
+    using System.Runtime.Versioning;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class BrowserWindowTests
@@ -42,7 +44,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await Task.Delay(50);
         }
 
-        [Fact(Timeout = 20000)]
+        [SkipOnWslFact(Timeout = 20000)]
         public async Task Can_set_and_get_position()
         {
             this.fx.MainWindow.SetPosition(134, 246);
@@ -91,7 +93,9 @@ namespace ElectronNET.IntegrationTests.Tests
             (await this.fx.MainWindow.IsAlwaysOnTopAsync()).Should().BeFalse();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("Windows")]
         public async Task MenuBar_auto_hide_and_visibility()
         {
             this.fx.MainWindow.SetAutoHideMenuBar(true);
@@ -165,7 +169,9 @@ namespace ElectronNET.IntegrationTests.Tests
             (await win.IsAlwaysOnTopAsync()).Should().BeFalse();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("Windows")]
         public async Task Menu_bar_visibility_and_auto_hide()
         {
             var win = this.fx.MainWindow;
@@ -188,7 +194,8 @@ namespace ElectronNET.IntegrationTests.Tests
             child.Destroy();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
         public async Task Represented_filename_and_edited_flags()
         {
             var win = this.fx.MainWindow;
@@ -196,26 +203,11 @@ namespace ElectronNET.IntegrationTests.Tests
             File.WriteAllText(temp, "test");
             win.SetRepresentedFilename(temp);
             var represented = await win.GetRepresentedFilenameAsync();
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                represented.Should().Be(temp);
-            }
-            else
-            {
-                // Non-macOS platforms may not support represented filename; empty is acceptable
-                represented.Should().BeEmpty();
-            }
+            represented.Should().Be(temp);
 
             win.SetDocumentEdited(true);
             var edited = await win.IsDocumentEditedAsync();
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                edited.Should().BeTrue();
-            }
-            else
-            {
-                edited.Should().BeFalse(); // unsupported on non-mac platforms
-            }
+            edited.Should().BeTrue();
 
             win.SetDocumentEdited(false);
         }
