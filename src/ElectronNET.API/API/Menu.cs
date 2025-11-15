@@ -129,7 +129,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("menu-contextMenuPopup", browserWindow.Id);
         }
-
-
     }
 }

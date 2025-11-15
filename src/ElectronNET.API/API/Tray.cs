@@ -14,7 +14,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Add icons and context menus to the system's notification area.
     /// </summary>
-    public sealed class Tray: ApiBase
+    public sealed class Tray : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
@@ -38,6 +38,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
                 }
+
                 _click += value;
             }
             remove
@@ -72,6 +73,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
                 }
+
                 _rightClick += value;
             }
             remove
@@ -106,6 +108,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
                 }
+
                 _doubleClick += value;
             }
             remove
@@ -140,7 +143,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Windows: Emitted when the tray balloon is closed 
+        /// Windows: Emitted when the tray balloon is closed
         /// because of timeout or user manually closes it.
         /// </summary>
         public event Action OnBalloonClosed
@@ -293,7 +296,6 @@ namespace ElectronNET.API
 
             return await tcs.Task.ConfigureAwait(false);
         }
-
 
 
         private const string ModuleName = "tray";

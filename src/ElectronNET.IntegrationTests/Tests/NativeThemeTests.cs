@@ -45,14 +45,14 @@ namespace ElectronNET.IntegrationTests.Tests
 
             fired.Should().BeTrue();
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task Should_use_high_contrast_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
             metrics.Should().Be(false);
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task Should_use_inverted_colors_check()
         {

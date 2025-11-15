@@ -39,7 +39,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        ///  Listens to channel, when a new message arrives listener would be called with 
+        ///  Listens to channel, when a new message arrives listener would be called with
         ///  listener(event, args...).
         /// </summary>
         /// <param name="channel">Channelname.</param>
@@ -71,7 +71,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Send a message to the renderer process synchronously via channel, 
+        /// Send a message to the renderer process synchronously via channel,
         /// you can also send arbitrary arguments.
         /// 
         /// Note: Sending a synchronous message will block the whole renderer process,
@@ -160,7 +160,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
         }
-
-
     }
 }

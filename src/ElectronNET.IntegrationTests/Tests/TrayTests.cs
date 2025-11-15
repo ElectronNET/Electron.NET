@@ -7,6 +7,7 @@ namespace ElectronNET.IntegrationTests.Tests
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly ElectronFixture fx;
+
         public TrayTests(ElectronFixture fx)
         {
             this.fx = fx;

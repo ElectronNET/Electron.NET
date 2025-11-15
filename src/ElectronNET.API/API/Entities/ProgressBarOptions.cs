@@ -1,4 +1,3 @@
-
 using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
@@ -14,4 +13,3 @@ namespace ElectronNET.API.Entities
         public ProgressBarMode Mode { get; set; }
     }
 }
-

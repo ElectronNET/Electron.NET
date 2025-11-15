@@ -6,6 +6,7 @@ namespace ElectronNET.IntegrationTests.Tests
     public class IpcMainTests
     {
         private readonly ElectronFixture fx;
+
         public IpcMainTests(ElectronFixture fx)
         {
             this.fx = fx;

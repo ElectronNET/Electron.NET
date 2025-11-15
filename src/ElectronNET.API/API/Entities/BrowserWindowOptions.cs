@@ -1,5 +1,4 @@
 using ElectronNET.Converter;
-
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
@@ -297,7 +296,3 @@ namespace ElectronNET.API.Entities
         public string ProxyCredentials { get; set; }
     }
 }
-
-
-
-

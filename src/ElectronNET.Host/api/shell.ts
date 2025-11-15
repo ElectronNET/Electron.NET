@@ -39,7 +39,7 @@ export = (socket: Socket) => {
             await shell.trashItem(fullPath);
             success = true;
         } catch (error) {
-            success = false;    
+            success = false;
         }
 
         electronSocket.emit('shell-trashItem-completed', success);

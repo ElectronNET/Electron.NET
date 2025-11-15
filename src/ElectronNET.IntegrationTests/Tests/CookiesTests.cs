@@ -4,6 +4,7 @@ namespace ElectronNET.IntegrationTests.Tests
     public class CookiesTests
     {
         private readonly ElectronFixture fx;
+
         public CookiesTests(ElectronFixture fx)
         {
             this.fx = fx;

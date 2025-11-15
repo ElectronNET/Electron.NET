@@ -68,7 +68,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Open the given external protocol URL in the desktop’s default manner. 
+        /// Open the given external protocol URL in the desktop’s default manner.
         /// (For example, mailto: URLs in the user’s default mail agent).
         /// </summary>
         /// <param name="url">Max 2081 characters on windows.</param>
@@ -79,7 +79,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Open the given external protocol URL in the desktop’s default manner. 
+        /// Open the given external protocol URL in the desktop’s default manner.
         /// (For example, mailto: URLs in the user’s default mail agent).
         /// </summary>
         /// <param name="url">Max 2081 characters on windows.</param>
@@ -158,7 +158,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }

@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-export class Connector { 
-    constructor(private socket:  Socket,
+export class Connector {
+    constructor(private socket: Socket,
         public app: any) { }
 
     on(key: string, javaScriptCode: Function): void {

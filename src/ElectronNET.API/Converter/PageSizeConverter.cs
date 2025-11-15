@@ -43,4 +43,3 @@ public class PageSizeConverter : JsonConverter<PageSize>
         }
     }
 }
-

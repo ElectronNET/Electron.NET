@@ -208,7 +208,5 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("dock-setIcon", image);
         }
-
-
     }
 }

@@ -16,7 +16,7 @@ namespace ElectronNET.WebApp.Controllers
                     var mainWindow = Electron.WindowManager.BrowserWindows.First();
                     var options = new OpenDialogOptions
                     {
-                        Properties = new OpenDialogProperty[] 
+                        Properties = new OpenDialogProperty[]
                         {
                             OpenDialogProperty.openDirectory
                         }

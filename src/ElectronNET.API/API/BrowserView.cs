@@ -8,10 +8,11 @@ namespace ElectronNET.API
     /// It is like a child window, except that it is positioned relative to its owning window.
     /// It is meant to be an alternative to the webview tag.
     /// </summary>
-    public class BrowserView: ApiBase
+    public class BrowserView : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+
         /// <summary>
         /// Gets the identifier.
         /// </summary>
@@ -70,4 +71,3 @@ namespace ElectronNET.API
         }
     }
 }
-

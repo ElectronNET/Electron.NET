@@ -9,7 +9,7 @@ namespace ElectronNET.API;
 /// <summary>
 /// Render and control web pages.
 /// </summary>
-public class WebContents: ApiBase
+public class WebContents : ApiBase
 {
     protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
     protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
@@ -147,6 +147,7 @@ public class WebContents: ApiBase
     /// <param name="options"></param>
     /// <returns>success</returns>
     public Task<bool> PrintAsync(PrintOptions options) => this.InvokeAsync<bool>(options);
+
     /// <summary>
     /// Prints window's web page.
     /// </summary>
@@ -155,8 +156,8 @@ public class WebContents: ApiBase
 
     /// <summary>
     /// Prints window's web page as PDF with Chromium's preview printing custom
-    /// settings.The landscape will be ignored if @page CSS at-rule is used in the web page. 
-    /// By default, an empty options will be regarded as: Use page-break-before: always; 
+    /// settings.The landscape will be ignored if @page CSS at-rule is used in the web page.
+    /// By default, an empty options will be regarded as: Use page-break-before: always;
     /// CSS style to force to print to a new page.
     /// </summary>
     /// <param name="path"></param>
@@ -222,7 +223,7 @@ public class WebContents: ApiBase
     }
 
     /// <summary>
-    /// The async method will resolve when the page has finished loading, 
+    /// The async method will resolve when the page has finished loading,
     /// and rejects if the page fails to load.
     /// 
     /// A noop rejection handler is already attached, which avoids unhandled rejection
@@ -239,7 +240,7 @@ public class WebContents: ApiBase
     }
 
     /// <summary>
-    /// The async method will resolve when the page has finished loading, 
+    /// The async method will resolve when the page has finished loading,
     /// and rejects if the page fails to load.
     /// 
     /// A noop rejection handler is already attached, which avoids unhandled rejection
@@ -261,10 +262,7 @@ public class WebContents: ApiBase
             tcs.SetResult(null);
         });
 
-        BridgeConnector.Socket.Once<string>("webContents-loadURL-error" + Id, (error) =>
-        {
-            tcs.SetException(new InvalidOperationException(error));
-        });
+        BridgeConnector.Socket.Once<string>("webContents-loadURL-error" + Id, (error) => { tcs.SetException(new InvalidOperationException(error)); });
 
         BridgeConnector.Socket.Emit("webContents-loadURL", Id, url, options);
 

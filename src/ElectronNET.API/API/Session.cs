@@ -373,7 +373,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }

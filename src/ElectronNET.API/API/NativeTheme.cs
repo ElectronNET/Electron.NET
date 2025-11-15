@@ -8,7 +8,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Read and respond to changes in Chromium's native color theme.
     /// </summary>
-    public sealed class NativeTheme: ApiBase
+    public sealed class NativeTheme : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
@@ -59,7 +59,7 @@ namespace ElectronNET.API
         /// </item>
         /// <item>
         /// <description>The 'updated' event will be emitted</description>
-        /// </item> 
+        /// </item>
         /// </list>
         /// <para/>
         /// Settings this property to <see cref="ThemeSourceMode.Light"/> will have the following effects:
@@ -79,7 +79,7 @@ namespace ElectronNET.API
         /// <item>
         /// <description>The 'updated' event will be emitted</description>
         /// </item>
-        /// </list> 
+        /// </list>
         /// The usage of this property should align with a classic "dark mode" state machine in your application where the user has three options.
         /// <para/>
         /// <list type="bullet">

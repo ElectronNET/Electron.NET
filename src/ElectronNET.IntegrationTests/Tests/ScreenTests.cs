@@ -64,7 +64,7 @@ namespace ElectronNET.IntegrationTests.Tests
             display.Size.Width.Should().BeGreaterThan(0);
             display.Size.Height.Should().BeGreaterThan(0);
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task GetDisplayMatching_check()
         {

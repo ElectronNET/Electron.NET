@@ -85,7 +85,7 @@ public sealed class ReleaseNotesParser
 
             // Parse content.
             var notes = new List<string>();
-            
+
             while (true)
             {
                 // Sanity checks.

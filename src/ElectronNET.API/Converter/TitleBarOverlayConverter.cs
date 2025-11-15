@@ -43,4 +43,3 @@ public class TitleBarOverlayConverter : JsonConverter<TitleBarOverlay>
         }
     }
 }
-

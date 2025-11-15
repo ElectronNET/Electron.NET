@@ -25,7 +25,7 @@ namespace ElectronNET.WebApp.Controllers
                     Electron.PowerMonitor.OnBattery += () => { Console.WriteLine("The system is about to change to battery power"); };
                 }
             }
-            
+
             return View();
         }
     }

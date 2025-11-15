@@ -12,6 +12,7 @@ namespace ElectronNET.IntegrationTests.Tests
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly ElectronFixture fx;
+
         public AppTests(ElectronFixture fx)
         {
             this.fx = fx;
@@ -151,7 +152,7 @@ namespace ElectronNET.IntegrationTests.Tests
             success.Should().BeTrue();
             var count = await Electron.App.GetBadgeCountAsync();
             // Allow fallback to0 on platforms without badge support
-            (count ==3 || count ==0).Should().BeTrue();
+            (count == 3 || count == 0).Should().BeTrue();
         }
 
         [Fact(Timeout = 20000)]
