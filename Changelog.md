@@ -2,7 +2,12 @@
 
 ## ElectronNET.Core
 
+- Updated dependencies (#930) @softworkz
+- Updated integration tests (#931) @softworkz
+- Updated `ElectronNET.Host` (#935) @softworkz
+- Removed transition period specific build configuration (#928) @softworkz
 - Added `IsRunningBlazor` option to `BrowserWindowOptions` (#926)
+- Added platform support attributes (#929) @softworkz
 
 # 0.1.0
 
