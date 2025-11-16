@@ -1,6 +1,7 @@
 using ElectronNET.API.Entities;
 using System;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
@@ -108,6 +109,7 @@ namespace ElectronNET.API
         /// macOS: The height of the menu bar in pixels.
         /// </summary>
         /// <returns>The height of the menu bar in pixels.</returns>
+        [SupportedOSPlatform("macOS")]
         public Task<Rectangle> GetMenuBarWorkAreaAsync() => this.InvokeAsync<Rectangle>();
 
         /// <summary>

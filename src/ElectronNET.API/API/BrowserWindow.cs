@@ -1,10 +1,11 @@
-using ElectronNET.API.Entities;
-using ElectronNET.API.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.API.Extensions;
 
 // ReSharper disable InconsistentNaming
 
@@ -68,6 +69,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Emitted when window session is going to end due to force shutdown or machine restart or session log off.
     /// </summary>
+    [SupportedOSPlatform("Windows")]
     public event Action OnSessionEnd
     {
         add => AddEvent(value, Id);
@@ -187,6 +189,8 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// macOS: Emitted once when the window is moved to a new position.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public event Action OnMoved
     {
         add => AddEvent(value, Id);
@@ -238,6 +242,8 @@ public class BrowserWindow : ApiBase
     /// and the APPCOMMAND_ prefix is stripped off.e.g.APPCOMMAND_BROWSER_BACKWARD
     /// is emitted as browser-backward.
     /// </summary>
+    [SupportedOSPlatform("Windows")]
+    [SupportedOSPlatform("Linux")]
     public event Action<string> OnAppCommand
     {
         add => AddEvent(value, Id);
@@ -247,6 +253,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Emitted on 3-finger swipe. Possible directions are up, right, down, left.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public event Action<string> OnSwipe
     {
         add => AddEvent(value, Id);
@@ -256,6 +263,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Emitted when the window opens a sheet.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public event Action OnSheetBegin
     {
         add => AddEvent(value, Id);
@@ -265,6 +273,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Emitted when the window has closed a sheet.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public event Action OnSheetEnd
     {
         add => AddEvent(value, Id);
@@ -274,6 +283,7 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Emitted when the native new tab button is clicked.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public event Action OnNewWindowForTab
     {
         add => AddEvent(value, Id);
@@ -432,6 +442,7 @@ public class BrowserWindow : ApiBase
     /// <param name="path">The absolute path to the file to preview with QuickLook. This is important as
     /// Quick Look uses the file name and file extension on the path to determine the content type of the
     /// file to open.</param>
+    [SupportedOSPlatform("macOS")]
     public void PreviewFile(string path) => this.CallMethod1(path);
 
     /// <summary>
@@ -442,11 +453,13 @@ public class BrowserWindow : ApiBase
     /// file to open.</param>
     /// <param name="displayname">The name of the file to display on the Quick Look modal view. This is
     /// purely visual and does not affect the content type of the file. Defaults to path.</param>
+    [SupportedOSPlatform("macOS")]
     public void PreviewFile(string path, string displayname) => this.CallMethod2(path, displayname);
 
     /// <summary>
     /// Closes the currently open Quick Look panel.
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public void CloseFilePreview() => this.CallMethod0();
 
     /// <summary>
@@ -571,6 +584,8 @@ public class BrowserWindow : ApiBase
     /// Sets whether the window can be moved by user. On Linux does nothing.
     /// </summary>
     /// <param name="movable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetMovable(bool movable) => this.CallMethod1(movable);
 
     /// <summary>
@@ -579,12 +594,16 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsMovableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually minimized by user. On Linux does nothing.
     /// </summary>
     /// <param name="minimizable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetMinimizable(bool minimizable) => this.CallMethod1(minimizable);
 
     /// <summary>
@@ -593,12 +612,16 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsMinimizableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
     /// Sets whether the window can be manually maximized by user. On Linux does nothing.
     /// </summary>
     /// <param name="maximizable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetMaximizable(bool maximizable) => this.CallMethod1(maximizable);
 
     /// <summary>
@@ -607,6 +630,8 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsMaximizableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -625,6 +650,8 @@ public class BrowserWindow : ApiBase
     /// Sets whether the window can be manually closed by user. On Linux does nothing.
     /// </summary>
     /// <param name="closable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetClosable(bool closable) => this.CallMethod1(closable);
 
     /// <summary>
@@ -633,6 +660,8 @@ public class BrowserWindow : ApiBase
     /// On Linux always returns true.
     /// </summary>
     /// <returns>On Linux always returns true.</returns>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsClosableAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -743,6 +772,7 @@ public class BrowserWindow : ApiBase
     /// but you may want to display them beneath a HTML-rendered toolbar.
     /// </summary>
     /// <param name="offsetY"></param>
+    [SupportedOSPlatform("macOS")]
     public void SetSheetOffset(float offsetY) => this.CallMethod1(offsetY);
 
     /// <summary>
@@ -752,6 +782,7 @@ public class BrowserWindow : ApiBase
     /// </summary>
     /// <param name="offsetY"></param>
     /// <param name="offsetX"></param>
+    [SupportedOSPlatform("macOS")]
     public void SetSheetOffset(float offsetY, float offsetX) => this.CallMethod2(offsetY, offsetX);
 
     /// <summary>
@@ -764,6 +795,8 @@ public class BrowserWindow : ApiBase
     /// Makes the window not show in the taskbar.
     /// </summary>
     /// <param name="skip"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetSkipTaskbar(bool skip) => this.CallMethod1(skip);
 
     /// <summary>
@@ -789,12 +822,14 @@ public class BrowserWindow : ApiBase
     /// and the icon of the file will show in window’s title bar.
     /// </summary>
     /// <param name="filename"></param>
+    [SupportedOSPlatform("macOS")]
     public void SetRepresentedFilename(string filename) => this.CallMethod1(filename);
 
     /// <summary>
     /// The pathname of the file the window represents.
     /// </summary>
     /// <returns></returns>
+    [SupportedOSPlatform("macOS")]
     public Task<string> GetRepresentedFilenameAsync() => this.InvokeAsync<string>();
 
     /// <summary>
@@ -802,12 +837,14 @@ public class BrowserWindow : ApiBase
     /// and the icon in title bar will become gray when set to true.
     /// </summary>
     /// <param name="edited"></param>
+    [SupportedOSPlatform("macOS")]
     public void SetDocumentEdited(bool edited) => this.CallMethod1(edited);
 
     /// <summary>
     /// Whether the window’s document has been edited.
     /// </summary>
     /// <returns></returns>
+    [SupportedOSPlatform("macOS")]
     public Task<bool> IsDocumentEditedAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -861,6 +898,8 @@ public class BrowserWindow : ApiBase
     /// setting it to null will remove the menu bar.
     /// </summary>
     /// <param name="menuItems"></param>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public void SetMenu(MenuItem[] menuItems)
     {
         menuItems.AddMenuItemsId();
@@ -878,6 +917,8 @@ public class BrowserWindow : ApiBase
     /// <summary>
     /// Remove the window's menu bar.
     /// </summary>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public void RemoveMenu() => this.CallMethod0();
 
     /// <summary>
@@ -950,6 +991,7 @@ public class BrowserWindow : ApiBase
     /// </summary>
     /// <param name="thumbarButtons"></param>
     /// <returns>Whether the buttons were added successfully.</returns>
+    [SupportedOSPlatform("Windows")]
     public Task<bool> SetThumbarButtonsAsync(ThumbarButton[] thumbarButtons)
     {
         var tcs = new TaskCompletionSource<bool>();
@@ -977,12 +1019,14 @@ public class BrowserWindow : ApiBase
     /// an empty region: {x: 0, y: 0, width: 0, height: 0}.
     /// </summary>
     /// <param name="rectangle"></param>
+    [SupportedOSPlatform("Windows")]
     public void SetThumbnailClip(Rectangle rectangle) => this.CallMethod1(rectangle);
 
     /// <summary>
     /// Sets the toolTip that is displayed when hovering over the window thumbnail in the taskbar.
     /// </summary>
     /// <param name="tooltip"></param>
+    [SupportedOSPlatform("Windows")]
     public void SetThumbnailToolTip(string tooltip) => this.CallMethod1(tooltip);
 
     /// <summary>
@@ -992,11 +1036,13 @@ public class BrowserWindow : ApiBase
     /// If one of those properties is not set, then neither will be used.
     /// </summary>
     /// <param name="options"></param>
+    [SupportedOSPlatform("Windows")]
     public void SetAppDetails(AppDetailsOptions options) => this.CallMethod1(options);
 
     /// <summary>
     /// Same as webContents.showDefinitionForSelection().
     /// </summary>
+    [SupportedOSPlatform("macOS")]
     public void ShowDefinitionForSelection() => this.CallMethod0();
 
     /// <summary>
@@ -1006,12 +1052,16 @@ public class BrowserWindow : ApiBase
     /// If the menu bar is already visible, calling setAutoHideMenuBar(true) won’t hide it immediately.
     /// </summary>
     /// <param name="hide"></param>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public void SetAutoHideMenuBar(bool hide) => this.CallMethod1(hide);
 
     /// <summary>
     /// Whether menu bar automatically hides itself.
     /// </summary>
     /// <returns></returns>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsMenuBarAutoHideAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -1019,12 +1069,16 @@ public class BrowserWindow : ApiBase
     /// users can still bring up the menu bar by pressing the single Alt key.
     /// </summary>
     /// <param name="visible"></param>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public void SetMenuBarVisibility(bool visible) => this.CallMethod1(visible);
 
     /// <summary>
     /// Whether the menu bar is visible.
     /// </summary>
     /// <returns></returns>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("Windows")]
     public Task<bool> IsMenuBarVisibleAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -1033,6 +1087,8 @@ public class BrowserWindow : ApiBase
     /// Note: This API does nothing on Windows.
     /// </summary>
     /// <param name="visible"></param>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("macOS")]
     public void SetVisibleOnAllWorkspaces(bool visible) => this.CallMethod1(visible);
 
     /// <summary>
@@ -1041,6 +1097,8 @@ public class BrowserWindow : ApiBase
     /// Note: This API always returns false on Windows.
     /// </summary>
     /// <returns></returns>
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("macOS")]
     public Task<bool> IsVisibleOnAllWorkspacesAsync() => this.InvokeAsync<bool>();
 
     /// <summary>
@@ -1059,12 +1117,16 @@ public class BrowserWindow : ApiBase
     /// On Windows it calls SetWindowDisplayAffinity with WDA_MONITOR.
     /// </summary>
     /// <param name="enable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetContentProtection(bool enable) => this.CallMethod1(enable);
 
     /// <summary>
     /// Changes whether the window can be focused.
     /// </summary>
     /// <param name="focusable"></param>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public void SetFocusable(bool focusable) => this.CallMethod1(focusable);
 
     /// <summary>
@@ -1117,6 +1179,7 @@ public class BrowserWindow : ApiBase
     /// Controls whether to hide cursor when typing.
     /// </summary>
     /// <param name="autoHide"></param>
+    [SupportedOSPlatform("macOS")]
     public void SetAutoHideCursor(bool autoHide) => this.CallMethod1(autoHide);
 
     /// <summary>
@@ -1126,6 +1189,7 @@ public class BrowserWindow : ApiBase
     /// <param name="type">Can be appearance-based, light, dark, titlebar, selection,
     /// menu, popover, sidebar, medium-light or ultra-dark.
     /// See the macOS documentation for more details.</param>
+    [SupportedOSPlatform("macOS")]
     public void SetVibrancy(Vibrancy type) => this.CallMethod1(type.GetDescription());
 
     /// <summary>

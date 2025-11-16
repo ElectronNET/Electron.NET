@@ -1,5 +1,6 @@
 using ElectronNET.API.Entities;
 using System;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -186,6 +187,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public Task ShowCertificateTrustDialogAsync(CertificateTrustDialogOptions options)
         {
             return ShowCertificateTrustDialogAsync(null, options);
@@ -199,6 +202,8 @@ namespace ElectronNET.API
         /// <param name="browserWindow"></param>
         /// <param name="options"></param>
         /// <returns></returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
             var tcs = new TaskCompletionSource<object>();
