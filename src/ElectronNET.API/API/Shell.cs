@@ -1,8 +1,7 @@
+using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
-using ElectronNET.API.Serialization;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ElectronNET.API
 {
@@ -68,7 +67,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Open the given external protocol URL in the desktop’s default manner. 
+        /// Open the given external protocol URL in the desktop’s default manner.
         /// (For example, mailto: URLs in the user’s default mail agent).
         /// </summary>
         /// <param name="url">Max 2081 characters on windows.</param>
@@ -79,7 +78,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Open the given external protocol URL in the desktop’s default manner. 
+        /// Open the given external protocol URL in the desktop’s default manner.
         /// (For example, mailto: URLs in the user’s default mail agent).
         /// </summary>
         /// <param name="url">Max 2081 characters on windows.</param>
@@ -133,6 +132,7 @@ namespace ElectronNET.API
         /// <param name="operation">Default is <see cref="ShortcutLinkOperation.Create"/></param>
         /// <param name="options">Structure of a shortcut.</param>
         /// <returns>Whether the shortcut was created successfully.</returns>
+        [SupportedOSPlatform("Windows")]
         public Task<bool> WriteShortcutLinkAsync(string shortcutPath, ShortcutLinkOperation operation, ShortcutDetails options)
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -149,6 +149,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="shortcutPath">The path tot the shortcut.</param>
         /// <returns><see cref="ShortcutDetails"/> of the shortcut.</returns>
+        [SupportedOSPlatform("Windows")]
         public Task<ShortcutDetails> ReadShortcutLinkAsync(string shortcutPath)
         {
             var tcs = new TaskCompletionSource<ShortcutDetails>();
@@ -158,7 +159,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
@@ -8,7 +9,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Read and respond to changes in Chromium's native color theme.
     /// </summary>
-    public sealed class NativeTheme: ApiBase
+    public sealed class NativeTheme : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
@@ -59,7 +60,7 @@ namespace ElectronNET.API
         /// </item>
         /// <item>
         /// <description>The 'updated' event will be emitted</description>
-        /// </item> 
+        /// </item>
         /// </list>
         /// <para/>
         /// Settings this property to <see cref="ThemeSourceMode.Light"/> will have the following effects:
@@ -79,7 +80,7 @@ namespace ElectronNET.API
         /// <item>
         /// <description>The 'updated' event will be emitted</description>
         /// </item>
-        /// </list> 
+        /// </list>
         /// The usage of this property should align with a classic "dark mode" state machine in your application where the user has three options.
         /// <para/>
         /// <list type="bullet">
@@ -107,26 +108,30 @@ namespace ElectronNET.API
         /// A <see cref="ThemeSourceMode"/> property that can be <see cref="ThemeSourceMode.System"/>, <see cref="ThemeSourceMode.Light"/> or <see cref="ThemeSourceMode.Dark"/>. It is used to override (<seealso cref="SetThemeSource"/>) and
         /// supercede the value that Chromium has chosen to use internally.
         /// </summary>
-        public Task<ThemeSourceMode> GetThemeSourceAsync() => GetPropertyAsync<ThemeSourceMode>();
+        public Task<ThemeSourceMode> GetThemeSourceAsync() => this.InvokeAsync<ThemeSourceMode>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has a dark mode enabled or is
         /// being instructed to show a dark-style UI. If you want to modify this value you
         /// should use <see cref="SetThemeSource"/>.
         /// </summary>
-        public Task<bool> ShouldUseDarkColorsAsync() => GetPropertyAsync<bool>();
+        public Task<bool> ShouldUseDarkColorsAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has high-contrast mode enabled or is
         /// being instructed to show a high-contrast UI.
         /// </summary>
-        public Task<bool> ShouldUseHighContrastColorsAsync() => GetPropertyAsync<bool>();
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
+        public Task<bool> ShouldUseHighContrastColorsAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A <see cref="bool"/> for if the OS / Chromium currently has an inverted color scheme or is
         /// being instructed to use an inverted color scheme.
         /// </summary>
-        public Task<bool> ShouldUseInvertedColorSchemeAsync() => GetPropertyAsync<bool>();
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
+        public Task<bool> ShouldUseInvertedColorSchemeAsync() => this.InvokeAsync<bool>();
 
         /// <summary>
         /// Emitted when something in the underlying NativeTheme has changed. This normally means that either the value of <see cref="ShouldUseDarkColorsAsync"/>,

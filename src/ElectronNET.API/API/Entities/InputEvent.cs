@@ -78,5 +78,3 @@ namespace ElectronNET.API.Entities
         public InputEventType Type { get; set; }
     }
 }
-
-

@@ -51,14 +51,14 @@ namespace ElectronNET.Common
 
             return str;
         }
-        
+
         public static string StripOn(this string str)
         {
             if (string.IsNullOrWhiteSpace(str) || !str.StartsWith("On", StringComparison.Ordinal))
             {
                 return str;
             }
-            
+
             return str.Substring(2);
         }
 
@@ -66,7 +66,7 @@ namespace ElectronNET.Common
         {
             return string.Join("-", Regex.Split(str.StripOn(), "(?<!^)(?=[A-Z])")).ToLower(CultureInfo.InvariantCulture);
         }
-        
+
         public static string ToCamelCaseEventName(this string str)
         {
             return str.StripOn().LowerFirst();

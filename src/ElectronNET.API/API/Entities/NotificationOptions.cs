@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
@@ -43,6 +44,8 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The timeout duration of the notification. Can be 'default' or 'never'.
         /// </summary>
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("Windows")]
         public string TimeoutType { get; set; }
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The urgency level of the notification. Can be 'normal', 'critical', or 'low'.
         /// </summary>
+        [SupportedOSPlatform("Linux")]
         public string Urgency { get; set; }
 
         /// <summary>
@@ -127,6 +131,7 @@ namespace ElectronNET.API.Entities
         /// The string the user entered into the inline reply field
         /// </summary>
         [JsonIgnore]
+        [SupportedOSPlatform("macOS")]
         public Action<string> OnReply { get; set; }
 
         /// <summary>
@@ -142,6 +147,7 @@ namespace ElectronNET.API.Entities
         /// macOS only - The index of the action that was activated
         /// </summary>
         [JsonIgnore]
+        [SupportedOSPlatform("macOS")]
         public Action<string> OnAction { get; set; }
 
         /// <summary>

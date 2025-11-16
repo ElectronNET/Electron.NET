@@ -1,7 +1,9 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Serialization;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 // ReSharper disable InconsistentNaming
 
 namespace ElectronNET.API
@@ -9,7 +11,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Perform copy and paste operations on the system clipboard.
     /// </summary>
-    public sealed class Clipboard: ApiBase
+    public sealed class Clipboard : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
@@ -45,7 +47,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns>The content in the clipboard as plain text.</returns>
-        public Task<string> ReadTextAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadTextAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard as plain text.
@@ -62,7 +64,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadHTMLAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadHTMLAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes markup to the clipboard.
@@ -79,7 +81,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string> ReadRTFAsync(string type = "") => GetPropertyAsync<string>(type);
+        public Task<string> ReadRTFAsync(string type = "") => this.InvokeAsync<string>(type);
 
         /// <summary>
         /// Writes the text into the clipboard in RTF.
@@ -92,23 +94,27 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Returns an Object containing title and url keys representing 
-        /// the bookmark in the clipboard. The title and url values will 
+        /// Returns an Object containing title and url keys representing
+        /// the bookmark in the clipboard. The title and url values will
         /// be empty strings when the bookmark is unavailable.
         /// </summary>
         /// <returns></returns>
-        public Task<ReadBookmark> ReadBookmarkAsync() => GetPropertyAsync<ReadBookmark>();
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
+        public Task<ReadBookmark> ReadBookmarkAsync() => this.InvokeAsync<ReadBookmark>();
 
         /// <summary>
         /// Writes the title and url into the clipboard as a bookmark.
         /// 
         /// Note: Most apps on Windows don’t support pasting bookmarks
-        /// into them so you can use clipboard.write to write both a 
+        /// into them so you can use clipboard.write to write both a
         /// bookmark and fallback text to the clipboard.
         /// </summary>
         /// <param name="title"></param>
         /// <param name="url"></param>
         /// <param name="type"></param>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public void WriteBookmark(string title, string url, string type = "")
         {
             BridgeConnector.Socket.Emit("clipboard-writeBookmark", title, url, type);
@@ -120,13 +126,15 @@ namespace ElectronNET.API
         /// find pasteboard whenever the application is activated.
         /// </summary>
         /// <returns></returns>
-        public Task<string> ReadFindTextAsync() => GetPropertyAsync<string>();
+        [SupportedOSPlatform("macOS")]
+        public Task<string> ReadFindTextAsync() => this.InvokeAsync<string>();
 
         /// <summary>
-        /// macOS: Writes the text into the find pasteboard as plain text. This method uses 
+        /// macOS: Writes the text into the find pasteboard as plain text. This method uses
         /// synchronous IPC when called from the renderer process.
         /// </summary>
         /// <param name="text"></param>
+        [SupportedOSPlatform("macOS")]
         public void WriteFindText(string text)
         {
             BridgeConnector.Socket.Emit("clipboard-writeFindText", text);
@@ -146,7 +154,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<string[]> AvailableFormatsAsync(string type = "") => GetPropertyAsync<string[]>(type);
+        public Task<string[]> AvailableFormatsAsync(string type = "") => this.InvokeAsync<string[]>(type);
 
         /// <summary>
         /// Writes data to the clipboard.
@@ -163,7 +171,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public Task<NativeImage> ReadImageAsync(string type = "") => GetPropertyAsync<NativeImage>(type);
+        public Task<NativeImage> ReadImageAsync(string type = "") => this.InvokeAsync<NativeImage>(type);
 
         /// <summary>
         /// Writes an image to the clipboard.

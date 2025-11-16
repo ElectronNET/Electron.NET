@@ -1,6 +1,7 @@
 using ElectronNET.API.Entities;
 using System;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
@@ -10,7 +11,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Retrieve information about screen size, displays, cursor position, etc.
     /// </summary>
-    public sealed class Screen: ApiBase
+    public sealed class Screen : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
@@ -35,8 +36,8 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Emitted when one or more metrics change in a display. 
-        /// The changedMetrics is an array of strings that describe the changes. 
+        /// Emitted when one or more metrics change in a display.
+        /// The changedMetrics is an array of strings that describe the changes.
         /// Possible changes are bounds, workArea, scaleFactor and rotation.
         /// </summary>
         public event Action<Display, string[]> OnDisplayMetricsChanged
@@ -56,6 +57,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-screen-display-metrics-changed", GetHashCode());
                 }
+
                 _onDisplayMetricsChanged += value;
             }
             remove
@@ -101,37 +103,38 @@ namespace ElectronNET.API
         /// The current absolute position of the mouse pointer.
         /// </summary>
         /// <returns></returns>
-        public Task<Point> GetCursorScreenPointAsync() => GetPropertyAsync<Point>();
+        public Task<Point> GetCursorScreenPointAsync() => this.InvokeAsync<Point>();
 
         /// <summary>
         /// macOS: The height of the menu bar in pixels.
         /// </summary>
         /// <returns>The height of the menu bar in pixels.</returns>
-        public Task<Rectangle> GetMenuBarWorkAreaAsync() => GetPropertyAsync<Rectangle>();
+        [SupportedOSPlatform("macOS")]
+        public Task<Rectangle> GetMenuBarWorkAreaAsync() => this.InvokeAsync<Rectangle>();
 
         /// <summary>
         /// The primary display.
         /// </summary>
         /// <returns></returns>
-        public Task<Display> GetPrimaryDisplayAsync() => GetPropertyAsync<Display>();
+        public Task<Display> GetPrimaryDisplayAsync() => this.InvokeAsync<Display>();
 
         /// <summary>
         /// An array of displays that are currently available.
         /// </summary>
         /// <returns>An array of displays that are currently available.</returns>
-        public Task<Display[]> GetAllDisplaysAsync() => GetPropertyAsync<Display[]>();
+        public Task<Display[]> GetAllDisplaysAsync() => this.InvokeAsync<Display[]>();
 
         /// <summary>
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
-        public Task<Display> GetDisplayNearestPointAsync(Point point) => GetPropertyAsync<Display>(point);
+        public Task<Display> GetDisplayNearestPointAsync(Point point) => this.InvokeAsync<Display>(point);
 
         /// <summary>
         /// The display that most closely intersects the provided bounds.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns>The display that most closely intersects the provided bounds.</returns>
-        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => GetPropertyAsync<Display>(rectangle);
+        public Task<Display> GetDisplayMatchingAsync(Rectangle rectangle) => this.InvokeAsync<Display>(rectangle);
     }
 }

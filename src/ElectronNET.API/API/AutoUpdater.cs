@@ -10,7 +10,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Enable apps to automatically update themselves. Based on electron-updater.
     /// </summary>
-    public sealed class AutoUpdater: ApiBase
+    public sealed class AutoUpdater : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
@@ -23,7 +23,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -40,7 +40,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -49,7 +49,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// *GitHub provider only.* Whether to allow update to pre-release versions. 
+        /// *GitHub provider only.* Whether to allow update to pre-release versions.
         /// Defaults to "true" if application version contains prerelease components (e.g. "0.12.1-alpha.1", here "alpha" is a prerelease component), otherwise "false".
         /// 
         /// If "true", downgrade will be allowed("allowDowngrade" will be set to "true").
@@ -58,7 +58,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -67,14 +67,14 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// *GitHub provider only.* 
+        /// *GitHub provider only.*
         /// Get all release notes (from current version to latest), not just the latest (Default is false).
         /// </summary>
         public bool FullChangelog
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -91,7 +91,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<bool>()).Result;
+                return Task.Run(() => this.InvokeAsync<bool>()).Result;
             }
             set
             {
@@ -106,7 +106,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<string>()).Result;
+                return Task.Run(() => this.InvokeAsync<string>()).Result;
             }
         }
 
@@ -117,12 +117,12 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<SemVer>());
+                return Task.Run(() => this.InvokeAsync<SemVer>());
             }
         }
 
         /// <summary>
-        /// Get the update channel. Not applicable for GitHub. 
+        /// Get the update channel. Not applicable for GitHub.
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
         [Obsolete("Use the asynchronous version ChannelAsync instead")]
@@ -135,19 +135,19 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Get the update channel. Not applicable for GitHub. 
+        /// Get the update channel. Not applicable for GitHub.
         /// Doesn’t return channel from the update configuration, only if was previously set.
         /// </summary>
         public Task<string> ChannelAsync
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<string>());
+                return Task.Run(() => this.InvokeAsync<string>());
             }
         }
 
         /// <summary>
-        /// Set the update channel. Not applicable for GitHub. 
+        /// Set the update channel. Not applicable for GitHub.
         /// </summary>
         public string SetChannel
         {
@@ -165,7 +165,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return Task.Run(() => GetPropertyAsync<Dictionary<string, string>>());
+                return Task.Run(() => this.InvokeAsync<Dictionary<string, string>>());
             }
         }
 
@@ -199,7 +199,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Emitted when there is an available update. 
+        /// Emitted when there is an available update.
         /// The update is downloaded automatically if AutoDownload is true.
         /// </summary>
         public event Action<UpdateInfo> OnUpdateAvailable
@@ -332,11 +332,11 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        ///  Restarts the app and installs the update after it has been downloaded.
-        ///  It should only be called after `update-downloaded` has been emitted.
-        ///  
-        ///  Note: QuitAndInstall() will close all application windows first and only emit `before-quit` event on `app` after that.
-        ///  This is different from the normal quit event sequence.
+        ///    Restarts the app and installs the update after it has been downloaded.
+        ///    It should only be called after `update-downloaded` has been emitted.
+        ///
+        ///    Note: QuitAndInstall() will close all application windows first and only emit `before-quit` event on `app` after that.
+        ///    This is different from the normal quit event sequence.
         /// </summary>
         /// <param name="isSilent">*windows-only* Runs the installer in silent mode. Defaults to `false`.</param>
         /// <param name="isForceRunAfter">Run the app after finish even on silent install. Not applicable for macOS. Ignored if `isSilent` is set to `false`.</param>
@@ -374,9 +374,5 @@ namespace ElectronNET.API
 
             return tcs.Task;
         }
-
-
     }
 }
-
-

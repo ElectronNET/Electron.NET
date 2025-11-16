@@ -2,6 +2,7 @@ using ElectronNET.API.Entities;
 using ElectronNET.API.Extensions;
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace ElectronNET.API
         private event Action _windowAllClosed;
 
         /// <summary>
-        /// Emitted before the application starts closing its windows. 
+        /// Emitted before the application starts closing its windows.
         /// <para/>
         /// Note: If application quit was initiated by <see cref="AutoUpdater.QuitAndInstall"/> then <see cref="BeforeQuit"/>
         /// is emitted after emitting close event on all windows and closing them.
@@ -259,6 +260,8 @@ namespace ElectronNET.API
         /// screen readers, are enabled or disabled. See https://www.chromium.org/developers/design-documents/accessibility for more details.
         /// </summary>
         /// <returns><see langword="true"/> when Chrome's accessibility support is enabled, <see langword="false"/> otherwise.</returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action<bool> AccessibilitySupportChanged
         {
             add => AddEvent(value, GetHashCode());
@@ -316,6 +319,7 @@ namespace ElectronNET.API
         /// <para/>
         /// On Windows, you have to parse the arguments using App.CommandLine to get the filepath.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public event Action<string> OpenFile
         {
             add => AddEvent(value, GetHashCode());
@@ -327,6 +331,7 @@ namespace ElectronNET.API
         /// Emitted when a MacOS user wants to open a URL with the application. Your application's Info.plist file must
         /// define the URL scheme within the CFBundleURLTypes key, and set NSPrincipalClass to AtomApplication.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public event Action<string> OpenUrl
         {
             add => AddEvent(value, GetHashCode());
@@ -366,7 +371,7 @@ namespace ElectronNET.API
         {
             get
             {
-                return this.GetPropertyAsync<string>();
+                return this.InvokeAsync<string>();
             }
         }
 
@@ -397,7 +402,6 @@ namespace ElectronNET.API
 
         private static App _app;
         private static object _syncRoot = new object();
-
 
 
         /// <summary>
@@ -482,6 +486,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Hides all application windows without minimizing them.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public void Hide()
         {
             this.CallMethod0();
@@ -490,6 +495,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Shows application windows after they were hidden. Does not automatically focus them.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public void Show()
         {
             this.CallMethod0();
@@ -501,7 +507,7 @@ namespace ElectronNET.API
         public async Task<string> GetAppPathAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -558,14 +564,14 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// The version of the loaded application. If no version is found in the application’s package.json file, 
+        /// The version of the loaded application. If no version is found in the application’s package.json file,
         /// the version of the current bundle or executable is returned.
         /// </summary>
         /// <returns>The version of the loaded application.</returns>
         public async Task<string> GetVersionAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -579,7 +585,7 @@ namespace ElectronNET.API
         public async Task<string> GetLocaleAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -587,6 +593,8 @@ namespace ElectronNET.API
         /// list from the task bar, and on macOS you can visit it from dock menu.
         /// </summary>
         /// <param name="path">Path to add.</param>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public void AddRecentDocument(string path)
         {
             this.CallMethod1(path);
@@ -595,6 +603,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Clears the recent documents list.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public void ClearRecentDocuments()
         {
             this.CallMethod0();
@@ -710,6 +720,8 @@ namespace ElectronNET.API
         /// <param name="protocol">The name of your protocol, without ://.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, CancellationToken cancellationToken = default)
         {
             return await this.RemoveAsDefaultProtocolClientAsync(protocol, null, null, cancellationToken).ConfigureAwait(false);
@@ -723,6 +735,8 @@ namespace ElectronNET.API
         /// <param name="path">Defaults to process.execPath.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, CancellationToken cancellationToken = default)
         {
             return await this.RemoveAsDefaultProtocolClientAsync(protocol, path, null, cancellationToken).ConfigureAwait(false);
@@ -737,6 +751,8 @@ namespace ElectronNET.API
         /// <param name="args">Defaults to an empty array.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<bool> RemoveAsDefaultProtocolClientAsync(string protocol, string path, string[] args, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -827,6 +843,7 @@ namespace ElectronNET.API
         /// <param name="userTasks">Array of <see cref="UserTask"/> objects.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("Windows")]
         public async Task<bool> SetUserTasksAsync(UserTask[] userTasks, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -847,10 +864,11 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Jump List settings.</returns>
+        [SupportedOSPlatform("Windows")]
         public async Task<JumpListSettings> GetJumpListSettingsAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<JumpListSettings>().ConfigureAwait(false);
+            return await this.InvokeAsync<JumpListSettings>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -869,6 +887,7 @@ namespace ElectronNET.API
         /// omitted from the Jump List. The list of removed items can be obtained using <see cref="GetJumpListSettingsAsync"/>.
         /// </summary>
         /// <param name="categories">Array of <see cref="JumpListCategory"/> objects.</param>
+        [SupportedOSPlatform("Windows")]
         public void SetJumpList(JumpListCategory[] categories)
         {
             this.CallMethod1(categories);
@@ -941,7 +960,7 @@ namespace ElectronNET.API
         public async Task<bool> HasSingleInstanceLockAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -951,6 +970,7 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="type">Uniquely identifies the activity. Maps to <see href="https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSUserActivity_Class/index.html#//apple_ref/occ/instp/NSUserActivity/activityType">NSUserActivity.activityType</see>.</param>
         /// <param name="userInfo">App-specific state to store for use by another device.</param>
+        [SupportedOSPlatform("macOS")]
         public void SetUserActivity(string type, object userInfo)
         {
             SetUserActivity(type, userInfo, null);
@@ -968,6 +988,7 @@ namespace ElectronNET.API
         /// <param name="webpageUrl">
         /// The webpage to load in a browser if no suitable app is installed on the resuming device. The scheme must be http or https.
         /// </param>
+        [SupportedOSPlatform("macOS")]
         public void SetUserActivity(string type, object userInfo, string webpageUrl)
         {
             this.CallMethod3(type, userInfo, webpageUrl);
@@ -977,15 +998,17 @@ namespace ElectronNET.API
         /// The type of the currently running activity.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("macOS")]
         public async Task<string> GetCurrentActivityTypeAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<string>().ConfigureAwait(false);
+            return await this.InvokeAsync<string>().ConfigureAwait(false);
         }
 
         /// <summary>
         /// Invalidates the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public void InvalidateCurrentActivity()
         {
             this.CallMethod0();
@@ -994,6 +1017,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Marks the current <see href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/Handoff/HandoffFundamentals/HandoffFundamentals.html">Handoff</see> user activity as inactive without invalidating it.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
         public void ResignCurrentActivity()
         {
             this.CallMethod0();
@@ -1003,6 +1027,7 @@ namespace ElectronNET.API
         /// Changes the <see href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd378459(v=vs.85).aspx">Application User Model ID</see> to id.
         /// </summary>
         /// <param name="id">Model Id.</param>
+        [SupportedOSPlatform("Windows")]
         public void SetAppUserModelId(string id)
         {
             this.CallMethod1(id);
@@ -1017,6 +1042,7 @@ namespace ElectronNET.API
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Result of import. Value of 0 indicates success.</returns>
+        [SupportedOSPlatform("Linux")]
         public async Task<int> ImportCertificateAsync(ImportCertificateOptions options, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1043,7 +1069,7 @@ namespace ElectronNET.API
         public async Task<ProcessMetric[]> GetAppMetricsAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<ProcessMetric[]>().ConfigureAwait(false);
+            return await this.InvokeAsync<ProcessMetric[]>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1055,7 +1081,7 @@ namespace ElectronNET.API
         public async Task<GPUFeatureStatus> GetGpuFeatureStatusAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<GPUFeatureStatus>().ConfigureAwait(false);
+            return await this.InvokeAsync<GPUFeatureStatus>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1068,6 +1094,8 @@ namespace ElectronNET.API
         /// <param name="count">Counter badge.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Whether the call succeeded.</returns>
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("macOS")]
         public async Task<bool> SetBadgeCountAsync(int count, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1087,10 +1115,12 @@ namespace ElectronNET.API
         /// The current value displayed in the counter badge.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("macOS")]
         public async Task<int> GetBadgeCountAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<int>().ConfigureAwait(false);
+            return await this.InvokeAsync<int>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1102,16 +1132,19 @@ namespace ElectronNET.API
         /// Whether the current desktop environment is Unity launcher.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("Linux")]
         public async Task<bool> IsUnityRunningAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>
         /// If you provided path and args options to <see cref="SetLoginItemSettings"/> then you need to pass the same
         /// arguments here for <see cref="LoginItemSettings.OpenAtLogin"/> to be set correctly.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<LoginItemSettings> GetLoginItemSettingsAsync(CancellationToken cancellationToken = default)
         {
             return await this.GetLoginItemSettingsAsync(null, cancellationToken).ConfigureAwait(false);
@@ -1123,6 +1156,8 @@ namespace ElectronNET.API
         /// </summary>
         /// <param name="options"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<LoginItemSettings> GetLoginItemSettingsAsync(LoginItemSettingsOptions options, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1152,6 +1187,8 @@ namespace ElectronNET.API
         /// you'll want to set the launch path to Update.exe, and pass arguments that specify your application name.
         /// </summary>
         /// <param name="loginSettings"></param>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public void SetLoginItemSettings(LoginSettings loginSettings)
         {
             this.CallMethod1(loginSettings);
@@ -1163,10 +1200,12 @@ namespace ElectronNET.API
         /// See <see href="chromium.org/developers/design-documents/accessibility">Chromium's accessibility docs</see> for more details.
         /// </summary>
         /// <returns><see langword="true"/> if Chrome’s accessibility support is enabled, <see langword="false"/> otherwise.</returns>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task<bool> IsAccessibilitySupportEnabledAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await this.GetPropertyAsync<bool>().ConfigureAwait(false);
+            return await this.InvokeAsync<bool>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1179,6 +1218,8 @@ namespace ElectronNET.API
         /// Note: Rendering accessibility tree can significantly affect the performance of your app. It should not be enabled by default.
         /// </summary>
         /// <param name="enabled">Enable or disable <see href="https://developers.google.com/web/fundamentals/accessibility/semantics-builtin/the-accessibility-tree">accessibility tree</see> rendering.</param>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public void SetAccessibilitySupportEnabled(bool enabled)
         {
             this.CallMethod1(enabled);
@@ -1245,7 +1286,7 @@ namespace ElectronNET.API
                 return Task.Run(() =>
                 {
                     var taskCompletionSource = new TaskCompletionSource<string>();
-                    
+
                     BridgeConnector.Socket.Once<string>("appGetUserAgentFallbackCompleted", taskCompletionSource.SetResult);
                     BridgeConnector.Socket.Emit("appGetUserAgentFallback");
 

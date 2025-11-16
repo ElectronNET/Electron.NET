@@ -7,6 +7,7 @@ namespace ElectronNET.IntegrationTests.Tests
     public class MenuTests
     {
         private readonly ElectronFixture fx;
+
         public MenuTests(ElectronFixture fx)
         {
             this.fx = fx;

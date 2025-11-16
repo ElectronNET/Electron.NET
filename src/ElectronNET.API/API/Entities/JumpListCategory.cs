@@ -1,4 +1,3 @@
-
 using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
@@ -24,4 +23,3 @@ namespace ElectronNET.API.Entities
         public JumpListCategoryType Type { get; set; }
     }
 }
-

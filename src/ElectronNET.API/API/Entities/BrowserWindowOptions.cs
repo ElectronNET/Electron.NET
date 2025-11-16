@@ -1,5 +1,4 @@
 using ElectronNET.Converter;
-
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
@@ -125,6 +124,11 @@ namespace ElectronNET.API.Entities
         /// Whether to show the window in taskbar. Default is false.
         /// </summary>
         public bool SkipTaskbar { get; set; }
+
+        /// <summary>
+        /// Determines if Blazor is used. Will disable "module" and "process" globals. Default is false.
+        /// </summary>
+        public bool IsRunningBlazor { get; set; }
 
         /// <summary>
         /// The kiosk mode. Default is false.
@@ -292,7 +296,3 @@ namespace ElectronNET.API.Entities
         public string ProxyCredentials { get; set; }
     }
 }
-
-
-
-

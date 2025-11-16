@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Versioning;
 
 // ReSharper disable InconsistentNaming
 
@@ -7,14 +8,16 @@ namespace ElectronNET.API
     /// <summary>
     /// Monitor power state changes..
     /// </summary>
-    public sealed class PowerMonitor: ApiBase
+    public sealed class PowerMonitor : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
 
         /// <summary>
-        /// Emitted when the system is about to lock the screen. 
+        /// Emitted when the system is about to lock the screen.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action OnLockScreen
         {
             add => AddEvent(value);
@@ -22,8 +25,10 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Emitted when the system is about to unlock the screen. 
+        /// Emitted when the system is about to unlock the screen.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action OnUnLockScreen
         {
             add => AddEvent(value);
@@ -51,6 +56,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when the system changes to AC power.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action OnAC
         {
             add => AddEvent(value);
@@ -60,6 +67,8 @@ namespace ElectronNET.API
         /// <summary>
         /// Emitted when system changes to battery power.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action OnBattery
         {
             add => AddEvent(value);
@@ -72,6 +81,8 @@ namespace ElectronNET.API
         /// order for the app to exit cleanly.If `e.preventDefault()` is called, the app
         /// should exit as soon as possible by calling something like `app.quit()`.
         /// </summary>
+        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("macOS")]
         public event Action OnShutdown
         {
             add => AddEvent(value);

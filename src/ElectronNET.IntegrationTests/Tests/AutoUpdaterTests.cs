@@ -7,18 +7,19 @@
     public class AutoUpdaterTests
     {
         private readonly ElectronFixture fx;
+
         public AutoUpdaterTests(ElectronFixture fx)
         {
             this.fx = fx;
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task AutoDownload_check()
         {
             Electron.AutoUpdater.AutoDownload = false;
-            var test1 =  Electron.AutoUpdater.AutoDownload;
+            var test1 = Electron.AutoUpdater.AutoDownload;
             Electron.AutoUpdater.AutoDownload = true;
-            var test2 =  Electron.AutoUpdater.AutoDownload;
+            var test2 = Electron.AutoUpdater.AutoDownload;
             test1.Should().BeFalse();
             test2.Should().BeTrue();
         }
@@ -27,9 +28,9 @@
         public async Task AutoInstallOnAppQuit_check()
         {
             Electron.AutoUpdater.AutoInstallOnAppQuit = false;
-            var test1 =  Electron.AutoUpdater.AutoInstallOnAppQuit;
+            var test1 = Electron.AutoUpdater.AutoInstallOnAppQuit;
             Electron.AutoUpdater.AutoInstallOnAppQuit = true;
-            var test2 =  Electron.AutoUpdater.AutoInstallOnAppQuit;
+            var test2 = Electron.AutoUpdater.AutoInstallOnAppQuit;
             test1.Should().BeFalse();
             test2.Should().BeTrue();
         }
@@ -38,9 +39,9 @@
         public async Task AllowPrerelease_check()
         {
             Electron.AutoUpdater.AllowPrerelease = false;
-            var test1 =  Electron.AutoUpdater.AllowPrerelease;
+            var test1 = Electron.AutoUpdater.AllowPrerelease;
             Electron.AutoUpdater.AllowPrerelease = true;
-            var test2 =  Electron.AutoUpdater.AllowPrerelease;
+            var test2 = Electron.AutoUpdater.AllowPrerelease;
             test1.Should().BeFalse();
             test2.Should().BeTrue();
         }
@@ -49,9 +50,9 @@
         public async Task FullChangelog_check()
         {
             Electron.AutoUpdater.FullChangelog = false;
-            var test1 =  Electron.AutoUpdater.FullChangelog;
+            var test1 = Electron.AutoUpdater.FullChangelog;
             Electron.AutoUpdater.FullChangelog = true;
-            var test2 =  Electron.AutoUpdater.FullChangelog;
+            var test2 = Electron.AutoUpdater.FullChangelog;
             test1.Should().BeFalse();
             test2.Should().BeTrue();
         }
@@ -60,9 +61,9 @@
         public async Task AllowDowngrade_check()
         {
             Electron.AutoUpdater.AllowDowngrade = false;
-            var test1 =  Electron.AutoUpdater.AllowDowngrade;
+            var test1 = Electron.AutoUpdater.AllowDowngrade;
             Electron.AutoUpdater.AllowDowngrade = true;
-            var test2 =  Electron.AutoUpdater.AllowDowngrade;
+            var test2 = Electron.AutoUpdater.AllowDowngrade;
             test1.Should().BeFalse();
             test2.Should().BeTrue();
         }
@@ -70,10 +71,10 @@
         [Fact(Timeout = 20000)]
         public async Task UpdateConfigPath_check()
         {
-            var test1 =  Electron.AutoUpdater.UpdateConfigPath;
+            var test1 = Electron.AutoUpdater.UpdateConfigPath;
             test1.Should().Be(string.Empty);
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task CurrentVersionAsync_check()
         {
@@ -88,6 +89,7 @@
             var test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be(string.Empty);
             Electron.AutoUpdater.SetChannel = "beta";
+            await Task.Delay(500);
             test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be("beta");
         }
@@ -107,26 +109,26 @@
             test.Count.Should().Be(1);
             test["key1"].Should().Be("value1");
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task CheckForUpdatesAsync_check()
         {
             var test = await Electron.AutoUpdater.CheckForUpdatesAsync();
             test.Should().BeNull();
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task CheckForUpdatesAndNotifyAsync_check()
         {
             var test = await Electron.AutoUpdater.CheckForUpdatesAsync();
             test.Should().BeNull();
         }
-        
+
         [Fact(Timeout = 20000)]
         public async Task GetFeedURLAsync_check()
         {
             var test = await Electron.AutoUpdater.GetFeedURLAsync();
             test.Should().Contain("Deprecated");
         }
-    }    
+    }
 }

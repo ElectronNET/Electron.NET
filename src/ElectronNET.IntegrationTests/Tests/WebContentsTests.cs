@@ -71,11 +71,11 @@ namespace ElectronNET.IntegrationTests.Tests
             var ok = await this.fx.MainWindow.WebContents.PrintAsync(new PrintOptions { Silent = true, PrintBackground = true });
             ok.Should().BeTrue();
         }
-        
+
         [SkippableFact(Timeout = 20000)]
         public async Task GetPrintersAsync_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping printer test in CI environment."); 
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping printer test in CI environment.");
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }

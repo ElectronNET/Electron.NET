@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildThisFileDirectory)ElectronNET.targets" />
+  <PropertyGroup Condition="'$(ElectronExecutable)' == ''">
+    <WinPrefix>win</WinPrefix>
+    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' == 'true'">$(Title)</ElectronExecutable>
+    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' != 'true'">$(PackageId)</ElectronExecutable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_IsMsAspNetProject>False</_IsMsAspNetProject>
+    <_IsMsAspNetProject Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">True</_IsMsAspNetProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="ElectronExecutable" Value="$(ElectronExecutable)" />
+    <AssemblyMetadata Include="ElectronVersion" Value="$(ElectronVersion)" />
+    <AssemblyMetadata Include="RuntimeIdentifier" Value="$(RuntimeIdentifier)" />
+    <AssemblyMetadata Include="ElectronSingleInstance" Value="$(ElectronSingleInstance)" />
+    <AssemblyMetadata Include="Title" Value="$(Title)" />
+    <AssemblyMetadata Include="Version" Value="$(Version)" />
+    <AssemblyMetadata Include="BuildConfiguration" Value="$(Configuration)" />
+    <AssemblyMetadata Include="IsAspNet" Value="$(_IsMsAspNetProject)" />
+  </ItemGroup>
 
 </Project>

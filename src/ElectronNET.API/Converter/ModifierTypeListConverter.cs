@@ -23,6 +23,7 @@ public class ModifierTypeListConverter : JsonConverter<List<ModifierType>>
         {
             throw new JsonException("Expected array for ModifierType list");
         }
+
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndArray) break;
@@ -30,6 +31,7 @@ public class ModifierTypeListConverter : JsonConverter<List<ModifierType>>
             var s = reader.GetString();
             list.Add((ModifierType)Enum.Parse(typeof(ModifierType), s, ignoreCase: true));
         }
+
         return list;
     }
 
@@ -40,6 +42,7 @@ public class ModifierTypeListConverter : JsonConverter<List<ModifierType>>
         {
             writer.WriteStringValue(modifier.ToString());
         }
+
         writer.WriteEndArray();
     }
 }

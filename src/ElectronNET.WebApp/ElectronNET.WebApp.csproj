@@ -5,7 +5,7 @@
     <ElectronNetDevMode>true</ElectronNetDevMode>
   </PropertyGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.props" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -42,6 +42,10 @@
     <TypeScriptUseNodeJS>true</TypeScriptUseNodeJS>
     <TypeScriptTSConfig>ElectronHostHook/tsconfig.json</TypeScriptTSConfig>
   </PropertyGroup>
+  <PropertyGroup>
+    <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="publish\**" />
     <Content Remove="publish\**" />
@@ -71,11 +75,11 @@
     <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ElectronNET.Core" Version="0.1.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
-    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.1.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
   </ItemGroup>
 
-  <Import Project="..\ElectronNET\build\ElectronNET.targets" Condition="$(ElectronNetDevMode)" />
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
 
 </Project>

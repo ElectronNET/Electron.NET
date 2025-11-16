@@ -1,5 +1,6 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using System.Runtime.Versioning;
     using ElectronNET.API;
 
     [Collection("ElectronCollection")]
@@ -31,7 +32,9 @@ namespace ElectronNET.IntegrationTests.Tests
             formats.Should().Contain(f => f.Contains("text") || f.Contains("TEXT") || f.Contains("plain"));
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Bookmark_write_and_read()
         {
             var url = "https://electron-test.com";

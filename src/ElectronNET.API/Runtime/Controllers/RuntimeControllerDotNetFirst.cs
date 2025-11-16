@@ -40,7 +40,7 @@
         {
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
-            var args = Environment.CommandLine;
+            var args = string.Format("{0} {1}", ElectronNetRuntime.ElectronExtraArguments, Environment.CommandLine).Trim();
             this.port = ElectronNetRuntime.ElectronSocketPort;
 
             if (!this.port.HasValue)
@@ -49,10 +49,15 @@
                 ElectronNetRuntime.ElectronSocketPort = this.port;
             }
 
+            Console.Error.WriteLine("[StartCore]: isUnPacked: {0}", isUnPacked);
+            Console.Error.WriteLine("[StartCore]: electronBinaryName: {0}", electronBinaryName);
+            Console.Error.WriteLine("[StartCore]: args: {0}", args);
+
             this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 
+            Console.Error.WriteLine("[StartCore]: Before Start");
             return this.electronProcess.Start();
         }
 
@@ -82,11 +87,11 @@
 
         private void HandleStopped()
         {
-            if (this.socketBridge.State != LifetimeState.Stopped)
+            if (this.socketBridge != null && this.socketBridge.State != LifetimeState.Stopped)
             {
                 this.socketBridge.Stop();
             }
-            else if (this.electronProcess.State != LifetimeState.Stopped)
+            else if (this.electronProcess != null && this.electronProcess.State != LifetimeState.Stopped)
             {
                 this.electronProcess.Stop();
             }

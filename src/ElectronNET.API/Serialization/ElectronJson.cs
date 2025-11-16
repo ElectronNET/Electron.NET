@@ -31,4 +31,3 @@ namespace ElectronNET.API.Serialization
     {
     }
 }
-

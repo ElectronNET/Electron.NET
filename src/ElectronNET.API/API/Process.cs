@@ -9,10 +9,11 @@ namespace ElectronNET.API
     /// Electron's process object is extended from the Node.js process object. It adds the
     /// events, properties, and methods.
     /// </summary>
-    public sealed class Process: ApiBase
+    public sealed class Process : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketTaskMessageNameTypes SocketTaskMessageNameType => SocketTaskMessageNameTypes.DashesLowerFirst;
+
         internal Process()
         {
         }
@@ -43,8 +44,8 @@ namespace ElectronNET.API
         /// <summary>
         /// The process.execPath property returns the absolute pathname of the executable that
         /// started the Node.js process. Symbolic links, if any, are resolved.
-        /// </summary> 
-        public Task<string> ExecPathAsync => GetPropertyAsync<string>();
+        /// </summary>
+        public Task<string> ExecPathAsync => this.InvokeAsync<string>();
 
         /// <summary>
         /// The process.argv property returns an array containing the command-line arguments passed
@@ -53,56 +54,56 @@ namespace ElectronNET.API
         /// will be the path to the JavaScript file being executed. The remaining elements will be
         /// any additional command-line arguments
         /// </summary>
-        public Task<string[]> ArgvAsync => GetPropertyAsync<string[]>();
+        public Task<string[]> ArgvAsync => this.InvokeAsync<string[]>();
 
         /// <summary>
         /// The process.execPath property returns the absolute pathname of the executable that
         /// started the Node.js process. Symbolic links, if any, are resolved.
         /// </summary>
-        public Task<string> TypeAsync => GetPropertyAsync<string>();
+        public Task<string> TypeAsync => this.InvokeAsync<string>();
 
         /// <summary>
         /// The process.versions property returns an object listing the version strings of
         /// chrome and electron.
-        /// </summary> 
-        public Task<ProcessVersions> VersionsAsync => GetPropertyAsync<ProcessVersions>();
+        /// </summary>
+        public Task<ProcessVersions> VersionsAsync => this.InvokeAsync<ProcessVersions>();
 
         /// <summary>
         /// A Boolean. When app is started by being passed as parameter to the default app, this
         /// property is true in the main process, otherwise it is false.
         /// </summary>
-        public Task<bool> DefaultAppAsync => GetPropertyAsync<bool>();
+        public Task<bool> DefaultAppAsync => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A Boolean, true when the current renderer context is the "main" renderer frame. If you
         /// want the ID of the current frame you should use webFrame.routingId
         /// </summary>
-        public Task<bool> IsMainFrameAsync => GetPropertyAsync<bool>();
+        public Task<bool> IsMainFrameAsync => this.InvokeAsync<bool>();
 
         /// <summary>
         /// A String representing the path to the resources directory.
         /// </summary>
-        public Task<string> ResourcesPathAsync => GetPropertyAsync<string>();
+        public Task<string> ResourcesPathAsync => this.InvokeAsync<string>();
 
         /// <summary>
         /// The number of seconds the current Node.js process has been running. The return value
         /// includes fractions of a second. Use Math.floor() to get whole seconds.
         /// </summary>
-        public Task<double> UpTimeAsync => GetPropertyAsync<double>();
+        public Task<double> UpTimeAsync => this.InvokeAsync<double>();
 
         /// <summary>
         /// The PID of the electron process
         /// </summary>
-        public Task<int> PidAsync => GetPropertyAsync<int>();
+        public Task<int> PidAsync => this.InvokeAsync<int>();
 
         /// <summary>
         /// The operating system CPU architecture for which the Node.js binary was compiled
         /// </summary>
-        public Task<string> ArchAsync => GetPropertyAsync<string>();
+        public Task<string> ArchAsync => this.InvokeAsync<string>();
 
         /// <summary>
         /// A string identifying the operating system platform on which the Node.js process is running
         /// </summary>
-        public Task<string> PlatformAsync => GetPropertyAsync<string>();
+        public Task<string> PlatformAsync => this.InvokeAsync<string>();
     }
 }

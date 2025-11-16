@@ -4,7 +4,7 @@ let electronSocket;
 
 export = (socket: Socket) => {
     electronSocket = socket;
-    
+
     socket.on('register-screen-display-added', (id) => {
         screen.on('display-added', (event, display) => {
             electronSocket.emit('screen-display-added' + id, display);

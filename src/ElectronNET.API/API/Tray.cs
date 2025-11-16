@@ -3,6 +3,7 @@ using ElectronNET.API.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
@@ -14,7 +15,7 @@ namespace ElectronNET.API
     /// <summary>
     /// Add icons and context menus to the system's notification area.
     /// </summary>
-    public sealed class Tray: ApiBase
+    public sealed class Tray : ApiBase
     {
         protected override SocketTaskEventNameTypes SocketTaskEventNameType => SocketTaskEventNameTypes.DashesLowerFirst;
         protected override SocketEventNameTypes SocketEventNameType => SocketEventNameTypes.DashedLower;
@@ -38,6 +39,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-click", GetHashCode());
                 }
+
                 _click += value;
             }
             remove
@@ -56,6 +58,8 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is right clicked.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action<TrayClickEventArgs, Rectangle> OnRightClick
         {
             add
@@ -72,6 +76,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-right-click", GetHashCode());
                 }
+
                 _rightClick += value;
             }
             remove
@@ -90,6 +95,8 @@ namespace ElectronNET.API
         /// <summary>
         /// macOS, Windows: Emitted when the tray icon is double clicked.
         /// </summary>
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public event Action<TrayClickEventArgs, Rectangle> OnDoubleClick
         {
             add
@@ -106,6 +113,7 @@ namespace ElectronNET.API
 
                     BridgeConnector.Socket.Emit("register-tray-double-click", GetHashCode());
                 }
+
                 _doubleClick += value;
             }
             remove
@@ -124,6 +132,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon shows.
         /// </summary>
+        [SupportedOSPlatform("Windows")]
         public event Action OnBalloonShow
         {
             add => AddEvent(value, GetHashCode());
@@ -133,6 +142,7 @@ namespace ElectronNET.API
         /// <summary>
         /// Windows: Emitted when the tray balloon is clicked.
         /// </summary>
+        [SupportedOSPlatform("Windows")]
         public event Action OnBalloonClick
         {
             add => AddEvent(value, GetHashCode());
@@ -140,9 +150,10 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// Windows: Emitted when the tray balloon is closed 
+        /// Windows: Emitted when the tray balloon is closed
         /// because of timeout or user manually closes it.
         /// </summary>
+        [SupportedOSPlatform("Windows")]
         public event Action OnBalloonClosed
         {
             add => AddEvent(value, GetHashCode());
@@ -248,6 +259,7 @@ namespace ElectronNET.API
         /// Sets the image associated with this tray icon when pressed on macOS.
         /// </summary>
         /// <param name="image"></param>
+        [SupportedOSPlatform("macOS")]
         public async Task SetPressedImage(string image)
         {
             await BridgeConnector.Socket.Emit("tray-setPressedImage", image).ConfigureAwait(false);
@@ -266,6 +278,7 @@ namespace ElectronNET.API
         /// macOS: Sets the title displayed aside of the tray icon in the status bar.
         /// </summary>
         /// <param name="title"></param>
+        [SupportedOSPlatform("macOS")]
         public async Task SetTitle(string title)
         {
             await BridgeConnector.Socket.Emit("tray-setTitle", title).ConfigureAwait(false);
@@ -275,6 +288,7 @@ namespace ElectronNET.API
         /// Windows: Displays a tray balloon.
         /// </summary>
         /// <param name="options"></param>
+        [SupportedOSPlatform("Windows")]
         public async Task DisplayBalloon(DisplayBalloonOptions options)
         {
             await BridgeConnector.Socket.Emit("tray-displayBalloon", options).ConfigureAwait(false);
@@ -293,7 +307,6 @@ namespace ElectronNET.API
 
             return await tcs.Task.ConfigureAwait(false);
         }
-
 
 
         private const string ModuleName = "tray";

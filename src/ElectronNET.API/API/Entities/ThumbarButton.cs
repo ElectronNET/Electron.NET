@@ -57,4 +57,3 @@ namespace ElectronNET.API.Entities
         }
     }
 }
-

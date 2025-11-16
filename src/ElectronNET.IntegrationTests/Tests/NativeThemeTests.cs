@@ -1,5 +1,6 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using System.Runtime.Versioning;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
 
@@ -12,15 +13,19 @@ namespace ElectronNET.IntegrationTests.Tests
             // Capture initial
             _ = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             // Force light
+            await Task.Delay(50);
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Light);
+            await Task.Delay(500);
             var useDarkAfterLight = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceLight = await Electron.NativeTheme.GetThemeSourceAsync();
             // Force dark
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Dark);
+            await Task.Delay(500);
             var useDarkAfterDark = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceDark = await Electron.NativeTheme.GetThemeSourceAsync();
             // Restore system
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.System);
+            await Task.Delay(500);
             var themeSourceSystem = await Electron.NativeTheme.GetThemeSourceAsync();
             // Assertions are tolerant (platform dependent)
             useDarkAfterLight.Should().BeFalse("forcing Light should result in light colors");
@@ -45,15 +50,19 @@ namespace ElectronNET.IntegrationTests.Tests
 
             fired.Should().BeTrue();
         }
-        
-        [Fact(Timeout = 20000)]
+
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Should_use_high_contrast_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
             metrics.Should().Be(false);
         }
-        
-        [Fact(Timeout = 20000)]
+
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("Windows")]
         public async Task Should_use_inverted_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseInvertedColorSchemeAsync();
