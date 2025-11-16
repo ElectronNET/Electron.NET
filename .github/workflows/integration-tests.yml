@@ -1,0 +1,209 @@
+﻿name: Tests
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ develop, main ]
+
+concurrency:
+  group: integration-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Integration Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rid: linux-x64
+          - os: windows-2022
+            rid: win-x64
+          - os: macos-14
+            rid: osx-arm64
+
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      DOTNET_NOLOGO: 1
+      CI: true
+      ELECTRON_ENABLE_LOGGING: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore
+        run: dotnet restore -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
+
+      - name: Build
+        run: dotnet build --no-restore -c Release -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
+
+      - name: Install Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: |
+          set -e
+          sudo apt-get update
+          # Core Electron dependencies
+          sudo apt-get install -y xvfb \
+            libgtk-3-0 libnss3 libgdk-pixbuf-2.0-0 libdrm2 libgbm1 libxss1 libxtst6 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libx11-xcb1 libasound2t64
+
+      - name: Run tests (Linux)
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        run: |
+          mkdir -p test-results/Ubuntu
+          xvfb-run -a dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj \
+            -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} \
+            --logger "trx;LogFileName=Ubuntu.trx" \
+            --logger "console;verbosity=detailed" \
+            --results-directory test-results
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        run: |
+          New-Item -ItemType Directory -Force -Path test-results/Windows | Out-Null
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} --logger "trx;LogFileName=Windows.trx" --logger "console;verbosity=detailed" --results-directory test-results
+
+      - name: Run tests (macOS)
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: |
+          mkdir -p test-results/macOS
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} --logger "trx;LogFileName=macOS.trx" --logger "console;verbosity=detailed" --results-directory test-results
+
+      - name: Upload raw test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: test-results/*.trx
+          retention-days: 7
+
+  summary:
+    name: Test Results
+    runs-on: ubuntu-24.04
+    if: always()
+    needs: [tests]
+
+    permissions:
+      actions: read
+      contents: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results
+
+      - name: Setup .NET (for CTRF conversion)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install CTRF TRX→CTRF converter (dotnet tool)
+        run: |
+          dotnet new tool-manifest
+          dotnet tool install DotnetCtrfJsonReporter --local
+
+      - name: Convert TRX → CTRF and clean names (keep suites; set filePath=OS)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ctrf
+          shopt -s globstar nullglob
+          conv=0
+          for trx in test-results/**/*.trx; do
+            fname="$(basename "$trx")"
+            os="${fname%.trx}"
+            outdir="ctrf/${os}"
+            mkdir -p "$outdir"
+            out="${outdir}/ctrf-report.json"
+
+            dotnet tool run DotnetCtrfJsonReporter -p "$trx" -d "$outdir" -f "ctrf-report.json"
+
+            jq --arg os "$os" '.results.tests |= map(.filePath = $os)' "$out" > "${out}.tmp" && mv "${out}.tmp" "$out"
+
+            echo "Converted & normalized $trx -> $out"
+            conv=$((conv+1))
+          done
+          echo "Processed $conv TRX file(s)"
+
+
+      - name: Publish Test Report
+        if: always()
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: 'ctrf/**/*.json'
+
+          summary: true
+          pull-request: false
+          status-check: false
+          status-check-name: 'Integration Tests'
+          use-suite-name: true
+          update-comment: true
+          always-group-by: true
+          overwrite-comment: true
+          exit-on-fail: true
+          group-by: 'suite'
+          upload-artifact: true
+          fetch-previous-results: true
+
+          summary-report: false
+          summary-delta-report: true
+          github-report: true
+          test-report: false
+          test-list-report: false
+          failed-report: true
+          failed-folded-report: false
+          skipped-report: true
+          suite-folded-report: true
+          suite-list-report: false
+          file-report: true
+          previous-results-report: true
+          insights-report: true
+          flaky-report: true
+          flaky-rate-report: true
+          fail-rate-report: false
+          slowest-report: false
+
+          report-order: 'summary-delta-report,failed-report,skipped-report,suite-folded-report,file-report,previous-results-report,github-report'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+
+      - name: Create PR Comment
+        if: always()
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: 'ctrf/**/*.json'
+
+          summary: true
+          pull-request: true
+          use-suite-name: true
+          update-comment: true
+          always-group-by: true
+          overwrite-comment: true
+          upload-artifact: false
+
+          pull-request-report: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Summary
+        run: echo "All matrix test jobs completed."

@@ -89,6 +89,7 @@
             var test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be(string.Empty);
             Electron.AutoUpdater.SetChannel = "beta";
+            await Task.Delay(500);
             test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be("beta");
         }

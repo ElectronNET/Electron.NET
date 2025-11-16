@@ -24,6 +24,8 @@
             StartupManager.Initialize();
         }
 
+        public static string ElectronExtraArguments { get; set; }
+
         public static int? ElectronSocketPort { get; internal set; }
 
         public static int? AspNetWebPort { get; internal set; }

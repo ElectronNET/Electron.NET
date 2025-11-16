@@ -1,6 +1,6 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
-    using System.Runtime.InteropServices;
+    using System.Runtime.Versioning;
     using ElectronNET.API.Entities;
 
     [Collection("ElectronCollection")]
@@ -13,7 +13,8 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("Windows")]
         public async Task SetThumbarButtons_returns_success()
         {
             var btn = new ThumbarButton("icon.png") { Tooltip = "Test" };
@@ -21,14 +22,10 @@ namespace ElectronNET.IntegrationTests.Tests
             success.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
+        [SupportedOSPlatform("Windows")]
         public async Task Thumbar_button_click_invokes_callback()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return; // only meaningful on Windows taskbar
-            }
-
             var icon = Path.Combine(Directory.GetCurrentDirectory(), "ElectronNET.WebApp", "wwwroot", "icon.png");
             if (!File.Exists(icon))
             {

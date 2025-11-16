@@ -9,7 +9,7 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task Process_info_is_accessible()
         {
             // Use renderer to fetch process info and round-trip
-            var execPath = await Electron.WindowManager.CreateWindowAsync(new API.Entities.BrowserWindowOptions { Show = false });
+            var execPath = await Electron.WindowManager.CreateWindowAsync(new API.Entities.BrowserWindowOptions { Show = false }, "about:blank");
             var result = await execPath.WebContents.ExecuteJavaScriptAsync<string>("process.execPath && process.platform ? 'ok' : 'fail'");
             result.Should().Be("ok");
         }

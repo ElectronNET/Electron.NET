@@ -1,0 +1,17 @@
+﻿{
+  "version": "1",
+  "environments": [
+    // See https://aka.ms/remotetesting for more details
+    // about how to configure remote environments.
+    {
+      "name": "WSL Ubuntu",
+      "type": "wsl",
+      "wslDistribution": "UbuFresh"
+    }
+    //{
+    //  "name": "Docker dotnet/sdk",
+    //  "type": "docker",
+    //  "dockerImage": "mcr.microsoft.com/dotnet/sdk"
+    //}
+  ]
+}

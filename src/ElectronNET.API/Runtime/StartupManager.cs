@@ -132,12 +132,18 @@
 
             if (electronAssembly == null)
             {
+                Console.WriteLine("GatherBuildInfo: Early exit");
                 return buildInfo;
             }
 
             if (electronAssembly.GetName().Name == "testhost" || electronAssembly.GetName().Name == "ReSharperTestRunner")
             {
+                Console.WriteLine("GatherBuildInfo: Detected testhost");
                 electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
+            }
+            else
+            {
+                Console.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
             }
 
             var attributes = electronAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
