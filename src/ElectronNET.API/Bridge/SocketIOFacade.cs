@@ -2,12 +2,10 @@
 // ReSharper disable once CheckNamespace
 namespace ElectronNET.API;
 
+using System;
+using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
-using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using SocketIO = SocketIOClient.SocketIO;
 
 internal class SocketIoFacade
@@ -61,20 +59,6 @@ internal class SocketIoFacade
             _socket.On(eventName, response =>
             {
                 var value = response.GetValue<T>();
-                Task.Run(() => action(value));
-            });
-        }
-    }
-
-    // Keep object overload for compatibility; value will be a JsonElement boxed as object.
-    public void On(string eventName, Action<object> action)
-    {
-        lock (_lockObj)
-        {
-            _socket.On(eventName, response =>
-            {
-                var value = (object)response.GetValue<JsonElement>();
-                ////Console.WriteLine($"Called Event {eventName} - data {value}");
                 Task.Run(() => action(value));
             });
         }

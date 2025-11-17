@@ -16,6 +16,7 @@
     <ImportNuGetBuildTasksPackTargetsFromSdk>false</ImportNuGetBuildTasksPackTargetsFromSdk>
     <PublishTrimmed>False</PublishTrimmed>
     <NuGetAudit>false</NuGetAudit>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <PropertyGroup Label="ElectronNetCommon">
     <PackageIcon>128.png</PackageIcon>

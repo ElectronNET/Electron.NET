@@ -47,10 +47,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ClearAuthCacheAsync(RemovePassword options)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearAuthCache-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearAuthCache-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, options, guid);
 
             return tcs.Task;
@@ -61,10 +61,10 @@ namespace ElectronNET.API
         /// </summary>
         public Task ClearAuthCacheAsync()
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearAuthCache-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearAuthCache-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearAuthCache", Id, guid);
 
             return tcs.Task;
@@ -76,10 +76,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ClearCacheAsync()
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearCache-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearCache-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearCache", Id, guid);
 
             return tcs.Task;
@@ -91,10 +91,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ClearHostResolverCacheAsync()
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearHostResolverCache-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearHostResolverCache-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearHostResolverCache", Id, guid);
 
             return tcs.Task;
@@ -106,10 +106,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ClearStorageDataAsync()
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearStorageData-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearStorageData-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearStorageData", Id, guid);
 
             return tcs.Task;
@@ -122,10 +122,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task ClearStorageDataAsync(ClearStorageDataOptions options)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-clearStorageData-options-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-clearStorageData-options-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-clearStorageData-options", Id, options, guid);
 
             return tcs.Task;
@@ -276,10 +276,10 @@ namespace ElectronNET.API
         /// <returns></returns>
         public Task SetProxyAsync(ProxyConfig config)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("webContents-session-setProxy-completed" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("webContents-session-setProxy-completed" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("webContents-session-setProxy", Id, config, guid);
 
             return tcs.Task;
