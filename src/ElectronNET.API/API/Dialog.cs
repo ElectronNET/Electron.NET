@@ -206,10 +206,10 @@ namespace ElectronNET.API
         [SupportedOSPlatform("Windows")]
         public Task ShowCertificateTrustDialogAsync(BrowserWindow browserWindow, CertificateTrustDialogOptions options)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
             string guid = Guid.NewGuid().ToString();
 
-            BridgeConnector.Socket.Once("showCertificateTrustDialogComplete" + guid, () => tcs.SetResult(null));
+            BridgeConnector.Socket.Once("showCertificateTrustDialogComplete" + guid, () => tcs.SetResult());
             BridgeConnector.Socket.Emit("showCertificateTrustDialog",
                 browserWindow,
                 options,
