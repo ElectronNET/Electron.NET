@@ -144,7 +144,6 @@ jobs:
           done
           echo "Processed $conv TRX file(s)"
 
-
       - name: Publish Test Report
         if: always()
         uses: ctrf-io/github-test-reporter@v1
@@ -186,24 +185,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Save PR Number
+        if: github.event_name == 'pull_request'
+        run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
-      - name: Create PR Comment
-        if: always()
-        uses: ctrf-io/github-test-reporter@v1
+      - name: Write PR Number to File
+        if: github.event_name == 'pull_request'
+        run: echo "$PR_NUMBER" > pr_number.txt
+        shell: bash
+
+      - name: Upload PR Number Artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
         with:
-          report-path: 'ctrf/**/*.json'
-
-          summary: true
-          pull-request: true
-          use-suite-name: true
-          update-comment: true
-          always-group-by: true
-          overwrite-comment: true
-          upload-artifact: false
-
-          pull-request-report: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          name: pr_number
+          path: pr_number.txt
 
       - name: Summary
         run: echo "All matrix test jobs completed."

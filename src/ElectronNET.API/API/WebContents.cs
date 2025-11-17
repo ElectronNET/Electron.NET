@@ -254,12 +254,12 @@ public class WebContents : ApiBase
     /// <param name="options"></param>
     public Task LoadURLAsync(string url, LoadURLOptions options)
     {
-        var tcs = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource();
 
         BridgeConnector.Socket.Once("webContents-loadURL-complete" + Id, () =>
         {
             BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            tcs.SetResult(null);
+            tcs.SetResult();
         });
 
         BridgeConnector.Socket.Once<string>("webContents-loadURL-error" + Id, (error) => { tcs.SetException(new InvalidOperationException(error)); });

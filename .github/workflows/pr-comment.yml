@@ -1,0 +1,81 @@
+name: Create PR Comments
+
+on:
+  workflow_run:
+    workflows: ["Tests"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  pr-comment:
+    name: Post Test Result as PR comment
+    runs-on: ubuntu-24.04
+    if: github.event.workflow_run.event == 'pull_request'
+
+    steps:
+      - name: Download CTRF artifact
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          github_token: ${{ github.token }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: ctrf-report
+          path: ctrf
+
+      - name: Download PR Number Artifact
+        uses: dawidd6/action-download-artifact@v8
+        with:
+          github_token: ${{ github.token }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: pr_number
+          path: pr_number
+
+      - name: Read PR Number
+        run: |
+          set -Eeuo pipefail
+          FILE='pr_number/pr_number.txt'
+
+          # Ensure file exists
+          if [ ! -f "$FILE" ] || [ -L "$FILE" ]; then
+            echo "Error: $FILE is missing or is not a regular file." >&2
+            exit 1
+          fi
+
+          # Chec file size
+          if [ "$(wc -c < "$FILE" | tr -d ' ')" -gt 200 ]; then
+            echo "Error: $FILE is too large." >&2
+            exit 1
+          fi
+
+          # Read first line
+          PR_NUMBER=""
+          IFS= read -r PR_NUMBER < "$FILE" || true
+
+          # Validate whether it's a number
+          if ! [[ "$PR_NUMBER" =~ ^[0-9]{1,10}$ ]]; then
+            echo "Error: PR_NUMBER is not a valid integer on the first line." >&2
+            exit 1
+          fi
+
+          printf 'PR_NUMBER=%s\n' "$PR_NUMBER" >> "$GITHUB_ENV"
+
+      - name: Post PR Comment
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: 'ctrf/**/*.json'
+          issue: ${{ env.PR_NUMBER }}
+
+          summary: true
+          pull-request: true
+          use-suite-name: true
+          update-comment: true
+          always-group-by: true
+          overwrite-comment: true
+          upload-artifact: false
+
+          pull-request-report: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
