@@ -15,10 +15,21 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task Ipc_On_receives_message_from_renderer()
         {
+            object received = null;
+
             var tcs = new TaskCompletionSource<string>();
-            await Electron.IpcMain.On("ipc-on-test", obj => tcs.TrySetResult(obj?.ToString() ?? string.Empty));
+            await Electron.IpcMain.On("ipc-on-test", obj =>
+            {
+                received = obj;
+                tcs.TrySetResult(obj as string);
+            });
+
             await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.send('ipc-on-test','payload123')");
+
             var result = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            received.Should().BeOfType<string>();
+            received.Should().Be("payload123");
             result.Should().Be("payload123");
         }
 
@@ -46,12 +57,18 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task Ipc_OnSync_returns_value()
         {
+            object received = null;
+
             Electron.IpcMain.OnSync("ipc-sync-test", (obj) =>
             {
-                obj.Should().NotBeNull();
+                received = obj;
                 return "pong";
             });
             var ret = await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.sendSync('ipc-sync-test','ping')");
+
+            received.Should().BeOfType<string>();
+            received.Should().Be("ping");
+
             ret.Should().Be("pong");
         }
 

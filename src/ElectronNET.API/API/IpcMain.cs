@@ -1,12 +1,13 @@
-using ElectronNET.API.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-
 namespace ElectronNET.API
 {
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
+    using ElectronNET.Serialization;
+
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
@@ -14,6 +15,18 @@ namespace ElectronNET.API
     {
         private static IpcMain _ipcMain;
         private static object _syncRoot = new object();
+        private static readonly JsonSerializerOptions BoxedObjectSerializationOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = false,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+                new JsonToBoxedPrimitivesConverter(),
+            }
+        };
+
 
         internal IpcMain()
         {
@@ -50,24 +63,23 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
+                var arg = FormatArguments(args);
+                listener(arg);
             });
         }
 
-        private static List<object> FormatArguments(JsonElement args)
+        private static object FormatArguments(JsonElement args)
         {
-            var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
-            objectArray.RemoveAll(item => item is null);
-            return objectArray;
+            var objectArray = args.Deserialize<object[]>(BoxedObjectSerializationOptions).ToList();
+
+            Debug.Assert(objectArray.Count <= 2);
+
+            if (objectArray.Count == 2)
+            {
+                return objectArray[1];
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -84,18 +96,8 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
             BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-                object parameter;
-                if (objectArray.Count == 1)
-                {
-                    parameter = objectArray.First();
-                }
-                else
-                {
-                    parameter = objectArray;
-                }
-
-                var result = listener(parameter);
+                var arg = FormatArguments(args);
+                var result = listener(arg);
                 BridgeConnector.Socket.Emit(channel + "Sync", result);
             });
         }
@@ -111,16 +113,8 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
             BridgeConnector.Socket.Once<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
+                var arg = FormatArguments(args);
+                listener(arg);
             });
         }
 
