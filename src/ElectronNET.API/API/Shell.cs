@@ -42,13 +42,9 @@ namespace ElectronNET.API
         /// <param name="fullPath">The full path to the directory / file.</param>
         public Task ShowItemInFolderAsync(string fullPath)
         {
-            var tcs = new TaskCompletionSource<object>();
-
-            // Is this really useful?
-            BridgeConnector.Socket.Once("shell-showItemInFolderCompleted", () => { });
             BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
 
-            return tcs.Task;
+            return Task.CompletedTask;
         }
 
         /// <summary>
