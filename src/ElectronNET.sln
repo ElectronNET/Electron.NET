@@ -42,6 +42,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{985D39A7-5216-4945-8167-2FD0CB387BD8}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+		..\.github\workflows\integration-tests.yml = ..\.github\workflows\integration-tests.yml
+		..\.github\workflows\pr-comment.yml = ..\.github\workflows\pr-comment.yml
+		..\.github\workflows\publish-wiki.yml = ..\.github\workflows\publish-wiki.yml
+		..\.github\workflows\trailing-whitespace-check.yml = ..\.github\workflows\trailing-whitespace-check.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "..\nuke\_build.csproj", "{015CB06B-6CAE-209F-E050-21C3ACA5FE9F}"
