@@ -35,12 +35,32 @@ jobs:
 
       - name: Read PR Number
         run: |
-          PR_NUMBER=$(cat pr_number/pr_number.txt | grep -E '^[0-9]+$')
-          if [ -z "$PR_NUMBER" ]; then
-            echo "Error: PR_NUMBER is not a valid integer."
+          set -Eeuo pipefail
+          FILE='pr_number/pr_number.txt'
+
+          # Ensure file exists
+          if [ ! -f "$FILE" ] || [ -L "$FILE" ]; then
+            echo "Error: $FILE is missing or is not a regular file." >&2
             exit 1
           fi
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
+          # Chec file size
+          if [ "$(wc -c < "$FILE" | tr -d ' ')" -gt 200 ]; then
+            echo "Error: $FILE is too large." >&2
+            exit 1
+          fi
+
+          # Read first line
+          PR_NUMBER=""
+          IFS= read -r PR_NUMBER < "$FILE" || true
+
+          # Validate whether it's a number
+          if ! [[ "$PR_NUMBER" =~ ^[0-9]{1,10}$ ]]; then
+            echo "Error: PR_NUMBER is not a valid integer on the first line." >&2
+            exit 1
+          fi
+
+          printf 'PR_NUMBER=%s\n' "$PR_NUMBER" >> "$GITHUB_ENV"
 
       - name: Post PR Comment
         uses: ctrf-io/github-test-reporter@v1
