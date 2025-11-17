@@ -1,12 +1,13 @@
-using ElectronNET.API.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-
 namespace ElectronNET.API
 {
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
+    using ElectronNET.Serialization;
+
     /// <summary>
     /// Communicate asynchronously from the main process to renderer processes.
     /// </summary>
@@ -14,6 +15,18 @@ namespace ElectronNET.API
     {
         private static IpcMain _ipcMain;
         private static object _syncRoot = new object();
+        private static readonly JsonSerializerOptions BoxedObjectSerializationOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = false,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+                new JsonToBoxedPrimitivesConverter(),
+            }
+        };
+
 
         internal IpcMain()
         {
@@ -65,6 +78,7 @@ namespace ElectronNET.API
 
         private static List<object> FormatArguments(JsonElement args)
         {
+            var objectArray = args.Deserialize<object[]>(BoxedObjectSerializationOptions).ToList();
             var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
             objectArray.RemoveAll(item => item is null);
             return objectArray;
