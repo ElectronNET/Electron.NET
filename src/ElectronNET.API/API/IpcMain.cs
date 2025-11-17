@@ -63,25 +63,23 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Off(channel);
             BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
+                var arg = FormatArguments(args);
+                listener(arg);
             });
         }
 
-        private static List<object> FormatArguments(JsonElement args)
+        private static object FormatArguments(JsonElement args)
         {
             var objectArray = args.Deserialize<object[]>(BoxedObjectSerializationOptions).ToList();
-            var objectArray = args.Deserialize<object[]>(ElectronJson.Options).ToList();
-            objectArray.RemoveAll(item => item is null);
-            return objectArray;
+
+            Debug.Assert(objectArray.Count <= 2);
+
+            if (objectArray.Count == 2)
+            {
+                return objectArray[1];
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -98,18 +96,8 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
             BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-                object parameter;
-                if (objectArray.Count == 1)
-                {
-                    parameter = objectArray.First();
-                }
-                else
-                {
-                    parameter = objectArray;
-                }
-
-                var result = listener(parameter);
+                var arg = FormatArguments(args);
+                var result = listener(arg);
                 BridgeConnector.Socket.Emit(channel + "Sync", result);
             });
         }
@@ -125,16 +113,8 @@ namespace ElectronNET.API
             BridgeConnector.Socket.Emit("registerOnceIpcMainChannel", channel);
             BridgeConnector.Socket.Once<JsonElement>(channel, (args) =>
             {
-                List<object> objectArray = FormatArguments(args);
-
-                if (objectArray.Count == 1)
-                {
-                    listener(objectArray.First());
-                }
-                else
-                {
-                    listener(objectArray);
-                }
+                var arg = FormatArguments(args);
+                listener(arg);
             });
         }
 
