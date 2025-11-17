@@ -45,6 +45,7 @@
   <PropertyGroup>
     <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="publish\**" />
