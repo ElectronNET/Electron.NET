@@ -49,6 +49,12 @@
 
         internal static Func<Task> OnAppReadyCallback { get; set; }
 
+        /// <summary>
+        /// Global configuration options for the Electron.NET runtime, including
+        /// lifecycle events that can be configured from the ASP.NET host builder.
+        /// </summary>
+        public static ElectronNetOptions Options { get; set; } = new ElectronNetOptions();
+
         internal static SocketIoFacade GetSocket()
         {
             return RuntimeControllerCore?.Socket;

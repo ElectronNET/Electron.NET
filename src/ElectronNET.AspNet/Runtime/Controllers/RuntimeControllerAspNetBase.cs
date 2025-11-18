@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using ElectronNET;
     using ElectronNET.API;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Controllers;
@@ -81,7 +82,20 @@
                 (this.aspNetLifetimeAdapter.IsNullOrStopped()))
             {
                 this.TransitionState(LifetimeState.Stopped);
+
+                // Everything is fully stopped – fire the OnQuit callback.
+                Task.Run(this.RunQuitCallback);
             }
+        }
+
+        /// <summary>
+        /// Invoked when ASP.NET lifetime enters Stopping (ApplicationStopping).
+        /// We only trigger the OnWillQuit callback here; the actual state
+        /// transition to Stopping is handled in <see cref="HandleStopped"/>.
+        /// </summary>
+        protected void HandleStopping()
+        {
+            Task.Run(this.RunWillQuitCallback);
         }
 
         protected abstract override Task StopCore();
@@ -108,10 +122,67 @@
 
         private void AspNetLifetimeAdapter_Stopping(object sender, EventArgs e)
         {
+            this.HandleStopping();
+        }
+
+        private async Task RunWillQuitCallback()
+        {
+            var events = ElectronNetRuntime.Options?.Events;
+            var handler = events?.OnWillQuit;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await handler().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception while executing OnWillQuit callback.\n" + ex);
+                // We are already stopping; no need to call this.Stop() here.
+            }
+        }
+
+        private async Task RunQuitCallback()
+        {
+            var events = ElectronNetRuntime.Options?.Events;
+            var handler = events?.OnQuit;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await handler().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception while executing OnQuit callback.\n" + ex);
+            }
         }
 
         private async Task RunReadyCallback()
         {
+            var events = ElectronNetRuntime.Options?.Events;
+            if (events?.OnBeforeReady != null)
+            {
+                try
+                {
+                    await events.OnBeforeReady().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception while executing OnBeforeReady callback. Stopping...\n" + ex);
+                    this.Stop();
+                    return;
+                }
+            }
+
             if (ElectronNetRuntime.OnAppReadyCallback == null)
             {
                 Console.WriteLine("Warning: Non OnReadyCallback provided in UseElectron() setup.");

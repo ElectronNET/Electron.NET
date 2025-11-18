@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ElectronNET.WebApp
 {
+    using System;
     using System.Threading.Tasks;
     using ElectronNET.API.Entities;
 
@@ -23,20 +24,28 @@ namespace ElectronNET.WebApp
                 .UseStartup<Startup>();
         }
 
-        public static async Task ElectronBootstrap()
+        private static void ElectronBootstrap(ElectronNetOptions options)
         {
-            //AddDevelopmentTests();
-
-            var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+            options.Events = new()
             {
-                Width = 1152,
-                Height = 940,
-                Show = false
-            });
+                OnBeforeReady = async () =>
+                {
+                    Console.WriteLine("Firing before ready callback!");
+                },
+                OnReady = async () =>
+                {
+                    var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+                    {
+                        Width = 1152,
+                        Height = 940,
+                        Show = false
+                    });
 
-            await browserWindow.WebContents.Session.ClearCacheAsync();
+                    await window.WebContents.Session.ClearCacheAsync();
 
-            browserWindow.OnReadyToShow += () => browserWindow.Show();
+                    window.OnReadyToShow += window.Show;
+                }
+            };
         }
 
         private static void AddDevelopmentTests()

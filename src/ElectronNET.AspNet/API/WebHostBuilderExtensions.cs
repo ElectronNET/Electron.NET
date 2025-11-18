@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Threading.Tasks;
+    using ElectronNET;
     using ElectronNET.AspNet;
     using ElectronNET.AspNet.Runtime;
     using ElectronNET.Runtime;
@@ -57,9 +58,39 @@
         /// }
         /// </code>
         /// </example>
+        [Obsolete("This method is deprecated. Please use the overload with the configure parameter")]
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<Task> onAppReadyCallback)
         {
-            ElectronNetRuntime.OnAppReadyCallback = onAppReadyCallback;
+            if (onAppReadyCallback == null)
+            {
+                throw new ArgumentNullException(nameof(onAppReadyCallback));
+            }
+
+            // Backwards compatible overload – wraps the single callback into the new options model.
+            return UseElectron(builder, args, options =>
+            {
+                options.Events.OnReady = onAppReadyCallback;
+            });
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core web host with granular lifecycle
+        /// configuration. The provided <see cref="ElectronNetOptions"/> allows registration of callbacks
+        /// for different phases of the Electron runtime.
+        /// </summary>
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Action<ElectronNetOptions> configure)
+        {
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+
+            var options = new ElectronNetOptions();
+            configure(options);
+            ElectronNetRuntime.Options = options;
+
+            // Preserve behaviour of the original API by mapping OnReady to the legacy callback.
+            ElectronNetRuntime.OnAppReadyCallback = options.Events?.OnReady;
 
             var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
             ElectronNetRuntime.AspNetWebPort = webPort;
