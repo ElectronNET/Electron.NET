@@ -40,7 +40,18 @@
         /// </example>
         public static WebApplicationBuilder UseElectron(this WebApplicationBuilder builder, string[] args, Func<Task> onAppReadyCallback)
         {
-            builder.WebHost.UseElectron(args, onAppReadyCallback);
+            return UseElectron(builder, options =>
+            {
+                options.Events = new()
+                {
+                    OnReady = onAppReadyCallback
+                };
+            });
+        }
+
+        public static WebApplicationBuilder UseElectron(this WebApplicationBuilder builder, Action<ElectronNetOptions> configure)
+        {
+            builder.WebHost.UseElectron(configure);
 
             return builder;
         }

@@ -183,7 +183,7 @@
                 }
             }
 
-            if (ElectronNetRuntime.OnAppReadyCallback == null)
+            if (events.OnReady == null)
             {
                 Console.WriteLine("Warning: Non OnReadyCallback provided in UseElectron() setup.");
                 return;
@@ -191,7 +191,7 @@
 
             try
             {
-                await ElectronNetRuntime.OnAppReadyCallback().ConfigureAwait(false);
+                await events.OnReady().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

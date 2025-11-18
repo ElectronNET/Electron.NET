@@ -58,7 +58,6 @@
         /// }
         /// </code>
         /// </example>
-        [Obsolete("This method is deprecated. Please use the overload with the configure parameter")]
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<Task> onAppReadyCallback)
         {
             if (onAppReadyCallback == null)
@@ -67,7 +66,7 @@
             }
 
             // Backwards compatible overload – wraps the single callback into the new options model.
-            return UseElectron(builder, args, options =>
+            return UseElectron(builder, options =>
             {
                 options.Events.OnReady = onAppReadyCallback;
             });
@@ -78,7 +77,7 @@
         /// configuration. The provided <see cref="ElectronNetOptions"/> allows registration of callbacks
         /// for different phases of the Electron runtime.
         /// </summary>
-        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Action<ElectronNetOptions> configure)
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, Action<ElectronNetOptions> configure)
         {
             if (configure == null)
             {
@@ -88,9 +87,6 @@
             var options = new ElectronNetOptions();
             configure(options);
             ElectronNetRuntime.Options = options;
-
-            // Preserve behaviour of the original API by mapping OnReady to the legacy callback.
-            ElectronNetRuntime.OnAppReadyCallback = options.Events?.OnReady;
 
             var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
             ElectronNetRuntime.AspNetWebPort = webPort;

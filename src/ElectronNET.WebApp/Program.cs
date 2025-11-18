@@ -20,7 +20,7 @@ namespace ElectronNET.WebApp
         {
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging((hostingContext, logging) => { logging.AddConsole(); })
-                .UseElectron(args, ElectronBootstrap)
+                .UseElectron(ElectronBootstrap)
                 .UseStartup<Startup>();
         }
 
