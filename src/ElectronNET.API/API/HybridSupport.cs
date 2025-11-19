@@ -1,7 +1,9 @@
-﻿namespace ElectronNET.API
+namespace ElectronNET.API
 {
+    using ElectronNET.Runtime;
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class HybridSupport
     {
@@ -15,7 +17,7 @@
         {
             get
             {
-                return ElectronNetRuntime.RuntimeController != null;
+                return ElectronHostEnvironment.Current.RuntimeController != null;
             }
         }
     }

@@ -38,15 +38,16 @@
 
         protected override Task StartCore()
         {
-            var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
-            var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
-            var args = string.Format("{0} {1}", ElectronNetRuntime.ElectronExtraArguments, Environment.CommandLine).Trim();
-            this.port = ElectronNetRuntime.ElectronSocketPort;
+            var host = ElectronHostEnvironment.InternalHost;
+            var isUnPacked = host.StartupMethod.IsUnpackaged();
+            var electronBinaryName = host.ElectronExecutable;
+            var args = string.Format("{0} {1}", host.ElectronExtraArguments, Environment.CommandLine).Trim();
+            this.port = host.ElectronSocketPort;
 
             if (!this.port.HasValue)
             {
-                this.port = PortHelper.GetFreePort(ElectronNetRuntime.DefaultSocketPort);
-                ElectronNetRuntime.ElectronSocketPort = this.port;
+                this.port = PortHelper.GetFreePort(ElectronHostDefaults.DefaultSocketPort);
+                host.ElectronSocketPort = this.port;
             }
 
             Console.Error.WriteLine("[StartCore]: isUnPacked: {0}", isUnPacked);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using ElectronNET.Runtime;
 
 namespace ElectronNET.WebApp.Controllers
 {
@@ -11,7 +12,8 @@ namespace ElectronNET.WebApp.Controllers
         {
             if (HybridSupport.IsElectronActive)
             {
-                string viewPath = $"http://localhost:{ElectronNetRuntime.AspNetWebPort}/windows/demowindow";
+                var host = ElectronHostEnvironment.Current;
+                string viewPath = $"http://localhost:{host.AspNetWebPort}/windows/demowindow";
 
                 Electron.IpcMain.On("new-window", async (args) =>
                 {

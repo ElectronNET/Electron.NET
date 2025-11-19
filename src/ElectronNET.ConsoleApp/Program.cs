@@ -1,4 +1,5 @@
 ﻿using ElectronNET.API;
+using ElectronNET.Runtime;
 
 namespace ElectronNET.WebApp
 {
@@ -10,7 +11,7 @@ namespace ElectronNET.WebApp
     {
         public static async Task Main(string[] args)
         {
-            var runtimeController = ElectronNetRuntime.RuntimeController;
+            var runtimeController = ElectronHostEnvironment.Current.RuntimeController;
 
             try
             {

@@ -36,14 +36,15 @@
 
         protected override Task StartCore()
         {
-            this.port = ElectronNetRuntime.ElectronSocketPort;
+            var host = ElectronHostEnvironment.InternalHost;
+            this.port = host.ElectronSocketPort;
 
             if (!this.port.HasValue)
             {
                 throw new Exception("No port has been specified by Electron!");
             }
 
-            if (!ElectronNetRuntime.ElectronProcessId.HasValue)
+            if (!host.ElectronProcessId.HasValue)
             {
                 throw new Exception("No electronPID has been specified by Electron!");
             }
@@ -54,7 +55,7 @@
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();
 
-            this.electronProcess = new ElectronProcessPassive(ElectronNetRuntime.ElectronProcessId.Value);
+            this.electronProcess = new ElectronProcessPassive(host.ElectronProcessId.Value);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 

@@ -86,10 +86,12 @@
 
             var options = new ElectronNetOptions();
             configure(options);
-            ElectronNetRuntime.Options = options;
 
-            var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
-            ElectronNetRuntime.AspNetWebPort = webPort;
+            var host = ElectronHostEnvironment.InternalHost;
+            host.ApplyOptions(options);
+
+            var webPort = PortHelper.GetFreePort(host.AspNetWebPort ?? ElectronHostDefaults.DefaultWebPort);
+            host.AspNetWebPort = webPort;
 
             // check for the content folder if its exists in base director otherwise no need to include
             // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
@@ -108,8 +110,9 @@
             {
                 services.AddTransient<IStartupFilter, ServerReadyStartupFilter>();
                 services.AddSingleton<AspNetLifetimeAdapter>();
+                services.AddSingleton<IElectronHost>(host);
 
-                switch (ElectronNetRuntime.StartupMethod)
+                switch (host.StartupMethod)
                 {
                     case StartupMethod.PackagedElectronFirst:
                     case StartupMethod.UnpackedElectronFirst:

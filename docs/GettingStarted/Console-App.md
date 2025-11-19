@@ -71,6 +71,7 @@ Here's a complete console application example:
 using System;
 using System.Threading.Tasks;
 using ElectronNET.API.Entities;
+using ElectronNET.Runtime;
 
 namespace MyElectronApp
 
@@ -78,7 +79,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var runtimeController = ElectronNetRuntime.RuntimeController;
+        var runtimeController = ElectronHostEnvironment.Current.RuntimeController;
 
         try
         {

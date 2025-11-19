@@ -88,11 +88,11 @@ public class Program
 
 #### ASP.NET Port
 
-If you want to launch a specific URL, you can retrieve the actual ASP.NET port from the new `ElectronNetRuntime` static class, for example:
+If you want to launch a specific URL, you can retrieve the actual ASP.NET port from `ElectronHostEnvironment.Current`, for example:
 
 ```csharp
     await browserWindow.WebContents
-        .LoadURLAsync($"http://localhost:{ElectronNetRuntime.AspNetWebPort}/mypage.html");
+        .LoadURLAsync($"http://localhost:{ElectronNET.Runtime.ElectronHostEnvironment.Current.AspNetWebPort}/mypage.html");
 ```
 
 ### 4. Alternative: IWebHostBuilder Setup
