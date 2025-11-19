@@ -106,7 +106,7 @@ app.Run();
 // Program.cs
 public static async Task Main(string[] args)
 {
-    var runtimeController = ElectronNetRuntime.RuntimeController;
+    var runtimeController = ElectronNET.Runtime.ElectronHostEnvironment.Current.RuntimeController;
 
     await runtimeController.Start();
     await runtimeController.WaitReadyTask;
@@ -189,7 +189,7 @@ ElectronNET.Core automatically manages process lifecycle:
 Access runtime controller for advanced scenarios:
 
 ```csharp
-var runtime = ElectronNetRuntime.RuntimeController;
+var runtime = ElectronNET.Runtime.ElectronHostEnvironment.Current.RuntimeController;
 
 // Wait for Electron to be ready
 await runtime.WaitReadyTask;

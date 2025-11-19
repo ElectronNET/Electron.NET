@@ -1,5 +1,6 @@
 using ElectronNET.API.Entities;
 using ElectronNET.API.Serialization;
+using ElectronNET.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,9 +118,10 @@ namespace ElectronNET.API
                 }
             });
 
-            if (loadUrl.Equals("http://localhost", StringComparison.OrdinalIgnoreCase) && ElectronNetRuntime.AspNetWebPort.HasValue)
+            var host = ElectronHostEnvironment.Current;
+            if (loadUrl.Equals("http://localhost", StringComparison.OrdinalIgnoreCase) && host.AspNetWebPort.HasValue)
             {
-                loadUrl = $"{loadUrl}:{ElectronNetRuntime.AspNetWebPort}";
+                loadUrl = $"{loadUrl}:{host.AspNetWebPort}";
             }
 
             // Workaround Windows 10 / Electron Bug

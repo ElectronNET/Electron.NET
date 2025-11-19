@@ -4,6 +4,7 @@ namespace ElectronNET.IntegrationTests
     using System.Reflection;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Runtime;
 
     // Shared fixture that starts Electron runtime once
     [SuppressMessage("ReSharper", "MethodHasAsyncOverload")]
@@ -19,8 +20,9 @@ namespace ElectronNET.IntegrationTests
                 AppDomain.CurrentDomain.SetData("ElectronTestAssembly", Assembly.GetExecutingAssembly());
 
                 Console.WriteLine("[ElectronFixture] Acquire RuntimeController");
-                var runtimeController = ElectronNetRuntime.RuntimeController;
-                ElectronNetRuntime.ElectronExtraArguments = "--no-sandbox";
+                var host = ElectronHostEnvironment.Current;
+                var runtimeController = host.RuntimeController;
+                host.ElectronExtraArguments = "--no-sandbox";
 
                 Console.Error.WriteLine("[ElectronFixture] Starting Electron runtime...");
                 await runtimeController.Start();
@@ -55,7 +57,7 @@ namespace ElectronNET.IntegrationTests
 
         public async Task DisposeAsync()
         {
-            var runtimeController = ElectronNetRuntime.RuntimeController;
+            var runtimeController = ElectronHostEnvironment.Current.RuntimeController;
             Console.Error.WriteLine("[ElectronFixture] Stopping Electron runtime...");
             await runtimeController.Stop();
             await runtimeController.WaitStoppedTask;

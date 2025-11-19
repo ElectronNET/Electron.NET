@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using ElectronNET.Runtime;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.ElectronProcess;
 
@@ -18,21 +19,22 @@
 
         protected override Task StartCore()
         {
-            this.port = ElectronNetRuntime.ElectronSocketPort;
+            var host = ElectronHostEnvironment.InternalHost;
+            this.port = host.ElectronSocketPort;
 
             if (!this.port.HasValue)
             {
                 throw new Exception("No port has been specified by Electron!");
             }
 
-            if (!ElectronNetRuntime.ElectronProcessId.HasValue)
+            if (!host.ElectronProcessId.HasValue)
             {
                 throw new Exception("No electronPID has been specified by Electron!");
             }
 
             this.CreateSocketBridge(this.port!.Value);
 
-            this.electronProcess = new ElectronProcessPassive(ElectronNetRuntime.ElectronProcessId.Value);
+            this.electronProcess = new ElectronProcessPassive(host.ElectronProcessId.Value);
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 
             this.electronProcess.Start();

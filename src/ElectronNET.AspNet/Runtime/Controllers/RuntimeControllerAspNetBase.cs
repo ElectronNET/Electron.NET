@@ -5,6 +5,7 @@
     using ElectronNET;
     using ElectronNET.API;
     using ElectronNET.Common;
+    using ElectronNET.Runtime;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.SocketBridge;
@@ -21,7 +22,7 @@
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
             this.aspNetLifetimeAdapter.Stopped += this.AspNetLifetimeAdapter_Stopped;
 
-            ElectronNetRuntime.RuntimeControllerCore = this;
+            ElectronHostEnvironment.InternalHost.RuntimeControllerCore = this;
         }
 
         internal override SocketBridgeService SocketBridge => this.socketBridge;
@@ -127,7 +128,7 @@
 
         private async Task RunWillQuitCallback()
         {
-            var events = ElectronNetRuntime.Options?.Events;
+            var events = ElectronHostEnvironment.InternalHost.Options?.Events;
             var handler = events?.OnWillQuit;
 
             if (handler == null)
@@ -148,7 +149,7 @@
 
         private async Task RunQuitCallback()
         {
-            var events = ElectronNetRuntime.Options?.Events;
+            var events = ElectronHostEnvironment.InternalHost.Options?.Events;
             var handler = events?.OnQuit;
 
             if (handler == null)
@@ -168,7 +169,7 @@
 
         private async Task RunReadyCallback()
         {
-            var events = ElectronNetRuntime.Options?.Events;
+            var events = ElectronHostEnvironment.InternalHost.Options?.Events;
             if (events?.OnBeforeReady != null)
             {
                 try

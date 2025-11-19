@@ -44,7 +44,7 @@
 
         private static bool? CheckUnpackaged1()
         {
-            var cfg = ElectronNetRuntime.BuildInfo.BuildConfiguration;
+            var cfg = ElectronHostEnvironment.InternalHost.BuildInfo.BuildConfiguration;
             if (cfg != null)
             {
                 if (cfg.Equals("Debug", StringComparison.OrdinalIgnoreCase))
@@ -90,14 +90,15 @@
 
         private static bool? CheckUnpackaged4()
         {
-            var isUnpackaged = ElectronNetRuntime.ProcessArguments.Any(e => e.Contains("unpacked", StringComparison.OrdinalIgnoreCase));
+            var host = ElectronHostEnvironment.InternalHost;
+            var isUnpackaged = host.ProcessArguments.Any(e => e.Contains("unpacked", StringComparison.OrdinalIgnoreCase));
 
             if (isUnpackaged)
             {
                 return true;
             }
 
-            var isPackaged = ElectronNetRuntime.ProcessArguments.Any(e => e.Contains("dotnetpacked", StringComparison.OrdinalIgnoreCase));
+            var isPackaged = host.ProcessArguments.Any(e => e.Contains("dotnetpacked", StringComparison.OrdinalIgnoreCase));
             if (isPackaged)
             {
                 return false;

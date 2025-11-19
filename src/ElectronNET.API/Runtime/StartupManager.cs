@@ -11,11 +11,18 @@
 
     internal class StartupManager
     {
+        private readonly ElectronHost host;
+
+        public StartupManager(ElectronHost host)
+        {
+            this.host = host ?? throw new ArgumentNullException(nameof(host));
+        }
+
         public void Initialize()
         {
             try
             {
-                ElectronNetRuntime.BuildInfo = this.GatherBuildInfo();
+                this.host.BuildInfo = this.GatherBuildInfo();
             }
             catch (Exception ex)
             {
@@ -25,19 +32,18 @@
             this.CollectProcessData();
             this.SetElectronExecutable();
 
+            this.host.StartupMethod = this.DetectAppTypeAndStartup();
+            Console.WriteLine((string)("Evaluated StartupMethod: " + this.host.StartupMethod));
 
-            ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
-            Console.WriteLine((string)("Evaluated StartupMethod: " + ElectronNetRuntime.StartupMethod));
-
-            if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
+            if (this.host.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
-                ElectronNetRuntime.RuntimeControllerCore = this.CreateRuntimeController();
+                this.host.RuntimeControllerCore = this.CreateRuntimeController();
             }
         }
 
         private RuntimeControllerBase CreateRuntimeController()
         {
-            switch (ElectronNetRuntime.StartupMethod)
+            switch (this.host.StartupMethod)
             {
                 case StartupMethod.PackagedDotnetFirst:
                 case StartupMethod.UnpackedDotnetFirst:
@@ -79,29 +85,29 @@
         {
             var argsList = Environment.GetCommandLineArgs().ToImmutableList();
 
-            ElectronNetRuntime.ProcessArguments = argsList;
+            this.host.ProcessArguments = argsList;
 
-            var portArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronPortArgumentName, StringComparison.OrdinalIgnoreCase));
+            var portArg = argsList.FirstOrDefault(e => e.Contains(ElectronHostDefaults.ElectronPortArgumentName, StringComparison.OrdinalIgnoreCase));
 
             if (portArg != null)
             {
                 var parts = portArg.Split('=', StringSplitOptions.TrimEntries);
                 if (parts.Length > 1 && int.TryParse(parts[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
                 {
-                    ElectronNetRuntime.ElectronSocketPort = result;
+                    this.host.ElectronSocketPort = result;
 
                     Console.WriteLine("Use Electron Port: " + result);
                 }
             }
 
-            var pidArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
+            var pidArg = argsList.FirstOrDefault(e => e.Contains(ElectronHostDefaults.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
 
             if (pidArg != null)
             {
                 var parts = pidArg.Split('=', StringSplitOptions.TrimEntries);
                 if (parts.Length > 1 && int.TryParse(parts[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
                 {
-                    ElectronNetRuntime.ElectronProcessId = result;
+                    this.host.ElectronProcessId = result;
 
                     Console.WriteLine("Electron Process ID: " + result);
                 }
@@ -110,7 +116,7 @@
 
         private void SetElectronExecutable()
         {
-            string executable = ElectronNetRuntime.BuildInfo.ElectronExecutable;
+            string executable = this.host.BuildInfo.ElectronExecutable;
             if (string.IsNullOrEmpty(executable))
             {
                 throw new Exception("AssemblyMetadataAttribute 'ElectronExecutable' could not be found!");
@@ -121,7 +127,7 @@
                 executable += ".exe";
             }
 
-            ElectronNetRuntime.ElectronExecutable = executable;
+            this.host.ElectronExecutable = executable;
         }
 
         private BuildInfo GatherBuildInfo()
@@ -162,7 +168,7 @@
 
                 if (isAspNet?.Length > 0 && bool.TryParse(isAspNet, out var isAspNetActive) && isAspNetActive)
                 {
-                    ElectronNetRuntime.DotnetAppType = DotnetAppType.AspNetCoreApp;
+                    this.host.DotnetAppType = DotnetAppType.AspNetCoreApp;
                 }
 
                 if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var isSingleInstanceActive) && isSingleInstanceActive)
@@ -176,7 +182,7 @@
 
                 if (httpPort?.Length > 0 && int.TryParse(httpPort, out var port))
                 {
-                    ElectronNetRuntime.AspNetWebPort = port;
+                    this.host.AspNetWebPort = port;
                 }
             }
 

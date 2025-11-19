@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using ElectronNET.Common;
+    using ElectronNET.Runtime;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
     using ElectronNET.Runtime.Services.ElectronProcess;
@@ -20,15 +21,16 @@
 
         protected override Task StartCore()
         {
-            var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
-            var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
+            var host = ElectronNET.Runtime.ElectronHostEnvironment.InternalHost;
+            var isUnPacked = host.StartupMethod.IsUnpackaged();
+            var electronBinaryName = host.ElectronExecutable;
             var args = Environment.CommandLine;
-            this.port = ElectronNetRuntime.ElectronSocketPort;
+            this.port = host.ElectronSocketPort;
 
             if (!this.port.HasValue)
             {
-                this.port = PortHelper.GetFreePort(ElectronNetRuntime.DefaultSocketPort);
-                ElectronNetRuntime.ElectronSocketPort = this.port;
+                this.port = PortHelper.GetFreePort(ElectronHostDefaults.DefaultSocketPort);
+                host.ElectronSocketPort = this.port;
             }
 
             this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);

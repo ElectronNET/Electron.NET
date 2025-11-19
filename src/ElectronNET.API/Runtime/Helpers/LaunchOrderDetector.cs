@@ -38,7 +38,8 @@
 
         private static bool? CheckIsDotNetStartup1()
         {
-            var hasPortArg = ElectronNetRuntime.ProcessArguments.Any(e => e.Contains(ElectronNetRuntime.ElectronPortArgumentName, StringComparison.OrdinalIgnoreCase));
+            var host = ElectronHostEnvironment.InternalHost;
+            var hasPortArg = host.ProcessArguments.Any(e => e.Contains(ElectronHostDefaults.ElectronPortArgumentName, StringComparison.OrdinalIgnoreCase));
             if (hasPortArg)
             {
                 return false;
@@ -50,7 +51,8 @@
 
         private static bool? CheckIsDotNetStartup2()
         {
-            var hasPidArg = ElectronNetRuntime.ProcessArguments.Any(e => e.Contains(ElectronNetRuntime.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
+            var host = ElectronHostEnvironment.InternalHost;
+            var hasPidArg = host.ProcessArguments.Any(e => e.Contains(ElectronHostDefaults.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
             if (hasPidArg)
             {
                 return false;
