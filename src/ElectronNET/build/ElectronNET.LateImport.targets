@@ -344,7 +344,6 @@
     <PropertyGroup>
       <_OriginalPublishDir>$(PublishDir)</_OriginalPublishDir>
       <PublishDir>$(_OriginalPublishDir)bin\</PublishDir>
-      <PublishUrl>$(PublishDir)</PublishUrl>
       <DeleteExistingFiles>true</DeleteExistingFiles>
     </PropertyGroup>
 
@@ -460,7 +459,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 
