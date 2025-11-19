@@ -1,3 +1,11 @@
+# 0.3.0
+
+## ElectronNET.Core
+
+- Updated infrastructure (#937, #939) @softworkz
+- Fixed output path for `electron-builder` (#942) @softworkz
+- Fixed previous API break using exposed `JsonElement` objects (#938) @softworkz
+
 # 0.2.0
 
 ## ElectronNET.Core
