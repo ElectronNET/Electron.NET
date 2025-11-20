@@ -12,16 +12,24 @@ concurrency:
 
 jobs:
   tests:
-    name: Integration Tests (${{ matrix.os }})
+    name: Integration Tests (${{ matrix.os }} / Electron ${{ matrix.electronVersion }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, windows-2025, macos-14, macos-26]
+        electronVersion: ['30.4.0', '38.2.2']
         include:
+          - os: ubuntu-22.04
+            rid: linux-x64
           - os: ubuntu-24.04
             rid: linux-x64
           - os: windows-2022
             rid: win-x64
+          - os: windows-2025
+            rid: win-x64
+          - os: macos-14
+            rid: osx-arm64
           - os: macos-26
             rid: osx-arm64
 
@@ -46,28 +54,30 @@ jobs:
           node-version: '22'
 
       - name: Restore
-        run: dotnet restore -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
+        run: dotnet restore -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
 
       - name: Build
-        run: dotnet build --no-restore -c Release -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
+        run: dotnet build --no-restore -c Release -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj
 
       - name: Install Linux GUI dependencies
         if: runner.os == 'Linux'
         run: |
           set -e
           sudo apt-get update
-          # Core Electron dependencies
+          . /etc/os-release
+          if [ "$VERSION_ID" = "24.04" ]; then ALSA_PKG=libasound2t64; else ALSA_PKG=libasound2; fi
+          echo "Using ALSA package: $ALSA_PKG"
           sudo apt-get install -y xvfb \
-            libgtk-3-0 libnss3 libgdk-pixbuf-2.0-0 libdrm2 libgbm1 libxss1 libxtst6 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libx11-xcb1 libasound2t64
+            libgtk-3-0 libnss3 libgdk-pixbuf-2.0-0 libdrm2 libgbm1 libxss1 libxtst6 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libx11-xcb1 "$ALSA_PKG"
 
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         continue-on-error: true
         run: |
-          mkdir -p test-results/Ubuntu
+          mkdir -p test-results
           xvfb-run -a dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj \
-            -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} \
-            --logger "trx;LogFileName=Ubuntu.trx" \
+            -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} \
+            --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" \
             --logger "console;verbosity=detailed" \
             --results-directory test-results
 
@@ -75,21 +85,21 @@ jobs:
         if: runner.os == 'Windows'
         continue-on-error: true
         run: |
-          New-Item -ItemType Directory -Force -Path test-results/Windows | Out-Null
-          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} --logger "trx;LogFileName=Windows.trx" --logger "console;verbosity=detailed" --results-directory test-results
+          New-Item -ItemType Directory -Force -Path test-results | Out-Null
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --results-directory test-results
 
       - name: Run tests (macOS)
         if: runner.os == 'macOS'
         continue-on-error: true
         run: |
-          mkdir -p test-results/macOS
-          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} --logger "trx;LogFileName=macOS.trx" --logger "console;verbosity=detailed" --results-directory test-results
+          mkdir -p test-results
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --results-directory test-results
 
       - name: Upload raw test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.os }}
+          name: test-results-${{ matrix.os }}-electron-${{ matrix.electronVersion }}
           path: test-results/*.trx
           retention-days: 7
 
@@ -121,7 +131,7 @@ jobs:
           dotnet new tool-manifest
           dotnet tool install DotnetCtrfJsonReporter --local
 
-      - name: Convert TRX → CTRF and clean names (keep suites; set filePath=OS)
+      - name: Convert TRX → CTRF and clean names (filePath=OS|Electron X.Y.Z)
         shell: bash
         run: |
           set -euo pipefail
@@ -129,15 +139,17 @@ jobs:
           shopt -s globstar nullglob
           conv=0
           for trx in test-results/**/*.trx; do
-            fname="$(basename "$trx")"
-            os="${fname%.trx}"
-            outdir="ctrf/${os}"
+            base="$(basename "$trx" .trx)"  # e.g. ubuntu-22.04-electron-30.4.0
+            os="${base%%-electron-*}"
+            electron="${base#*-electron-}"
+            label="$os|Electron $electron"
+            outdir="ctrf/${label}"
             mkdir -p "$outdir"
             out="${outdir}/ctrf-report.json"
 
             dotnet tool run DotnetCtrfJsonReporter -p "$trx" -d "$outdir" -f "ctrf-report.json"
 
-            jq --arg os "$os" '.results.tests |= map(.filePath = $os)' "$out" > "${out}.tmp" && mv "${out}.tmp" "$out"
+            jq --arg fp "$label" '.results.tests |= map(.filePath = $fp)' "$out" > "${out}.tmp" && mv "${out}.tmp" "$out"
 
             echo "Converted & normalized $trx -> $out"
             conv=$((conv+1))
@@ -149,7 +161,6 @@ jobs:
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: 'ctrf/**/*.json'
-
           summary: true
           pull-request: false
           status-check: false
@@ -162,7 +173,6 @@ jobs:
           group-by: 'suite'
           upload-artifact: true
           fetch-previous-results: true
-
           summary-report: false
           summary-delta-report: true
           github-report: true
@@ -180,7 +190,6 @@ jobs:
           flaky-rate-report: true
           fail-rate-report: false
           slowest-report: false
-
           report-order: 'summary-delta-report,failed-report,skipped-report,suite-folded-report,file-report,previous-results-report,github-report'
         env:
           GITHUB_TOKEN: ${{ github.token }}
