@@ -115,10 +115,11 @@ namespace ElectronNET.API.Entities
 
         /// <summary>
         /// Whether the window can be put into fullscreen mode. On macOS, also whether the
-        /// maximize/zoom button should toggle full screen mode or maximize window.Default
-        /// is true.
+        /// maximize/zoom button should toggle full screen mode or maximize window. Default
+        /// is true (Electron default).
         /// </summary>
-        public bool Fullscreenable { get; set; }
+        [DefaultValue(true)]
+        public bool Fullscreenable { get; set; } = true; // FIX: previously defaulted to false in C#
 
         /// <summary>
         /// Whether to show the window in taskbar. Default is false.
