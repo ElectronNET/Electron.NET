@@ -539,7 +539,7 @@ namespace ElectronNET.API
             using (cancellationToken.Register(() => taskCompletionSource.TrySetCanceled()))
             {
                 BridgeConnector.Socket.Once<string>("appGetPathCompleted", taskCompletionSource.SetResult);
-                BridgeConnector.Socket.Emit("appGetPath", pathName.GetDescription());
+                BridgeConnector.Socket.Emit("appGetPath", pathName);
 
                 return await taskCompletionSource.Task
                     .ConfigureAwait(false);
@@ -560,7 +560,7 @@ namespace ElectronNET.API
         /// </summary>
         public void SetPath(PathName name, string path)
         {
-            this.CallMethod2(name.GetDescription(), path);
+            this.CallMethod2(name, path);
         }
 
         /// <summary>
