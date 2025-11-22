@@ -3,15 +3,16 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with electron-updater 6.7.2</remarks>
     public class ReleaseNoteInfo
     {
         /// <summary>
-        /// The version.
+        /// Gets or sets the version.
         /// </summary>
         public string Version { get; set; }
 
         /// <summary>
-        /// The note.
+        /// Gets or sets the note text.
         /// </summary>
         public string Note { get; set; }
     }

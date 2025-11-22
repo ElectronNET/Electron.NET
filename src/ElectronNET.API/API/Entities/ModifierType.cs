@@ -1,8 +1,9 @@
 ﻿namespace ElectronNET.API.Entities;
 
 /// <summary>
-/// Specifies the possible modifier keys for a keyboard input.
+/// Specifies the possible modifier keys for a keyboard input (maps to InputEvent.modifiers).
 /// </summary>
+/// <remarks>Up-to-date with Electron API 39.2</remarks>
 public enum ModifierType
 {
     /// <summary>

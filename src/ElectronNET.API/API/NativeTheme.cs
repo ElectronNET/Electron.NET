@@ -99,7 +99,7 @@ namespace ElectronNET.API
         /// <param name="themeSourceMode">The new ThemeSource.</param>
         public void SetThemeSource(ThemeSourceMode themeSourceMode)
         {
-            var themeSource = themeSourceMode.GetDescription();
+            var themeSource = themeSourceMode;
 
             BridgeConnector.Socket.Emit("nativeTheme-themeSource", themeSource);
         }

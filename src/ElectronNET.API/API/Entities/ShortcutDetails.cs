@@ -1,8 +1,12 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// Structure of a shortcut.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("windows")]
     public class ShortcutDetails
     {
         /// <summary>
@@ -35,6 +39,12 @@
         /// The resource ID of icon when <see cref="Icon"/> is a DLL or EXE. Default is 0.
         /// </summary>
         public int IconIndex { get; set; }
+
+        /// <summary>
+        /// The Application Toast Activator CLSID. Needed for participating in Action Center.
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        public string ToastActivatorClsid { get; set; }
 
         /// <summary>
         /// The target to launch from this shortcut.

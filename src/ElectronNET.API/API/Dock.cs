@@ -57,7 +57,7 @@ namespace ElectronNET.API
             using (cancellationToken.Register(() => tcs.TrySetCanceled()))
             {
                 BridgeConnector.Socket.Once<int>("dock-bounce-completed", tcs.SetResult);
-                BridgeConnector.Socket.Emit("dock-bounce", type.GetDescription());
+                BridgeConnector.Socket.Emit("dock-bounce", type);
 
                 return await tcs.Task
                     .ConfigureAwait(false);

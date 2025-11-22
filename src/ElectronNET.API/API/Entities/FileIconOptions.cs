@@ -3,14 +3,13 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class FileIconOptions
     {
         /// <summary>
-        /// Gets the size.
+        /// The requested icon size string passed to app.getFileIcon:
+        /// "small" (16x16), "normal" (32x32), or "large" (48x48 on Linux, 32x32 on Windows; unsupported on macOS).
         /// </summary>
-        /// <value>
-        /// The size.
-        /// </value>
         public string Size { get; private set; }
 
         /// <summary>

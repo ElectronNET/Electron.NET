@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
+    /// <yremarks>Project-specific: JSON converter for NativeImage; no MCP structure equivalent.</yremarks>
     internal class NativeImageJsonConverter : JsonConverter<NativeImage>
     {
         public override void Write(Utf8JsonWriter writer, NativeImage value, JsonSerializerOptions options)

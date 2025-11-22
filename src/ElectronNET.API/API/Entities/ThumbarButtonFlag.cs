@@ -1,8 +1,12 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Flags for Windows taskbar thumbnail toolbar buttons.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("windows")]
     public enum ThumbarButtonFlag
     {
         /// <summary>

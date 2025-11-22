@@ -3,6 +3,7 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// An object listing the version strings specific to Electron
     /// </summary>
+    /// <yremarks>Project-specific: no matching Electron structure found in MCP docs (electronjs).</yremarks>
     /// <param name="Chrome">Value representing Chrome's version string</param>
     /// <param name="Electron">Value representing Electron's version string</param>
     /// <returns></returns>

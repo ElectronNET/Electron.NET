@@ -15,4 +15,24 @@ public class OnDidFailLoadInfo
     /// Validated URL.
     /// </summary>
     public string ValidatedUrl { get; set; }
+
+    /// <summary>
+    /// Error description string.
+    /// </summary>
+    public string ErrorDescription { get; set; }
+
+    /// <summary>
+    /// True if the event pertains to the main frame.
+    /// </summary>
+    public bool IsMainFrame { get; set; }
+
+    /// <summary>
+    /// The process id for the frame.
+    /// </summary>
+    public int FrameProcessId { get; set; }
+
+    /// <summary>
+    /// The routing id for the frame.
+    /// </summary>
+    public int FrameRoutingId { get; set; }
 }

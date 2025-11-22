@@ -177,7 +177,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var win = this.fx.MainWindow;
             win.SetProgressBar(0.5);
             await Task.Delay(50);
-            win.SetProgressBar(0.8, new ProgressBarOptions { Mode = ProgressBarMode.normal });
+            win.SetProgressBar(0.8, new ProgressBarOptions());
             await Task.Delay(50);
             win.SetAlwaysOnTop(true);
             await Task.Delay(500);

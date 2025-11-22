@@ -117,13 +117,18 @@ namespace ElectronNET.API
 
         protected Task<T> InvokeAsync<T>(object arg = null, [CallerMemberName] string callerName = null)
         {
+            return this.InvokeAsyncWithTimeout<T>(InvocationTimeout, arg, callerName);
+        }
+
+        protected Task<T> InvokeAsyncWithTimeout<T>(int invocationTimeout, object arg = null, [CallerMemberName] string callerName = null)
+        {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
 
             lock (this.objLock)
             {
                 return this.invocators.GetOrAdd(callerName, _ =>
                 {
-                    var getter = new Invocator<T>(this, callerName, InvocationTimeout, arg);
+                    var getter = new Invocator<T>(this, callerName, invocationTimeout, arg);
 
                     getter.Task<T>().ContinueWith(_ =>
                     {
@@ -301,7 +306,7 @@ namespace ElectronNET.API
                     _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) : BridgeConnector.Socket.Emit(messageName);
                 }
 
-                System.Threading.Tasks.Task.Delay(InvocationTimeout).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(timeoutMs).ContinueWith(_ =>
                 {
                     if (this.tcs != null)
                     {

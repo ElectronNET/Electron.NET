@@ -681,7 +681,7 @@ public class BrowserWindow : ApiBase
     /// <param name="level">Values include normal, floating, torn-off-menu, modal-panel, main-menu,
     /// status, pop-up-menu and screen-saver. The default is floating.
     /// See the macOS docs</param>
-    public void SetAlwaysOnTop(bool flag, OnTopLevel level) => this.CallMethod2(flag, level.GetDescription());
+    public void SetAlwaysOnTop(bool flag, OnTopLevel level) => this.CallMethod2(flag, level);
 
     /// <summary>
     /// Sets whether the window should show always on top of other windows.
@@ -694,7 +694,7 @@ public class BrowserWindow : ApiBase
     /// See the macOS docs</param>
     /// <param name="relativeLevel">The number of layers higher to set this window relative to the given level.
     /// The default is 0. Note that Apple discourages setting levels higher than 1 above screen-saver.</param>
-    public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel) => this.CallMethod3(flag, level.GetDescription(), relativeLevel);
+    public void SetAlwaysOnTop(bool flag, OnTopLevel level, int relativeLevel) => this.CallMethod3(flag, level, relativeLevel);
 
     /// <summary>
     /// Whether the window is always on top of other windows.
@@ -1190,7 +1190,7 @@ public class BrowserWindow : ApiBase
     /// menu, popover, sidebar, medium-light or ultra-dark.
     /// See the macOS documentation for more details.</param>
     [SupportedOSPlatform("macOS")]
-    public void SetVibrancy(Vibrancy type) => this.CallMethod1(type.GetDescription());
+    public void SetVibrancy(Vibrancy type) => this.CallMethod1(type);
 
     /// <summary>
     /// Render and control web pages.

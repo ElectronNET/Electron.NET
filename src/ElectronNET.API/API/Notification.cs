@@ -97,7 +97,14 @@ namespace ElectronNET.API
                 isActionDefined = true;
 
                 BridgeConnector.Socket.Off("NotificationEventAction");
-                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) => { _notificationOptions.Single(x => x.ActionID == args[0]).OnAction(args[1]); });
+                BridgeConnector.Socket.On<string[]>("NotificationEventAction", (args) =>
+                {
+                    var opt = _notificationOptions.Single(x => x.ActionID == args[0]);
+                    if (int.TryParse(args[1], out var index))
+                    {
+                        opt.OnAction(index);
+                    }
+                });
             }
 
             if (isActionDefined)

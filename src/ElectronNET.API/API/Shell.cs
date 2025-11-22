@@ -134,7 +134,7 @@ namespace ElectronNET.API
             var tcs = new TaskCompletionSource<bool>();
 
             BridgeConnector.Socket.Once<bool>("shell-writeShortcutLinkCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), options);
+            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation, options);
 
             return tcs.Task;
         }

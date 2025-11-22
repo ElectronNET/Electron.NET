@@ -1,8 +1,12 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Options for app.importCertificate(options) on Linux.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("linux")]
     public class ImportCertificateOptions
     {
         /// <summary>

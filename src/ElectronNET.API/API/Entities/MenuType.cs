@@ -1,33 +1,48 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Menu item types matching Electron's MenuItem.type values.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public enum MenuType
     {
         /// <summary>
-        /// The normal
+        /// Normal menu item.
         /// </summary>
         normal,
 
         /// <summary>
-        /// The separator
+        /// Separator between items.
         /// </summary>
         separator,
 
         /// <summary>
-        /// The submenu
+        /// Submenu container.
         /// </summary>
         submenu,
 
         /// <summary>
-        /// The checkbox
+        /// Checkbox item.
         /// </summary>
         checkbox,
 
         /// <summary>
-        /// The radio
+        /// Radio item.
         /// </summary>
-        radio
+        radio,
+
+        /// <summary>
+        /// Header item (macOS 14+).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        header,
+
+        /// <summary>
+        /// Palette item (macOS 14+).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        palette
     }
 }

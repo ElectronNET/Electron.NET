@@ -1,8 +1,9 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Message box type for dialog.showMessageBox/showMessageBoxSync.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public enum MessageBoxType
     {
         /// <summary>

@@ -2,9 +2,12 @@ using System.Text.Json.Serialization;
 
 namespace ElectronNET.API.Entities
 {
+    using System.Runtime.Versioning;
+
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class OpenDialogOptions
     {
         /// <summary>
@@ -29,18 +32,19 @@ namespace ElectronNET.API.Entities
         public string ButtonLabel { get; set; }
 
         /// <summary>
-        /// Contains which features the dialog should use. The following values are supported:
+        /// Gets or sets which features the dialog should use. The following values are supported:
         /// 'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'
         /// </summary>
         public OpenDialogProperty[] Properties { get; set; }
 
         /// <summary>
-        /// Message to display above input boxes.
+        /// Gets or sets the message to display above input boxes.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string Message { get; set; }
 
         /// <summary>
-        /// The filters specifies an array of file types that can be displayed or
+        /// Gets or sets the filters specifying an array of file types that can be displayed or
         /// selected when you want to limit the user to a specific type. For example:
         /// </summary>
         /// <example>
@@ -55,5 +59,11 @@ namespace ElectronNET.API.Entities
         /// </code>
         /// </example>
         public FileFilter[] Filters { get; set; }
+
+        /// <summary>
+        /// Create security scoped bookmarks when packaged for the Mac App Store.
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public bool SecurityScopedBookmarks { get; set; }
     }
 }

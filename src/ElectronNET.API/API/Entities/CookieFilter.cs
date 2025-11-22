@@ -3,10 +3,11 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class CookieFilter
     {
         /// <summary>
-        /// (optional) - Retrieves cookies which are associated with url.Empty implies retrieving cookies of all URLs.
+        /// (optional) - Retrieves cookies which are associated with url. Empty implies retrieving cookies of all URLs.
         /// </summary>
         public string Url { get; set; }
 
@@ -34,5 +35,10 @@
         /// (optional) - Filters out session or persistent cookies.
         /// </summary>
         public bool Session { get; set; }
+
+        /// <summary>
+        /// (optional) - Filters cookies by httpOnly.
+        /// </summary>
+        public bool HttpOnly { get; set; }
     }
 }

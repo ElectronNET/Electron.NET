@@ -139,7 +139,7 @@ public class WebContents : ApiBase
     /// Get system printers.
     /// </summary>
     /// <returns>printers</returns>
-    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsync<PrinterInfo[]>();
+    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(5_000);
 
     /// <summary>
     /// Prints window's web page.
