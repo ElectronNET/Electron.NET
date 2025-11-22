@@ -3,6 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class CreateInterruptedDownloadOptions
     {
         /// <summary>
@@ -16,7 +17,7 @@
         public string[] UrlChain { get; set; }
 
         /// <summary>
-        /// 
+        /// (optional) - MIME type of the download.
         /// </summary>
         public string MimeType { get; set; }
 
@@ -41,9 +42,10 @@
         public string ETag { get; set; }
 
         /// <summary>
-        /// Time when download was started in number of seconds since UNIX epoch.
+        /// (optional) - Time when download was started in number of seconds since UNIX epoch.
+        /// Electron documents this as a Number (Double).
         /// </summary>
-        public int StartTime { get; set; }
+        public double? StartTime { get; set; }
 
         /// <summary>
         /// 

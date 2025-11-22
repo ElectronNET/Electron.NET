@@ -3,6 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class EnableNetworkEmulationOptions
     {
         /// <summary>
@@ -12,17 +13,20 @@
 
         /// <summary>
         /// RTT in ms. Defaults to 0 which will disable latency throttling.
+        /// Electron documents this as a Number (Double).
         /// </summary>
-        public int Latency { get; set; }
+        public double Latency { get; set; }
 
         /// <summary>
         /// Download rate in Bps. Defaults to 0 which will disable download throttling.
+        /// Electron documents this as a Number (Double).
         /// </summary>
-        public int DownloadThroughput { get; set; }
+        public double DownloadThroughput { get; set; }
 
         /// <summary>
         /// Upload rate in Bps. Defaults to 0 which will disable upload throttling.
+        /// Electron documents this as a Number (Double).
         /// </summary>
-        public int UploadThroughput { get; set; }
+        public double UploadThroughput { get; set; }
     }
 }

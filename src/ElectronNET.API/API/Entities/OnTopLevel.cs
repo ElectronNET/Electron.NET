@@ -1,10 +1,14 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// String values for the 'level' parameter of BrowserWindow.setAlwaysOnTop.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("macOS")]
+    [SupportedOSPlatform("Windows")]
     public enum OnTopLevel
     {
         /// <summary>

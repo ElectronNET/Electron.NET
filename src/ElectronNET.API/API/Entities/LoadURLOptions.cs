@@ -1,12 +1,14 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Options for BrowserWindow.loadURL(url, options) / webContents.loadURL(url, options).
+    /// Matches Electron's loadURL options.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class LoadURLOptions
     {
         /// <summary>
-        /// A HTTP Referrer url.
+        /// An HTTP Referrer URL. In Electron this may be a string or a Referrer object.
         /// </summary>
         public string HttpReferrer { get; set; }
 
@@ -16,20 +18,18 @@
         public string UserAgent { get; set; }
 
         /// <summary>
-        /// Base url (with trailing path separator) for files to be loaded by the data url.
-        /// This is needed only if the specified url is a data url and needs to load other
-        /// files.
+        /// Base URL (with trailing path separator) for files to be loaded by the data URL.
+        /// Needed only if the specified URL is a data URL and needs to load other files.
         /// </summary>
         public string BaseURLForDataURL { get; set; }
 
         /// <summary>
-        /// Extra headers for the request.
+        /// Extra headers separated by "\n".
         /// </summary>
         public string ExtraHeaders { get; set; }
 
         /// <summary>
-        /// PostData Object for the request.
-        /// Can be <see cref="UploadRawData"/>, <see cref="UploadFile"/> or <see cref="Blob"/>
+        /// Post data for the request. Matches Electron's postData: (UploadRawData | UploadFile)[]
         /// </summary>
         public IPostData[] PostData { get; set; }
     }

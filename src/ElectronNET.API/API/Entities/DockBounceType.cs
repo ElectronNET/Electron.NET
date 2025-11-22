@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// Defines the DockBounceType enumeration.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("macOS")]
     public enum DockBounceType
     {
         /// <summary>

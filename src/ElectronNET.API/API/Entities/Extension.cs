@@ -3,6 +3,7 @@
     /// <summary>
     /// Docs: https://electronjs.org/docs/api/structures/extension
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class Extension
     {
         /// <summary>

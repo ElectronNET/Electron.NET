@@ -1,10 +1,12 @@
 using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class WebPreferences
     {
         /// <summary>
@@ -26,6 +28,11 @@ namespace ElectronNET.API.Entities
         public bool NodeIntegrationInWorker { get; set; }
 
         /// <summary>
+        /// Experimental option for enabling Node.js support in sub-frames such as iframes and child windows.
+        /// </summary>
+        public bool NodeIntegrationInSubFrames { get; set; }
+
+        /// <summary>
         /// Specifies a script that will be loaded before other scripts run in the page.
         /// This script will always have access to node APIs no matter whether node
         /// integration is turned on or off.The value should be the absolute file path to
@@ -35,11 +42,7 @@ namespace ElectronNET.API.Entities
         public string Preload { get; set; }
 
         /// <summary>
-        /// If set, this will sandbox the renderer associated with the window, making it
-        /// compatible with the Chromium OS-level sandbox and disabling the Node.js engine.
-        /// This is not the same as the nodeIntegration option and the APIs available to the
-        /// preload script are more limited. Read more about the option.This option is
-        /// currently experimental and may change or be removed in future Electron releases.
+        /// If set, this will sandbox the renderer associated with the window, making it compatible with the Chromium OS-level sandbox and disabling the Node.js engine. This is not the same as the nodeIntegration option and the APIs available to the preload script are more limited. Default is true since Electron 20. The sandbox will automatically be disabled when nodeIntegration is set to true.
         /// </summary>
         public bool Sandbox { get; set; }
 
@@ -56,7 +59,8 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The default zoom factor of the page, 3.0 represents 300%. Default is 1.0.
         /// </summary>
-        public double ZoomFactor { get; set; }
+        [DefaultValue(1.0)]
+        public double ZoomFactor { get; set; } = 1.0;
 
         /// <summary>
         /// Enables JavaScript support. Default is true.
@@ -83,6 +87,11 @@ namespace ElectronNET.API.Entities
         /// </summary>
         [DefaultValue(true)]
         public bool Images { get; set; } = true;
+
+        /// <summary>
+        /// Specifies how to run image animations (e.g. GIFs). Can be 'animate', 'animateOnce' or 'noAnimation'. Default is 'animate'.
+        /// </summary>
+        public string ImageAnimationPolicy { get; set; }
 
         /// <summary>
         /// Make TextArea elements resizable. Default is true.
@@ -115,11 +124,13 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Enables Chromium's experimental canvas features. Default is false.
         /// </summary>
+        /// <remarks>Not documented by MCP electronjs web-preferences.</remarks>
         public bool ExperimentalCanvasFeatures { get; set; }
 
         /// <summary>
         /// Enables scroll bounce (rubber banding) effect on macOS. Default is false.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool ScrollBounce { get; set; }
 
         /// <summary>
@@ -147,16 +158,19 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Defaults to 13.
         /// </summary>
-        public int DefaultMonospaceFontSize { get; set; }
+        [DefaultValue(13)]
+        public int DefaultMonospaceFontSize { get; set; } = 13;
 
         /// <summary>
         /// Defaults to 0.
         /// </summary>
-        public int MinimumFontSize { get; set; }
+        [DefaultValue(0)]
+        public int MinimumFontSize { get; set; } = 0;
 
         /// <summary>
         /// Defaults to ISO-8859-1.
         /// </summary>
+        /// <remarks>Not documented by MCP electronjs web-preferences.</remarks>
         public string DefaultEncoding { get; set; }
 
         /// <summary>
@@ -212,5 +226,25 @@ namespace ElectronNET.API.Entities
         /// </summary>
         [DefaultValue(false)]
         public bool EnableRemoteModule { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable preferred size mode. The preferred size is the minimum size needed to contain the layout of the document—without requiring scrolling. Enabling this will cause the 'preferred-size-changed' event to be emitted on the WebContents when the preferred size changes. Default is false.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool EnablePreferredSizeMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable background transparency for the guest page. Default is true.
+        /// Note: The guest page's text and background colors are derived from the color scheme of its root element. When transparency is enabled, the text color will still change accordingly but the background will remain transparent.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool Transparent { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable the 'paste' execCommand. Deprecated. Default is false.
+        /// </summary>
+        [DefaultValue(false)]
+        [System.Obsolete("enableDeprecatedPaste is deprecated in Electron; avoid using.")]
+        public bool EnableDeprecatedPaste { get; set; }
     }
 }

@@ -3,6 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <yremarks>Project-specific: no matching Electron structure found in MCP docs (electronjs).</yremarks>
     public class SemVer
     {
         /// <summary>
@@ -54,6 +55,7 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <yremarks>Project-specific: no matching Electron structure found in MCP docs (electronjs).</yremarks>
     public class SemVerOptions
     {
         /// <summary>

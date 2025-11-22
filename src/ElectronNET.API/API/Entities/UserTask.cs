@@ -1,8 +1,12 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Windows Task item used by app.setUserTasks.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("Windows")]
     public class UserTask
     {
         /// <summary>

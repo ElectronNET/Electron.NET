@@ -1,63 +1,92 @@
 ﻿using System.Runtime.Serialization;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Vibrancy types for BrowserWindow on macOS.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("macos")]
     public enum Vibrancy
     {
         /// <summary>
-        /// The appearance based
+        /// Appearance-based vibrancy.
         /// </summary>
         [EnumMember(Value = "appearance-based")]
         appearanceBased,
 
         /// <summary>
-        /// The light
-        /// </summary>
-        light,
-
-        /// <summary>
-        /// The dark
-        /// </summary>
-        dark,
-
-        /// <summary>
-        /// The titlebar
+        /// Title bar area.
         /// </summary>
         titlebar,
 
         /// <summary>
-        /// The selection
+        /// Selection highlight.
         /// </summary>
         selection,
 
         /// <summary>
-        /// The menu
+        /// Menu background.
         /// </summary>
         menu,
 
         /// <summary>
-        /// The popover
+        /// Popover background.
         /// </summary>
         popover,
 
         /// <summary>
-        /// The sidebar
+        /// Sidebar background.
         /// </summary>
         sidebar,
 
         /// <summary>
-        /// The medium light
+        /// Header background.
         /// </summary>
-        [EnumMember(Value = "medium-light")]
-        mediumLight,
+        header,
 
         /// <summary>
-        /// The ultra dark
+        /// Sheet background.
         /// </summary>
-        [EnumMember(Value = "ultra-dark")]
-        ultraDark
+        sheet,
+
+        /// <summary>
+        /// Window background.
+        /// </summary>
+        window,
+
+        /// <summary>
+        /// Heads-up display.
+        /// </summary>
+        hud,
+
+        /// <summary>
+        /// Fullscreen UI background.
+        /// </summary>
+        [EnumMember(Value = "fullscreen-ui")]
+        fullscreenUi,
+
+        /// <summary>
+        /// Tooltip background.
+        /// </summary>
+        tooltip,
+
+        /// <summary>
+        /// Content background.
+        /// </summary>
+        content,
+
+        /// <summary>
+        /// Under-window background.
+        /// </summary>
+        [EnumMember(Value = "under-window")]
+        underWindow,
+
+        /// <summary>
+        /// Under-page background.
+        /// </summary>
+        [EnumMember(Value = "under-page")]
+        underPage
     }
 }

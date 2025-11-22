@@ -1,8 +1,12 @@
-﻿namespace ElectronNET.API.Entities
+﻿using System.Runtime.Versioning;
+
+namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Mode for BrowserWindow/BaseWindow setProgressBar on Windows.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("Windows")]
     public enum ProgressBarMode
     {
         /// <summary>

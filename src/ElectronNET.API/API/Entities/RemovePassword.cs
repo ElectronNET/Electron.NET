@@ -5,6 +5,7 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// 
     /// </summary>
+    /// <yremarks>Undecidable from MCP: no typed structure for session.clearAuthCache parameters.</yremarks>
     public class RemovePassword
     {
         /// <summary>

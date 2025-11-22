@@ -1,4 +1,6 @@
-﻿namespace ElectronNET.API
+﻿using ElectronNET.API.Entities;
+
+namespace ElectronNET.API
 {
     /// <summary>
     /// 
@@ -36,5 +38,15 @@
         ///   <c>true</c> if [meta key]; otherwise, <c>false</c>.
         /// </value>
         public bool MetaKey { get; set; }
+
+        /// <summary>
+        /// The bounds of tray icon.
+        /// </summary>
+        public Rectangle Bounds { get; set; }
+
+        /// <summary>
+        /// The position of the event.
+        /// </summary>
+        public Point Position { get; set; }
     }
 }

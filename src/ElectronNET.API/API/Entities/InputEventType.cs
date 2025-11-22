@@ -63,6 +63,11 @@ public enum InputEventType
     /// <summary>
     /// 
     /// </summary>
+    @char,
+
+    /// <summary>
+    /// 
+    /// </summary>
     gestureScrollBegin,
 
     /// <summary>

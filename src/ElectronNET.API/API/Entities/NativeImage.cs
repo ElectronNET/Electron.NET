@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -267,6 +268,12 @@ namespace ElectronNET.API.Entities
         /// Deprecated. Whether the image is a template image.
         /// </summary>
         public bool IsTemplateImage => _isTemplateImage;
+
+        /// <summary>
+        /// Whether the image is considered a macOS template image.
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public bool IsMacTemplateImage => _isTemplateImage;
 
         /// <summary>
         /// Deprecated. Marks the image as a template image.

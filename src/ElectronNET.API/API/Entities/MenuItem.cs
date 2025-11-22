@@ -1,11 +1,13 @@
 using System;
 using System.Text.Json.Serialization;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class MenuItem
     {
         /// <summary>
@@ -16,13 +18,12 @@ namespace ElectronNET.API.Entities
         public Action Click { get; set; }
 
         /// <summary>
-        /// Define the action of the menu item, when specified the click property will be
-        /// ignored.
+        /// Gets or sets the action (role) of the menu item. When specified, the click property will be ignored.
         /// </summary>
         public MenuRole Role { get; set; }
 
         /// <summary>
-        /// Can be normal, separator, submenu, checkbox or radio.
+        /// Gets or sets the menu item type. Can be normal, separator, submenu, checkbox, radio, header (macOS 14+), or palette (macOS 14+).
         /// </summary>
         public MenuType Type { get; set; }
 
@@ -42,7 +43,14 @@ namespace ElectronNET.API.Entities
         /// <value>
         /// The sublabel.
         /// </value>
+        [SupportedOSPlatform("macos")]
         public string Sublabel { get; set; }
+
+        /// <summary>
+        /// Hover text for this menu item (macOS).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public string ToolTip { get; set; }
 
 
         /// <summary>
@@ -63,17 +71,31 @@ namespace ElectronNET.API.Entities
         public string Icon { get; set; }
 
         /// <summary>
-        /// If false, the menu item will be greyed out and unclickable.
+        /// Gets or sets a value indicating whether the item is enabled. If false, the menu item will be greyed out and unclickable.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// If false, the menu item will be entirely hidden.
+        /// Gets or sets a value indicating whether the item is visible. If false, the menu item will be entirely hidden.
         /// </summary>
         public bool Visible { get; set; } = true;
 
         /// <summary>
-        /// Should only be specified for checkbox or radio type menu items.
+        /// Gets or sets a value indicating whether the accelerator should work when the item is hidden. Default is true (macOS).
+        /// When false, prevents the accelerator from triggering the item if the item is not visible.
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public bool? AcceleratorWorksWhenHidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the accelerator should be registered with the system or only displayed (Linux/Windows). Defaults to true.
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
+        public bool? RegisterAccelerator { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item is checked. Should only be specified for checkbox or radio items.
         /// </summary>
         public bool Checked { get; set; }
 
@@ -85,15 +107,44 @@ namespace ElectronNET.API.Entities
         public MenuItem[] Submenu { get; set; }
 
         /// <summary>
-        /// Unique within a single menu. If defined then it can be used as a reference to
-        /// this item by the position attribute.
+        /// The item to share when the role is shareMenu (macOS).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public SharingItem SharingItem { get; set; }
+
+        /// <summary>
+        /// Gets or sets a unique id within a single menu. If defined then it can be used as a reference for placement.
         /// </summary>
         public string Id { get; internal set; }
 
         /// <summary>
-        /// This field allows fine-grained definition of the specific location within a
-        /// given menu.
+        /// This field allows fine-grained definition of the specific location within a given menu.
         /// </summary>
         public string Position { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of item ids. Inserts this item before the item(s) with the specified id(s).
+        /// If the referenced item doesn't exist the item will be inserted at the end of the menu.
+        /// Also implies that this item should be placed in the same group as the referenced item(s).
+        /// </summary>
+        public string[] Before { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of item ids. Inserts this item after the item(s) with the specified id(s).
+        /// If the referenced item doesn't exist the item will be inserted at the end of the menu.
+        /// </summary>
+        public string[] After { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of item ids. Places this item's containing group before the containing group
+        /// of the item(s) with the specified id(s).
+        /// </summary>
+        public string[] BeforeGroupContaining { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of item ids. Places this item's containing group after the containing group
+        /// of the item(s) with the specified id(s).
+        /// </summary>
+        public string[] AfterGroupContaining { get; set; }
     }
 }

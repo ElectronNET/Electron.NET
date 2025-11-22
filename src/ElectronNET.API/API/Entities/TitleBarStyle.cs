@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -21,11 +22,13 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// The hidden inset
         /// </summary>
+        [SupportedOSPlatform("macos")]
         hiddenInset,
 
         /// <summary>
         /// The custom buttons on hover
         /// </summary>
+        [SupportedOSPlatform("macos")]
         customButtonsOnHover
     }
 }

@@ -31,14 +31,14 @@
         paste,
 
         /// <summary>
-        /// The pasteandmatchstyle
+        /// The pasteAndMatchStyle
         /// </summary>
-        pasteandmatchstyle,
+        pasteAndMatchStyle,
 
         /// <summary>
-        /// The selectall
+        /// The selectAll
         /// </summary>
-        selectall,
+        selectAll,
 
         /// <summary>
         /// The delete
@@ -68,12 +68,12 @@
         /// <summary>
         /// Reload the current window ignoring the cache.
         /// </summary>
-        forcereload,
+        forceReload,
 
         /// <summary>
         /// Toggle developer tools in the current window
         /// </summary>
-        toggledevtools,
+        toggleDevTools,
 
         /// <summary>
         /// Toggle full screen mode on the current window
@@ -83,17 +83,17 @@
         /// <summary>
         /// Reset the focused page’s zoom level to the original size
         /// </summary>
-        resetzoom,
+        resetZoom,
 
         /// <summary>
         /// Zoom in the focused page by 10%
         /// </summary>
-        zoomin,
+        zoomIn,
 
         /// <summary>
         /// Zoom out the focused page by 10%
         /// </summary>
-        zoomout,
+        zoomOut,
 
         /// <summary>
         /// Whole default “Edit” menu (Undo, Copy, etc.)
@@ -118,7 +118,7 @@
         /// <summary>
         /// Only macOS: Map to the hideOtherApplications action
         /// </summary>
-        hideothers,
+        hideOthers,
 
         /// <summary>
         /// Only macOS: Map to the unhideAllApplications action
@@ -128,12 +128,12 @@
         /// <summary>
         /// Only macOS: Map to the startSpeaking action
         /// </summary>
-        startspeaking,
+        startSpeaking,
 
         /// <summary>
         /// Only macOS: Map to the stopSpeaking action
         /// </summary>
-        stopspeaking,
+        stopSpeaking,
 
         /// <summary>
         /// Only macOS: Map to the arrangeInFront action
@@ -158,6 +158,108 @@
         /// <summary>
         /// Only macOS: The submenu is a “Services” menu
         /// </summary>
-        services
+        services,
+
+        /// <summary>
+        /// Toggle built-in spellchecker.
+        /// </summary>
+        toggleSpellChecker,
+
+        /// <summary>
+        /// The submenu is a "File" menu.
+        /// </summary>
+        fileMenu,
+
+        /// <summary>
+        /// The submenu is a "View" menu.
+        /// </summary>
+        viewMenu,
+
+        /// <summary>
+        /// The application menu.
+        /// </summary>
+        appMenu,
+
+        /// <summary>
+        /// The submenu is a "Share" menu.
+        /// </summary>
+        shareMenu,
+
+        /// <summary>
+        /// Displays a list of files recently opened by the app.
+        /// </summary>
+        recentDocuments,
+
+        /// <summary>
+        /// Clear the recent documents list.
+        /// </summary>
+        clearRecentDocuments,
+
+        /// <summary>
+        /// Toggle the tab bar (macOS).
+        /// </summary>
+        toggleTabBar,
+
+        /// <summary>
+        /// Select the next tab (macOS).
+        /// </summary>
+        selectNextTab,
+
+        /// <summary>
+        /// Select the previous tab (macOS).
+        /// </summary>
+        selectPreviousTab,
+
+        /// <summary>
+        /// Show all tabs (macOS).
+        /// </summary>
+        showAllTabs,
+
+        /// <summary>
+        /// Merge all windows (macOS).
+        /// </summary>
+        mergeAllWindows,
+
+        /// <summary>
+        /// Move the current tab to a new window (macOS).
+        /// </summary>
+        moveTabToNewWindow,
+
+        /// <summary>
+        /// Show substitutions panel (macOS).
+        /// </summary>
+        showSubstitutions,
+
+        /// <summary>
+        /// Toggle smart quotes (macOS).
+        /// </summary>
+        toggleSmartQuotes,
+
+        /// <summary>
+        /// Toggle smart dashes (macOS).
+        /// </summary>
+        toggleSmartDashes,
+
+        /// <summary>
+        /// Toggle text replacement (macOS).
+        /// </summary>
+        toggleTextReplacement,
+
+        // Backwards-compatibility aliases (old identifiers) to avoid breaking existing code.
+        // These map to the same enum values as their official values.
+        pasteandmatchstyle = pasteAndMatchStyle,
+        selectall = selectAll,
+        forcereload = forceReload,
+        toggledevtools = toggleDevTools,
+        resetzoom = resetZoom,
+        zoomin = zoomIn,
+        zoomout = zoomOut,
+        hideothers = hideOthers,
+        startspeaking = startSpeaking,
+        stopspeaking = stopSpeaking,
+        togglespellchecker = toggleSpellChecker,
+        togglesmartquotes = toggleSmartQuotes,
+        togglesmartdashes = toggleSmartDashes,
+        toggletextreplacement = toggleTextReplacement
     }
 }

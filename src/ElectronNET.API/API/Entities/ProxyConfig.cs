@@ -1,10 +1,16 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Proxy configuration for app.setProxy / session.setProxy. Matches Electron's ProxyConfig structure.
     /// </summary>
     public class ProxyConfig
     {
+        /// <summary>
+        /// The proxy mode. One of: 'direct' | 'auto_detect' | 'pac_script' | 'fixed_servers' | 'system'.
+        /// Defaults to 'pac_script' if 'PacScript' is specified, otherwise defaults to 'fixed_servers'.
+        /// </summary>
+        public string Mode { get; set; }
+
         /// <summary>
         /// The URL associated with the PAC file.
         /// </summary>
