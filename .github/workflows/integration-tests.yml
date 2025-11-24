@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, windows-2025, macos-14, macos-26]
+        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, windows-2025, macos-14, macos-15-intel, macos-26]
         electronVersion: ['30.4.0', '38.2.2']
         include:
           - os: ubuntu-22.04
@@ -30,6 +30,8 @@ jobs:
             rid: win-x64
           - os: macos-14
             rid: osx-arm64
+          - os: macos-15-intel
+            rid: osx-x64
           - os: macos-26
             rid: osx-arm64
 
