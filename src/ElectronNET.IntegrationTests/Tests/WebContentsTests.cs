@@ -132,13 +132,13 @@ namespace ElectronNET.IntegrationTests.Tests
             Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null, "Skipping test in CI environment.");
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
             fx.MainWindow.WebContents.OpenDevTools();
-            await Task.Delay(1000);
+            await Task.Delay(500);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
             fx.MainWindow.WebContents.CloseDevTools();
-            await Task.Delay(1000);
+            await Task.Delay(500);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
             fx.MainWindow.WebContents.ToggleDevTools();
-            await Task.Delay(1000);
+            await Task.Delay(500);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
         }
 
@@ -146,9 +146,11 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task GetSetAudioMuted_check()
         {
             fx.MainWindow.WebContents.SetAudioMuted(true);
+            await Task.Delay(500);
             var ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeTrue();
             fx.MainWindow.WebContents.SetAudioMuted(false);
+            await Task.Delay(500);
             ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeFalse();
 

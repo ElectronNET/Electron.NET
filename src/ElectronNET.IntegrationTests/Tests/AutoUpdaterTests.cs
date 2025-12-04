@@ -104,6 +104,7 @@
             var test = await Electron.AutoUpdater.RequestHeadersAsync;
             test.Should().BeNull();
             Electron.AutoUpdater.RequestHeaders = headers;
+            await Task.Delay(500);
             test = await Electron.AutoUpdater.RequestHeadersAsync;
             test.Should().NotBeNull();
             test.Count.Should().Be(1);
