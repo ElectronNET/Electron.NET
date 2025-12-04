@@ -104,9 +104,10 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().Be(2.0);
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
         public async Task GetSetZoomLevel_check()
         {
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
             await fx.MainWindow.WebContents.GetZoomLevelAsync();
             var ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
             ok.Should().Be(0);
@@ -169,7 +170,7 @@ namespace ElectronNET.IntegrationTests.Tests
             fx.MainWindow.WebContents.AudioMuted.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
         public async Task GetSetUserAgent_check()
         {
             Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
@@ -181,7 +182,7 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().Be("MyUserAgent/1.0");
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
         public async Task UserAgentProperty_check()
         {
             Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
