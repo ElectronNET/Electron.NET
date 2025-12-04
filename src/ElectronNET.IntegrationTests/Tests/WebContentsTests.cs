@@ -77,7 +77,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task GetPrintersAsync_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping printer test in CI environment.");
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_CONTEXT") != null, "Skipping printer test in CI environment.");
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }
@@ -129,7 +129,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task DevTools_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping test in CI environment.");
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_CONTEXT") != null, "Skipping test in CI environment.");
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
             fx.MainWindow.WebContents.OpenDevTools();
             await Task.Delay(1000);
@@ -161,7 +161,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task AudioMutedProperty_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_CONTEXT") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
             fx.MainWindow.WebContents.AudioMuted.Should().BeFalse();
             fx.MainWindow.WebContents.AudioMuted = true;
             fx.MainWindow.WebContents.AudioMuted.Should().BeTrue();
