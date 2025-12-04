@@ -1,5 +1,5 @@
 import { Socket } from "net";
-import {BrowserWindow, BrowserView, webFrame} from "electron";
+import {BrowserWindow, BrowserView} from "electron";
 import { browserViewMediateService } from "./browserView";
 const fs = require("fs");
 let electronSocket;
