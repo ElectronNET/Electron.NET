@@ -142,7 +142,7 @@ public class WebContents : ApiBase
     {
         BridgeConnector.Socket.Emit("webContents-toggleDevTools", Id);
     }
-    
+
     /// <summary>
     /// Closes the devtools.
     /// </summary>
@@ -150,7 +150,7 @@ public class WebContents : ApiBase
     {
         BridgeConnector.Socket.Emit("webContents-closeDevTools", Id);
     }
-    
+
     /// <summary>
     /// Returns boolean - Whether the devtools is opened.
     /// </summary>
@@ -314,7 +314,7 @@ public class WebContents : ApiBase
     {
         BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
     }
-    
+
     /// <summary>
     /// A number property that determines the zoom level for this web contents.
     ///The original size is 0 and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of original size, respectively.
@@ -331,7 +331,7 @@ public class WebContents : ApiBase
             BridgeConnector.Socket.Emit("webContents-zoomLevel-set", Id, value);
         }
     }
-    
+
     /// <summary>
     /// A number property that determines the zoom factor for this web contents.
     ///The zoom factor is the zoom percent divided by 100, so 300% = 3.0.
@@ -347,13 +347,13 @@ public class WebContents : ApiBase
             BridgeConnector.Socket.Emit("webContents-zoomFactor-set", Id, value);
         }
     }
-    
+
     /// <summary>
     /// Returns number - The current zoom factor.
     /// </summary>
     /// <returns></returns>
     public Task<double> GetZoomFactorAsync() => InvokeAsync<double>();
-    
+
     /// <summary>
     /// Changes the zoom factor to the specified factor.
     /// Zoom factor is zoom percent divided by 100, so 300% = 3.0.
@@ -370,7 +370,7 @@ public class WebContents : ApiBase
     /// </summary>
     /// <returns></returns>
     public Task<int> GetZoomLevelAsync() => InvokeAsync<int>();
-    
+
     /// <summary>
     /// Changes the zoom level to the specified level.
     /// The original size is 0 and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of original size, respectively.
@@ -380,7 +380,7 @@ public class WebContents : ApiBase
     {
         BridgeConnector.Socket.Emit("webContents-setZoomLevel", Id, level);
     }
-    
+
     /// <summary>
     /// Sets the maximum and minimum pinch-to-zoom level.
     /// </summary>
@@ -395,7 +395,7 @@ public class WebContents : ApiBase
 
         return tcs.Task;
     }
-    
+
     /// <summary>
     /// A boolean property that determines whether this page is muted.
     /// </summary>
@@ -410,7 +410,7 @@ public class WebContents : ApiBase
             BridgeConnector.Socket.Emit("webContents-audioMuted-set", Id, value);
         }
     }
-    
+
     /// <summary>
     /// Returns boolean - Whether this page has been muted.
     /// </summary>

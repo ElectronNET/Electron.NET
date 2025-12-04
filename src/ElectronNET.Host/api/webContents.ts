@@ -108,7 +108,7 @@ export = (socket: Socket) => {
       getWindowById(id).webContents.openDevTools();
     }
   });
-  
+
   socket.on("webContents-getPrinters", async (id) => {
     const printers = await getWindowById(id).webContents.getPrintersAsync();
     electronSocket.emit("webContents-getPrinters-completed", printers);
@@ -471,23 +471,23 @@ export = (socket: Socket) => {
         const text = browserWindow.webContents.getZoomFactor();
         electronSocket.emit('webContents-getZoomFactor-completed', text);
     });
-    
+
     socket.on('webContents-setZoomFactor', (id, factor) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.setZoomFactor(factor);
     });
-    
+
     socket.on('webContents-getZoomLevel', (id) => {
         const browserWindow = getWindowById(id);
         const content = browserWindow.webContents.getZoomLevel();
         electronSocket.emit('webContents-getZoomLevel-completed', content);
     });
-    
+
     socket.on('webContents-setZoomLevel', (id, level) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.setZoomLevel(level);
     });
-    
+
     socket.on('webContents-setVisualZoomLevelLimits', async (id, minimumLevel, maximumLevel) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.setVisualZoomLevelLimits(minimumLevel, maximumLevel);
@@ -498,7 +498,7 @@ export = (socket: Socket) => {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-zoomLevel-completed', browserWindow.webContents.zoomLevel);
     });
-    
+
     socket.on('webContents-zoomLevel-set', (id, level) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.zoomLevel = level;
@@ -508,16 +508,16 @@ export = (socket: Socket) => {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-zoomFactor-completed', browserWindow.webContents.zoomFactor);
     });
-    
+
     socket.on('webContents-zoomFactor-set', (id, factor) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.zoomFactor = factor;
     });
-    
+
     socket.on("webContents-toggleDevTools", (id) => {
         getWindowById(id).webContents.toggleDevTools();
     });
-    
+
     socket.on("webContents-closeDevTools", (id) => {
         getWindowById(id).webContents.closeDevTools();
     });
@@ -535,7 +535,7 @@ export = (socket: Socket) => {
     socket.on("webContents-setAudioMuted", (id, muted) => {
         getWindowById(id).webContents.setAudioMuted(muted);
     });
-    
+
     socket.on("webContents-isAudioMuted", function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-isAudioMuted-completed', browserWindow.webContents.isAudioMuted());
@@ -555,12 +555,12 @@ export = (socket: Socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.audioMuted = muted;
     });
-    
+
     socket.on("webContents-getUserAgent", function (id) {
         const browserWindow = getWindowById(id);
         electronSocket.emit('webContents-getUserAgent-completed', browserWindow.webContents.getUserAgent());
     });
-    
+
     socket.on("webContents-setUserAgent", (id, userAgent) => {
         getWindowById(id).webContents.setUserAgent(userAgent);
     });
@@ -574,7 +574,6 @@ export = (socket: Socket) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.userAgent = userAgent;
     });
-
 
     function getWindowById(
     id: number
