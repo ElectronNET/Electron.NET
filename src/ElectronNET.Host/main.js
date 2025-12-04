@@ -8,7 +8,7 @@ const { imageSize } = require('image-size');
 const { HookService } = require('electron-host-hook');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
-let globalShortcut, shellApi, screen, clipboard, autoUpdater;
+let globalShortcut, shellApi, screen, clipboard, autoUpdater
 let commandLine, browserView;
 let powerMonitor;
 let processInfo;

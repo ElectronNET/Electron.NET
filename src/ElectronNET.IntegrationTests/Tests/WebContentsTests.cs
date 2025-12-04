@@ -79,5 +79,105 @@ namespace ElectronNET.IntegrationTests.Tests
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }
+
+        [Fact(Timeout = 20000)]
+        public async Task GetSetZoomFactor_check()
+        {
+            await fx.MainWindow.WebContents.GetZoomFactorAsync();
+            var ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
+            ok.Should().Be(1.0);
+            fx.MainWindow.WebContents.SetZoomFactor(2.0);
+            ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
+            ok.Should().Be(2.0);
+        }
+
+        [Fact(Timeout = 20000)]
+        public async Task ZoomFactorProperty_check()
+        {
+            var ok =  fx.MainWindow.WebContents.ZoomFactor;
+            ok.Should().Be(1.0);
+            fx.MainWindow.WebContents.ZoomFactor = 2.0;
+            ok = fx.MainWindow.WebContents.ZoomFactor;
+            ok.Should().Be(2.0);
+        }
+
+        [Fact(Timeout = 20000)]
+        public async Task GetSetZoomLevel_check()
+        {
+            await fx.MainWindow.WebContents.GetZoomLevelAsync();
+            var ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
+            ok.Should().Be(0);
+            fx.MainWindow.WebContents.SetZoomLevel(2);
+            ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
+            ok.Should().Be(2);
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task ZoomLevelProperty_check()
+        {
+            var ok =  fx.MainWindow.WebContents.ZoomLevel;
+            ok.Should().Be(0);
+            fx.MainWindow.WebContents.ZoomLevel = 2;
+            ok = fx.MainWindow.WebContents.ZoomLevel;
+            ok.Should().Be(2);
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task DevTools_check()
+        {
+            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
+            fx.MainWindow.WebContents.OpenDevTools();
+            await Task.Delay(500);
+            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
+            fx.MainWindow.WebContents.CloseDevTools();
+            await Task.Delay(500);
+            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
+            fx.MainWindow.WebContents.ToggleDevTools();
+            await Task.Delay(500);
+            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task GetSetAudioMuted_check()
+        {
+            fx.MainWindow.WebContents.SetAudioMuted(true);
+            var ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
+            ok.Should().BeTrue();
+            fx.MainWindow.WebContents.SetAudioMuted(false);
+            ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
+            ok.Should().BeFalse();
+
+            // Assuming no audio is playing, IsCurrentlyAudibleAsync should return false
+            // there is no way to play audio in this test
+            ok = await fx.MainWindow.WebContents.IsCurrentlyAudibleAsync();
+            ok.Should().BeFalse();
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task AudioMutedProperty_check()
+        {
+            fx.MainWindow.WebContents.AudioMuted.Should().BeFalse();
+            fx.MainWindow.WebContents.AudioMuted = true;
+            fx.MainWindow.WebContents.AudioMuted.Should().BeTrue();
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task GetSetUserAgent_check()
+        {
+            var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
+            ok.Should().NotBeNullOrEmpty();
+            fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
+            ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
+            ok.Should().Be("MyUserAgent/1.0");
+        }
+        
+        [Fact(Timeout = 20000)]
+        public async Task UserAgentProperty_check()
+        {
+            fx.MainWindow.WebContents.UserAgent.Should().NotBeNullOrEmpty();
+            fx.MainWindow.WebContents.UserAgent = "MyUserAgent/1.0";
+            fx.MainWindow.WebContents.UserAgent.Should().Be("MyUserAgent/1.0");
+        }
+
     }
 }
