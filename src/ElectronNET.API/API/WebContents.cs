@@ -416,13 +416,13 @@ public class WebContents : ApiBase
     /// </summary>
     /// <returns></returns>
     public Task<bool> IsAudioMutedAsync() => InvokeAsync<bool>();
-    
+
     /// <summary>
     /// Returns boolean - Whether audio is currently playing.
     /// </summary>
     /// <returns></returns>
     public Task<bool> IsCurrentlyAudibleAsync() => InvokeAsync<bool>();
-    
+
     /// <summary>
     /// Mute the audio on the current web page.
     /// </summary>
@@ -431,7 +431,7 @@ public class WebContents : ApiBase
     {
         BridgeConnector.Socket.Emit("webContents-setAudioMuted", Id, muted);
     }
-    
+
     /// <summary>
     /// A string property that determines the user agent for this web page.
     /// </summary>
@@ -446,7 +446,7 @@ public class WebContents : ApiBase
             BridgeConnector.Socket.Emit("webContents-userAgent-set", Id, value);
         }
     }
-    
+
     /// <summary>
     /// Returns string - The user agent for this web page.
     /// </summary>

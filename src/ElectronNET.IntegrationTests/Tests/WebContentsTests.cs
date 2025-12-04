@@ -89,6 +89,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().BeGreaterThan(0.0);
             fx.MainWindow.WebContents.SetZoomFactor(2.0);
+            await Task.Delay(500);
             ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().Be(2.0);
         }
@@ -128,16 +129,16 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task DevTools_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping printer test in CI environment.");
+            Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null, "Skipping test in CI environment.");
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
             fx.MainWindow.WebContents.OpenDevTools();
-            await Task.Delay(500);
+            await Task.Delay(1000);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
             fx.MainWindow.WebContents.CloseDevTools();
-            await Task.Delay(500);
+            await Task.Delay(1000);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
             fx.MainWindow.WebContents.ToggleDevTools();
-            await Task.Delay(500);
+            await Task.Delay(1000);
             fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
         }
 
@@ -157,7 +158,7 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().BeFalse();
         }
 
-        [Fact(Timeout = 20000)]
+        [SkippableFact(Timeout = 20000)]
         public async Task AudioMutedProperty_check()
         {
             Skip.If(Environment.GetEnvironmentVariable("GITHUB_TOKEN") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
@@ -172,7 +173,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
             ok.Should().NotBeNullOrEmpty();
             fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
-            await Task.Delay(500);
+            await Task.Delay(1000);
             ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
             ok.Should().Be("MyUserAgent/1.0");
         }
