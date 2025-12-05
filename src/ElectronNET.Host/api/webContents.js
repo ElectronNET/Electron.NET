@@ -78,7 +78,7 @@ module.exports = (socket) => {
             electronSocket.emit("webContents-domReady" + id);
         });
     });
-    socket.on("webContentsOpenDevTools", (id, options) => {
+    socket.on("webContents-openDevTools", (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
         }
@@ -314,6 +314,93 @@ module.exports = (socket) => {
         const browserWindow = getWindowById(id);
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
         electronSocket.emit("webContents-session-loadExtension-completed", extension);
+    });
+    socket.on('webContents-getZoomFactor', (id) => {
+        const browserWindow = getWindowById(id);
+        const text = browserWindow.webContents.getZoomFactor();
+        electronSocket.emit('webContents-getZoomFactor-completed', text);
+    });
+    socket.on('webContents-setZoomFactor', (id, factor) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.setZoomFactor(factor);
+    });
+    socket.on('webContents-getZoomLevel', (id) => {
+        const browserWindow = getWindowById(id);
+        const content = browserWindow.webContents.getZoomLevel();
+        electronSocket.emit('webContents-getZoomLevel-completed', content);
+    });
+    socket.on('webContents-setZoomLevel', (id, level) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.setZoomLevel(level);
+    });
+    socket.on('webContents-setVisualZoomLevelLimits', async (id, minimumLevel, maximumLevel) => {
+        const browserWindow = getWindowById(id);
+        await browserWindow.webContents.setVisualZoomLevelLimits(minimumLevel, maximumLevel);
+        electronSocket.emit('webContents-setVisualZoomLevelLimits-completed');
+    });
+    socket.on('webContents-zoomLevel', (id) => {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-zoomLevel-completed', browserWindow.webContents.zoomLevel);
+    });
+    socket.on('webContents-zoomLevel-set', (id, level) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.zoomLevel = level;
+    });
+    socket.on('webContents-zoomFactor', (id) => {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-zoomFactor-completed', browserWindow.webContents.zoomFactor);
+    });
+    socket.on('webContents-zoomFactor-set', (id, factor) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.zoomFactor = factor;
+    });
+    socket.on("webContents-toggleDevTools", (id) => {
+        getWindowById(id).webContents.toggleDevTools();
+    });
+    socket.on("webContents-closeDevTools", (id) => {
+        getWindowById(id).webContents.closeDevTools();
+    });
+    socket.on("webContents-isDevToolsOpened", function (id) {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-isDevToolsOpened-completed', browserWindow.webContents.isDevToolsOpened());
+    });
+    socket.on("webContents-isDevToolsFocused", function (id) {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-isDevToolsFocused-completed', browserWindow.webContents.isDevToolsFocused());
+    });
+    socket.on("webContents-setAudioMuted", (id, muted) => {
+        getWindowById(id).webContents.setAudioMuted(muted);
+    });
+    socket.on("webContents-isAudioMuted", function (id) {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-isAudioMuted-completed', browserWindow.webContents.isAudioMuted());
+    });
+    socket.on("webContents-isCurrentlyAudible", function (id) {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-isCurrentlyAudible-completed', browserWindow.webContents.isCurrentlyAudible());
+    });
+    socket.on('webContents-audioMuted', (id) => {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-audioMuted-completed', browserWindow.webContents.audioMuted);
+    });
+    socket.on('webContents-audioMuted-set', (id, muted) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.audioMuted = muted;
+    });
+    socket.on("webContents-getUserAgent", function (id) {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-getUserAgent-completed', browserWindow.webContents.getUserAgent());
+    });
+    socket.on("webContents-setUserAgent", (id, userAgent) => {
+        getWindowById(id).webContents.setUserAgent(userAgent);
+    });
+    socket.on('webContents-userAgent', (id) => {
+        const browserWindow = getWindowById(id);
+        electronSocket.emit('webContents-userAgent-completed', browserWindow.webContents.userAgent);
+    });
+    socket.on('webContents-userAgent-set', (id, userAgent) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.userAgent = userAgent;
     });
     function getWindowById(id) {
         if (id >= 1000) {
