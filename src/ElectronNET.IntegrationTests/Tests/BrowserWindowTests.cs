@@ -1,6 +1,5 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
-    using System.Runtime.InteropServices;
     using System.Runtime.Versioning;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
@@ -136,22 +135,28 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task ReadyToShow_event_fires_after_content_ready()
         {
-            var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false }, "about:blank");
-            var tcs = new TaskCompletionSource();
-            window.OnReadyToShow += () => tcs.TrySetResult();
+            BrowserWindow window = null;
 
-            // Trigger a navigation and wait for DOM ready so the renderer paints, which emits ready-to-show
-            var domReadyTcs = new TaskCompletionSource();
-            window.WebContents.OnDomReady += () => domReadyTcs.TrySetResult();
-            await Task.Delay(500);
-            await window.WebContents.LoadURLAsync("about:blank");
-            await domReadyTcs.Task;
+            try
+            {
+                window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false }, "about:blank");
+                var tcs = new TaskCompletionSource();
+                window.OnReadyToShow += () => tcs.TrySetResult();
 
-            var completed = await Task.WhenAny(tcs.Task, Task.Delay(3000));
-            completed.Should().Be(tcs.Task);
+                // Trigger a navigation and wait for DOM ready so the renderer paints, which emits ready-to-show
+                var domReadyTcs = new TaskCompletionSource();
+                window.WebContents.OnDomReady += () => domReadyTcs.TrySetResult();
+                await Task.Delay(500);
+                await window.WebContents.LoadURLAsync("about:blank");
+                await domReadyTcs.Task;
 
-            // Typical usage is to show once ready
-            window.Show();
+                var completed = await Task.WhenAny(tcs.Task, Task.Delay(3000));
+                completed.Should().Be(tcs.Task);
+            }
+            finally
+            {
+                window?.Destroy();
+            }
         }
 
         [Fact(Timeout = 20000)]
