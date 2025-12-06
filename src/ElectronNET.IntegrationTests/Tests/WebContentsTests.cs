@@ -94,16 +94,6 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().Be(2.0);
         }
 
-        [Fact(Timeout = 20000)]
-        public async Task ZoomFactorProperty_check()
-        {
-            var ok =  fx.MainWindow.WebContents.ZoomFactor;
-            ok.Should().Be(1.0);
-            fx.MainWindow.WebContents.ZoomFactor = 2.0;
-            ok = fx.MainWindow.WebContents.ZoomFactor;
-            ok.Should().Be(2.0);
-        }
-
         [SkippableFact(Timeout = 20000)]
         public async Task GetSetZoomLevel_check()
         {
@@ -114,16 +104,6 @@ namespace ElectronNET.IntegrationTests.Tests
             fx.MainWindow.WebContents.SetZoomLevel(2);
             await Task.Delay(500);
             ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
-            ok.Should().Be(2);
-        }
-
-        [Fact(Timeout = 20000)]
-        public async Task ZoomLevelProperty_check()
-        {
-            var ok =  fx.MainWindow.WebContents.ZoomLevel;
-            ok.Should().Be(0);
-            fx.MainWindow.WebContents.ZoomLevel = 2;
-            ok = fx.MainWindow.WebContents.ZoomLevel;
             ok.Should().Be(2);
         }
 
@@ -162,15 +142,6 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [SkippableFact(Timeout = 20000)]
-        public async Task AudioMutedProperty_check()
-        {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-            fx.MainWindow.WebContents.AudioMuted.Should().BeFalse();
-            fx.MainWindow.WebContents.AudioMuted = true;
-            fx.MainWindow.WebContents.AudioMuted.Should().BeTrue();
-        }
-
-        [SkippableFact(Timeout = 20000)]
         public async Task GetSetUserAgent_check()
         {
             Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
@@ -180,15 +151,6 @@ namespace ElectronNET.IntegrationTests.Tests
             await Task.Delay(1000);
             ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
             ok.Should().Be("MyUserAgent/1.0");
-        }
-
-        [SkippableFact(Timeout = 20000)]
-        public async Task UserAgentProperty_check()
-        {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-            fx.MainWindow.WebContents.UserAgent.Should().NotBeNullOrEmpty();
-            fx.MainWindow.WebContents.UserAgent = "MyUserAgent/1.0";
-            fx.MainWindow.WebContents.UserAgent.Should().Be("MyUserAgent/1.0");
         }
 
     }

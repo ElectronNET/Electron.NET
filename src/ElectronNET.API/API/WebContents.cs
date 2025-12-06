@@ -316,39 +316,6 @@ public class WebContents : ApiBase
     }
 
     /// <summary>
-    /// A number property that determines the zoom level for this web contents.
-    ///The original size is 0 and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of original size, respectively.
-    ///The formula for this is scale := 1.2 ^ level.
-    /// </summary>
-    public int ZoomLevel
-    {
-        get
-        {
-            return Task.Run(() => this.InvokeAsync<int>()).Result;
-        }
-        set
-        {
-            BridgeConnector.Socket.Emit("webContents-zoomLevel-set", Id, value);
-        }
-    }
-
-    /// <summary>
-    /// A number property that determines the zoom factor for this web contents.
-    ///The zoom factor is the zoom percent divided by 100, so 300% = 3.0.
-    /// </summary>
-    public double ZoomFactor
-    {
-        get
-        {
-            return Task.Run(() => this.InvokeAsync<double>()).Result;
-        }
-        set
-        {
-            BridgeConnector.Socket.Emit("webContents-zoomFactor-set", Id, value);
-        }
-    }
-
-    /// <summary>
     /// Returns number - The current zoom factor.
     /// </summary>
     /// <returns></returns>
@@ -397,21 +364,6 @@ public class WebContents : ApiBase
     }
 
     /// <summary>
-    /// A boolean property that determines whether this page is muted.
-    /// </summary>
-    public bool AudioMuted
-    {
-        get
-        {
-            return Task.Run(() => this.InvokeAsync<bool>()).Result;
-        }
-        set
-        {
-            BridgeConnector.Socket.Emit("webContents-audioMuted-set", Id, value);
-        }
-    }
-
-    /// <summary>
     /// Returns boolean - Whether this page has been muted.
     /// </summary>
     /// <returns></returns>
@@ -430,21 +382,6 @@ public class WebContents : ApiBase
     public void SetAudioMuted(bool muted)
     {
         BridgeConnector.Socket.Emit("webContents-setAudioMuted", Id, muted);
-    }
-
-    /// <summary>
-    /// A string property that determines the user agent for this web page.
-    /// </summary>
-    public string UserAgent
-    {
-        get
-        {
-            return Task.Run(() => this.InvokeAsync<string>()).Result;
-        }
-        set
-        {
-            BridgeConnector.Socket.Emit("webContents-userAgent-set", Id, value);
-        }
     }
 
     /// <summary>
