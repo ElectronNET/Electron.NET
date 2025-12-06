@@ -82,12 +82,28 @@ namespace ElectronNET.IntegrationTests.Tests
         [Fact(Timeout = 20000)]
         public async Task Show_hide_visibility_roundtrip()
         {
-            this.fx.MainWindow.Show();
-            await Task.Delay(500);
-            (await this.fx.MainWindow.IsVisibleAsync()).Should().BeTrue();
-            this.fx.MainWindow.Hide();
-            await Task.Delay(500);
-            (await this.fx.MainWindow.IsVisibleAsync()).Should().BeFalse();
+            BrowserWindow window = null;
+
+            try
+            {
+                window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
+
+                await Task.Delay(100);
+
+                window.Show();
+
+                await Task.Delay(500);
+                (await window.IsVisibleAsync()).Should().BeTrue();
+
+                window.Hide();
+                await Task.Delay(500);
+
+                (await window.IsVisibleAsync()).Should().BeFalse();
+            }
+            finally
+            {
+                window?.Destroy();
+            }
         }
 
         [Fact(Timeout = 20000)]
