@@ -178,8 +178,12 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
 
-            fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
             await Task.Delay(1000);
+
+            fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
+
+            await Task.Delay(1000);
+
             var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
             ok.Should().Be("MyUserAgent/1.0");
         }

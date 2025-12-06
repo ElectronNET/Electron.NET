@@ -388,7 +388,7 @@ public class WebContents : ApiBase
     /// Returns string - The user agent for this web page.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetUserAgentAsync() => InvokeAsync<string>();
+    public Task<string> GetUserAgentAsync() => InvokeAsyncWithTimeout<string>(3000);
 
     /// <summary>
     /// Overrides the user agent for this web page.
