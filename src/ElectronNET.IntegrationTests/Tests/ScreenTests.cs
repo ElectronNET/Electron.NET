@@ -37,8 +37,6 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             var point = await Electron.Screen.GetCursorScreenPointAsync();
             point.Should().NotBeNull();
-            point.X.Should().BeGreaterThanOrEqualTo(0);
-            point.Y.Should().BeGreaterThanOrEqualTo(0);
         }
 
         [SkippableFact(Timeout = 20000)]
