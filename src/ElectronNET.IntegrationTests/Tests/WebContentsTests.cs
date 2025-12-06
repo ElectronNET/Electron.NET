@@ -178,14 +178,27 @@ namespace ElectronNET.IntegrationTests.Tests
         {
             ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
 
-            await Task.Delay(1000);
+            BrowserWindow window = null;
 
-            fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
+            try
+            {
+                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
 
-            await Task.Delay(1000);
+                window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
-            var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
-            ok.Should().Be("MyUserAgent/1.0");
+                await Task.Delay(3000);
+
+                window.WebContents.SetUserAgent("MyUserAgent/1.0");
+
+                await Task.Delay(1000);
+
+                var ok = await window.WebContents.GetUserAgentAsync();
+                ok.Should().Be("MyUserAgent/1.0");
+            }
+            finally
+            {
+                window?.Destroy();
+            }
         }
 
     }
