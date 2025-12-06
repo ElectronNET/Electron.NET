@@ -97,14 +97,32 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task GetSetZoomLevel_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-            await fx.MainWindow.WebContents.GetZoomLevelAsync();
-            var ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
-            ok.Should().Be(0);
-            fx.MainWindow.WebContents.SetZoomLevel(2);
-            await Task.Delay(500);
-            ok = await fx.MainWindow.WebContents.GetZoomLevelAsync();
-            ok.Should().Be(2);
+            BrowserWindow window = null;
+
+            try
+            {
+                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
+
+                window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
+
+                await Task.Delay(100);
+
+                window.WebContents.SetZoomLevel(0);
+                await Task.Delay(500);
+
+                var ok = await window.WebContents.GetZoomLevelAsync();
+                ok.Should().Be(0);
+
+                window.WebContents.SetZoomLevel(2);
+                await Task.Delay(500);
+
+                ok = await window.WebContents.GetZoomLevelAsync();
+                ok.Should().Be(2);
+            }
+            finally
+            {
+                window?.Destroy();
+            }
         }
 
         [SkippableFact(Timeout = 20000)]
