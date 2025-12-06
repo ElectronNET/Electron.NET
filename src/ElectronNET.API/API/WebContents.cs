@@ -173,7 +173,7 @@ public class WebContents : ApiBase
     /// Get system printers.
     /// </summary>
     /// <returns>printers</returns>
-    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(5_000);
+    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(8_000);
 
     /// <summary>
     /// Prints window's web page.
@@ -388,7 +388,7 @@ public class WebContents : ApiBase
     /// Returns string - The user agent for this web page.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetUserAgentAsync() => InvokeAsync<string>();
+    public Task<string> GetUserAgentAsync() => InvokeAsyncWithTimeout<string>(3000);
 
     /// <summary>
     /// Overrides the user agent for this web page.
