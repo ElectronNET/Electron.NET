@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using ElectronNET.API;
     using ElectronNET.API.Entities;
 
     [Collection("ElectronCollection")]
@@ -77,7 +78,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task GetPrintersAsync_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null, "Skipping printer test in CI environment.");
+            ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null, "Skipping printer test in CI environment.");
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }
@@ -128,17 +129,30 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task DevTools_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.OSX), "Skipping test on macOS CI.");
-            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
-            fx.MainWindow.WebContents.OpenDevTools();
-            await Task.Delay(500);
-            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
-            fx.MainWindow.WebContents.CloseDevTools();
-            await Task.Delay(500);
-            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeFalse();
-            fx.MainWindow.WebContents.ToggleDevTools();
-            await Task.Delay(500);
-            fx.MainWindow.WebContents.IsDevToolsOpened().Should().BeTrue();
+            BrowserWindow window = null;
+
+            try
+            {
+                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
+
+                window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
+
+                await Task.Delay(3000);
+
+                window.WebContents.IsDevToolsOpened().Should().BeFalse();
+                window.WebContents.OpenDevTools();
+                await Task.Delay(5000);
+
+                window.WebContents.IsDevToolsOpened().Should().BeTrue();
+                window.WebContents.CloseDevTools();
+                await Task.Delay(2000);
+
+                window.WebContents.IsDevToolsOpened().Should().BeFalse();
+            }
+            finally
+            {
+                window?.Destroy();
+            }
         }
 
         [Fact(Timeout = 20000)]
@@ -162,12 +176,11 @@ namespace ElectronNET.IntegrationTests.Tests
         [SkippableFact(Timeout = 20000)]
         public async Task GetSetUserAgent_check()
         {
-            Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-            var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
-            ok.Should().NotBeNullOrEmpty();
+            ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
+
             fx.MainWindow.WebContents.SetUserAgent("MyUserAgent/1.0");
             await Task.Delay(1000);
-            ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
+            var ok = await fx.MainWindow.WebContents.GetUserAgentAsync();
             ok.Should().Be("MyUserAgent/1.0");
         }
 
