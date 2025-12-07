@@ -3,13 +3,10 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class MultiEventRegistrationTests
+    public class MultiEventRegistrationTests : IntegrationTestBase
     {
-        private readonly ElectronFixture fx;
-
-        public MultiEventRegistrationTests(ElectronFixture fx)
+        public MultiEventRegistrationTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         private static async Task<bool> WaitAllOrTimeout(TimeSpan timeout, params Task[] tasks)
@@ -22,7 +19,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [IntegrationFact]
         public async Task BrowserWindow_OnResize_multiple_handlers_called()
         {
-            var win = this.fx.MainWindow;
+            var win = this.MainWindow;
             var h1 = new TaskCompletionSource();
             var h2 = new TaskCompletionSource();
             var h3 = new TaskCompletionSource();
@@ -46,7 +43,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [IntegrationFact]
         public async Task WebContents_OnDomReady_multiple_handlers_called()
         {
-            var wc = this.fx.MainWindow.WebContents;
+            var wc = this.MainWindow.WebContents;
             var r1 = new TaskCompletionSource();
             var r2 = new TaskCompletionSource();
 

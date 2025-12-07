@@ -7,8 +7,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class NativeThemeTests
+    public class NativeThemeTests : IntegrationTestBase
     {
+        public NativeThemeTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
         [IntegrationFact]
         public async Task ThemeSource_roundtrip()
         {
@@ -54,8 +58,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Should_use_high_contrast_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseHighContrastColorsAsync();
@@ -63,8 +67,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Should_use_inverted_colors_check()
         {
             var metrics = await Electron.NativeTheme.ShouldUseInvertedColorSchemeAsync();

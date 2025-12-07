@@ -4,8 +4,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class ProcessTests
+    public class ProcessTests : IntegrationTestBase
     {
+        public ProcessTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
         [IntegrationFact]
         public async Task Process_info_is_accessible()
         {

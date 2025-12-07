@@ -7,8 +7,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class NotificationTests
+    public class NotificationTests : IntegrationTestBase
     {
+        public NotificationTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
         [IntegrationFact]
         public async Task Notification_create_check()
         {

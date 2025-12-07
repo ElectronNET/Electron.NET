@@ -4,14 +4,10 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class TrayTests
+    public class TrayTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public TrayTests(ElectronFixture fx)
+        public TrayTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact]

@@ -1,15 +1,19 @@
+using System.Drawing;
+using ElectronNET.API.Entities;
+using ElectronNET.IntegrationTests.Common;
 using System.Runtime.Versioning;
 using RectangleEntity = ElectronNET.API.Entities.Rectangle;
 
 namespace ElectronNET.IntegrationTests.Tests
 {
-    using System.Drawing;
-    using ElectronNET.API.Entities;
-    using ElectronNET.IntegrationTests.Common;
-
-    [SupportedOSPlatform("Windows")]
-    public class NativeImageTests
+    [Collection("ElectronCollection")]
+    [SupportedOSPlatform(Windows)]
+    public class NativeImageTests : IntegrationTestBase
     {
+        public NativeImageTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
         [IntegrationFact]
         public async Task Create_from_bitmap_and_to_png()
         {

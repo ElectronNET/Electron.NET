@@ -9,14 +9,10 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class AppTests
+    public class AppTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public AppTests(ElectronFixture fx)
+        public AppTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact]
@@ -64,8 +60,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Can_get_login_item_settings()
         {
             var settings = await Electron.App.GetLoginItemSettingsAsync();
@@ -82,8 +78,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Accessibility_support_toggle()
         {
             Electron.App.SetAccessibilitySupportEnabled(true);
@@ -103,8 +99,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("Linux")]
-        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform(Linux)]
+        [SupportedOSPlatform(MacOS)]
         public async Task BadgeCount_set_and_reset_where_supported()
         {
             await Electron.App.SetBadgeCountAsync(2);

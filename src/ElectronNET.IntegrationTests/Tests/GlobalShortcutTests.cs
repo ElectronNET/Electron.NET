@@ -5,8 +5,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class GlobalShortcutTests
+    public class GlobalShortcutTests : IntegrationTestBase
     {
+        public GlobalShortcutTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
         [IntegrationFact]
         public async Task Can_register_and_unregister()
         {

@@ -8,19 +8,16 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class WebContentsTests
+    public class WebContentsTests : IntegrationTestBase
     {
-        private readonly ElectronFixture fx;
-
-        public WebContentsTests(ElectronFixture fx)
+        public WebContentsTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact]
         public async Task Can_get_url_after_navigation()
         {
-            var wc = this.fx.MainWindow.WebContents;
+            var wc = this.MainWindow.WebContents;
             await wc.LoadURLAsync("https://example.com");
             var url = await wc.GetUrl();
             url.Should().Contain("example.com");
@@ -29,7 +26,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [IntegrationFact]
         public async Task ExecuteJavaScript_returns_title()
         {
-            var wc = this.fx.MainWindow.WebContents;
+            var wc = this.MainWindow.WebContents;
             await wc.LoadURLAsync("https://example.com");
             var title = await wc.ExecuteJavaScriptAsync<string>("document.title");
             title.Should().NotBeNull();
@@ -38,7 +35,7 @@ namespace ElectronNET.IntegrationTests.Tests
         [IntegrationFact]
         public async Task DomReady_event_fires()
         {
-            var wc = this.fx.MainWindow.WebContents;
+            var wc = this.MainWindow.WebContents;
             var fired = false;
             wc.OnDomReady += () => fired = true;
             await wc.LoadURLAsync("https://example.com");
@@ -50,11 +47,11 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task Can_print_to_pdf()
         {
             var html = "data:text/html,<html><body><h1>PDF Test</h1><p>Electron.NET</p></body></html>";
-            await this.fx.MainWindow.WebContents.LoadURLAsync(html);
+            await this.MainWindow.WebContents.LoadURLAsync(html);
             var tmp = Path.Combine(Path.GetTempPath(), $"electronnet_pdf_{Guid.NewGuid():N}.pdf");
             try
             {
-                var ok = await this.fx.MainWindow.WebContents.PrintToPDFAsync(tmp);
+                var ok = await this.MainWindow.WebContents.PrintToPDFAsync(tmp);
                 ok.Should().BeTrue();
                 File.Exists(tmp).Should().BeTrue();
                 new FileInfo(tmp).Length.Should().BeGreaterThan(0);
@@ -72,27 +69,27 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task Can_basic_print()
         {
             var html = "data:text/html,<html><body><h2>Print Test</h2></body></html>";
-            await this.fx.MainWindow.WebContents.LoadURLAsync(html);
-            var ok = await this.fx.MainWindow.WebContents.PrintAsync(new PrintOptions { Silent = true, PrintBackground = true });
+            await this.MainWindow.WebContents.LoadURLAsync(html);
+            var ok = await this.MainWindow.WebContents.PrintAsync(new PrintOptions { Silent = true, PrintBackground = true });
             ok.Should().BeTrue();
         }
 
         [IntegrationFact]
         public async Task GetPrintersAsync_check()
         {
-            var info = await fx.MainWindow.WebContents.GetPrintersAsync();
+            var info = await this.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }
 
         [IntegrationFact]
         public async Task GetSetZoomFactor_check()
         {
-            await fx.MainWindow.WebContents.GetZoomFactorAsync();
-            var ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
+            await this.MainWindow.WebContents.GetZoomFactorAsync();
+            var ok = await this.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().BeGreaterThan(0.0);
-            fx.MainWindow.WebContents.SetZoomFactor(2.0);
+            this.MainWindow.WebContents.SetZoomFactor(2.0);
             await Task.Delay(500.ms());
-            ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
+            ok = await this.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().Be(2.0);
         }
 
@@ -155,18 +152,18 @@ namespace ElectronNET.IntegrationTests.Tests
         [IntegrationFact]
         public async Task GetSetAudioMuted_check()
         {
-            fx.MainWindow.WebContents.SetAudioMuted(true);
+            this.MainWindow.WebContents.SetAudioMuted(true);
             await Task.Delay(500.ms());
-            var ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
+            var ok = await this.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeTrue();
-            fx.MainWindow.WebContents.SetAudioMuted(false);
+            this.MainWindow.WebContents.SetAudioMuted(false);
             await Task.Delay(500.ms());
-            ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
+            ok = await this.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeFalse();
 
             // Assuming no audio is playing, IsCurrentlyAudibleAsync should return false
             // there is no way to play audio in this test
-            ok = await fx.MainWindow.WebContents.IsCurrentlyAudibleAsync();
+            ok = await this.MainWindow.WebContents.IsCurrentlyAudibleAsync();
             ok.Should().BeFalse();
         }
 

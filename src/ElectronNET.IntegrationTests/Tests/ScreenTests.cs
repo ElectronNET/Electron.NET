@@ -6,14 +6,10 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class ScreenTests
+    public class ScreenTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public ScreenTests(ElectronFixture fx)
+        public ScreenTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact(SkipOnWsl = true)]
@@ -40,7 +36,7 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform(MacOS)]
         public async Task GetMenuBarWorkArea_check()
         {
             var area = await Electron.Screen.GetMenuBarWorkAreaAsync();

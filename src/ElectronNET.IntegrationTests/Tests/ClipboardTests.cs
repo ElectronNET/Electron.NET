@@ -5,14 +5,10 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class ClipboardTests
+    public class ClipboardTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public ClipboardTests(ElectronFixture fx)
+        public ClipboardTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact]
@@ -34,8 +30,8 @@ namespace ElectronNET.IntegrationTests.Tests
         }
 
         [IntegrationFact]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Bookmark_write_and_read()
         {
             var url = "https://electron-test.com";

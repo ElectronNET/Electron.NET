@@ -6,13 +6,10 @@
     using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class AutoUpdaterTests
+    public class AutoUpdaterTests : IntegrationTestBase
     {
-        private readonly ElectronFixture fx;
-
-        public AutoUpdaterTests(ElectronFixture fx)
+        public AutoUpdaterTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
         [IntegrationFact]
