@@ -4,11 +4,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class NotificationTests
     {
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Notification_create_check()
         {
             Skip.If(RuntimeInformation.IsOSPlatform(OSPlatform.Linux), "Always returns false. Might need full-blown desktop environment");
@@ -27,7 +28,7 @@ namespace ElectronNET.IntegrationTests.Tests
             tcs.Task.IsCompletedSuccessfully.Should().BeTrue();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Notification_is_supported_check()
         {
             Skip.If(RuntimeInformation.IsOSPlatform(OSPlatform.Linux), "Always returns false. Might need full-blown desktop environment");

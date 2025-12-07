@@ -16,7 +16,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_set_and_get_title()
         {
             const string title = "Integration Test Title";
@@ -26,7 +26,7 @@ namespace ElectronNET.IntegrationTests.Tests
             roundTrip.Should().Be(title);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_resize_and_get_size()
         {
             this.fx.MainWindow.SetSize(643, 482);
@@ -37,7 +37,7 @@ namespace ElectronNET.IntegrationTests.Tests
             size[1].Should().Be(482);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_set_progress_bar_and_clear()
         {
             this.fx.MainWindow.SetProgressBar(0.5);
@@ -46,7 +46,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await Task.Delay(50.ms());
         }
 
-        [SkipOnWslFact(Timeout = 20000)]
+        [IntegrationFact(SkipOnWsl = true)]
         public async Task Can_set_and_get_position()
         {
             this.fx.MainWindow.SetPosition(134, 246);
@@ -55,7 +55,7 @@ namespace ElectronNET.IntegrationTests.Tests
             pos.Should().BeEquivalentTo([134, 246]);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_set_and_get_bounds()
         {
             var bounds = new Rectangle { X = 10, Y = 20, Width = 400, Height = 300 };
@@ -68,7 +68,7 @@ namespace ElectronNET.IntegrationTests.Tests
             round.Height.Should().Be(300);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_set_and_get_content_bounds()
         {
             var bounds = new Rectangle { X = 0, Y = 0, Width = 300, Height = 200 };
@@ -79,7 +79,7 @@ namespace ElectronNET.IntegrationTests.Tests
             round.Height.Should().BeGreaterThan(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Show_hide_visibility_roundtrip()
         {
             BrowserWindow window = null;
@@ -106,7 +106,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task AlwaysOnTop_toggle_and_query()
         {
             this.fx.MainWindow.SetAlwaysOnTop(true);
@@ -117,7 +117,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await this.fx.MainWindow.IsAlwaysOnTopAsync()).Should().BeFalse();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("Linux")]
         [SupportedOSPlatform("Windows")]
         public async Task MenuBar_auto_hide_and_visibility()
@@ -133,7 +133,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await this.fx.MainWindow.IsMenuBarVisibleAsync()).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ReadyToShow_event_fires_after_content_ready()
         {
             BrowserWindow window = null;
@@ -160,7 +160,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task PageTitleUpdated_event_fires_on_title_change()
         {
             var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
@@ -181,7 +181,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await tcs.Task).Should().Be("NewTitle");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Resize_event_fires_on_size_change()
         {
             var window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false }, "about:blank");
@@ -193,7 +193,7 @@ namespace ElectronNET.IntegrationTests.Tests
             resized.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Progress_bar_and_always_on_top_toggle()
         {
             var win = this.fx.MainWindow;
@@ -209,7 +209,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await win.IsAlwaysOnTopAsync()).Should().BeFalse();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("Linux")]
         [SupportedOSPlatform("Windows")]
         public async Task Menu_bar_visibility_and_auto_hide()
@@ -223,7 +223,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await win.IsMenuBarVisibleAsync()).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Parent_child_relationship_roundtrip()
         {
             var child = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = false, Width = 300, Height = 200 }, "about:blank");
@@ -237,7 +237,7 @@ namespace ElectronNET.IntegrationTests.Tests
             child.Destroy();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         public async Task Represented_filename_and_edited_flags()
         {

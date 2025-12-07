@@ -2,6 +2,7 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class IpcMainTests
@@ -13,7 +14,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Ipc_On_receives_message_from_renderer()
         {
             object received = null;
@@ -34,7 +35,7 @@ namespace ElectronNET.IntegrationTests.Tests
             result.Should().Be("payload123");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Ipc_Once_only_fires_once()
         {
             var count = 0;
@@ -44,7 +45,7 @@ namespace ElectronNET.IntegrationTests.Tests
             count.Should().Be(1);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Ipc_RemoveAllListeners_stops_receiving()
         {
             var fired = false;
@@ -55,7 +56,7 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeFalse();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Ipc_OnSync_returns_value()
         {
             object received = null;
@@ -73,7 +74,7 @@ namespace ElectronNET.IntegrationTests.Tests
             ret.Should().Be("pong");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Ipc_Send_from_main_reaches_renderer()
         {
             // Listener: store raw arg; if Electron packs differently we will normalize later

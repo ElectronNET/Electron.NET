@@ -1,5 +1,7 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using ElectronNET.IntegrationTests.Common;
+
     [Collection("ElectronCollection")]
     public class MultiEventRegistrationTests
     {
@@ -17,7 +19,7 @@ namespace ElectronNET.IntegrationTests.Tests
             return ReferenceEquals(completed, all) && all.IsCompletedSuccessfully;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task BrowserWindow_OnResize_multiple_handlers_called()
         {
             var win = this.fx.MainWindow;
@@ -41,7 +43,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task WebContents_OnDomReady_multiple_handlers_called()
         {
             var wc = this.fx.MainWindow.WebContents;

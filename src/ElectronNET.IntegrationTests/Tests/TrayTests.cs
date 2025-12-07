@@ -1,6 +1,7 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class TrayTests
@@ -13,7 +14,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_create_tray_and_destroy()
         {
             //await Electron.Tray.Show("assets/icon.png");

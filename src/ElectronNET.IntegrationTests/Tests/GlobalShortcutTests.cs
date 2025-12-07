@@ -2,11 +2,12 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using System.Runtime.InteropServices;
     using ElectronNET.API;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class GlobalShortcutTests
     {
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_register_and_unregister()
         {
             var accel = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Cmd+Alt+G" : "Ctrl+Alt+G";

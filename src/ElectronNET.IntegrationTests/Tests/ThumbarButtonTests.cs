@@ -2,6 +2,7 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using System.Runtime.Versioning;
     using ElectronNET.API.Entities;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class ThumbarButtonTests
@@ -13,7 +14,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("Windows")]
         public async Task SetThumbarButtons_returns_success()
         {
@@ -22,7 +23,7 @@ namespace ElectronNET.IntegrationTests.Tests
             success.Should().BeTrue();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("Windows")]
         public async Task Thumbar_button_click_invokes_callback()
         {

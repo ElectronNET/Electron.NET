@@ -5,6 +5,7 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class WebContentsTests
@@ -16,7 +17,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_url_after_navigation()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -25,7 +26,7 @@ namespace ElectronNET.IntegrationTests.Tests
             url.Should().Contain("example.com");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ExecuteJavaScript_returns_title()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -34,7 +35,7 @@ namespace ElectronNET.IntegrationTests.Tests
             title.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task DomReady_event_fires()
         {
             var wc = this.fx.MainWindow.WebContents;
@@ -45,7 +46,7 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_print_to_pdf()
         {
             var html = "data:text/html,<html><body><h1>PDF Test</h1><p>Electron.NET</p></body></html>";
@@ -67,7 +68,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_basic_print()
         {
             var html = "data:text/html,<html><body><h2>Print Test</h2></body></html>";
@@ -76,15 +77,14 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().BeTrue();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetPrintersAsync_check()
         {
-            ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null, "Skipping printer test in CI environment.");
             var info = await fx.MainWindow.WebContents.GetPrintersAsync();
             info.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetSetZoomFactor_check()
         {
             await fx.MainWindow.WebContents.GetZoomFactorAsync();
@@ -96,15 +96,13 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().Be(2.0);
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetSetZoomLevel_check()
         {
             BrowserWindow window = null;
 
             try
             {
-                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
                 await Task.Delay(100.ms());
@@ -127,15 +125,13 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task DevTools_check()
         {
             BrowserWindow window = null;
 
             try
             {
-                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
                 await Task.Delay(3.seconds());
@@ -156,7 +152,7 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetSetAudioMuted_check()
         {
             fx.MainWindow.WebContents.SetAudioMuted(true);
@@ -174,17 +170,13 @@ namespace ElectronNET.IntegrationTests.Tests
             ok.Should().BeFalse();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetSetUserAgent_check()
         {
-            ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-
             BrowserWindow window = null;
 
             try
             {
-                ////Skip.If(Environment.GetEnvironmentVariable("GITHUB_RUN_ID") != null && RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "Skipping test on Windows CI.");
-
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
                 await Task.Delay(3.seconds());

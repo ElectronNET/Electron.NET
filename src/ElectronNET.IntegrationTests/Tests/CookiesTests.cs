@@ -1,6 +1,7 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class CookiesTests
@@ -12,7 +13,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Skip = "Cookie set/get requires navigation to domain; skipping until test harness serves page")]
+        [IntegrationFact(Skip = "Cookie set/get requires navigation to domain; skipping until test harness serves page")]
         public async Task Cookie_set_get_remove_sequence()
         {
             var session = this.fx.MainWindow.WebContents.Session;

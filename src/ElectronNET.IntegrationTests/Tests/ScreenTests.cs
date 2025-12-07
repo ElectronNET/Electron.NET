@@ -16,7 +16,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [SkipOnWslFact(Timeout = 20000)]
+        [IntegrationFact(SkipOnWsl = true)]
         public async Task Primary_display_has_positive_dimensions()
         {
             var display = await Electron.Screen.GetPrimaryDisplayAsync();
@@ -24,7 +24,7 @@ namespace ElectronNET.IntegrationTests.Tests
             display.Size.Height.Should().BeGreaterThan(0);
         }
 
-        [SkipOnWslFact(Timeout = 20000)]
+        [IntegrationFact(SkipOnWsl = true)]
         public async Task GetAllDisplays_returns_at_least_one()
         {
             var displays = await Electron.Screen.GetAllDisplaysAsync();
@@ -32,14 +32,14 @@ namespace ElectronNET.IntegrationTests.Tests
             displays.Length.Should().BeGreaterThan(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetCursorScreenPoint_check()
         {
             var point = await Electron.Screen.GetCursorScreenPointAsync();
             point.Should().NotBeNull();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         public async Task GetMenuBarWorkArea_check()
         {
@@ -51,7 +51,7 @@ namespace ElectronNET.IntegrationTests.Tests
             area.Width.Should().BeGreaterThan(0);
         }
 
-        [SkipOnWslFact(Timeout = 20000)]
+        [IntegrationFact(SkipOnWsl = true)]
         public async Task GetDisplayNearestPoint_check()
         {
             var point = new Point
@@ -65,7 +65,7 @@ namespace ElectronNET.IntegrationTests.Tests
             display.Size.Height.Should().BeGreaterThan(0);
         }
 
-        [SkipOnWslFact(Timeout = 20000)]
+        [IntegrationFact(SkipOnWsl = true)]
         public async Task GetDisplayMatching_check()
         {
             var rectangle = new Rectangle

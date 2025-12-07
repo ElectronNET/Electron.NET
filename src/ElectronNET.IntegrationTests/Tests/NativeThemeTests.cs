@@ -4,11 +4,12 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class NativeThemeTests
     {
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ThemeSource_roundtrip()
         {
             // Capture initial
@@ -36,7 +37,7 @@ namespace ElectronNET.IntegrationTests.Tests
             themeSourceSystem.Should().Be(ThemeSourceMode.System);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Updated_event_fires_on_change()
         {
             var fired = false;
@@ -52,7 +53,7 @@ namespace ElectronNET.IntegrationTests.Tests
             fired.Should().BeTrue();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         [SupportedOSPlatform("Windows")]
         public async Task Should_use_high_contrast_colors_check()
@@ -61,7 +62,7 @@ namespace ElectronNET.IntegrationTests.Tests
             metrics.Should().Be(false);
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         [SupportedOSPlatform("Windows")]
         public async Task Should_use_inverted_colors_check()

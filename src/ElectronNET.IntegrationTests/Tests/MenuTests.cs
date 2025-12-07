@@ -3,6 +3,7 @@ namespace ElectronNET.IntegrationTests.Tests
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class MenuTests
@@ -14,7 +15,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ApplicationMenu_click_invokes_handler()
         {
             var clicked = false;
@@ -40,7 +41,7 @@ namespace ElectronNET.IntegrationTests.Tests
             clicked.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ContextMenu_popup_registers_items()
         {
             var win = this.fx.MainWindow;

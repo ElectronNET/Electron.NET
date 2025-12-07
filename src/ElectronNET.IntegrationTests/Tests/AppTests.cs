@@ -6,6 +6,7 @@ namespace ElectronNET.IntegrationTests.Tests
     using System.IO;
     using System.Runtime.Versioning;
     using System.Threading.Tasks;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class AppTests
@@ -18,7 +19,7 @@ namespace ElectronNET.IntegrationTests.Tests
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_app_path()
         {
             var path = await Electron.App.GetAppPathAsync();
@@ -26,7 +27,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(path).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_version_and_locale()
         {
             var version = await Electron.App.GetVersionAsync();
@@ -35,7 +36,7 @@ namespace ElectronNET.IntegrationTests.Tests
             locale.Should().NotBeNullOrWhiteSpace();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_special_paths()
         {
             var userData = await Electron.App.GetPathAsync(PathName.UserData);
@@ -47,7 +48,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(temp).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_app_metrics()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
@@ -55,14 +56,14 @@ namespace ElectronNET.IntegrationTests.Tests
             metrics.Length.Should().BeGreaterThan(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_gpu_feature_status()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();
             status.Should().NotBeNull();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         [SupportedOSPlatform("Windows")]
         public async Task Can_get_login_item_settings()
@@ -71,7 +72,7 @@ namespace ElectronNET.IntegrationTests.Tests
             settings.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task CommandLine_append_and_query_switch()
         {
             var switchName = "integration-switch";
@@ -80,7 +81,7 @@ namespace ElectronNET.IntegrationTests.Tests
             (await Electron.App.CommandLine.GetSwitchValueAsync(switchName)).Should().Be("value123");
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("macOS")]
         [SupportedOSPlatform("Windows")]
         public async Task Accessibility_support_toggle()
@@ -91,7 +92,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.SetAccessibilitySupportEnabled(false);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task UserAgentFallback_roundtrip()
         {
             var original = await Electron.App.UserAgentFallbackAsync;
@@ -101,7 +102,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.UserAgentFallback = original; // restore
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         [SupportedOSPlatform("Linux")]
         [SupportedOSPlatform("macOS")]
         public async Task BadgeCount_set_and_reset_where_supported()
@@ -113,14 +114,14 @@ namespace ElectronNET.IntegrationTests.Tests
             await Electron.App.SetBadgeCountAsync(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task App_metrics_have_cpu_info()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
             metrics[0].Cpu.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task App_gpu_feature_status_has_some_fields()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();

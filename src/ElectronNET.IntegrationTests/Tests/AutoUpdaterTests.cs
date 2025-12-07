@@ -3,6 +3,7 @@
     using API;
     using System.Threading.Tasks;
     using ElectronNET.Common;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
     public class AutoUpdaterTests
@@ -14,7 +15,7 @@
             this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task AutoDownload_check()
         {
             Electron.AutoUpdater.AutoDownload = false;
@@ -25,7 +26,7 @@
             test2.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task AutoInstallOnAppQuit_check()
         {
             Electron.AutoUpdater.AutoInstallOnAppQuit = false;
@@ -36,7 +37,7 @@
             test2.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task AllowPrerelease_check()
         {
             Electron.AutoUpdater.AllowPrerelease = false;
@@ -47,7 +48,7 @@
             test2.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task FullChangelog_check()
         {
             Electron.AutoUpdater.FullChangelog = false;
@@ -58,7 +59,7 @@
             test2.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task AllowDowngrade_check()
         {
             Electron.AutoUpdater.AllowDowngrade = false;
@@ -69,14 +70,14 @@
             test2.Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task UpdateConfigPath_check()
         {
             var test1 = Electron.AutoUpdater.UpdateConfigPath;
             test1.Should().Be(string.Empty);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task CurrentVersionAsync_check()
         {
             var semver = await Electron.AutoUpdater.CurrentVersionAsync;
@@ -84,7 +85,7 @@
             semver.Major.Should().BeGreaterThan(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task ChannelAsync_check()
         {
             var test = await Electron.AutoUpdater.ChannelAsync;
@@ -95,7 +96,7 @@
             test.Should().Be("beta");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task RequestHeadersAsync_check()
         {
             var headers = new Dictionary<string, string>
@@ -112,21 +113,21 @@
             test["key1"].Should().Be("value1");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task CheckForUpdatesAsync_check()
         {
             var test = await Electron.AutoUpdater.CheckForUpdatesAsync();
             test.Should().BeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task CheckForUpdatesAndNotifyAsync_check()
         {
             var test = await Electron.AutoUpdater.CheckForUpdatesAsync();
             test.Should().BeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task GetFeedURLAsync_check()
         {
             var test = await Electron.AutoUpdater.GetFeedURLAsync();
