@@ -4,7 +4,7 @@ This guide explains how to include and use a `custom_main.js` file in your Elect
 
 ## Why use custom_main.js?
 
-- Add custom Electron features (global shortcuts, tray icons, menus, etc.)
+- Register custom protocol handlers (e.g., `myapp://`) — protocols must be registered before the app is fully initialized
 - Integrate Node.js modules (e.g., telemetry, OS APIs)
 - Control startup logic (abort, environment checks)
 - Set up IPC messaging or preload scripts
