@@ -23,4 +23,7 @@
     <AssemblyMetadata Include="IsAspNet" Value="$(_IsMsAspNetProject)" />
   </ItemGroup>
 
+  <!-- Import migration validation checks -->
+  <Import Project="$(MSBuildThisFileDirectory)ElectronNET.MigrationChecks.targets" />
+
 </Project>
