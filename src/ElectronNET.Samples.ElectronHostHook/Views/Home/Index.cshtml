@@ -1,0 +1,24 @@
+@model string
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ElectronHostHook Sample</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .result { padding: 10px; background-color: #f0f0f0; border: 1px solid #ccc; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>ElectronHostHook Sample</h1>
+    <p>This sample demonstrates bidirectional communication between C# and the Electron Host process.</p>
+    
+    <div class="result">
+        <strong>Result:</strong> @Model
+    </div>
+</body>
+</html>
