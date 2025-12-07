@@ -26,12 +26,15 @@ Add publish profiles to `Properties/PublishProfiles/`:
   <PropertyGroup>
     <Configuration>Release</Configuration>
     <Platform>Any CPU</Platform>
-    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-    <PublishProtocol>FileSystem</PublishProtocol>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 </Project>
 ```
@@ -46,12 +49,15 @@ Add publish profiles to `Properties/PublishProfiles/`:
   <PropertyGroup>
     <Configuration>Release</Configuration>
     <Platform>Any CPU</Platform>
-    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-    <PublishProtocol>FileSystem</PublishProtocol>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 </Project>
 ```
