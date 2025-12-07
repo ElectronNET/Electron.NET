@@ -23,6 +23,7 @@
 - [Startup-Methods](Using/Startup-Methods.md)
 - [Debugging](Using/Debugging.md)
 - [Package Building](Using/Package-Building.md)
+- [Adding a `custom_main.js`](Using/Custom_main.md)
 
 # API Reference
 
