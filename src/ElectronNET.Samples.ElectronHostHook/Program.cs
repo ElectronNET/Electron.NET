@@ -8,7 +8,11 @@ namespace ElectronNET.Samples.ElectronHostHook
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.WebHost.UseElectron(args);
+            builder.WebHost.UseElectron(args, async () =>
+            {
+                var window = await Electron.WindowManager.CreateWindowAsync();
+            });
+
             builder.Services.AddElectron();
             builder.Services.AddControllersWithViews();
 
@@ -20,14 +24,6 @@ namespace ElectronNET.Samples.ElectronHostHook
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            if (HybridSupport.IsElectronActive)
-            {
-                Task.Run(async () =>
-                {
-                    var window = await Electron.WindowManager.CreateWindowAsync();
-                });
-            }
 
             app.Run();
         }

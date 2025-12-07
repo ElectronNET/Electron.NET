@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "removeComments": false,
+    "target": "ES2019",
     "sourceMap": true,
-    "target": "es5",
-    "lib": ["es2015", "dom"]
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "wwwroot"]
+  "exclude": ["node_modules"]
 }
