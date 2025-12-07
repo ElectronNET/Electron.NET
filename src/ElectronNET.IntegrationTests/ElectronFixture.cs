@@ -4,6 +4,7 @@ namespace ElectronNET.IntegrationTests
     using System.Reflection;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Common;
 
     // Shared fixture that starts Electron runtime once
     [SuppressMessage("ReSharper", "MethodHasAsyncOverload")]
@@ -26,7 +27,7 @@ namespace ElectronNET.IntegrationTests
                 await runtimeController.Start();
 
                 Console.Error.WriteLine("[ElectronFixture] Waiting for Ready...");
-                await Task.WhenAny(runtimeController.WaitReadyTask, Task.Delay(TimeSpan.FromSeconds(10)));
+                await Task.WhenAny(runtimeController.WaitReadyTask, Task.Delay(10.seconds()));
 
                 if (!runtimeController.WaitReadyTask.IsCompleted)
                 {

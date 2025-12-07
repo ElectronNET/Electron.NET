@@ -1,6 +1,7 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class IpcMainTests
@@ -39,7 +40,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var count = 0;
             Electron.IpcMain.Once("ipc-once-test", _ => count++);
             await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("const {ipcRenderer}=require('electron'); ipcRenderer.send('ipc-once-test','a'); ipcRenderer.send('ipc-once-test','b');");
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             count.Should().Be(1);
         }
 
@@ -50,7 +51,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await Electron.IpcMain.On("ipc-remove-test", _ => fired = true);
             Electron.IpcMain.RemoveAllListeners("ipc-remove-test");
             await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>("require('electron').ipcRenderer.send('ipc-remove-test','x')");
-            await Task.Delay(400);
+            await Task.Delay(400.ms());
             fired.Should().BeFalse();
         }
 
@@ -88,7 +89,7 @@ namespace ElectronNET.IntegrationTests.Tests
                     break;
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(100.ms());
             }
 
             // Normalize possible JSON array ["hello-msg"] case

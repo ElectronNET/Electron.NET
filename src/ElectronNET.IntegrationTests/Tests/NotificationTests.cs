@@ -3,6 +3,7 @@ namespace ElectronNET.IntegrationTests.Tests
     using System.Runtime.InteropServices;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class NotificationTests
@@ -17,11 +18,11 @@ namespace ElectronNET.IntegrationTests.Tests
             var options = new NotificationOptions("Notification Title", "Notification test 123");
             options.OnShow = () => tcs.SetResult();
 
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
 
             Electron.Notification.Show(options);
 
-            await Task.WhenAny(tcs.Task, Task.Delay(5_000));
+            await Task.WhenAny(tcs.Task, Task.Delay(5.seconds()));
 
             tcs.Task.IsCompletedSuccessfully.Should().BeTrue();
         }

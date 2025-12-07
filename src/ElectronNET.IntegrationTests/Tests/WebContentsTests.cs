@@ -4,6 +4,7 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class WebContentsTests
@@ -40,7 +41,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var fired = false;
             wc.OnDomReady += () => fired = true;
             await wc.LoadURLAsync("https://example.com");
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             fired.Should().BeTrue();
         }
 
@@ -90,7 +91,7 @@ namespace ElectronNET.IntegrationTests.Tests
             var ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().BeGreaterThan(0.0);
             fx.MainWindow.WebContents.SetZoomFactor(2.0);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             ok = await fx.MainWindow.WebContents.GetZoomFactorAsync();
             ok.Should().Be(2.0);
         }
@@ -106,16 +107,16 @@ namespace ElectronNET.IntegrationTests.Tests
 
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
-                await Task.Delay(100);
+                await Task.Delay(100.ms());
 
                 window.WebContents.SetZoomLevel(0);
-                await Task.Delay(500);
+                await Task.Delay(500.ms());
 
                 var ok = await window.WebContents.GetZoomLevelAsync();
                 ok.Should().Be(0);
 
                 window.WebContents.SetZoomLevel(2);
-                await Task.Delay(500);
+                await Task.Delay(500.ms());
 
                 ok = await window.WebContents.GetZoomLevelAsync();
                 ok.Should().Be(2);
@@ -137,15 +138,15 @@ namespace ElectronNET.IntegrationTests.Tests
 
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
-                await Task.Delay(3000);
+                await Task.Delay(3.seconds());
 
                 window.WebContents.IsDevToolsOpened().Should().BeFalse();
                 window.WebContents.OpenDevTools();
-                await Task.Delay(5000);
+                await Task.Delay(5.seconds());
 
                 window.WebContents.IsDevToolsOpened().Should().BeTrue();
                 window.WebContents.CloseDevTools();
-                await Task.Delay(2000);
+                await Task.Delay(2.seconds());
 
                 window.WebContents.IsDevToolsOpened().Should().BeFalse();
             }
@@ -159,11 +160,11 @@ namespace ElectronNET.IntegrationTests.Tests
         public async Task GetSetAudioMuted_check()
         {
             fx.MainWindow.WebContents.SetAudioMuted(true);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             var ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeTrue();
             fx.MainWindow.WebContents.SetAudioMuted(false);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             ok = await fx.MainWindow.WebContents.IsAudioMutedAsync();
             ok.Should().BeFalse();
 
@@ -186,11 +187,11 @@ namespace ElectronNET.IntegrationTests.Tests
 
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
-                await Task.Delay(3000);
+                await Task.Delay(3.seconds());
 
                 window.WebContents.SetUserAgent("MyUserAgent/1.0");
 
-                await Task.Delay(1000);
+                await Task.Delay(1.seconds());
 
                 var ok = await window.WebContents.GetUserAgentAsync();
                 ok.Should().Be("MyUserAgent/1.0");

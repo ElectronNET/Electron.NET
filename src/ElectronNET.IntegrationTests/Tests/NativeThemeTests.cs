@@ -3,6 +3,7 @@ namespace ElectronNET.IntegrationTests.Tests
     using System.Runtime.Versioning;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class NativeThemeTests
@@ -13,19 +14,19 @@ namespace ElectronNET.IntegrationTests.Tests
             // Capture initial
             _ = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             // Force light
-            await Task.Delay(50);
+            await Task.Delay(50.ms());
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Light);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             var useDarkAfterLight = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceLight = await Electron.NativeTheme.GetThemeSourceAsync();
             // Force dark
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Dark);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             var useDarkAfterDark = await Electron.NativeTheme.ShouldUseDarkColorsAsync();
             var themeSourceDark = await Electron.NativeTheme.GetThemeSourceAsync();
             // Restore system
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.System);
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             var themeSourceSystem = await Electron.NativeTheme.GetThemeSourceAsync();
             // Assertions are tolerant (platform dependent)
             useDarkAfterLight.Should().BeFalse("forcing Light should result in light colors");
@@ -41,11 +42,11 @@ namespace ElectronNET.IntegrationTests.Tests
             var fired = false;
             Electron.NativeTheme.Updated += () => fired = true;
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Dark);
-            await Task.Delay(400);
+            await Task.Delay(400.ms());
             Electron.NativeTheme.SetThemeSource(ThemeSourceMode.Light);
             for (int i = 0; i < 10 && !fired; i++)
             {
-                await Task.Delay(100);
+                await Task.Delay(100.ms());
             }
 
             fired.Should().BeTrue();

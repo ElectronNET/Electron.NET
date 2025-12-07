@@ -2,6 +2,7 @@
 {
     using API;
     using System.Threading.Tasks;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class AutoUpdaterTests
@@ -89,7 +90,7 @@
             var test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be(string.Empty);
             Electron.AutoUpdater.SetChannel = "beta";
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             test = await Electron.AutoUpdater.ChannelAsync;
             test.Should().Be("beta");
         }
@@ -104,7 +105,7 @@
             var test = await Electron.AutoUpdater.RequestHeadersAsync;
             test.Should().BeNull();
             Electron.AutoUpdater.RequestHeaders = headers;
-            await Task.Delay(500);
+            await Task.Delay(500.ms());
             test = await Electron.AutoUpdater.RequestHeadersAsync;
             test.Should().NotBeNull();
             test.Count.Should().Be(1);

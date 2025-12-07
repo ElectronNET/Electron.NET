@@ -2,6 +2,7 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using ElectronNET.Common;
 
     [Collection("ElectronCollection")]
     public class MenuTests
@@ -33,7 +34,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>($"require('electron').ipcRenderer.send('integration-click-application-menu','{targetId}')");
             for (int i = 0; i < 20 && !clicked; i++)
             {
-                await Task.Delay(100);
+                await Task.Delay(100.ms());
             }
 
             clicked.Should().BeTrue();
@@ -52,7 +53,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await this.fx.MainWindow.WebContents.ExecuteJavaScriptAsync<string>($"require('electron').ipcRenderer.send('integration-click-context-menu',{win.Id},'{ctxId}')");
             for (int i = 0; i < 20 && !ctxClicked; i++)
             {
-                await Task.Delay(100);
+                await Task.Delay(100.ms());
             }
 
             ctxClicked.Should().BeTrue();
