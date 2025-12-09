@@ -1,0 +1,12 @@
+{
+  "name": "electron-host-hook",
+  "version": "1.0.0",
+  "description": "Connector for Electron.NET projects.",
+  "main": "index.js",
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
