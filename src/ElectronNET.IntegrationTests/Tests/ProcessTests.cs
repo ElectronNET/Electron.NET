@@ -1,11 +1,16 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
     using ElectronNET.API;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class ProcessTests
+    public class ProcessTests : IntegrationTestBase
     {
-        [Fact(Timeout = 20000)]
+        public ProcessTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
+        [IntegrationFact]
         public async Task Process_info_is_accessible()
         {
             // Use renderer to fetch process info and round-trip
@@ -14,7 +19,7 @@ namespace ElectronNET.IntegrationTests.Tests
             result.Should().Be("ok");
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Process_properties_are_populated()
         {
             var execPath = await Electron.Process.ExecPathAsync;

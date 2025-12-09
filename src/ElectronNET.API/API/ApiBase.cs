@@ -31,7 +31,7 @@ namespace ElectronNET.API
             CamelCase,
         }
 
-        private const int InvocationTimeout = 1000;
+        private static readonly TimeSpan InvocationTimeout = 1000.ms();
 
         private readonly string objectName;
         private readonly ConcurrentDictionary<string, Invocator> invocators;
@@ -120,7 +120,7 @@ namespace ElectronNET.API
             return this.InvokeAsyncWithTimeout<T>(InvocationTimeout, arg, callerName);
         }
 
-        protected Task<T> InvokeAsyncWithTimeout<T>(int invocationTimeout, object arg = null, [CallerMemberName] string callerName = null)
+        protected Task<T> InvokeAsyncWithTimeout<T>(TimeSpan invocationTimeout, object arg = null, [CallerMemberName] string callerName = null)
         {
             Debug.Assert(callerName != null, nameof(callerName) + " != null");
 
@@ -245,7 +245,7 @@ namespace ElectronNET.API
             private readonly Task<T> tcsTask;
             private TaskCompletionSource<T> tcs;
 
-            public Invocator(ApiBase apiBase, string callerName, int timeoutMs, object arg = null)
+            public Invocator(ApiBase apiBase, string callerName, TimeSpan timeout, object arg = null)
             {
                 this.tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 this.tcsTask = this.tcs.Task;
@@ -306,7 +306,7 @@ namespace ElectronNET.API
                     _ = apiBase.Id >= 0 ? BridgeConnector.Socket.Emit(messageName, apiBase.Id) : BridgeConnector.Socket.Emit(messageName);
                 }
 
-                System.Threading.Tasks.Task.Delay(timeoutMs).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(timeout).ContinueWith(_ =>
                 {
                     if (this.tcs != null)
                     {
@@ -314,7 +314,7 @@ namespace ElectronNET.API
                         {
                             if (this.tcs != null)
                             {
-                                var ex = new TimeoutException($"No response after {timeoutMs:D}ms trying to retrieve value {apiBase.objectName}.{callerName}()");
+                                var ex = new TimeoutException($"No response after {timeout:D}ms trying to retrieve value {apiBase.objectName}.{callerName}()");
                                 this.tcs.TrySetException(ex);
                                 this.tcs = null;
                             }

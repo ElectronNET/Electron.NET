@@ -76,7 +76,7 @@
         {
             try
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10.ms()).ConfigureAwait(false);
 
                 Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
                 Console.Error.WriteLine("[StartInternal]: args: {0}", args);
@@ -85,7 +85,7 @@
                 this.process.ProcessExited += this.Process_Exited;
                 this.process.Run(startCmd, args, directoriy);
 
-                await Task.Delay(500).ConfigureAwait(false);
+                await Task.Delay(500.ms()).ConfigureAwait(false);
 
                 Console.Error.WriteLine("[StartInternal]: after run:");
 

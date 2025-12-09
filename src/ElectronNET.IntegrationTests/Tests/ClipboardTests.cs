@@ -2,19 +2,16 @@ namespace ElectronNET.IntegrationTests.Tests
 {
     using System.Runtime.Versioning;
     using ElectronNET.API;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class ClipboardTests
+    public class ClipboardTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public ClipboardTests(ElectronFixture fx)
+        public ClipboardTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Clipboard_text_roundtrip()
         {
             var text = $"Hello Electron {Guid.NewGuid()}";
@@ -23,7 +20,7 @@ namespace ElectronNET.IntegrationTests.Tests
             read.Should().Be(text);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Available_formats_contains_text_after_write()
         {
             var text = "FormatsTest";
@@ -32,9 +29,9 @@ namespace ElectronNET.IntegrationTests.Tests
             formats.Should().Contain(f => f.Contains("text") || f.Contains("TEXT") || f.Contains("plain"));
         }
 
-        [SkippableFact(Timeout = 20000)]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [IntegrationFact]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Bookmark_write_and_read()
         {
             var url = "https://electron-test.com";

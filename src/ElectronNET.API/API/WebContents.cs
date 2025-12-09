@@ -1,6 +1,7 @@
-using ElectronNET.API.Entities;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.Common;
 
 // ReSharper disable InconsistentNaming
 
@@ -173,7 +174,7 @@ public class WebContents : ApiBase
     /// Get system printers.
     /// </summary>
     /// <returns>printers</returns>
-    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(5_000);
+    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(8.seconds());
 
     /// <summary>
     /// Prints window's web page.
@@ -388,7 +389,7 @@ public class WebContents : ApiBase
     /// Returns string - The user agent for this web page.
     /// </summary>
     /// <returns></returns>
-    public Task<string> GetUserAgentAsync() => InvokeAsync<string>();
+    public Task<string> GetUserAgentAsync() => InvokeAsyncWithTimeout<string>(3.seconds());
 
     /// <summary>
     /// Overrides the user agent for this web page.

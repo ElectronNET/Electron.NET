@@ -35,5 +35,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="ElectronNET.AspNet" />
     <InternalsVisibleTo Include="ElectronNET.Core.AspNet" />
+    <InternalsVisibleTo Include="ElectronNET.IntegrationTests" />
   </ItemGroup>
 </Project>
