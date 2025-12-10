@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <ElectronNetDevMode>true</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+    <IsPackable>false</IsPackable>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptUseNodeJS>true</TypeScriptUseNodeJS>
+    <TypeScriptTSConfig>ElectronHostHook/tsconfig.json</TypeScriptTSConfig>
+    <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Remove="**\node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+    <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
+  </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
+</Project>
