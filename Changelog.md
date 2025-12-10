@@ -3,8 +3,16 @@
 ## ElectronNET.Core
 
 - Updated infrastructure (#937, #939) @softworkz
+- Updated all model classes to Electron API 39.2 (#949) @softworkz
 - Fixed output path for `electron-builder` (#942) @softworkz
+- Fixed floating point display resolution (#944) @softworkz
 - Fixed previous API break using exposed `JsonElement` objects (#938) @softworkz
+- Fixed and improved several test cases (#962) @softworkz
+- Fixed the `BrowserWindowOptions` (#945) @softworkz
+- Added several migration checks for publishing (#966) @softworkz
+- Added more test runners for E2E tests (#950, #951) @agracio
+- Added matrix tests with 6 runners and 2 electron version (#948) @softworkz
+- Added additional APIs for WebContents (#958) @agracio
 
 # 0.2.0
 
