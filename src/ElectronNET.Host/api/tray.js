@@ -50,16 +50,17 @@ module.exports = (socket) => {
         const trayIcon = electron_1.nativeImage.createFromPath(image);
         tray.value = new electron_1.Tray(trayIcon);
         if (menuItems) {
-            const menu = electron_1.Menu.buildFromTemplate(menuItems);
-            addMenuItemClickConnector(menu.items, (id) => {
-                electronSocket.emit('trayMenuItemClicked', id);
-            });
-            tray.value.setContextMenu(menu);
+            applyContextMenu(menuItems);
         }
     });
     socket.on('tray-destroy', () => {
         if (tray.value) {
             tray.value.destroy();
+        }
+    });
+    socket.on('set-contextMenu', (menuItems) => {
+        if (menuItems && tray.value) {
+            applyContextMenu(menuItems);
         }
     });
     socket.on('tray-setImage', (image) => {
@@ -118,6 +119,13 @@ module.exports = (socket) => {
             });
         }
     });
+    function applyContextMenu(menuItems) {
+        const menu = electron_1.Menu.buildFromTemplate(menuItems);
+        addMenuItemClickConnector(menu.items, (id) => {
+            electronSocket.emit('trayMenuItemClicked', id);
+        });
+        tray.value.setContextMenu(menu);
+    }
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {
             if (item.submenu && item.submenu.items.length > 0) {
