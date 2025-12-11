@@ -220,11 +220,33 @@ namespace ElectronNET.API
             _items.Clear();
             _items.AddRange(menuItems);
 
+            RegisterMenuItemClickedHandler();
+        }
+
+        /// <summary>
+        /// Sets the tray menu items.
+        /// </summary>
+        /// <remarks>Calling this method updates the context menu with the specified items. Any previously
+        /// set menu items will be replaced.</remarks>
+        /// <param name="menuItems">An array of <see cref="MenuItem"/> objects representing the menu items to display in the tray menu.
+        /// Cannot be null.</param>
+        public async Task SetMenuItems(MenuItem[] menuItems)
+        {
+            menuItems.AddMenuItemsId();
+            await BridgeConnector.Socket.Emit("set-contextMenu", [menuItems]).ConfigureAwait(false);
+            _items.Clear();
+            _items.AddRange(menuItems);
+
+            RegisterMenuItemClickedHandler();
+        }
+
+        private void RegisterMenuItemClickedHandler()
+        {
             BridgeConnector.Socket.Off("trayMenuItemClicked");
             BridgeConnector.Socket.On<string>("trayMenuItemClicked", (id) =>
             {
                 MenuItem menuItem = _items.GetMenuItem(id);
-                menuItem?.Click();
+                menuItem?.Click?.Invoke();
             });
         }
 
