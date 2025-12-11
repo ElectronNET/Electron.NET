@@ -45,6 +45,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Random delay (0-20 seconds)
+        shell: bash
+        run: |
+          DELAY=$((RANDOM % 21))
+          echo "Waiting for $DELAY seconds..."
+          sleep $DELAY
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
