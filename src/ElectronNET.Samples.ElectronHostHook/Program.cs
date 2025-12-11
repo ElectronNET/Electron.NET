@@ -1,4 +1,6 @@
 using ElectronNET.API;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ElectronNET.Samples.ElectronHostHook
 {
