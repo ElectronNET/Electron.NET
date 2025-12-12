@@ -233,7 +233,7 @@ namespace ElectronNET.API
         public async Task SetMenuItems(MenuItem[] menuItems)
         {
             menuItems.AddMenuItemsId();
-            await BridgeConnector.Socket.Emit("set-contextMenu", [menuItems]).ConfigureAwait(false);
+            await BridgeConnector.Socket.Emit("set-contextMenu", new object[] { menuItems }).ConfigureAwait(false);
             _items.Clear();
             _items.AddRange(menuItems);
 
