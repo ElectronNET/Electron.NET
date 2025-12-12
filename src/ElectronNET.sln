@@ -41,10 +41,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{985D39A7-5216-4945-8167-2FD0CB387BD8}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+		..\.github\workflows\Build and Publish.yml = ..\.github\workflows\Build and Publish.yml
 		..\.github\workflows\integration-tests.yml = ..\.github\workflows\integration-tests.yml
+		..\.github\workflows\PR Validation.yml = ..\.github\workflows\PR Validation.yml
 		..\.github\workflows\pr-comment.yml = ..\.github\workflows\pr-comment.yml
 		..\.github\workflows\publish-wiki.yml = ..\.github\workflows\publish-wiki.yml
+		..\.github\workflows\retry-test-jobs.yml = ..\.github\workflows\retry-test-jobs.yml
 		..\.github\workflows\trailing-whitespace-check.yml = ..\.github\workflows\trailing-whitespace-check.yml
 	EndProjectSection
 EndProject

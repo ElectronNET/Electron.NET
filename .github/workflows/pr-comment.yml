@@ -2,7 +2,7 @@ name: Create PR Comments
 
 on:
   workflow_run:
-    workflows: ["Tests"]
+    workflows: [ "PR Validation" ]
     types: [completed]
 
 permissions:
@@ -14,7 +14,7 @@ jobs:
   pr-comment:
     name: Post Test Result as PR comment
     runs-on: ubuntu-24.04
-    if: github.event.workflow_run.event == 'pull_request'
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'cancelled'
 
     steps:
       - name: Download CTRF artifact
