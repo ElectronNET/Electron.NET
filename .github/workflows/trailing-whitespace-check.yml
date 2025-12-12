@@ -1,11 +1,10 @@
-name: Trailing Whitespace Check
+name: Whitespace Check
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
 
 jobs:
-  check-trailing-whitespace:
+  check-whitespace:
     runs-on: ubuntu-latest
     permissions:
       contents: read

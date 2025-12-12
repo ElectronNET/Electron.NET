@@ -1,10 +1,7 @@
-﻿name: Tests
+name: Tests
 
 on:
-  push:
-    branches: [ develop, main ]
-  pull_request:
-    branches: [ develop, main ]
+  workflow_call:
 
 concurrency:
   group: integration-tests-${{ github.ref }}
@@ -12,7 +9,7 @@ concurrency:
 
 jobs:
   tests:
-    name: Integration Tests (${{ matrix.os }} / Electron ${{ matrix.electronVersion }})
+    name: ${{ matrix.os }} API-${{ matrix.electronVersion }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

@@ -1,8 +1,8 @@
-﻿name: Tests auto-rerun
+name: Tests auto-rerun
 
 on:
   workflow_run:
-    workflows: [ "Tests" ]
+    workflows: [ "PR Validation", "Build and Publish" ]
     types: [ completed ]
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           failed_matrix_jobs=$(echo "$jobs_json" | jq '
             [ .jobs[]
               | select(.conclusion == "failure"
-                       and (.name | startswith("Integration Tests (")))
+                       and (.name | contains(" API-")))
             ]
             | length
           ')
