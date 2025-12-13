@@ -10,10 +10,14 @@
 - Fixed and improved several test cases (#962) @softworkz
 - Fixed startup of Electron.NET from VS Code Debug Adapter (#952)
 - Fixed the `BrowserWindowOptions` (#945) @softworkz
+- Fixed example for `AutoMenuHide` to reflect platform capabilities (#982) @markatosi
 - Added several migration checks for publishing (#966) @softworkz
 - Added more test runners for E2E tests (#950, #951) @agracio
+- Added dynamic updates for tray menu (#973) @davidroth
 - Added matrix tests with 6 runners and 2 electron version (#948) @softworkz
 - Added additional APIs for WebContents (#958) @agracio
+- Added documentation for MacOS package publish (#983) @markatosi
+- Added sample application for `ElectronHostHook` (#967) @adityashirsatrao007
 
 # 0.2.0
 
