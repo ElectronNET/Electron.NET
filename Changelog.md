@@ -8,6 +8,7 @@
 - Fixed floating point display resolution (#944) @softworkz
 - Fixed previous API break using exposed `JsonElement` objects (#938) @softworkz
 - Fixed and improved several test cases (#962) @softworkz
+- Fixed startup of Electron.NET from VS Code Debug Adapter (#952)
 - Fixed the `BrowserWindowOptions` (#945) @softworkz
 - Added several migration checks for publishing (#966) @softworkz
 - Added more test runners for E2E tests (#950, #951) @agracio

@@ -60,6 +60,11 @@
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<Task> onAppReadyCallback)
         {
             ElectronNetRuntime.OnAppReadyCallback = onAppReadyCallback;
+            
+            // no matter how this is set - let's unset to prevent Electron not starting as expected
+            // e.g., VS Code sets this env variable, but this will cause `require("electron")` to not
+            // work as expected, see issue #952
+            Environment.SetEnvironmentVariable("ELECTRON_RUN_AS_NODE", null);
 
             var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
             ElectronNetRuntime.AspNetWebPort = webPort;
