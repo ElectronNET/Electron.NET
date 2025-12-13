@@ -133,9 +133,10 @@ builder.UseElectron(args, async () =>
 {
     var options = new BrowserWindowOptions {
         Show = false,
-        AutoHideMenuBar = true,
         IsRunningBlazor = true, // <-- crucial
     };
+    if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
+        options.AutoHideMenuBar = true;
     var browserWindow = await Electron.WindowManager.CreateWindowAsync(options);
     browserWindow.OnReadyToShow += () => browserWindow.Show();
 });
