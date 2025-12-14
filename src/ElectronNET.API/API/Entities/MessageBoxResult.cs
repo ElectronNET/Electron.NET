@@ -1,24 +1,19 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Result returned by dialog.showMessageBox / dialog.showMessageBoxSync.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class MessageBoxResult
     {
         /// <summary>
-        /// Gets or sets the response.
+        /// The index of the clicked button.
         /// </summary>
-        /// <value>
-        /// The response.
-        /// </value>
         public int Response { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [checkbox checked].
+        /// The checked state of the checkbox if CheckboxLabel was set; otherwise false.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if [checkbox checked]; otherwise, <c>false</c>.
-        /// </value>
         public bool CheckboxChecked { get; set; }
     }
 }

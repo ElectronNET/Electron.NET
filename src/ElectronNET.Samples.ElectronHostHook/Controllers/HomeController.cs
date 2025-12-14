@@ -1,5 +1,6 @@
 using ElectronNET.API;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ElectronNET.Samples.ElectronHostHook.Controllers
 {

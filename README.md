@@ -14,9 +14,9 @@ Build cross platform desktop applications with .NET 6/8/10 - from console apps t
 
 ## Wait - how does that work exactly?
 
-Well... there are lots of different approaches how to get a X-plat desktop app running. Electron.NET provides a range of  ways to build .NET based solutions using Electron at the side of presentation.
+Well... there are lots of different approaches how to get a X-plat desktop app running. Electron.NET provides a range of ways to build .NET-based solutions using Electron at the side of presentation.
 
-While the classic Electron.NET setup, using an ASP.NET host ran by the Electron side is still the primary way, there's more flexibility now: both, dotnet and Electron are now able to launch the other for better lifetime management, and when you don't need a local web server - like when running content from files or remote servers, you can  drop the ASP.NET stack altogether and got with a lightweight console app instead.
+While the classic Electron.NET setup (using an ASP.NET host run by the Electron side) is still the primary way, there's more flexibility now. Both .NET and Electron are now able to launch the other for better lifetime management, and when you don't need a local web server (like when running content from files or remote servers), you can drop the ASP.NET stack altogether and go with a lightweight console app instead.
 
 ## 📦 NuGet
 
@@ -133,9 +133,10 @@ builder.UseElectron(args, async () =>
 {
     var options = new BrowserWindowOptions {
         Show = false,
-        AutoHideMenuBar = true,
         IsRunningBlazor = true, // <-- crucial
     };
+    if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
+        options.AutoHideMenuBar = true;
     var browserWindow = await Electron.WindowManager.CreateWindowAsync(options);
     browserWindow.OnReadyToShow += () => browserWindow.Show();
 });
@@ -169,7 +170,7 @@ Just press `F5` in Visual Studio or use dotnet for debugging.
 
 ## 📔 Usage of the Electron API
 
-A complete documentation is available on the Wiki.
+Complete documentation is available on the Wiki.
 
 In this YouTube video, we show you how you can create a new project, use the Electron.NET API, debug a application and build an executable desktop app for Windows: [Electron.NET - Getting Started](https://www.youtube.com/watch?v=nuM6AojRFHk)  
   

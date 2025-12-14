@@ -5,24 +5,22 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// Defines the ThemeSourceMode enumeration.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public enum ThemeSourceMode
     {
         /// <summary>
         /// Operating system default.
         /// </summary>
-        [Description("system")]
         System,
 
         /// <summary>
         /// Light theme.
         /// </summary>
-        [Description("light")]
         Light,
 
         /// <summary>
         /// Dark theme.
         /// </summary>
-        [Description("dark")]
         Dark
     }
 }

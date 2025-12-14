@@ -5,14 +5,13 @@ const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
-const { HookService } = require('electron-host-hook');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
 let commandLine, browserView;
 let powerMonitor;
 let processInfo;
-let splashScreen, hostHook;
+let splashScreen;
 let nativeTheme;
 let dock;
 let launchFile;
@@ -263,6 +262,7 @@ function startSocketApiBridge(port) {
     console.log('Electron Socket: starting...');
     server = require('http').createServer();
     const { Server } = require('socket.io');
+    let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
         pingInterval: 10000, // in ms, default is 25000
@@ -359,6 +359,8 @@ function startSocketApiBridge(port) {
         });
 
         try {
+            const { HookService } = require('electron-host-hook');
+
             if (hostHook === undefined) {
                 hostHook = new HookService(socket, app);
                 hostHook.onHostReady();
@@ -366,6 +368,7 @@ function startSocketApiBridge(port) {
         } catch (error) {
             console.error(error.message);
         }
+
         console.log('Electron Socket: startup complete.');
     });
 }
@@ -373,7 +376,7 @@ function startSocketApiBridge(port) {
 function startAspCoreBackend(electronPort) {
     startBackend();
 
-    function startBackend() {           
+    function startBackend() {
         loadURL = `about:blank`;
         const envParam = getEnvironmentParameter();
         const parameters = [

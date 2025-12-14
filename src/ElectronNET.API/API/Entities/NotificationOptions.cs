@@ -7,74 +7,84 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class NotificationOptions
     {
         /// <summary>
-        /// A title for the notification, which will be shown at the top of the notification
-        /// window when it is shown.
+        /// Gets or sets the title for the notification, which will be shown at the top of the notification window when it is shown.
         /// </summary>
         public string Title { get; set; }
 
         /// <summary>
-        /// A subtitle for the notification, which will be displayed below the title.
+        /// Gets or sets the subtitle for the notification, which will be displayed below the title.
         /// </summary>
-        public string SubTitle { get; set; }
+        [SupportedOSPlatform("macos")]
+        [JsonPropertyName("subtitle")]
+        public string Subtitle { get; set; }
 
         /// <summary>
-        /// The body text of the notification, which will be displayed below the title or
-        /// subtitle.
+        /// Gets or sets the body text of the notification, which will be displayed below the title or subtitle.
         /// </summary>
         public string Body { get; set; }
 
         /// <summary>
-        /// Whether or not to emit an OS notification noise when showing the notification.
+        /// Gets or sets a value indicating whether to suppress the OS notification noise when showing the notification.
         /// </summary>
         public bool Silent { get; set; }
 
         /// <summary>
-        /// An icon to use in the notification.
+        /// Gets or sets an icon to use in the notification. Can be a string path or a NativeImage. If a string is passed, it must be a valid path to a local icon file.
         /// </summary>
         public string Icon { get; set; }
 
         /// <summary>
-        /// Whether or not to add an inline reply option to the notification.
+        /// Gets or sets a value indicating whether to add an inline reply option to the notification.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool HasReply { get; set; }
 
         /// <summary>
-        /// The timeout duration of the notification. Can be 'default' or 'never'.
+        /// Gets or sets the timeout duration of the notification. Can be 'default' or 'never'.
         /// </summary>
-        [SupportedOSPlatform("Linux")]
-        [SupportedOSPlatform("Windows")]
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("windows")]
         public string TimeoutType { get; set; }
 
         /// <summary>
-        /// The placeholder to write in the inline reply input field.
+        /// Gets or sets the placeholder to write in the inline reply input field.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string ReplyPlaceholder { get; set; }
 
         /// <summary>
-        /// The name of the sound file to play when the notification is shown.
+        /// Gets or sets the name of the sound file to play when the notification is shown.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string Sound { get; set; }
 
         /// <summary>
-        /// The urgency level of the notification. Can be 'normal', 'critical', or 'low'.
+        /// Gets or sets the urgency level of the notification. Can be 'normal', 'critical', or 'low'.
         /// </summary>
-        [SupportedOSPlatform("Linux")]
+        [SupportedOSPlatform("linux")]
         public string Urgency { get; set; }
 
         /// <summary>
-        /// Actions to add to the notification. Please read the available actions and
-        /// limitations in the NotificationAction documentation.
+        /// Gets or sets the actions to add to the notification. Please read the available actions and limitations in the NotificationAction documentation.
         /// </summary>
-        public NotificationAction Actions { get; set; }
+        [SupportedOSPlatform("macos")]
+        public NotificationAction[] Actions { get; set; }
 
         /// <summary>
-        /// A custom title for the close button of an alert. An empty string will cause the
-        /// default localized text to be used.
+        /// Gets or sets a custom title for the close button of an alert. An empty string will cause the default localized text to be used.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string CloseButtonText { get; set; }
+
+        /// <summary>
+        /// Gets or sets a custom description of the Notification on Windows superseding all properties above. Provides full customization of design and behavior of the notification.
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        public string ToastXml { get; set; }
 
         /// <summary>
         /// Emitted when the notification is shown to the user, note this could be fired
@@ -131,7 +141,7 @@ namespace ElectronNET.API.Entities
         /// The string the user entered into the inline reply field
         /// </summary>
         [JsonIgnore]
-        [SupportedOSPlatform("macOS")]
+        [SupportedOSPlatform("macos")]
         public Action<string> OnReply { get; set; }
 
         /// <summary>
@@ -144,11 +154,11 @@ namespace ElectronNET.API.Entities
         internal string ReplyID { get; set; }
 
         /// <summary>
-        /// macOS only - The index of the action that was activated
+        /// macOS only - The index of the action that was activated.
         /// </summary>
         [JsonIgnore]
-        [SupportedOSPlatform("macOS")]
-        public Action<string> OnAction { get; set; }
+        [SupportedOSPlatform("macos")]
+        public Action<int> OnAction { get; set; }
 
         /// <summary>
         /// Gets or sets the action identifier.
@@ -158,6 +168,14 @@ namespace ElectronNET.API.Entities
         /// </value>
         [JsonInclude]
         internal string ActionID { get; set; }
+
+        /// <summary>
+        /// Windows only: Emitted when an error is encountered while creating and showing the native notification.
+        /// Corresponds to the 'failed' event on Notification.
+        /// </summary>
+        [JsonIgnore]
+        [SupportedOSPlatform("windows")]
+        public Action<string> OnFailed { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationOptions"/> class.

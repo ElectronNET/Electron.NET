@@ -10,6 +10,7 @@
     <Description>$(DescriptionFirstPart) This package contains the ElectronNET project system.</Description>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <IncludeSymbols>false</IncludeSymbols>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Include="PackageIcon.png" Pack="true" PackagePath="\" />

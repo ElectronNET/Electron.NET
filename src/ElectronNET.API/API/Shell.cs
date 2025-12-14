@@ -42,13 +42,9 @@ namespace ElectronNET.API
         /// <param name="fullPath">The full path to the directory / file.</param>
         public Task ShowItemInFolderAsync(string fullPath)
         {
-            var tcs = new TaskCompletionSource<object>();
-
-            // Is this really useful?
-            BridgeConnector.Socket.Once("shell-showItemInFolderCompleted", () => { });
             BridgeConnector.Socket.Emit("shell-showItemInFolder", fullPath);
 
-            return tcs.Task;
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -138,7 +134,7 @@ namespace ElectronNET.API
             var tcs = new TaskCompletionSource<bool>();
 
             BridgeConnector.Socket.Once<bool>("shell-writeShortcutLinkCompleted", tcs.SetResult);
-            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation.GetDescription(), options);
+            BridgeConnector.Socket.Emit("shell-writeShortcutLink", shortcutPath, operation, options);
 
             return tcs.Task;
         }

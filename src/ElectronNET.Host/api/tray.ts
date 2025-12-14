@@ -59,18 +59,19 @@ export = (socket: Socket) => {
         tray.value = new Tray(trayIcon);
 
         if (menuItems) {
-            const menu = Menu.buildFromTemplate(menuItems);
-
-            addMenuItemClickConnector(menu.items, (id) => {
-                electronSocket.emit('trayMenuItemClicked', id);
-            });
-            tray.value.setContextMenu(menu);
+            applyContextMenu(menuItems);
         }
     });
 
     socket.on('tray-destroy', () => {
         if (tray.value) {
             tray.value.destroy();
+        }
+    });
+
+    socket.on('set-contextMenu', (menuItems) => {
+        if (menuItems && tray.value) {
+            applyContextMenu(menuItems);
         }
     });
 
@@ -135,6 +136,14 @@ export = (socket: Socket) => {
             });
         }
     });
+
+    function applyContextMenu(menuItems) {
+        const menu = Menu.buildFromTemplate(menuItems);
+        addMenuItemClickConnector(menu.items, (id) => {
+            electronSocket.emit('trayMenuItemClicked', id);
+        });
+        tray.value.setContextMenu(menu);
+    }
 
     function addMenuItemClickConnector(menuItems, callback) {
         menuItems.forEach((item) => {

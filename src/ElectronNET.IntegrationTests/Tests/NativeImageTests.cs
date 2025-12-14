@@ -1,15 +1,20 @@
+using System.Drawing;
+using ElectronNET.API.Entities;
+using ElectronNET.IntegrationTests.Common;
 using System.Runtime.Versioning;
 using RectangleEntity = ElectronNET.API.Entities.Rectangle;
 
 namespace ElectronNET.IntegrationTests.Tests
 {
-    using System.Drawing;
-    using ElectronNET.API.Entities;
-
-    [SupportedOSPlatform("Windows")]
-    public class NativeImageTests
+    [Collection("ElectronCollection")]
+    [SupportedOSPlatform(Windows)]
+    public class NativeImageTests : IntegrationTestBase
     {
-        [SkippableFact(Timeout = 20000)]
+        public NativeImageTests(ElectronFixture fx) : base(fx)
+        {
+        }
+
+        [IntegrationFact]
         public async Task Create_from_bitmap_and_to_png()
         {
             using var bmp = new Bitmap(10, 10);
@@ -27,7 +32,7 @@ namespace ElectronNET.IntegrationTests.Tests
             png!.Length.Should().BeGreaterThan(0);
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Create_from_buffer_and_to_data_url()
         {
             // Prepare PNG bytes
@@ -46,7 +51,7 @@ namespace ElectronNET.IntegrationTests.Tests
             dataUrl!.StartsWith("data:image/", StringComparison.Ordinal).Should().BeTrue();
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Resize_and_crop_produce_expected_sizes()
         {
             using var bmp = new Bitmap(12, 10);
@@ -66,7 +71,7 @@ namespace ElectronNET.IntegrationTests.Tests
             csize.Height.Should().Be(3);
         }
 
-        [SkippableFact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Add_representation_for_scale_factor()
         {
             using var bmp = new Bitmap(5, 5);

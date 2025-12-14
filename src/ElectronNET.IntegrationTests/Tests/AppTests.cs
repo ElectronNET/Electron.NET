@@ -6,19 +6,16 @@ namespace ElectronNET.IntegrationTests.Tests
     using System.IO;
     using System.Runtime.Versioning;
     using System.Threading.Tasks;
+    using ElectronNET.IntegrationTests.Common;
 
     [Collection("ElectronCollection")]
-    public class AppTests
+    public class AppTests : IntegrationTestBase
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly ElectronFixture fx;
-
-        public AppTests(ElectronFixture fx)
+        public AppTests(ElectronFixture fx) : base(fx)
         {
-            this.fx = fx;
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_app_path()
         {
             var path = await Electron.App.GetAppPathAsync();
@@ -26,7 +23,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(path).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_version_and_locale()
         {
             var version = await Electron.App.GetVersionAsync();
@@ -35,7 +32,7 @@ namespace ElectronNET.IntegrationTests.Tests
             locale.Should().NotBeNullOrWhiteSpace();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_special_paths()
         {
             var userData = await Electron.App.GetPathAsync(PathName.UserData);
@@ -47,7 +44,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Directory.Exists(temp).Should().BeTrue();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_app_metrics()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
@@ -55,23 +52,23 @@ namespace ElectronNET.IntegrationTests.Tests
             metrics.Length.Should().BeGreaterThan(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task Can_get_gpu_feature_status()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();
             status.Should().NotBeNull();
         }
 
-        [SkippableFact(Timeout = 20000)]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [IntegrationFact]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Can_get_login_item_settings()
         {
             var settings = await Electron.App.GetLoginItemSettingsAsync();
             settings.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task CommandLine_append_and_query_switch()
         {
             var switchName = "integration-switch";
@@ -80,9 +77,9 @@ namespace ElectronNET.IntegrationTests.Tests
             (await Electron.App.CommandLine.GetSwitchValueAsync(switchName)).Should().Be("value123");
         }
 
-        [SkippableFact(Timeout = 20000)]
-        [SupportedOSPlatform("macOS")]
-        [SupportedOSPlatform("Windows")]
+        [IntegrationFact]
+        [SupportedOSPlatform(MacOS)]
+        [SupportedOSPlatform(Windows)]
         public async Task Accessibility_support_toggle()
         {
             Electron.App.SetAccessibilitySupportEnabled(true);
@@ -91,7 +88,7 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.SetAccessibilitySupportEnabled(false);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task UserAgentFallback_roundtrip()
         {
             var original = await Electron.App.UserAgentFallbackAsync;
@@ -101,9 +98,9 @@ namespace ElectronNET.IntegrationTests.Tests
             Electron.App.UserAgentFallback = original; // restore
         }
 
-        [SkippableFact(Timeout = 20000)]
-        [SupportedOSPlatform("Linux")]
-        [SupportedOSPlatform("macOS")]
+        [IntegrationFact]
+        [SupportedOSPlatform(Linux)]
+        [SupportedOSPlatform(MacOS)]
         public async Task BadgeCount_set_and_reset_where_supported()
         {
             await Electron.App.SetBadgeCountAsync(2);
@@ -113,14 +110,14 @@ namespace ElectronNET.IntegrationTests.Tests
             await Electron.App.SetBadgeCountAsync(0);
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task App_metrics_have_cpu_info()
         {
             var metrics = await Electron.App.GetAppMetricsAsync();
             metrics[0].Cpu.Should().NotBeNull();
         }
 
-        [Fact(Timeout = 20000)]
+        [IntegrationFact]
         public async Task App_gpu_feature_status_has_some_fields()
         {
             var status = await Electron.App.GetGpuFeatureStatusAsync();

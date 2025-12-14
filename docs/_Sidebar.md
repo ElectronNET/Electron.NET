@@ -9,6 +9,7 @@
 
 - [What's new?](Core/What's-New.md)
 - [Migration Guide](Core/Migration-Guide.md)
+- [Migration Checks](Core/Migration-Checks.md)
 - [Advanced Migration](Core/Advanced-Migration-Topics.md)
 
 # Getting Started

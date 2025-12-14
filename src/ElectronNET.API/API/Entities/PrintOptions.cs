@@ -3,15 +3,16 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// Print dpi
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class PrintDpi
     {
         /// <summary>
-        /// The horizontal dpi
+        /// Gets or sets the horizontal DPI.
         /// </summary>
         public float Horizontal { get; set; }
 
         /// <summary>
-        /// The vertical dpi
+        /// Gets or sets the vertical DPI.
         /// </summary>
         public float Vertical { get; set; }
     }
@@ -19,15 +20,16 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// The page range to print
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class PrintPageRange
     {
         /// <summary>
-        /// From
+        /// Gets or sets the starting page index (0-based).
         /// </summary>
         public int From { get; set; }
 
         /// <summary>
-        /// To
+        /// Gets or sets the ending page index (inclusive, 0-based).
         /// </summary>
         public int To { get; set; }
     }
@@ -35,72 +37,89 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// Print options
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class PrintOptions
     {
         /// <summary>
-        /// Don't ask user for print settings
+        /// Gets or sets a value indicating whether to suppress print settings prompts.
         /// </summary>
         public bool Silent { get; set; }
 
         /// <summary>
-        /// Prints the background color and image of the web page
+        /// Gets or sets a value indicating whether to print background graphics.
         /// </summary>
         public bool PrintBackground { get; set; }
 
         /// <summary>
-        /// Set the printer device name to use
+        /// Gets or sets the printer device name to use.
         /// </summary>
         public string DeviceName { get; set; }
 
         /// <summary>
-        /// Set whether the printed web page will be in color or grayscale
+        /// Gets or sets a value indicating whether the page will be printed in color.
         /// </summary>
         public bool Color { get; set; }
 
         /// <summary>
-        /// Specifies the type of margins to use. Uses 0 for default margin, 1 for no
-        /// margin, and 2 for minimum margin.
+        /// Gets or sets the margins for the print job. Use MarginType plus top/bottom/left/right for custom.
+        /// Units for margins with webContents.print are pixels (per MCP); for webContents.printToPDF, inches.
         /// </summary>
-        public int MarginsType { get; set; }
+        public Margins Margins { get; set; }
 
         /// <summary>
-        /// true for landscape, false for portrait.
+        /// Gets or sets a value indicating whether to print in landscape orientation.
         /// </summary>
         public bool Landscape { get; set; }
 
         /// <summary>
-        /// The scale factor of the web page
+        /// Gets or sets the scale factor of the web page.
         /// </summary>
         public float ScaleFactor { get; set; }
 
         /// <summary>
-        /// The number of pages to print per page sheet
+        /// Gets or sets the number of pages to print per sheet.
         /// </summary>
         public int PagesPerSheet { get; set; }
 
         /// <summary>
-        /// The number of copies of the web page to print
+        /// Gets or sets the number of copies to print.
         /// </summary>
-        public bool Copies { get; set; }
+        public int Copies { get; set; }
 
         /// <summary>
-        /// Whether the web page should be collated
+        /// Gets or sets a value indicating whether pages should be collated.
         /// </summary>
         public bool Collate { get; set; }
 
         /// <summary>
-        /// The page range to print
+        /// Gets or sets the page range(s) to print. On macOS, only one range is honored.
         /// </summary>
-        public PrintPageRange PageRanges { get; set; }
+        public PrintPageRange[] PageRanges { get; set; }
 
         /// <summary>
-        /// Set the duplex mode of the printed web page. Can be simplex, shortEdge, or longEdge.
+        /// Gets or sets the duplex mode of the printed web page. Can be simplex, shortEdge, or longEdge.
         /// </summary>
         public string DuplexMode { get; set; }
 
         /// <summary>
-        /// Dpi
+        /// Gets or sets the DPI settings for the print job.
         /// </summary>
         public PrintDpi Dpi { get; set; }
+
+        /// <summary>
+        /// Gets or sets the string to be printed as page header.
+        /// </summary>
+        public string Header { get; set; }
+
+        /// <summary>
+        /// Gets or sets the string to be printed as page footer.
+        /// </summary>
+        public string Footer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page size of the printed document. Can be A0–A6, Legal, Letter, Tabloid,
+        /// or an object. For webContents.print, custom sizes use microns (Chromium validates width_microns/height_microns).
+        /// </summary>
+        public PageSize PageSize { get; set; }
     }
 }

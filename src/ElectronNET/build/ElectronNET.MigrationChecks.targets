@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ElectronMigrationChecksDependsOn>
+      ElectronCheckNoPackageJson;
+      ElectronCheckNoManifestJson;
+      ElectronCheckElectronBuilderJson;
+      ElectronCheckNoParentPaths;
+      ElectronCheckPubxmlFiles
+    </ElectronMigrationChecksDependsOn>
+  </PropertyGroup>
+
+  <!-- Main migration checks target that runs before build -->
+  <Target Name="ElectronMigrationChecks"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="$(ElectronMigrationChecksDependsOn)"
+          Condition="'$(ElectronSkipMigrationChecks)' != 'true'">
+  </Target>
+
+  <!--
+    Check 1: No package.json must be present in the project (except ElectronHostHook folder)
+  -->
+  <Target Name="ElectronCheckNoPackageJson">
+
+    <!-- Find all package.json files, excluding ElectronHostHook folder and output directories -->
+    <ItemGroup>
+      <_InvalidPackageJson Include="$(MSBuildProjectDirectory)\**\package.json"
+                           Exclude="$(MSBuildProjectDirectory)\ElectronHostHook\**\package.json;
+                                    $(MSBuildProjectDirectory)\bin\**\package.json;
+                                    $(MSBuildProjectDirectory)\obj\**\package.json;
+                                    $(MSBuildProjectDirectory)\publish\**\package.json;
+                                    $(MSBuildProjectDirectory)\node_modules\**\package.json" />
+      <_InvalidPackageLockJson Include="$(MSBuildProjectDirectory)\**\package-lock.json"
+                               Exclude="$(MSBuildProjectDirectory)\ElectronHostHook\**\package-lock.json;
+                                        $(MSBuildProjectDirectory)\bin\**\package-lock.json;
+                                        $(MSBuildProjectDirectory)\obj\**\package-lock.json;
+                                        $(MSBuildProjectDirectory)\publish\**\package-lock.json;
+                                        $(MSBuildProjectDirectory)\node_modules\**\package-lock.json" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_HasInvalidPackageJson>false</_HasInvalidPackageJson>
+      <_HasInvalidPackageJson Condition="@(_InvalidPackageJson->Count()) > 0 OR @(_InvalidPackageLockJson->Count()) > 0">true</_HasInvalidPackageJson>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_HasInvalidPackageJson)' == 'true'"
+             Code="ELECTRON001"
+             Text="Found package.json or package-lock.json file(s) in the project root or subdirectories. These files are no longer supported in this location.
+
+Files found:
+@(_InvalidPackageJson, '%0A')@(_InvalidPackageLockJson, '%0A')
+
+MIGRATION REQUIRED:
+All properties from an existing package.json file must now be specified as MSBuild properties in the project file.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#1-packagejson-not-allowed
+
+EXCEPTION: package.json and package-lock.json files ARE allowed in the 'ElectronHostHook' folder for custom host hook implementations." />
+
+  </Target>
+
+  <!--
+    Check 2: No electron-manifest.json must be present in the project
+  -->
+  <Target Name="ElectronCheckNoManifestJson">
+
+    <ItemGroup>
+      <_InvalidManifestJson Include="$(MSBuildProjectDirectory)\**\electron.manifest.json;$(MSBuildProjectDirectory)\**\electron-manifest.json"
+                            Exclude="$(MSBuildProjectDirectory)\bin\**\*;
+                                     $(MSBuildProjectDirectory)\obj\**\*;
+                                     $(MSBuildProjectDirectory)\publish\**\*;
+                                     $(MSBuildProjectDirectory)\node_modules\**\*" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_HasInvalidManifestJson>false</_HasInvalidManifestJson>
+      <_HasInvalidManifestJson Condition="@(_InvalidManifestJson->Count()) > 0">true</_HasInvalidManifestJson>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_HasInvalidManifestJson)' == 'true'"
+             Code="ELECTRON002"
+             Text="Found electron-manifest.json file(s) in the project. This file format is no longer supported.
+
+Files found:
+@(_InvalidManifestJson, '%0A')
+
+MIGRATION REQUIRED:
+1. All properties from an existing electron-manifest.json file must now be specified as MSBuild properties in the project file.
+   For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#2-electron-manifestjson-not-allowed
+
+2. The subtree from the 'build' property must be moved to the electron-builder.json file inside the './Properties' folder.
+   For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#3-electron-builderjson-location" />
+
+  </Target>
+
+  <!--
+    Check 3: Single electron-builder.json must exist in ./Properties folder
+  -->
+  <Target Name="ElectronCheckElectronBuilderJson">
+
+    <!-- Check for electron-builder.json in the Properties folder -->
+    <ItemGroup>
+      <_ElectronBuilderJsonInProperties Include="$(MSBuildProjectDirectory)\Properties\electron-builder.json" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_HasElectronBuilderJsonInProperties>false</_HasElectronBuilderJsonInProperties>
+      <_HasElectronBuilderJsonInProperties Condition="Exists('$(MSBuildProjectDirectory)\Properties\electron-builder.json')">true</_HasElectronBuilderJsonInProperties>
+    </PropertyGroup>
+
+    <!-- Check for electron-builder.json in wrong locations -->
+    <ItemGroup>
+      <_ElectronBuilderJsonWrongLocation Include="$(MSBuildProjectDirectory)\**\electron-builder.json"
+                                          Exclude="$(MSBuildProjectDirectory)\Properties\electron-builder.json;
+                                                   $(MSBuildProjectDirectory)\bin\**\*;
+                                                   $(MSBuildProjectDirectory)\obj\**\*;
+                                                   $(MSBuildProjectDirectory)\publish\**\*;
+                                                   $(MSBuildProjectDirectory)\node_modules\**\*" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_HasElectronBuilderJsonWrongLocation>false</_HasElectronBuilderJsonWrongLocation>
+      <_HasElectronBuilderJsonWrongLocation Condition="@(_ElectronBuilderJsonWrongLocation->Count()) > 0">true</_HasElectronBuilderJsonWrongLocation>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_HasElectronBuilderJsonInProperties)' != 'true'"
+             Code="ELECTRON003"
+             Text="The project must contain an electron-builder.json file inside the './Properties' folder.
+
+Expected location: $(MSBuildProjectDirectory)\Properties\electron-builder.json
+
+REQUIRED ACTION:
+Create an electron-builder.json file in the Properties folder with your electron-builder configuration.
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#3-electron-builderjson-location" />
+
+    <Warning Condition="'$(_HasElectronBuilderJsonWrongLocation)' == 'true'"
+             Code="ELECTRON004"
+             Text="Found electron-builder.json file(s) in incorrect location(s). The file must be located only in the './Properties' folder.
+
+Files found in wrong locations:
+@(_ElectronBuilderJsonWrongLocation, '%0A')
+
+REQUIRED ACTION:
+Move the electron-builder.json file to: $(MSBuildProjectDirectory)\Properties\electron-builder.json" />
+
+  </Target>
+
+  <!--
+    Check 4: No parent-path references (..) in electron-builder.json
+  -->
+  <Target Name="ElectronCheckNoParentPaths"
+          Condition="Exists('$(MSBuildProjectDirectory)\Properties\electron-builder.json')">
+
+    <PropertyGroup>
+      <_ElectronBuilderJsonPath>$(MSBuildProjectDirectory)\Properties\electron-builder.json</_ElectronBuilderJsonPath>
+    </PropertyGroup>
+
+    <!-- Read the file content -->
+    <ReadLinesFromFile File="$(_ElectronBuilderJsonPath)">
+      <Output TaskParameter="Lines" ItemName="_ElectronBuilderJsonLines" />
+    </ReadLinesFromFile>
+
+    <!-- Check if any line contains parent path references -->
+    <PropertyGroup>
+      <_ElectronBuilderJsonContent>@(_ElectronBuilderJsonLines, ' ')</_ElectronBuilderJsonContent>
+      <_HasParentPathReference>false</_HasParentPathReference>
+      <_HasParentPathReference Condition="$(_ElectronBuilderJsonContent.Contains('../')) OR $(_ElectronBuilderJsonContent.Contains('..\\'))" >true</_HasParentPathReference>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_HasParentPathReference)' == 'true'"
+             Code="ELECTRON005"
+             Text="The electron-builder.json file contains parent-path references ('..').
+
+File: $(_ElectronBuilderJsonPath)
+
+MIGRATION REQUIRED:
+Parent-path references are not allowed in electron-builder.json because the file is copied to the build output directory during publishing.
+
+HOW TO FIX:
+1. Place any resource files (icons, installers, etc.) inside your project folder structure
+2. Configure those files to be copied to the output directory using the project file:
+   
+   &lt;ItemGroup&gt;
+     &lt;Content Include=&quot;Assets\**\*&quot;&gt;
+       &lt;CopyToOutputDirectory&gt;PreserveNewest&lt;/CopyToOutputDirectory&gt;
+     &lt;/Content&gt;
+   &lt;/ItemGroup&gt;
+
+3. Reference files using relative paths from the output directory (e.g., 'Assets/myicon.ico' instead of '../Assets/myicon.ico')
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#4-parent-paths-not-allowed-in-electron-builderjson" />
+
+  </Target>
+
+  <!--
+    Check 5: Pubxml files match the project type
+    
+    This check validates that publish profiles are appropriate for the project type:
+    - ASP.NET projects (using Microsoft.NET.Sdk.Web) have WebPublishMethod in their pubxml files
+    - Console/other projects PublishProtocol instead of WebPublishMethod
+  -->
+  <Target Name="ElectronCheckPubxmlFiles">
+
+    <!-- Find all pubxml files -->
+    <ItemGroup>
+      <_PubxmlFiles Include="$(MSBuildProjectDirectory)\Properties\PublishProfiles\*.pubxml" />
+    </ItemGroup>
+
+    <!-- Determine if this is an ASP.NET project (UsingMicrosoftNETSdkWeb is set by the Web SDK) -->
+    <PropertyGroup>
+      <_IsAspNetProject>false</_IsAspNetProject>
+      <_IsAspNetProject Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">true</_IsAspNetProject>
+      <_HasPubxmlFiles>false</_HasPubxmlFiles>
+      <_HasPubxmlFiles Condition="@(_PubxmlFiles->Count()) > 0">true</_HasPubxmlFiles>
+    </PropertyGroup>
+
+    <!-- Build a combined content string for each file and check (only if files exist) -->
+    <ItemGroup Condition="'$(_HasPubxmlFiles)' == 'true'">
+      <_PubxmlFileInfo Include="@(_PubxmlFiles)" Condition="'%(Identity)' != ''">
+        <FileContent>$([System.IO.File]::ReadAllText('%(Identity)'))</FileContent>
+      </_PubxmlFileInfo>
+    </ItemGroup>
+
+    <!-- Check each file for WebPublishMethod presence -->
+    <ItemGroup Condition="'$(_HasPubxmlFiles)' == 'true'">
+      <_PubxmlFileInfoWithFlags Include="@(_PubxmlFileInfo)" Condition="'%(Identity)' != ''">
+        <HasWebPublishMethod>$([System.Text.RegularExpressions.Regex]::IsMatch('%(FileContent)', '&lt;WebPublishMethod&gt;'))</HasWebPublishMethod>
+      </_PubxmlFileInfoWithFlags>
+    </ItemGroup>
+
+    <!-- For ASP.NET projects: find pubxml files MISSING WebPublishMethod -->
+    <ItemGroup>
+      <_AspNetMissingWebPublishMethod Include="@(_PubxmlFileInfoWithFlags)"
+                                       Condition="'$(_IsAspNetProject)' == 'true' AND '%(HasWebPublishMethod)' == 'False'" />
+    </ItemGroup>
+
+    <!-- For Console/Non-ASP.NET projects: find pubxml files that HAVE WebPublishMethod -->
+    <ItemGroup>
+      <_ConsolePubxmlWithAspNetProperties Include="@(_PubxmlFileInfoWithFlags)"
+                                           Condition="'$(_IsAspNetProject)' != 'true' AND '%(HasWebPublishMethod)' == 'True'" />
+    </ItemGroup>
+
+    <!-- Warning for ASP.NET projects with incorrect pubxml files -->
+    <Warning
+      Condition="'@(_AspNetMissingWebPublishMethod)' != ''"
+      Code="ELECTRON006"
+      Text="The publish profile '%(_AspNetMissingWebPublishMethod.Identity)' appears to be configured for a console application (missing WebPublishMethod property), but this is an ASP.NET project.
+
+RECOMMENDED ACTION:
+1. Delete the existing publish profiles
+2. Use the Visual Studio Publishing Wizard to create a new profile:
+   - Right-click on the project in Solution Explorer
+   - Select 'Publish...'
+   - Follow the wizard to create a Folder publish profile for ASP.NET
+
+Note: ASP.NET Electron.NET projects require publish profiles with WebPublishMethod set to FileSystem.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#5-publish-profile-validation" />
+
+    <!-- Warning for Console projects with incorrect pubxml files -->
+    <Warning
+      Condition="'@(_ConsolePubxmlWithAspNetProperties)' != ''"
+      Code="ELECTRON007"
+      Text="The publish profile '%(_ConsolePubxmlWithAspNetProperties.Identity)' appears to be configured for ASP.NET publishing (containing the WebPublishMethod property), but this is a console application project.
+
+RECOMMENDED ACTION:
+1. Delete the existing publish profiles
+2. Use the Visual Studio Publishing Wizard to create a new profile:
+   - Right-click on the project in Solution Explorer
+   - Select 'Publish...'
+   - Follow the wizard to create a Folder publish profile for console applications
+
+Note: Console Electron.NET projects should not use ASP.NET-style publish profiles.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#5-publish-profile-validation" />
+
+  </Target>
+
+</Project>

@@ -21,6 +21,12 @@
         /// </value>
         public string Html { get; set; }
 
+        /// <summary>
+        /// Gets or sets the image.
+        /// Maps to clipboard.write({ image: NativeImage }).
+        /// </summary>
+        public NativeImage Image { get; set; }
+
 
         /// <summary>
         /// Gets or sets the RTF.

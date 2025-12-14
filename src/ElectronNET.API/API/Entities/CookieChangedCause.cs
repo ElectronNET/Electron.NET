@@ -1,16 +1,15 @@
-using System.Text.Json.Serialization;
-
 namespace ElectronNET.API.Entities
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
-    /// The cause of the change
+    /// The cause of the cookie change (per Electron Cookies 'changed' event).
     /// </summary>
     public enum CookieChangedCause
     {
         /// <summary>
-        ///The cookie was changed directly by a consumer's action.
+        /// The cookie was changed directly by a consumer's action.
         /// </summary>
-        [JsonPropertyName("explicit")]
         @explicit,
 
         /// <summary>
@@ -19,17 +18,17 @@ namespace ElectronNET.API.Entities
         overwrite,
 
         /// <summary>
-        ///  The cookie was automatically removed as it expired.
+        /// The cookie was automatically removed as it expired.
         /// </summary>
         expired,
 
         /// <summary>
-        ///  The cookie was automatically evicted during garbage collection.
+        /// The cookie was automatically evicted during garbage collection.
         /// </summary>
         evicted,
 
         /// <summary>
-        ///   The cookie was overwritten with an already-expired expiration date.
+        /// The cookie was overwritten with an already-expired expiration date.
         /// </summary>
         [JsonPropertyName("expired_overwrite")]
         expiredOverwrite

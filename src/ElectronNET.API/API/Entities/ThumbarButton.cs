@@ -1,11 +1,14 @@
 using System;
 using System.Text.Json.Serialization;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// 
+    /// Thumbnail toolbar button for Windows taskbar.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
+    [SupportedOSPlatform("windows")]
     public class ThumbarButton
     {
         /// <summary>

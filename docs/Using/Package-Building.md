@@ -26,12 +26,15 @@ Add publish profiles to `Properties/PublishProfiles/`:
   <PropertyGroup>
     <Configuration>Release</Configuration>
     <Platform>Any CPU</Platform>
-    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-    <PublishProtocol>FileSystem</PublishProtocol>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 </Project>
 ```
@@ -46,12 +49,61 @@ Add publish profiles to `Properties/PublishProfiles/`:
   <PropertyGroup>
     <Configuration>Release</Configuration>
     <Platform>Any CPU</Platform>
-    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
-    <PublishProtocol>FileSystem</PublishProtocol>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+#### ASP.NET Application Profile (macOS Apple Silicon ARM64)
+
+**osx-arm64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+</Project>
+```
+
+#### ASP.NET Application Profile (macOS Intel x64)
+
+**osx-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <DeleteExistingFiles>true</DeleteExistingFiles>
+    <PublishProvider>FileSystem</PublishProvider>
+    <PublishUrl>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishUrl>
+    <WebPublishMethod>FileSystem</WebPublishMethod>
+    <_TargetId>Folder</_TargetId>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+    <ProjectGuid>48eff821-2f4d-60cc-aa44-be0f1d6e5f35</ProjectGuid>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
 </Project>
 ```
@@ -91,6 +143,46 @@ Add publish profiles to `Properties/PublishProfiles/`:
     <PublishProtocol>FileSystem</PublishProtocol>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+#### Console Application Profile (macOS Apple Silicon ARM64)
+
+**osx-arm64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+</Project>
+```
+
+#### Console Application Profile (macOS Intel x64)
+
+**osx-x64.pubxml:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <Configuration>Release</Configuration>
+    <Platform>Any CPU</Platform>
+    <PublishDir>publish\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</PublishDir>
+    <PublishProtocol>FileSystem</PublishProtocol>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>

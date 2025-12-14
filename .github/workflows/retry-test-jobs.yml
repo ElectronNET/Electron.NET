@@ -1,0 +1,50 @@
+name: Tests auto-rerun
+
+on:
+  workflow_run:
+    workflows: [ "PR Validation", "Build and Publish" ]
+    types: [ completed ]
+
+jobs:
+  rerun-failed-matrix-jobs-once:
+    if: >
+      ${{
+        github.event.workflow_run.conclusion == 'failure' &&
+        github.event.workflow_run.run_attempt == 1
+      }}
+    runs-on: ubuntu-24.04
+
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Decide whether to rerun (only if matrix jobs failed)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          echo "Inspecting jobs of workflow run $RUN_ID in $REPO"
+
+          jobs_json="$(gh api repos/$REPO/actions/runs/$RUN_ID/jobs)"
+
+          echo "Jobs and conclusions:"
+          echo "$jobs_json" | jq '.jobs[] | {name: .name, conclusion: .conclusion}'
+
+          failed_matrix_jobs=$(echo "$jobs_json" | jq '
+            [ .jobs[]
+              | select(.conclusion == "failure"
+                       and (.name | contains(" API-")))
+            ]
+            | length
+          ')
+
+          echo "Failed Integration Tests matrix jobs: $failed_matrix_jobs"
+
+          if [ "$failed_matrix_jobs" -gt 0 ]; then
+            echo "Detected failing Integration Tests jobs – re-running failed jobs for this run."
+            gh run rerun "$RUN_ID" --failed
+          else
+            echo "Only non-matrix jobs (like Test Results) failed – not auto-rerunning."
+          fi

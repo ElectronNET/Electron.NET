@@ -1,24 +1,19 @@
 ﻿namespace ElectronNET.API.Entities
 {
     /// <summary>
-    /// Controls the behavior of <see cref="App.Relaunch(RelaunchOptions)"/>.
+    /// Options for app.relaunch: optional args array and execPath.
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class RelaunchOptions
     {
         /// <summary>
-        /// Gets or sets the arguments.
+        /// Command-line arguments for the relaunched instance.
         /// </summary>
-        /// <value>
-        /// The arguments.
-        /// </value>
         public string[] Args { get; set; }
 
         /// <summary>
-        /// Gets or sets the execute path.
+        /// Executable path to relaunch instead of the current app.
         /// </summary>
-        /// <value>
-        /// The execute path.
-        /// </value>
         public string ExecPath { get; set; }
     }
 }

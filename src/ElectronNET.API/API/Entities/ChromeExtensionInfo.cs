@@ -3,6 +3,7 @@
     /// <summary>
     /// Provide metadata about the current loaded Chrome extension
     /// </summary>
+    /// <yremarks>Project-specific: no matching Electron structure found in MCP docs (electronjs).</yremarks>
     public class ChromeExtensionInfo
     {
         /// <summary>

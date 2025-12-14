@@ -1,33 +1,25 @@
-name: CI
+name: Build and Publish
 
-on: [push, pull_request]
+on: [push]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
+concurrency:
+  group: build-publish-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # linux:
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 10
+  Integration-Tests:
+    uses: ./.github/workflows/integration-tests.yml
+    name: '1'
 
-  #   steps:
-  #   - uses: actions/checkout@v4
-
-  #   - name: Setup dotnet
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: |
-  #         6.0.x
-  #         8.0.x
-  #         10.0.x
-
-  #   - name: Build
-  #     run: ./build.sh
-
-  windows:
+  Publish:
+    needs: [Integration-Tests]
     runs-on: windows-latest
     timeout-minutes: 10
+    name: '2 / Publish'
 
     steps:
     - uses: actions/checkout@v4

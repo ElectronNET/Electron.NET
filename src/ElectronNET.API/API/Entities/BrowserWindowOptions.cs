@@ -1,6 +1,7 @@
 using ElectronNET.Converter;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using System.Runtime.Versioning;
 
 namespace ElectronNET.API.Entities
 {
@@ -72,24 +73,32 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Whether window is movable. This is not implemented on Linux. Default is true.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool Movable { get; set; } = true;
 
         /// <summary>
         /// Whether window is minimizable. This is not implemented on Linux. Default is true.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool Minimizable { get; set; } = true;
 
         /// <summary>
         /// Whether window is maximizable. This is not implemented on Linux. Default is true.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool Maximizable { get; set; } = true;
 
         /// <summary>
         /// Whether window is closable. This is not implemented on Linux. Default is true.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool Closable { get; set; } = true;
 
@@ -115,14 +124,17 @@ namespace ElectronNET.API.Entities
 
         /// <summary>
         /// Whether the window can be put into fullscreen mode. On macOS, also whether the
-        /// maximize/zoom button should toggle full screen mode or maximize window.Default
-        /// is true.
+        /// maximize/zoom button should toggle full screen mode or maximize window. Default
+        /// is true (Electron default).
         /// </summary>
-        public bool Fullscreenable { get; set; }
+        [DefaultValue(true)]
+        public bool Fullscreenable { get; set; } = true; // FIX: previously defaulted to false in C#
 
         /// <summary>
         /// Whether to show the window in taskbar. Default is false.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         public bool SkipTaskbar { get; set; }
 
         /// <summary>
@@ -141,8 +153,7 @@ namespace ElectronNET.API.Entities
         public string Title { get; set; } = "Electron.NET";
 
         /// <summary>
-        /// The window icon. On Windows it is recommended to use ICO icons to get best
-        /// visual effects, you can also leave it undefined so the executable's icon will be used.
+        /// The window icon. Can be a NativeImage or a string path. On Windows it is recommended to use ICO icons; when undefined, the executable's icon will be used.
         /// </summary>
         public string Icon { get; set; }
 
@@ -153,7 +164,7 @@ namespace ElectronNET.API.Entities
         public bool Show { get; set; } = true;
 
         /// <summary>
-        /// Specify false to create a . Default is true.
+        /// Specify false to create a frameless window. Default is true.
         /// </summary>
         [DefaultValue(true)]
         public bool Frame { get; set; } = true;
@@ -168,6 +179,7 @@ namespace ElectronNET.API.Entities
         /// Whether the web view accepts a single mouse-down event that simultaneously
         /// activates the window.Default is false.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool AcceptFirstMouse { get; set; }
 
         /// <summary>
@@ -178,28 +190,35 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Auto hide the menu bar unless the Alt key is pressed. Default is false.
         /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("linux")]
         public bool AutoHideMenuBar { get; set; }
 
         /// <summary>
         /// Enable the window to be resized larger than screen. Default is false.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool EnableLargerThanScreen { get; set; }
 
         /// <summary>
-        /// Window's background color as Hexadecimal value, like #66CD00 or #FFF or
-        /// #80FFFFFF (alpha is supported). Default is #FFF (white).
+        /// The window's background color in Hex, RGB, RGBA, HSL, HSLA or named CSS color format. Alpha in #AARRGGBB format is supported if transparent is set to true. Default is #FFF (white).
         /// </summary>
         public string BackgroundColor { get; set; }
 
         /// <summary>
-        /// Whether window should have a shadow. This is only implemented on macOS. Default
-        /// is true.
+        /// Initial opacity of the window, between 0.0 (fully transparent) and 1.0 (fully opaque). Only implemented on Windows and macOS.
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("macos")]
+        public double? Opacity { get; set; }
+
+        /// <summary>
+        /// Whether window should have a shadow. Default is true.
         /// </summary>
         public bool HasShadow { get; set; }
 
         /// <summary>
-        /// Forces using dark theme for the window, only works on some GTK+3 desktop
-        /// environments.Default is false.
+        /// Forces using dark theme for the window, only works on some GTK+3 desktop environments. Default is false.
         /// </summary>
         public bool DarkTheme { get; set; }
 
@@ -220,6 +239,12 @@ namespace ElectronNET.API.Entities
         public TitleBarStyle TitleBarStyle { get; set; }
 
         /// <summary>
+        /// Set a custom position for the traffic light buttons in frameless windows (macOS).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public Point TrafficLightPosition { get; set; }
+
+        /// <summary>
         /// Configures the window's title bar overlay when using a frameless window.
         /// Can be either:
         /// - false: No title bar overlay.
@@ -232,9 +257,9 @@ namespace ElectronNET.API.Entities
         public TitleBarOverlay TitleBarOverlay { get; set; }
 
         /// <summary>
-        /// Shows the title in the tile bar in full screen mode on macOS for all
-        /// titleBarStyle options.Default is false.
+        /// Shows the title in the title bar in full screen mode on macOS for all titleBarStyle options. Default is false.
         /// </summary>
+        /// <remarks>Not documented by MCP base-window-options / browser-window-options.</remarks>
         public bool FullscreenWindowTitle { get; set; }
 
         /// <summary>
@@ -242,6 +267,7 @@ namespace ElectronNET.API.Entities
         /// window frame.Setting it to false will remove window shadow and window
         /// animations. Default is true.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool ThickFrame { get; set; } = true;
 
@@ -251,14 +277,17 @@ namespace ElectronNET.API.Entities
         /// Windows versions older than Windows 11 Build 22000 this property has no effect, and
         /// frameless windows will not have rounded corners.
         /// </summary>
+        [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("windows")]
         [DefaultValue(true)]
         public bool RoundedCorners { get; set; } = true;
 
         /// <summary>
         /// Add a type of vibrancy effect to the window, only on macOS. Can be
-        /// appearance-based, light, dark, titlebar, selection, menu, popover, sidebar,
-        /// medium-light or ultra-dark.
+        /// appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet,
+        /// window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public Vibrancy Vibrancy { get; set; }
 
         /// <summary>
@@ -268,6 +297,7 @@ namespace ElectronNET.API.Entities
         /// it to zoom to the width of the screen.This will also affect the behavior when
         /// calling maximize() directly.Default is false.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public bool ZoomToPageWidth { get; set; }
 
         /// <summary>
@@ -276,6 +306,7 @@ namespace ElectronNET.API.Entities
         /// adds a native new tab button to your window's tab bar and allows your app and
         /// window to receive the new-window-for-tab event.
         /// </summary>
+        [SupportedOSPlatform("macos")]
         public string TabbingIdentifier { get; set; }
 
         /// <summary>
@@ -287,12 +318,39 @@ namespace ElectronNET.API.Entities
         /// A proxy to set on creation in the format host:port.
         /// The proxy can be alternatively set using the BrowserWindow.WebContents.SetProxyAsync function.
         /// </summary>
+        /// <remarks>Not documented by MCP base-window-options / browser-window-options.</remarks>
         public string Proxy { get; set; }
 
         /// <summary>
         /// The credentials of the Proxy in the format username:password.
         /// These will only be used if the Proxy field is also set.
         /// </summary>
+        /// <remarks>Not documented by MCP base-window-options / browser-window-options.</remarks>
         public string ProxyCredentials { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to use pre-Lion fullscreen on macOS. Default is false.
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public bool SimpleFullscreen { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the window should be hidden when the user toggles into mission control (macOS).
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public bool HiddenInMissionControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets how the material appearance should reflect window activity state on macOS. Must be used with the vibrancy property.
+        /// Possible values: 'followWindow' (default), 'active', 'inactive'.
+        /// </summary>
+        [SupportedOSPlatform("macos")]
+        public string VisualEffectState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the system-drawn background material on Windows. Can be 'auto', 'none', 'mica', 'acrylic' or 'tabbed'.
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        public string BackgroundMaterial { get; set; }
     }
 }

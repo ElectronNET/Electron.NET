@@ -40,7 +40,7 @@ public class ModifierTypeListConverter : JsonConverter<List<ModifierType>>
         writer.WriteStartArray();
         foreach (var modifier in value)
         {
-            writer.WriteStringValue(modifier.ToString());
+            writer.WriteStringValue(modifier.ToString().ToLowerInvariant());
         }
 
         writer.WriteEndArray();

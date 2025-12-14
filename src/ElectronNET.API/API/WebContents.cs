@@ -1,6 +1,7 @@
-using ElectronNET.API.Entities;
 using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Entities;
+using ElectronNET.Common;
 
 // ReSharper disable InconsistentNaming
 
@@ -123,7 +124,7 @@ public class WebContents : ApiBase
     /// </summary>
     public void OpenDevTools()
     {
-        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id);
+        BridgeConnector.Socket.Emit("webContents-openDevTools", Id);
     }
 
     /// <summary>
@@ -132,14 +133,48 @@ public class WebContents : ApiBase
     /// <param name="openDevToolsOptions"></param>
     public void OpenDevTools(OpenDevToolsOptions openDevToolsOptions)
     {
-        BridgeConnector.Socket.Emit("webContentsOpenDevTools", Id, openDevToolsOptions);
+        BridgeConnector.Socket.Emit("webContents-openDevTools", Id, openDevToolsOptions);
+    }
+
+    /// <summary>
+    /// Toggles the devtools.
+    /// </summary>
+    public void ToggleDevTools()
+    {
+        BridgeConnector.Socket.Emit("webContents-toggleDevTools", Id);
+    }
+
+    /// <summary>
+    /// Closes the devtools.
+    /// </summary>
+    public void CloseDevTools()
+    {
+        BridgeConnector.Socket.Emit("webContents-closeDevTools", Id);
+    }
+
+    /// <summary>
+    /// Returns boolean - Whether the devtools is opened.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsDevToolsOpened()
+    {
+        return Task.Run(() => InvokeAsync<bool>()).Result;
+    }
+
+    /// <summary>
+    /// Returns boolean - Whether the devtools view is focused.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsDevToolsFocused()
+    {
+        return Task.Run(() => InvokeAsync<bool>()).Result;
     }
 
     /// <summary>
     /// Get system printers.
     /// </summary>
     /// <returns>printers</returns>
-    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsync<PrinterInfo[]>();
+    public Task<PrinterInfo[]> GetPrintersAsync() => this.InvokeAsyncWithTimeout<PrinterInfo[]>(8.seconds());
 
     /// <summary>
     /// Prints window's web page.
@@ -254,12 +289,12 @@ public class WebContents : ApiBase
     /// <param name="options"></param>
     public Task LoadURLAsync(string url, LoadURLOptions options)
     {
-        var tcs = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource();
 
         BridgeConnector.Socket.Once("webContents-loadURL-complete" + Id, () =>
         {
             BridgeConnector.Socket.Off("webContents-loadURL-error" + Id);
-            tcs.SetResult(null);
+            tcs.SetResult();
         });
 
         BridgeConnector.Socket.Once<string>("webContents-loadURL-error" + Id, (error) => { tcs.SetException(new InvalidOperationException(error)); });
@@ -279,5 +314,89 @@ public class WebContents : ApiBase
     public void InsertCSS(bool isBrowserWindow, string path)
     {
         BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
+    }
+
+    /// <summary>
+    /// Returns number - The current zoom factor.
+    /// </summary>
+    /// <returns></returns>
+    public Task<double> GetZoomFactorAsync() => InvokeAsync<double>();
+
+    /// <summary>
+    /// Changes the zoom factor to the specified factor.
+    /// Zoom factor is zoom percent divided by 100, so 300% = 3.0.
+    /// The factor must be greater than 0.0.
+    /// </summary>
+    /// <param name="factor"></param>
+    public void SetZoomFactor(double factor)
+    {
+        BridgeConnector.Socket.Emit("webContents-setZoomFactor", Id, factor);
+    }
+
+    /// <summary>
+    /// Returns number - The current zoom level.
+    /// </summary>
+    /// <returns></returns>
+    public Task<int> GetZoomLevelAsync() => InvokeAsync<int>();
+
+    /// <summary>
+    /// Changes the zoom level to the specified level.
+    /// The original size is 0 and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of original size, respectively.
+    /// </summary>
+    /// <param name="level"></param>
+    public void SetZoomLevel(int level)
+    {
+        BridgeConnector.Socket.Emit("webContents-setZoomLevel", Id, level);
+    }
+
+    /// <summary>
+    /// Sets the maximum and minimum pinch-to-zoom level.
+    /// </summary>
+    /// <param name="minimumLevel"></param>
+    /// <param name="maximumLevel"></param>
+    public Task SetVisualZoomLevelLimitsAsync(int minimumLevel, int maximumLevel)
+    {
+        var tcs = new TaskCompletionSource();
+
+        BridgeConnector.Socket.Once("webContents-setVisualZoomLevelLimits-completed", tcs.SetResult);
+        BridgeConnector.Socket.Emit("webContents-setVisualZoomLevelLimits", Id, minimumLevel, maximumLevel);
+
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Returns boolean - Whether this page has been muted.
+    /// </summary>
+    /// <returns></returns>
+    public Task<bool> IsAudioMutedAsync() => InvokeAsync<bool>();
+
+    /// <summary>
+    /// Returns boolean - Whether audio is currently playing.
+    /// </summary>
+    /// <returns></returns>
+    public Task<bool> IsCurrentlyAudibleAsync() => InvokeAsync<bool>();
+
+    /// <summary>
+    /// Mute the audio on the current web page.
+    /// </summary>
+    /// <param name="muted"></param>
+    public void SetAudioMuted(bool muted)
+    {
+        BridgeConnector.Socket.Emit("webContents-setAudioMuted", Id, muted);
+    }
+
+    /// <summary>
+    /// Returns string - The user agent for this web page.
+    /// </summary>
+    /// <returns></returns>
+    public Task<string> GetUserAgentAsync() => InvokeAsyncWithTimeout<string>(3.seconds());
+
+    /// <summary>
+    /// Overrides the user agent for this web page.
+    /// </summary>
+    /// <param name="userAgent"></param>
+    public void SetUserAgent(string userAgent)
+    {
+        BridgeConnector.Socket.Emit("webContents-setUserAgent", Id, userAgent);
     }
 }

@@ -54,7 +54,7 @@ Add the Electron.NET configuration to your `.csproj` file:
 </PropertyGroup>
 
 <ItemGroup>
-  <PackageReference Include="ElectronNET.Core" Version="0.2.0" />
+  <PackageReference Include="ElectronNET.Core" Version="0.3.0" />
 </ItemGroup>
 ```
 

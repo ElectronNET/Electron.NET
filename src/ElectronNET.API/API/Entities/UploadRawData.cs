@@ -3,15 +3,16 @@
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class UploadRawData : IPostData
     {
         /// <summary>
-        /// The data is available as a Buffer, in the rawData field.
+        /// Gets the type discriminator; constant 'rawData'.
         /// </summary>
         public string Type { get; } = "rawData";
 
         /// <summary>
-        /// The raw bytes of the post data in a Buffer.
+        /// Gets or sets the data to be uploaded as raw bytes (Electron Buffer).
         /// </summary>
         public byte[] Bytes { get; set; }
     }

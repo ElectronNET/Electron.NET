@@ -5,6 +5,7 @@ namespace ElectronNET.API.Entities
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>Up-to-date with Electron API 39.2</remarks>
     public class AutoResizeOptions
     {
         /// <summary>

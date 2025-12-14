@@ -1,5 +1,7 @@
 ﻿namespace ElectronNET.API.Entities
 {
+    using System.Runtime.Versioning;
+
     /// <summary>
     /// 
     /// </summary>
@@ -28,21 +30,31 @@
         /// <summary>
         /// The create directory
         /// </summary>
+        [SupportedOSPlatform("macos")]
         createDirectory,
 
         /// <summary>
         /// The prompt to create
         /// </summary>
+        [SupportedOSPlatform("windows")]
         promptToCreate,
 
         /// <summary>
         /// The no resolve aliases
         /// </summary>
+        [SupportedOSPlatform("macos")]
         noResolveAliases,
 
         /// <summary>
         /// The treat package as directory
         /// </summary>
-        treatPackageAsDirectory
+        [SupportedOSPlatform("macos")]
+        treatPackageAsDirectory,
+
+        /// <summary>
+        /// Do not add the item being opened to the recent documents list (Windows).
+        /// </summary>
+        [SupportedOSPlatform("windows")]
+        dontAddToRecent
     }
 }

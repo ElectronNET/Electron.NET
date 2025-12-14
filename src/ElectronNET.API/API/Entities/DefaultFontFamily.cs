@@ -34,5 +34,10 @@
         /// Defaults to Impact.
         /// </summary>
         public string Fantasy { get; set; }
+
+        /// <summary>
+        /// Defaults to Latin Modern Math.
+        /// </summary>
+        public string Math { get; set; }
     }
 }
