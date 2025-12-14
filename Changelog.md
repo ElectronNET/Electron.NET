@@ -6,6 +6,7 @@
 - Updated all model classes to Electron API 39.2 (#949) @softworkz
 - Fixed output path for `electron-builder` (#942) @softworkz
 - Fixed floating point display resolution (#944) @softworkz
+- Fixed error in case of missing electron-host-hook (#978)
 - Fixed previous API break using exposed `JsonElement` objects (#938) @softworkz
 - Fixed and improved several test cases (#962) @softworkz
 - Fixed startup of Electron.NET from VS Code Debug Adapter (#952)
