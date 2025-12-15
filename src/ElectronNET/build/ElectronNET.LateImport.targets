@@ -380,6 +380,23 @@
 
     <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
 
+    <!-- Fix up incorrect symlinks created by npm on Windows when targeting macOS -->
+    <PropertyGroup>
+      <_ElectronFrameworksDir>$(ElectronOutDir)node_modules\electron\dist\Electron.app\Contents\Frameworks</_ElectronFrameworksDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Electron Framework.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Mantle.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\ReactiveObjC.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Squirrel.framework" />
+    </ItemGroup>
+
+    <!-- Only execute on Windows host when targeting macOS -->
+    <Message Importance="High" Text="Fixing macOS framework Resources symlinks" Condition="'$(ElectronPlatform)' == 'mac' AND '$(_CurrentOSPlatform)' == 'win'" />
+
+    <Exec Command="cmd /c del Resources &amp;&amp; mklink /D Resources &quot;Versions\Current\Resources&quot;" WorkingDirectory="%(_ElectronFrameworkDirs.Identity)" Condition="'$(ElectronPlatform)' == 'mac' AND '$(_CurrentOSPlatform)' == 'win'" />
+
   </Target>
 
   <Target Name="BeforePublishElectronApp" BeforeTargets="PrepareForPublish">
