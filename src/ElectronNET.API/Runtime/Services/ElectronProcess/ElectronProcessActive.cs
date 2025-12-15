@@ -5,8 +5,11 @@
     using System;
     using System.ComponentModel;
     using System.IO;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using ElectronNET.Common;
+    using ElectronNET.Runtime.Data;
 
     /// <summary>
     /// Launches and manages the Electron app process.
@@ -33,7 +36,7 @@
             this.socketPort = socketPort;
         }
 
-        protected override Task StartCore()
+        protected override async Task StartCore()
         {
             var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
             string startCmd, args, workingDir;
@@ -41,6 +44,32 @@
             if (this.isUnpackaged)
             {
                 var electrondir = Path.Combine(dir.FullName, ".electron");
+
+                ProcessRunner chmodRunner = null;
+
+                try
+                {
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        var distFolder = Path.Combine(electrondir, "node_modules", "electron", "dist");
+
+                        chmodRunner = new ProcessRunner("ElectronRunner-Chmod");
+                        chmodRunner.Run("chmod", "-R +x " + distFolder, electrondir);
+                        await chmodRunner.WaitForExitAsync().ConfigureAwait(true);
+
+                        if (chmodRunner.LastExitCode != 0)
+                        {
+                            throw new Exception("Failed to set executable permissions on Electron dist folder.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine("[StartCore]: Exception: " + chmodRunner?.StandardError);
+                    Console.Error.WriteLine("[StartCore]: Exception: " + chmodRunner?.StandardOutput);
+                    Console.Error.WriteLine("[StartCore]: Exception: " + ex);
+                }
+
                 startCmd = Path.Combine(electrondir, "node_modules", "electron", "dist", "electron");
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -53,7 +82,7 @@
             }
             else
             {
-                dir = dir.Parent?.Parent;
+                dir = dir.Parent!.Parent!;
                 startCmd = Path.Combine(dir.FullName, this.electronBinaryName);
                 args = $"-dotnetpacked -electronforcedport={this.socketPort:D} " + this.extraArguments;
                 workingDir = dir.FullName;
