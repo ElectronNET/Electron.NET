@@ -1,7 +1,5 @@
 ﻿namespace ElectronNET.Runtime.Services.ElectronProcess
 {
-    using ElectronNET.Common;
-    using ElectronNET.Runtime.Data;
     using System;
     using System.ComponentModel;
     using System.IO;
@@ -43,6 +41,8 @@
 
             if (this.isUnpackaged)
             {
+                this.CheckRuntimeIdentifier();
+
                 var electrondir = Path.Combine(dir.FullName, ".electron");
 
                 ProcessRunner chmodRunner = null;
@@ -88,11 +88,65 @@
                 workingDir = dir.FullName;
             }
 
-
             // We don't await this in order to let the state transition to "Starting"
             Task.Run(async () => await this.StartInternal(startCmd, args, workingDir).ConfigureAwait(false));
+        }
 
-            return Task.CompletedTask;
+        private void CheckRuntimeIdentifier()
+        {
+            var buildInfoRid = ElectronNetRuntime.BuildInfo.RuntimeIdentifier;
+            if (string.IsNullOrEmpty(buildInfoRid))
+            {
+                return;
+            }
+
+            var osPart = buildInfoRid.Split('-').First();
+
+            var mismatch = false;
+
+            switch (osPart)
+            {
+                case "win":
+
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        mismatch = true;
+                    }
+
+                    break;
+
+                case "linux":
+
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        mismatch = true;
+                    }
+
+                    break;
+
+                case "osx":
+
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        mismatch = true;
+                    }
+
+                    break;
+
+                case "freebsd":
+
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+                    {
+                        mismatch = true;
+                    }
+
+                    break;
+            }
+
+            if (mismatch)
+            {
+                throw new PlatformNotSupportedException($"This Electron.NET application was built for '{buildInfoRid}'. It cannot run on this platform.");
+            }
         }
 
         protected override Task StopCore()
