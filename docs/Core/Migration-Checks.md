@@ -41,7 +41,7 @@ A `package.json` file **is allowed** in the `ElectronHostHook` folder if you're 
 
 ```xml
 <PropertyGroup Label="ElectronNetCommon">
-  <PackageId>my-electron-app</PackageId>
+  <ElectronPackageId>my-electron-app</ElectronPackageId>
   <Title>My Electron App</Title>
   <Version>1.0.0</Version>
   <Description>My awesome Electron.NET application</Description>

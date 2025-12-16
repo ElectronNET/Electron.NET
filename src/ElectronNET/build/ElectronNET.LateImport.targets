@@ -124,7 +124,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <TemplateProperty Include="PackageId" Value="$(PackageId)" />
+      <TemplateProperty Include="ElectronPackageId" Value="$(ElectronPackageId)" />
       <TemplateProperty Include="Title" Value="$(Title)" />
       <TemplateProperty Include="ElectronTitle" Value="$(ElectronTitle)" />
       <TemplateProperty Include="Version" Value="$(Version)" />
@@ -452,7 +452,7 @@
 
     <PropertyGroup>
       <ElectronPaParams></ElectronPaParams>
-      <ElectronPaParams Condition="'$(PackageId)' != ''">$(ElectronPaParams) -c.appId &quot;$(PackageId)&quot;</ElectronPaParams>
+      <ElectronPaParams Condition="'$(ElectronPackageId)' != ''">$(ElectronPaParams) -c.appId &quot;$(ElectronPackageId)&quot;</ElectronPaParams>
       <ElectronPaParams Condition="'$(Version)' != ''">$(ElectronPaParams) -c.buildVersion &quot;$(Version)&quot;</ElectronPaParams>
       <ElectronPaParams Condition="'$(Copyright)' != ''">$(ElectronPaParams) -c.copyright &quot;$(Copyright)&quot;</ElectronPaParams>
       <ElectronPaParams>$(ElectronPaParams) -c.extraResources &quot;bin/**/*&quot;</ElectronPaParams>

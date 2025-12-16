@@ -9,7 +9,7 @@
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
     <PackageIcon></PackageIcon>
-    <PackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</PackageId>
+    <ElectronPackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
     <ElectronBuilderJson>electron-builder.json</ElectronBuilderJson>
     <Title>$(MSBuildProjectName)</Title>
   </PropertyGroup>
