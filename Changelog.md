@@ -1,3 +1,9 @@
+# 0.3.1
+
+## ElectronNET.Core
+
+- Fixed issue transforming the project ID (#989, #990) @softworkz
+
 # 0.3.0
 
 ## ElectronNET.Core

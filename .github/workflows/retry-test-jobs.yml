@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "Inspecting jobs of workflow run $RUN_ID in $REPO"
 
-          jobs_json="$(gh api repos/$REPO/actions/runs/$RUN_ID/jobs)"
+          jobs_json="$(gh api -R $REPO repos/$REPO/actions/runs/$RUN_ID/jobs)"
 
           echo "Jobs and conclusions:"
           echo "$jobs_json" | jq '.jobs[] | {name: .name, conclusion: .conclusion}'
@@ -44,7 +44,7 @@ jobs:
 
           if [ "$failed_matrix_jobs" -gt 0 ]; then
             echo "Detected failing Integration Tests jobs – re-running failed jobs for this run."
-            gh run rerun "$RUN_ID" --failed
+            gh run rerun -R $REPO "$RUN_ID" --failed
           else
             echo "Only non-matrix jobs (like Test Results) failed – not auto-rerunning."
           fi

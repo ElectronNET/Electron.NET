@@ -25,7 +25,7 @@ These are the current default values when you don't make any changes:
     <ElectronSingleInstance>true</ElectronSingleInstance>
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
-    <PackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</PackageId>
+    <ElectronPackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
     <ElectronBuilderJson>electron-builder.json</ElectronBuilderJson>
     <Title>$(MSBuildProjectName)</Title>
 </PropertyGroup>
@@ -38,15 +38,15 @@ Since electron builder still expects a `package.json` file to exist, ElectronNET
 
 ```json
 {
-  "name": "$(PackageId)",
+  "name": "$(ElectronPackageId)",
   "productName": "$(ElectronTitle)",
   "build": {
-    "appId": "$(PackageId)",
+    "appId": "$(ElectronPackageId)",
     "linux": {
       "desktop": {
         "entry": { "Name": "$(Title)" }
       },
-      "executableName": "$(PackageId)"
+      "executableName": "$(ElectronPackageId)"
     },
     "deb": {
       "desktop": {

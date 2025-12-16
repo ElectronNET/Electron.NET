@@ -479,7 +479,7 @@
                   Description="The version of the app, following the major.minor.patch pattern. Version numbers may include a pre-release suffix."
                   Category="AppInfo" />
 
-  <StringProperty Name="PackageId"
+  <StringProperty Name="ElectronPackageId"
                   DisplayName="App Identifier"
                   Category="AppInfo">
   </StringProperty>
