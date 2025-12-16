@@ -1,13 +1,13 @@
 {
-  "name": "$(PackageId)",
+  "name": "$(ElectronPackageId)",
   "productName": "$(ElectronTitle)",
   "build": {
-    "appId": "$(PackageId)",
+    "appId": "$(ElectronPackageId)",
     "linux": {
       "desktop": {
         "entry": { "Name": "$(Title)" }
       },
-      "executableName": "$(PackageId)"
+      "executableName": "$(ElectronPackageId)"
     },
     "deb": {
       "desktop": {
