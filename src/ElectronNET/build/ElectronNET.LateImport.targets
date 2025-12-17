@@ -297,12 +297,58 @@
     <RemoveDir Directories="$(ElectronHookTargetModuleDir)" Condition="Exists($(ElectronHookTargetModuleDir))" />
   </Target>
 
+  <Target Name="ElectronCheckVersionMismatch">
+
+    <PropertyGroup>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
+
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86' OR '$(RuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm' OR '$(RuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
+      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
+     
+      <!-- npm uses different OS names than Electron -->
+      <NpmOs Condition="'$(ElectronPlatform)' == 'win'">win32</NpmOs>
+      <NpmOs Condition="'$(ElectronPlatform)' == 'linux'">linux</NpmOs>
+      <NpmOs Condition="'$(ElectronPlatform)' == 'mac'">darwin</NpmOs>
+
+      <!-- npm CPU is same as ElectronArch except for linux-arm -->
+      <NpmCpu>$(ElectronArch)</NpmCpu>
+      <NpmCpu Condition="'$(RuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
+     
+      <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Windows'))">win</_CurrentOSPlatform>
+      <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux</_CurrentOSPlatform>
+      <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('OSX'))">mac</_CurrentOSPlatform>
+    </PropertyGroup>
+
+    <!-- Validate that the target platform matches the current OS -->
+    <PropertyGroup>
+      <IsLinuxWsl>false</IsLinuxWsl>
+      <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND '$(_CurrentOSPlatform)' == 'win'">true</IsLinuxWsl>
+
+      <_IsCrossCompileAllowed>false</_IsCrossCompileAllowed>
+      <!-- Allow Linux builds on Windows via WSL -->
+      <_IsCrossCompileAllowed Condition="'$(_CurrentOSPlatform)' == 'win' AND '$(ElectronPlatform)' == 'linux' AND '$(IsLinuxWsl)' == 'true'">true</_IsCrossCompileAllowed>
+
+      <_IsPlatformMismatch>false</_IsPlatformMismatch>
+      <_IsPlatformMismatch Condition="'$(_CurrentOSPlatform)' != '$(ElectronPlatform)' AND '$(_IsCrossCompileAllowed)' != 'true'">true</_IsPlatformMismatch>
+
+    </PropertyGroup>
+
+  </Target>
+
 
   <Target Name="ElectronConfigureApp"
           Inputs="@(ElectronPackageJsonFiles)"
           Outputs="@(ElectronPackageJsonFiles->'$(OutDir)%(TargetPath)')"
           AfterTargets="CopyFilesToOutputDirectory"
-          DependsOnTargets="ElectronResetHostHook"
+          DependsOnTargets="ElectronResetHostHook;ElectronCheckVersionMismatch"
           >
 
     <Copy SourceFiles="@(ElectronPackageJsonFiles)" DestinationFiles="@(ElectronPackageJsonFiles->'$(OutDir)%(TargetPath)')" >
@@ -316,10 +362,9 @@
 
     <PropertyGroup>
       <ElectronOutputPath>$([System.IO.Path]::GetFullPath('$(ElectronOutDir)'))</ElectronOutputPath>
-      <LinuxPrefix>linux</LinuxPrefix>
-      <IsLinuxWsl>false</IsLinuxWsl>
-      <IsLinuxWsl Condition="'$(RuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
       <_NpmCmd>npm install --no-bin-links</_NpmCmd>
+      <!-- Add cross-platform parameters when there's a platform mismatch (for remote debugging preparation) -->
+      <_NpmCmd Condition="'$(_IsPlatformMismatch)' == 'true'">$(_NpmCmd) --os=$(NpmOs) --cpu=$(NpmCpu) --arch=$(NpmCpu) --platform=$(NpmOs)</_NpmCmd>
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
@@ -334,6 +379,23 @@
     <!--<Exec Command="powershell -Command &quot;Start-Sleep -Seconds 10&quot;" />-->
 
     <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+    <!-- Fix up incorrect symlinks created by npm on Windows when targeting macOS -->
+    <PropertyGroup>
+      <_ElectronFrameworksDir>$(ElectronOutDir)node_modules\electron\dist\Electron.app\Contents\Frameworks</_ElectronFrameworksDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Electron Framework.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Mantle.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\ReactiveObjC.framework" />
+      <_ElectronFrameworkDirs Include="$(_ElectronFrameworksDir)\Squirrel.framework" />
+    </ItemGroup>
+
+    <!-- Only execute on Windows host when targeting macOS -->
+    <Message Importance="High" Text="Fixing macOS framework Resources symlinks" Condition="'$(ElectronPlatform)' == 'mac' AND '$(_CurrentOSPlatform)' == 'win'" />
+
+    <Exec Command="cmd /c del Resources &amp;&amp; mklink /D Resources &quot;Versions\Current\Resources&quot;" WorkingDirectory="%(_ElectronFrameworkDirs.Identity)" Condition="'$(ElectronPlatform)' == 'mac' AND '$(_CurrentOSPlatform)' == 'win'" />
 
   </Target>
 
@@ -367,7 +429,7 @@
     <_ElectronPublishAppAfterTarget Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">Publish</_ElectronPublishAppAfterTarget>
   </PropertyGroup>
 
-  <Target Name="ElectronPublishApp" AfterTargets="$(_ElectronPublishAppAfterTarget)">
+  <Target Name="ElectronPublishApp" AfterTargets="$(_ElectronPublishAppAfterTarget)" DependsOnTargets="ElectronCheckVersionMismatch">
 
     <PropertyGroup>
       <PublishDir>$(_OriginalPublishDir)</PublishDir>
@@ -376,21 +438,18 @@
     </PropertyGroup>
 
 
-    <PropertyGroup>
-      <!-- Default values -->
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
+    <Error Condition="'$(_IsPlatformMismatch)' == 'true'"
+           Code="ELECTRON100"
+           Text="The target RuntimeIdentifier '$(RuntimeIdentifier)' (platform: $(ElectronPlatform)) does not match the current operating system ($(_CurrentOSPlatform)).
 
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86' OR '$(RuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm' OR '$(RuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
-    </PropertyGroup>
+Electron applications must be built on the target operating system:
+- Windows targets (win-x64, win-x86, win-arm64) must be built on Windows
+- Linux targets (linux-x64, linux-arm, linux-arm64) must be built on Linux (or Windows with WSL)
+- macOS targets (osx-x64, osx-arm64) must be built on macOS
+
+EXCEPTION: Linux targets can be built on Windows using WSL (Windows Subsystem for Linux).
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#8-cross-platform-build-validation" />
 
     <RemoveEnvironmentVariables Variables="BUILD_BUILDNUMBER;BUILD_NUMBER;TRAVIS_BUILD_NUMBER;APPVEYOR_BUILD_NUMBER;CIRCLE_BUILD_NUM;CI_PIPELINE_IID" />
 
