@@ -1,3 +1,9 @@
+# 0.4.0
+
+## ElectronNET.Core
+
+- Added cross-platform npm restore and check mismatch on publish (#988) @softworkz
+
 # 0.3.1
 
 ## ElectronNET.Core
