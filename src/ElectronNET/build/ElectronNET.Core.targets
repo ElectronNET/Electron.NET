@@ -12,6 +12,10 @@
     <_IsMsAspNetProject Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true'">True</_IsMsAspNetProject>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>$(ElectronPackageId)</PackageId>
+  </PropertyGroup>
+
   <ItemGroup>
     <AssemblyMetadata Include="ElectronExecutable" Value="$(ElectronExecutable)" />
     <AssemblyMetadata Include="ElectronVersion" Value="$(ElectronVersion)" />
