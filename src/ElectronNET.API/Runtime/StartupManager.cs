@@ -167,11 +167,11 @@
 
                 if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var isSingleInstanceActive) && isSingleInstanceActive)
                 {
-                    buildInfo.ElectronSingleInstance = "yes";
+                    buildInfo.ElectronSingleInstance = "true";
                 }
                 else
                 {
-                    buildInfo.ElectronSingleInstance = "no";
+                    buildInfo.ElectronSingleInstance = "false";
                 }
 
                 if (httpPort?.Length > 0 && int.TryParse(httpPort, out var port))
