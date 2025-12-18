@@ -2,6 +2,8 @@
 
 ## ElectronNET.Core
 
+- Fixed ElectronSingleInstance handling (#996) @softworkz
+- Fixed `PackageId` handling (#993) @softworkz
 - Added cross-platform npm restore and check mismatch on publish (#988) @softworkz
 
 # 0.3.1
