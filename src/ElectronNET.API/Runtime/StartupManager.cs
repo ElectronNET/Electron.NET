@@ -165,13 +165,9 @@
                     ElectronNetRuntime.DotnetAppType = DotnetAppType.AspNetCoreApp;
                 }
 
-                if (isSingleInstance?.Length > 0 && bool.TryParse(isSingleInstance, out var isSingleInstanceActive) && isSingleInstanceActive)
+                if (bool.TryParse(isSingleInstance, out var parsedBool))
                 {
-                    buildInfo.ElectronSingleInstance = "yes";
-                }
-                else
-                {
-                    buildInfo.ElectronSingleInstance = "no";
+                    buildInfo.ElectronSingleInstance = parsedBool;
                 }
 
                 if (httpPort?.Length > 0 && int.TryParse(httpPort, out var port))

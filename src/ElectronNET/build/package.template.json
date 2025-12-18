@@ -23,7 +23,7 @@
   },
   "license": "$(License)",
   "executable": "$(TargetName)",
-  "singleInstance": "$(ElectronSingleInstance)",
+  "singleInstance": $(ElectronSingleInstance),
   "homepage": "$(ProjectUrl)",
   "splashscreen": {
     "imageFile": "$(ElectronSplashScreen)"
