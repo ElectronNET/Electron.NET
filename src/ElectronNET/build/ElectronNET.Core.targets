@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>$(ElectronPackageId)</PackageId>
+    <PackageId Condition="'$(PackageId)' == ''">$(ElectronPackageId)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
