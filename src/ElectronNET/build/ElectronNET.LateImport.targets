@@ -135,7 +135,7 @@
       <TemplateProperty Include="ElectronSplashScreen" Value="$(ElectronSplashScreenFileName)" />
       <TemplateProperty Include="ElectronVersion" Value="$(ElectronVersion)" />
       <TemplateProperty Include="TargetName" Value="$(ElectronTargetName)" />
-      <TemplateProperty Include="ElectronSingleInstance" Value="$(ElectronSingleInstance)" />
+      <TemplateProperty Include="ElectronSingleInstance" Value="$(ElectronSingleInstance.ToLower())" />
     </ItemGroup>
 
     <MakeDir Directories="$(ElectronIntermediateOutputPath)" />
