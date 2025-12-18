@@ -8,7 +8,7 @@
 
         public string RuntimeIdentifier { get; internal set; }
 
-        public string ElectronSingleInstance { get; internal set; }
+        public bool ElectronSingleInstance { get; internal set; }
 
         public string Title { get; internal set; }
 

@@ -32,19 +32,18 @@ jobs:
           echo "Jobs and conclusions:"
           echo "$jobs_json" | jq '.jobs[] | {name: .name, conclusion: .conclusion}'
 
-          failed_matrix_jobs=$(echo "$jobs_json" | jq '
+          failed_matrix_jobs=$(echo "$jobs_json" | jq -r '
             [ .jobs[]
               | select(.conclusion == "failure"
                        and (.name | contains(" API-")))
             ]
-            | length
+            | length // 0
           ')
+          failed_matrix_jobs=${failed_matrix_jobs:-0}
 
-          echo "Failed Integration Tests matrix jobs: $failed_matrix_jobs"
-
-          if [ "$failed_matrix_jobs" -gt 0 ]; then
+          if [ "${failed_matrix_jobs}" -gt 0 ]; then
             echo "Detected failing Integration Tests jobs – re-running failed jobs for this run."
-            gh run rerun -R $REPO "$RUN_ID" --failed
+            gh run rerun -R "$REPO" "$RUN_ID" --failed
           else
             echo "Only non-matrix jobs (like Test Results) failed – not auto-rerunning."
           fi
