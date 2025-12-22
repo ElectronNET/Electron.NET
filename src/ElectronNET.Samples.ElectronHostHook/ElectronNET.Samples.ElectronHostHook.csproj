@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ElectronNET.Core" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
-    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.2.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core" Version="0.4.1" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.4.1" Condition="'$(ElectronNetDevMode)' != 'true'" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
   </ItemGroup>
 

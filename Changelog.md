@@ -1,3 +1,9 @@
+# 0.4.1
+
+## ElectronNET.Core
+
+- Fixed handling of `Center` property for windows (#1001)
+
 # 0.4.0
 
 ## ElectronNET.Core

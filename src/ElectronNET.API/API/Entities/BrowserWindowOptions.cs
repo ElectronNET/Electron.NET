@@ -24,13 +24,13 @@ namespace ElectronNET.API.Entities
         /// ( if y is used) Window's left offset from screen. Default is to center the
         /// window.
         /// </summary>
-        public int X { get; set; } = -1;
+        public int? X { get; set; }
 
         /// <summary>
         /// ( if x is used) Window's top offset from screen. Default is to center the
         /// window.
         /// </summary>
-        public int Y { get; set; } = -1;
+        public int? Y { get; set; }
 
         /// <summary>
         /// The width and height would be used as web page's size, which means the actual
