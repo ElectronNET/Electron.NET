@@ -29,16 +29,16 @@
         /// <summary>
         /// (optional) - Filters cookies by their Secure property.
         /// </summary>
-        public bool Secure { get; set; }
+        public bool? Secure { get; set; }
 
         /// <summary>
         /// (optional) - Filters out session or persistent cookies.
         /// </summary>
-        public bool Session { get; set; }
+        public bool? Session { get; set; }
 
         /// <summary>
         /// (optional) - Filters cookies by httpOnly.
         /// </summary>
-        public bool HttpOnly { get; set; }
+        public bool? HttpOnly { get; set; }
     }
 }

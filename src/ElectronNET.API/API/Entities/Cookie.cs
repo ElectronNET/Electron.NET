@@ -24,7 +24,7 @@
         /// <summary>
         /// Gets or sets a value indicating whether the cookie is a host-only cookie; this will only be true if no domain was passed.
         /// </summary>
-        public bool HostOnly { get; set; }
+        public bool? HostOnly { get; set; }
 
         /// <summary>
         /// Gets or sets the path of the cookie.
@@ -34,22 +34,22 @@
         /// <summary>
         /// Gets or sets a value indicating whether the cookie is marked as secure.
         /// </summary>
-        public bool Secure { get; set; }
+        public bool? Secure { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the cookie is marked as HTTP only.
         /// </summary>
-        public bool HttpOnly { get; set; }
+        public bool? HttpOnly { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the cookie is a session cookie or a persistent cookie with an expiration date.
         /// </summary>
-        public bool Session { get; set; }
+        public bool? Session { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration date of the cookie as the number of seconds since the UNIX epoch. Not provided for session cookies.
         /// </summary>
-        public double ExpirationDate { get; set; }
+        public double? ExpirationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the SameSite policy applied to this cookie. Can be "unspecified", "no_restriction", "lax" or "strict".
