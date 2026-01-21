@@ -257,5 +257,57 @@ namespace ElectronNET.IntegrationTests.Tests
 
             win.SetDocumentEdited(false);
         }
+
+        [IntegrationFact]
+        public async Task BoundsChanged_event_fires_with_updated_bounds()
+        {
+            BrowserWindow window = null;
+
+            try
+            {
+                window = await Electron.WindowManager.CreateWindowAsync(
+                    new BrowserWindowOptions { Show = false, Width = 300, Height = 200 },
+                    "about:blank");
+
+                var tcs = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
+                window.OnBoundsChanged += bounds => tcs.TrySetResult(bounds);
+
+                await Task.Delay(500.ms());
+
+                var target = new Rectangle { X = 25, Y = 35, Width = 420, Height = 310 };
+                window.SetBounds(target);
+
+                var completed = await Task.WhenAny(tcs.Task, Task.Delay(3.seconds()));
+                completed.Should().Be(tcs.Task);
+
+                var observed = await tcs.Task;
+
+                observed.Width.Should().Be(target.Width);
+                observed.Height.Should().Be(target.Height);
+            }
+            finally
+            {
+                window?.Destroy();
+            }
+        }
+
+        [IntegrationFact]
+        public async Task BoundsChanged_event_can_fire_on_resize_of_existing_window()
+        {
+            var win = this.MainWindow;
+
+            var tcs = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            win.OnBoundsChanged += bounds => tcs.TrySetResult(bounds);
+
+            await Task.Delay(500.ms());
+            win.SetBounds(new Rectangle { X = 10, Y = 10, Width = 560, Height = 440 });
+
+            var completed = await Task.WhenAny(tcs.Task, Task.Delay(3.seconds()));
+            completed.Should().Be(tcs.Task);
+
+            var boundsObserved = await tcs.Task;
+            boundsObserved.Width.Should().Be(560);
+            boundsObserved.Height.Should().Be(440);
+        }
     }
 }
