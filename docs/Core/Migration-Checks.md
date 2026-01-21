@@ -8,7 +8,9 @@ When you build an Electron.NET project, the following validation checks are perf
 
 | Code | Check | Description |
 |------|-------|-------------|
-| [ELECTRON001](#1-packagejson-not-allowed) | package.json not allowed | Ensures no package.json exists outside ElectronHostHook |
+| [ELECTRON001](#1-packagejson-rules) | package.json location rules | Ensures `package.json`/`package-lock.json` aren’t present in unsupported locations (root `package.json` handled separately) |
+| [ELECTRON008](#1-packagejson-rules) | root package.json contains electron | Warns when root `package.json` contains the word `electron` (case-insensitive) |
+| [ELECTRON009](#1-packagejson-rules) | root package.json copied to output | Warns when root `package.json` is configured to be copied to output/publish |
 | [ELECTRON002](#2-electron-manifestjson-not-allowed) | electron-manifest.json not allowed | Detects deprecated manifest files |
 | [ELECTRON003](#3-electron-builderjson-location) | electron-builder.json location | Verifies electron-builder.json exists in Properties folder |
 | [ELECTRON004](#3-electron-builderjson-location) | electron-builder.json wrong location | Warns if electron-builder.json is found in incorrect locations |
@@ -18,23 +20,37 @@ When you build an Electron.NET project, the following validation checks are perf
 
 ---
 
-## 1. package.json not allowed
+## 1. package.json rules
 
-**Warning Code:** `ELECTRON001`
+**Warning Codes:** `ELECTRON001`, `ELECTRON008`, `ELECTRON009`
 
 ### What is checked
 
-The build system scans for `package.json` and `package-lock.json` files in your project directory. These files should not exist in the project root or subdirectories (with one exception).
+The build system scans for `package.json` and `package-lock.json` files in your project directory.
+
+Rules:
+
+- **ELECTRON001**: `package.json` / `package-lock.json` must not exist in the project directory or subdirectories
+  - Exception: `ElectronHostHook` folder is allowed
+  - Note: a **root** `package.json` is **excluded** from `ELECTRON001` and validated by `ELECTRON008` / `ELECTRON009`
+
+- **ELECTRON008**: If a root `package.json` exists, it must **not** contain electron-related dependencies or configuration.
+
+- **ELECTRON009**: If a root `package.json` exists, it must **not** be configured to be copied to output/publish (for example via `CopyToOutputDirectory` / `CopyToPublishDirectory` metadata)
 
 ### Why this matters
 
-In previous versions of Electron.NET, a `package.json` file was required in the project. The new version generates this file automatically from MSBuild properties defined in your `.csproj` file.
+Electron.NET generates its Electron-related `package.json` during publishing based on MSBuild properties. A user-maintained Electron-related `package.json` can conflict with that process.
+
+Also, ensuring the root `package.json` is not copied prevents accidentally shipping it with the published app.
 
 ### Exception
 
-A `package.json` file **is allowed** in the `ElectronHostHook` folder if you're using custom host hooks. This is the only valid location for a manually maintained package.json.
+A `package.json` / `package-lock.json` file **is allowed** in the `ElectronHostHook` folder if you're using custom host hooks.
 
 ### How to fix
+
+If you have an Electron-related `package.json` from older Electron.NET versions:
 
 1. **Open your project's `.csproj` file**
 2. **Add the required properties** to a PropertyGroup with the label `ElectronNetCommon`:
@@ -51,7 +67,12 @@ A `package.json` file **is allowed** in the `ElectronHostHook` folder if you're 
 </PropertyGroup>
 ```
 
-3. **Delete the old `package.json`** file from your project root
+3. **Delete** Electron-related `package.json` / `package-lock.json` files (except those under `ElectronHostHook` if applicable)
+
+If you keep a root `package.json` for non-Electron reasons:
+
+- Ensure it does **not** contain electron dependencies or configuration (fixes `ELECTRON008`)
+- Ensure it is **not** copied to output/publish (fixes `ELECTRON009`)
 
 > **See also:** [Migration Guide](Migration-Guide.md) for complete migration instructions.
 
