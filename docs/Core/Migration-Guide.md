@@ -31,7 +31,7 @@ dotnet add package ElectronNET.Core.AspNet  # For ASP.NET projects
 ### Step 2: Configure Project Settings
 
 **Auto-generated Configuration:**  
-ElectronNET.Core automatically creates `electron-builder.json` during the first build or NuGet restore. No manual configuration is needed for basic setups.
+ElectronNET.Core automatically creates `electron-builder.json` in the `Properties` folder of your project during the first build or NuGet restore. No manual configuration is needed for basic setups.
 
 **Migrate Existing Configuration:**  
 If you have an existing `electron.manifest.json` file:
@@ -62,6 +62,9 @@ You can also manually edit `electron-builder.json`:
   }
 }
 ```
+
+**Modify Launch Settings:**
+ElectronNET.Core no longer needs a separate CLI tool (electronize.exe) for launching. You should update your launch settings to use either the ASP.NET-first or Electron-first approach. See [Debugging](../Using/Debugging.md) for details.
 
 ## 🎯 Testing Migration
 
