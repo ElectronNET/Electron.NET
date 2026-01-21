@@ -314,7 +314,9 @@ namespace ElectronNET.API
                         {
                             if (this.tcs != null)
                             {
-                                var ex = new TimeoutException($"No response after {timeout:D}ms trying to retrieve value {apiBase.objectName}.{callerName}()");
+                                var ex = new TimeoutException(
+                                    $"No response after {(long)timeout.TotalMilliseconds}ms trying to retrieve value {apiBase.objectName}.{callerName}()"
+                                );
                                 this.tcs.TrySetException(ex);
                                 this.tcs = null;
                             }
