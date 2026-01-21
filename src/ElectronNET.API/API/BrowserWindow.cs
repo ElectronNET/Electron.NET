@@ -187,6 +187,19 @@ public class BrowserWindow : ApiBase
     }
 
     /// <summary>
+    /// Emitted when the window is moved or resized.
+    /// </summary>
+    /// <remarks>
+    ///     While not being an original Electron event, this one includes the bounds values,
+    ///     saving the additional roundtrip for calling <see cref="GetBoundsAsync"/>.
+    /// </remarks>
+    public event Action<Rectangle> OnBoundsChanged
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
+    /// <summary>
     /// macOS: Emitted once when the window is moved to a new position.
     /// </summary>
     [SupportedOSPlatform("macOS")]
