@@ -154,5 +154,48 @@ namespace ElectronNET.API
         {
             BridgeConnector.Socket.Emit("sendToIpcRendererBrowserView", browserView.Id, channel, data);
         }
+
+        /// <summary>
+        /// Adds a handler for an invokeable IPC. This handler will be called
+        /// whenever a renderer calls ipcRenderer.invoke(channel, ...args).
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void Handle(string channel, Func<object, object> listener)
+        {
+            BridgeConnector.Socket.Emit("registerHandleIpcMainChannel", channel);
+            BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
+            {
+                var arg = FormatArguments(args);
+                var result = listener(arg);
+                BridgeConnector.Socket.Emit(channel + "Handle", result);
+            });
+        }
+
+        /// <summary>
+        /// Handles a single invokeable IPC message, then removes the listener.
+        /// See ipcMain.handle(channel, listener).
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void HandleOnce(string channel, Func<object, object> listener)
+        {
+            BridgeConnector.Socket.Emit("registerHandleOnceIpcMainChannel", channel);
+            BridgeConnector.Socket.Once<JsonElement>(channel, (args) =>
+            {
+                var arg = FormatArguments(args);
+                var result = listener(arg);
+                BridgeConnector.Socket.Emit(channel + "HandleOnce", result);
+            });
+        }
+
+        /// <summary>
+        /// Removes any handler for channel, if present.
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        public void RemoveHandler(string channel)
+        {
+            BridgeConnector.Socket.Emit("removeHandlerIpcMainChannel", channel);
+        }
     }
 }
