@@ -103,6 +103,29 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Send a message to the renderer process synchronously via channel,
+        /// you can also send arbitrary arguments.
+        /// 
+        /// Note: Sending a synchronous message will block the whole renderer process,
+        /// unless you know what you are doing you should never use it.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="listener"></param>
+        public void OnSync(string channel, Func<object, Task<object>> listener)
+        {
+            BridgeConnector.Socket.Emit("registerSyncIpcMainChannel", channel);
+            BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
+            {
+                Task.Run(async () =>
+                {
+                    var arg = FormatArguments(args);
+                    var result = await listener(arg);
+                    BridgeConnector.Socket.Emit(channel + "Sync", result);
+                });
+            });
+        }
+
+        /// <summary>
         /// Adds a one time listener method for the event. This listener is invoked only
         ///  the next time a message is sent to channel, after which it is removed.
         /// </summary>
@@ -173,6 +196,26 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Adds a handler for an invokeable IPC. This handler will be called
+        /// whenever a renderer calls ipcRenderer.invoke(channel, ...args).
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void Handle(string channel, Func<object, Task<object>> listener)
+        {
+            BridgeConnector.Socket.Emit("registerHandleIpcMainChannel", channel);
+            BridgeConnector.Socket.On<JsonElement>(channel, (args) =>
+            {
+                Task.Run(async () =>
+                {
+                    var arg = FormatArguments(args);
+                    var result = await listener(arg);
+                    BridgeConnector.Socket.Emit(channel + "Handle", result);
+                });
+            });
+        }
+
+        /// <summary>
         /// Handles a single invokeable IPC message, then removes the listener.
         /// See ipcMain.handle(channel, listener).
         /// </summary>
@@ -186,6 +229,26 @@ namespace ElectronNET.API
                 var arg = FormatArguments(args);
                 var result = listener(arg);
                 BridgeConnector.Socket.Emit(channel + "HandleOnce", result);
+            });
+        }
+
+        /// <summary>
+        /// Handles a single invokeable IPC message, then removes the listener.
+        /// See ipcMain.handle(channel, listener).
+        /// </summary>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="listener">Callback Method.</param>
+        public void HandleOnce(string channel, Func<object, Task<object>> listener)
+        {
+            BridgeConnector.Socket.Emit("registerHandleOnceIpcMainChannel", channel);
+            BridgeConnector.Socket.Once<JsonElement>(channel, (args) =>
+            {
+                Task.Run(async () =>
+                {
+                    var arg = FormatArguments(args);
+                    var result = await listener(arg);
+                    BridgeConnector.Socket.Emit(channel + "HandleOnce", result);
+                });
             });
         }
 
