@@ -55,6 +55,34 @@ export = (socket: Socket) => {
         }
     });
 
+    socket.on('registerHandleIpcMainChannel', (channel) => {
+        ipcMain.handle(channel, (event, args) => {
+            return new Promise((resolve, _reject) => {
+                socket.removeAllListeners(channel + 'Handle');
+                socket.on(channel + 'Handle', (result) => {
+                    resolve(result);
+                });
+                electronSocket.emit(channel, [event.preventDefault(), args]);
+            });
+        });
+    });
+
+    socket.on('registerHandleOnceIpcMainChannel', (channel) => {
+        ipcMain.handleOnce(channel, (event, args) => {
+            return new Promise((resolve, _reject) => {
+                socket.removeAllListeners(channel + 'HandleOnce');
+                socket.once(channel + 'HandleOnce', (result) => {
+                    resolve(result);
+                });
+                electronSocket.emit(channel, [event.preventDefault(), args]);
+            });
+        });
+    });
+
+    socket.on('removeHandlerIpcMainChannel', (channel) => {
+        ipcMain.removeHandler(channel);
+    });
+
     // Integration helpers: programmatically click menu items from renderer tests
     ipcMain.on('integration-click-application-menu', (event, id: string) => {
         try {

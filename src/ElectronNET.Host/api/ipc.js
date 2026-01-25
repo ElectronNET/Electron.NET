@@ -45,6 +45,31 @@ module.exports = (socket) => {
             view.webContents.send(channel, ...data);
         }
     });
+    socket.on('registerHandleIpcMainChannel', (channel) => {
+        electron_1.ipcMain.handle(channel, (event, args) => {
+            return new Promise((resolve, _reject) => {
+                socket.removeAllListeners(channel + 'Handle');
+                socket.on(channel + 'Handle', (result) => {
+                    resolve(result);
+                });
+                electronSocket.emit(channel, [event.preventDefault(), args]);
+            });
+        });
+    });
+    socket.on('registerHandleOnceIpcMainChannel', (channel) => {
+        electron_1.ipcMain.handleOnce(channel, (event, args) => {
+            return new Promise((resolve, _reject) => {
+                socket.removeAllListeners(channel + 'HandleOnce');
+                socket.once(channel + 'HandleOnce', (result) => {
+                    resolve(result);
+                });
+                electronSocket.emit(channel, [event.preventDefault(), args]);
+            });
+        });
+    });
+    socket.on('removeHandlerIpcMainChannel', (channel) => {
+        electron_1.ipcMain.removeHandler(channel);
+    });
     // Integration helpers: programmatically click menu items from renderer tests
     electron_1.ipcMain.on('integration-click-application-menu', (event, id) => {
         try {
