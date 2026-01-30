@@ -33,5 +33,23 @@
         ///     On the command lines, this is "unpackeddotnet"
         /// </remarks>
         UnpackedDotnetFirst,
+
+        /// <summary>Packaged Electron app where DotNet launches Electron and uses SignalR for communication.</summary>
+        /// <remarks>
+        ///     DotNet starts first on port 0 (dynamic), launches Electron with the actual URL,
+        ///     and uses SignalR instead of socket.io for bidirectional communication.
+        ///     Optimized for Blazor Server scenarios. ASP.NET Core only.
+        ///     On the command lines, this is "dotnetpackedsignalr"
+        /// </remarks>
+        PackagedDotnetFirstSignalR,
+
+        /// <summary>Unpackaged execution where DotNet launches Electron and uses SignalR for communication.</summary>
+        /// <remarks>
+        ///     Similar to PackagedDotnetFirstSignalR but for debugging scenarios.
+        ///     DotNet starts first on port 0 (dynamic), launches Electron with the actual URL,
+        ///     and uses SignalR instead of socket.io for bidirectional communication.
+        ///     On the command lines, this is "unpackeddotnetsignalr"
+        /// </remarks>
+        UnpackedDotnetFirstSignalR,
     }
 }
