@@ -3,74 +3,87 @@ namespace ElectronNET.AspNet.Runtime
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using ElectronNET.API;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.ElectronProcess;
+    using ElectronNET.Runtime.Services.SocketBridge;
     using Microsoft.AspNetCore.Hosting.Server;
     using Microsoft.AspNetCore.Hosting.Server.Features;
+    using Microsoft.AspNetCore.SignalR;
+    using ElectronNET.AspNet.Hubs;
 
     internal class RuntimeControllerAspNetDotnetFirstSignalR : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;
         private readonly IServer server;
+        private readonly IHubContext<ElectronHub> hubContext;
+        private SignalRFacade signalRFacade;
         private int? port;
         private string actualUrl;
         private bool electronLaunched;
 
-        public RuntimeControllerAspNetDotnetFirstSignalR(AspNetLifetimeAdapter aspNetLifetimeAdapter, IServer server) 
+        public RuntimeControllerAspNetDotnetFirstSignalR(
+            AspNetLifetimeAdapter aspNetLifetimeAdapter, 
+            IServer server,
+            IHubContext<ElectronHub> hubContext) 
             : base(aspNetLifetimeAdapter)
         {
             this.server = server;
+            this.hubContext = hubContext;
+            this.signalRFacade = new SignalRFacade(hubContext);
             this.electronLaunched = false;
+            
+            this.signalRFacade.BridgeConnected += this.SignalRFacade_Connected;
+            this.signalRFacade.BridgeDisconnected += this.SignalRFacade_Disconnected;
         }
 
         internal override ElectronProcessBase ElectronProcess => this.electronProcess;
+        internal override SocketBridgeService SocketBridge => null;
+        
+        internal override SocketIoFacade Socket
+        {
+            get
+            {
+                throw new NotImplementedException("SignalR mode uses SignalRFacade");
+            }
+        }
+
+        internal SignalRFacade SignalRSocket => this.signalRFacade;
 
         protected override Task StartCore()
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] StartCore - ASP.NET starting, will launch Electron when ready");
-            // We wait for ASP.NET to become ready via the AspNetLifetimeAdapter
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] StartCore");
             return Task.CompletedTask;
         }
 
         protected override Task StopCore()
         {
             this.electronProcess?.Stop();
+            this.signalRFacade?.DisposeSocket();
             return Task.CompletedTask;
         }
 
-        // Called by base class when ASP.NET becomes ready
         protected override void HandleReady()
         {
-            // If Electron hasn't been launched yet and ASP.NET is ready, launch it
             if (!this.electronLaunched)
             {
                 this.CapturePortAndLaunchElectron();
             }
-            
-            // Don't call base.HandleReady() yet - we need to wait for Electron and SignalR
         }
 
         private void CapturePortAndLaunchElectron()
         {
-            // Capture the actual port from Kestrel
             var addresses = this.server.Features.Get<IServerAddressesFeature>();
             if (addresses == null || !addresses.Addresses.Any())
             {
-                Console.Error.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] ERROR: Could not retrieve server addresses");
-                throw new Exception("Could not retrieve server addresses from Kestrel");
+                throw new Exception("Could not retrieve server addresses");
             }
 
-            // Get the first address (should be http://localhost:XXXXX)
             this.actualUrl = addresses.Addresses.First();
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Kestrel listening on: {this.actualUrl}");
-
-            // Parse the port from the URL
-            var uri = new Uri(this.actualUrl);
-            this.port = uri.Port;
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Captured port: {this.port}");
-
-            // Launch Electron process
+            this.port = new Uri(this.actualUrl).Port;
+            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] URL: {this.actualUrl}");
+            
             this.LaunchElectron();
             this.electronLaunched = true;
         }
@@ -78,45 +91,47 @@ namespace ElectronNET.AspNet.Runtime
         private void LaunchElectron()
         {
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
-            var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
+            var flag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
+            var args = $"{flag} --electronUrl={this.actualUrl}";
             
-            // Build command line arguments including the URL and startup mode flag
-            var startupModeFlag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
-            var args = $"{startupModeFlag} --electronUrl={this.actualUrl}";
-            
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Launching Electron...");
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] isUnPacked: {isUnPacked}");
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] electronBinaryName: {electronBinaryName}");
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] args: {args}");
+            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Launching: {args}");
 
-            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);
+            this.electronProcess = new ElectronProcessActive(isUnPacked, ElectronNetRuntime.ElectronExecutable, args, this.port.Value);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
-
             _ = this.electronProcess.Start();
         }
 
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron process ready - waiting for SignalR connection");
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron ready");
             this.TransitionState(LifetimeState.Started);
-            
-            // TODO: Wait for SignalR connection from ElectronHub before transitioning to Ready
-            // For now, assume connection happens quickly
-            Task.Delay(2000).ContinueWith(_ => 
-            {
-                if (this.State == LifetimeState.Started)
-                {
-                    Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Transitioning to Ready (SignalR assumed connected)");
-                    this.TransitionState(LifetimeState.Ready);
-                }
-            });
+        }
+
+        private void SignalRFacade_Connected(object sender, EventArgs e)
+        {
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] SignalR connected!");
+            this.TransitionState(LifetimeState.Ready);
+        }
+
+        private void SignalRFacade_Disconnected(object sender, EventArgs e)
+        {
+            this.HandleStopped();
         }
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron process stopped");
             this.HandleStopped();
+        }
+
+        public void OnSignalRConnected(string connectionId)
+        {
+            this.signalRFacade.SetConnectionId(connectionId);
+        }
+
+        public void OnSignalRDisconnected()
+        {
+            this.signalRFacade.OnDisconnected();
         }
     }
 }
