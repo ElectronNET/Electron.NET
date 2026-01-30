@@ -14,6 +14,9 @@ let processInfo;
 let splashScreen;
 let nativeTheme;
 let dock;
+let desktopCapturer;
+let electronHostHook;
+let touchBar;
 let launchFile;
 let launchUrl;
 let processApi;
@@ -443,14 +446,14 @@ async function startSignalRApiBridge(baseUrl) {
         if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(signalRBridge);
         if (clipboard === undefined) clipboard = require('./api/clipboard')(signalRBridge);
         if (screen === undefined) screen = require('./api/screen')(signalRBridge);
-        if (shell === undefined) shell = require('./api/shell')(signalRBridge);
+        if (shellApi === undefined) shellApi = require('./api/shell')(signalRBridge);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(signalRBridge);
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(signalRBridge);
         if (dock === undefined) dock = require('./api/dock')(signalRBridge, app);
-        if (desktopCapturer === undefined) desktopCapturer = require('./api/desktopCapturer')(signalRBridge);
-        if (electronHostHook === undefined) electronHostHook = require('./api/hostHook')();
+        if (processApi === undefined) processApi = require('./api/process')(signalRBridge);
         if (process.platform === 'darwin') {
-            if (touchBar === undefined) touchBar = require('./api/touchBar')(signalRBridge);
+            // touchBar only exists on macOS, skip for now
+            // if (touchBar === undefined) touchBar = require('./api/touchBar')(signalRBridge);
         }
         
         console.log('[SignalRBridge] Startup complete');

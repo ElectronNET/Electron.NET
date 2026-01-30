@@ -118,10 +118,25 @@ namespace ElectronNET.AspNet.Runtime
             this.TransitionState(LifetimeState.Started);
         }
 
-        private void SignalRFacade_Connected(object sender, EventArgs e)
+        private async void SignalRFacade_Connected(object sender, EventArgs e)
         {
             Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] SignalR connected!");
             this.TransitionState(LifetimeState.Ready);
+            
+            // Execute the app ready callback
+            if (ElectronNetRuntime.OnAppReadyCallback != null)
+            {
+                Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Executing app ready callback");
+                try
+                {
+                    await ElectronNetRuntime.OnAppReadyCallback().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Exception in app ready callback: {ex}");
+                    this.Stop();
+                }
+            }
         }
 
         private void SignalRFacade_Disconnected(object sender, EventArgs e)
