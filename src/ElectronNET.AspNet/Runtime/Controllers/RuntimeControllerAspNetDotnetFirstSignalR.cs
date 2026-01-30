@@ -62,14 +62,11 @@ namespace ElectronNET.AspNet.Runtime
 
         protected override Task StartCore()
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] StartCore");
             return Task.CompletedTask;
         }
 
         protected override Task StopCore()
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] StopCore called!");
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Stack trace: {Environment.StackTrace}");
             this.electronProcess?.Stop();
             this.signalRFacade?.DisposeSocket();
             return Task.CompletedTask;
@@ -77,7 +74,6 @@ namespace ElectronNET.AspNet.Runtime
 
         private void OnAspNetReady(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] ASP.NET Ready - launching Electron");
             if (!this.electronLaunched)
             {
                 this.CapturePortAndLaunchElectron();
@@ -98,8 +94,6 @@ namespace ElectronNET.AspNet.Runtime
             // Update the runtime port so WindowManager uses the correct URL
             ElectronNetRuntime.AspNetWebPort = this.port;
             
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] URL: {this.actualUrl}");
-            
             this.LaunchElectron();
             this.electronLaunched = true;
         }
@@ -109,52 +103,38 @@ namespace ElectronNET.AspNet.Runtime
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var flag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
             var args = $"{flag} --electronurl={this.actualUrl}";
-            
-            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Launching: {args}");
 
             this.electronProcess = new ElectronProcessActive(isUnPacked, ElectronNetRuntime.ElectronExecutable, args, this.port.Value);
-            // Note: We do NOT subscribe to electronProcess.Ready in SignalR mode
-            // The "ready" signal comes from SignalR connection, not stdout
+            // Note: We do NOT subscribe to electronProcess.Ready in SignalR mode.
+            // The "ready" signal comes from the SignalR connection, not stdout.
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
             _ = this.electronProcess.Start();
         }
 
-        // Keep this method but it won't be called in SignalR mode
-        private void ElectronProcess_Ready(object sender, EventArgs e)
-        {
-            // Not used in SignalR mode - ready state comes from SignalR connection
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron process started (stdout ready)");
-        }
-
         private async void SignalRFacade_Connected(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] SignalR connected! Waiting for electron-host-ready...");
-            
-            // Register handler for 'electron-host-ready' signal from Electron
-            // This ensures API modules are loaded before we call the app ready callback
+            // Register handler for 'electron-host-ready' signal from Electron.
+            // This ensures API modules are fully loaded before calling the app ready callback.
             this.signalRFacade.Once("electron-host-ready", () =>
             {
-                Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Received electron-host-ready signal");
                 this.OnElectronHostReady();
             });
         }
 
         private async void OnElectronHostReady()
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron host is fully ready!");
             this.TransitionState(LifetimeState.Ready);
             
             // Execute the app ready callback
             if (ElectronNetRuntime.OnAppReadyCallback != null)
             {
-                Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Executing app ready callback");
                 try
                 {
                     await ElectronNetRuntime.OnAppReadyCallback().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Exception in app ready callback: {ex}");
+                    Console.Error.WriteLine($"Exception in app ready callback: {ex}");
                     this.Stop();
                 }
             }
@@ -167,7 +147,6 @@ namespace ElectronNET.AspNet.Runtime
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] ElectronProcess_Stopped event fired!");
             this.HandleStopped();
         }
 

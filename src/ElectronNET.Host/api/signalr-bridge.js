@@ -29,27 +29,26 @@ class SignalRBridge {
     }
 
     async connect() {
-        safeConsole.log(`[SignalRBridge] Connecting to ${this.hubUrl}`);
-
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(this.hubUrl)
             .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Warning) // Enable warnings to debug connection issues
+            .configureLogging(signalR.LogLevel.Warning)
             .build();
 
         // Handle reconnection
         this.connection.onreconnecting((error) => {
-            safeConsole.log(`[SignalRBridge] Connection lost. Reconnecting...`, error);
+            console.error(`[SignalRBridge] Connection lost. Reconnecting...`, error);
             this.isConnected = false;
         });
 
         this.connection.onreconnected((connectionId) => {
-            safeConsole.log(`[SignalRBridge] Reconnected with ID: ${connectionId}`);
             this.isConnected = true;
         });
 
         this.connection.onclose((error) => {
-            safeConsole.log(`[SignalRBridge] Connection closed`, error);
+            if (error) {
+                console.error(`[SignalRBridge] Connection closed:`, error);
+            }
             this.isConnected = false;
         });
 
@@ -59,15 +58,13 @@ class SignalRBridge {
         try {
             await this.connection.start();
             this.isConnected = true;
-            console.log(`[SignalRBridge] Connected successfully`); // Use regular console for this critical message
             
             // Register with the hub
             await this.connection.invoke('RegisterElectronClient');
-            console.log(`[SignalRBridge] Registered as Electron client`);
             
             return true;
         } catch (err) {
-            console.error(`[SignalRBridge] Connection failed:`, err); // Use regular console to see the error
+            console.error(`[SignalRBridge] Connection failed:`, err);
             this.isConnected = false;
             return false;
         }
@@ -76,8 +73,6 @@ class SignalRBridge {
     setupMessageHandlers() {
         // Handle generic events from .NET - this is where .NET's Emit() calls arrive
         this.connection.on('event', (eventName, args) => {
-            safeConsole.log(`[SignalRBridge] Received event: ${eventName}`);
-            
             // args is an array from .NET - spread it when calling handlers
             const argsArray = Array.isArray(args) ? args : [args];
             
@@ -88,7 +83,7 @@ class SignalRBridge {
                     try {
                         handler(...argsArray);
                     } catch (err) {
-                        safeConsole.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
+                        console.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
                     }
                 });
             }
@@ -101,22 +96,20 @@ class SignalRBridge {
             this.eventHandlers.set(eventName, []);
         }
         this.eventHandlers.get(eventName).push(callback);
-        safeConsole.log(`[SignalRBridge] Registered handler for event: ${eventName}`);
     }
 
     // Socket.io compatibility: emit event (send to .NET)
     async emit(eventName, ...args) {
         if (!this.isConnected) {
-            safeConsole.log(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
+            console.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
             return;
         }
 
         try {
-            safeConsole.log(`[SignalRBridge] Emitting event: ${eventName}`);
             // Always pass args as an array to match C# method signature
             await this.connection.invoke('ElectronEvent', eventName, args);
         } catch (err) {
-            safeConsole.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
+            console.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
             throw err;
         }
     }
@@ -125,7 +118,6 @@ class SignalRBridge {
         if (this.connection) {
             await this.connection.stop();
             this.isConnected = false;
-            safeConsole.log(`[SignalRBridge] Disconnected`);
         }
     }
 }

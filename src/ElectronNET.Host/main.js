@@ -60,7 +60,6 @@ if (app.commandLine.hasSwitch('electronforcedport')) {
 
 if (app.commandLine.hasSwitch('electronurl')) {
     electronUrl = app.commandLine.getSwitchValue('electronurl');
-    console.log(`[Electron] Using URL from .NET: ${electronUrl}`);
 }
 
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
@@ -178,10 +177,9 @@ app.on('ready', async () => {
             app.quit();
             return;
         }
-        console.log('[Electron] Starting in SignalR mode');
         
-        // Create a temporary invisible window to keep Electron alive during startup
-        // This will be destroyed once the first real window is created
+        // Create a temporary invisible window to keep Electron alive during startup.
+        // This will be destroyed once the first real window is created.
         const { BrowserWindow } = require('electron');
         const keepAliveWindow = new BrowserWindow({
             show: false,
@@ -192,7 +190,6 @@ app.on('ready', async () => {
         // Destroy the keep-alive window when the first real window is created
         app.once('browser-window-created', (event, window) => {
             if (keepAliveWindow && !keepAliveWindow.isDestroyed()) {
-                console.log('[Electron] First window created, destroying keep-alive window');
                 keepAliveWindow.destroy();
             }
         });
@@ -424,19 +421,12 @@ function startSocketApiBridge(port) {
 }
 
 async function startSignalRApiBridge(baseUrl) {
-    console.log('[SignalRBridge] Starting SignalR API bridge...');
-    console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
-    
     const { SignalRBridge } = require('./api/signalr-bridge');
     const hubUrl = `${baseUrl}/electron-hub`;
-    
-    console.log(`[SignalRBridge] Connecting to hub: ${hubUrl}`);
-    
     const signalRBridge = new SignalRBridge(hubUrl);
     
     try {
         const connected = await signalRBridge.connect();
-        console.log(`[SignalRBridge] connect() returned: ${connected}`);
         
         if (!connected) {
             console.error('[SignalRBridge] Failed to connect to SignalR hub');
@@ -444,14 +434,10 @@ async function startSignalRApiBridge(baseUrl) {
             return;
         }
         
-        console.log('[SignalRBridge] Successfully connected');
-        
         // Store the bridge globally for API access
         global['electronsignalr'] = signalRBridge;
         
         // Load API modules with SignalR bridge (same as socket.io)
-        console.log('[SignalRBridge] Loading API components...');
-        
         if (appApi === undefined) appApi = require('./api/app')(signalRBridge, app);
         if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(signalRBridge, app);
         if (commandLine === undefined) commandLine = require('./api/commandLine')(signalRBridge, app);
@@ -475,10 +461,7 @@ async function startSignalRApiBridge(baseUrl) {
             // if (touchBar === undefined) touchBar = require('./api/touchBar')(signalRBridge);
         }
         
-        console.log('[SignalRBridge] Startup complete');
-        
         // Signal to .NET that Electron is fully ready (API modules loaded)
-        console.log('[SignalRBridge] Signaling electron-host-ready to .NET');
         await signalRBridge.emit('electron-host-ready');
         
     } catch (error) {

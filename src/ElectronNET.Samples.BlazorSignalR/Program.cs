@@ -24,41 +24,23 @@ builder.Services.AddElectron();
 // Configure Electron.NET with SignalR mode
 builder.WebHost.UseElectron(args, async () =>
 {
-    Console.WriteLine("[SignalR Sample] ===== APP READY CALLBACK STARTED =====");
-    
     var options = new BrowserWindowOptions
     {
         Show = false,
         Width = 1200,
         Height = 800,
-        IsRunningBlazor = true, // Crucial for Blazor support
+        IsRunningBlazor = true,
     };
 
     if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
         options.AutoHideMenuBar = true;
 
-    Console.WriteLine("[SignalR Sample] About to create window...");
     var browserWindow = await Electron.WindowManager.CreateWindowAsync(options);
-    Console.WriteLine($"[SignalR Sample] Window created with ID: {browserWindow.Id}");
     
-    browserWindow.OnReadyToShow += () =>
-    {
-        browserWindow.Show();
-        Console.WriteLine("[SignalR Sample] Window ready and visible!");
-    };
-
-    Console.WriteLine("[SignalR Sample] Electron app ready callback executed!");
+    browserWindow.OnReadyToShow += () => browserWindow.Show();
 });
 
 var app = builder.Build();
-
-// Log all HTTP requests for debugging
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"[HTTP] {context.Request.Method} {context.Request.Path}{context.Request.QueryString}");
-    await next();
-    Console.WriteLine($"[HTTP] {context.Request.Method} {context.Request.Path} -> {context.Response.StatusCode}");
-});
 
 // Enable WebSockets (required for SignalR)
 app.UseWebSockets();
@@ -95,7 +77,5 @@ app.UseEndpoints(endpoints =>
 app.MapStaticAssets();
 app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()
     .AddInteractiveServerRenderMode();
-
-Console.WriteLine("[SignalR Sample] Application configured and starting...");
 
 app.Run();

@@ -40,13 +40,11 @@ namespace ElectronNET.API
         public void SetConnectionId(string connectionId)
         {
             _connectionId = connectionId;
-            Console.WriteLine($"[SignalRFacade] Connection ID set: {connectionId}");
             this.BridgeConnected?.Invoke(this, EventArgs.Empty);
         }
 
         public void OnDisconnected()
         {
-            Console.WriteLine($"[SignalRFacade] Connection {_connectionId} disconnected");
             this.BridgeDisconnected?.Invoke(this, EventArgs.Empty);
         }
 
@@ -129,7 +127,6 @@ namespace ElectronNET.API
             {
                 // Send message to specific Electron client via the 'event' hub method
                 // This will be received by signalr-bridge.js's connection.on('event', ...)
-                Console.WriteLine($"[SignalRFacade] Emitting event '{eventName}' to connection {_connectionId}");
                 await _hubContext.Clients.Client(_connectionId).SendAsync("event", eventName, args);
             }
             catch (Exception ex)
@@ -141,18 +138,11 @@ namespace ElectronNET.API
 
         public void TriggerEvent(string eventName, params object[] args)
         {
-            Console.WriteLine($"[SignalRFacade] Triggering event '{eventName}' for .NET handlers (args: {args.Length})");
-            
             if (_eventHandlers.TryGetValue(eventName, out var handler))
             {
                 // If single arg, pass it directly; otherwise pass the array
                 var data = args.Length == 1 ? args[0] : args;
-                Console.WriteLine($"[SignalRFacade] Data type: {data?.GetType().Name ?? "null"}");
                 handler(data);
-            }
-            else
-            {
-                Console.WriteLine($"[SignalRFacade] No handler registered for event '{eventName}'");
             }
         }
 
