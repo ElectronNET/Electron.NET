@@ -11,6 +11,13 @@ namespace ElectronNET.API
     /// <summary>
     /// SignalR-based facade that mimics the SocketIoFacade interface
     /// for compatibility with existing Electron API code.
+    /// 
+    /// Key implementation details:
+    /// - Uses IHubContext to send events to Electron via 'event' hub method
+    /// - Receives events from Electron via ElectronHub.ElectronEvent() method
+    /// - Includes ConvertToType&lt;T&gt; helper to handle JsonElement and numeric type conversions
+    /// - Event args are passed as arrays to match SignalR serialization behavior
+    /// - Connection ID is set by ElectronHub when Electron client connects
     /// </summary>
     internal class SignalRFacade : IFacade
     {

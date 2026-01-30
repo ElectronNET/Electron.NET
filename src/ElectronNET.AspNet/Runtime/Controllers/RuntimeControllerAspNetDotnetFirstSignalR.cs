@@ -14,6 +14,14 @@ namespace ElectronNET.AspNet.Runtime
     using Microsoft.AspNetCore.SignalR;
     using ElectronNET.AspNet.Hubs;
 
+    /// <summary>
+    /// Runtime controller for SignalR-based .NET-first startup mode.
+    /// Key differences from Socket.IO mode:
+    /// - Waits for ASP.NET server to start, then captures the dynamic port
+    /// - Launches Electron with the actual URL (no port scanning needed)
+    /// - Uses SignalRFacade instead of SocketIOFacade for bidirectional communication
+    /// - Waits for 'electron-host-ready' signal to ensure API modules are loaded before calling app callback
+    /// </summary>
     internal class RuntimeControllerAspNetDotnetFirstSignalR : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;

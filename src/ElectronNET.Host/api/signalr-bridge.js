@@ -1,4 +1,14 @@
-// SignalR connection module for Electron.NET
+/**
+ * SignalR connection module for Electron.NET
+ * 
+ * This module provides a Socket.IO-compatible interface for SignalR communication.
+ * Key features:
+ * - Mimics Socket.IO's on() and emit() methods for compatibility with existing API modules
+ * - Handles event registration and propagation between Electron and .NET
+ * - Event args are always passed as arrays to match C# ElectronEvent(string, object[]) signature
+ * - Spreads args when calling handlers to match Socket.IO behavior
+ * - Supports automatic reconnection with configurable logging level
+ */
 const signalR = require('@microsoft/signalr');
 
 // Safe console wrapper that catches EPIPE errors

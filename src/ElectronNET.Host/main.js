@@ -171,6 +171,8 @@ app.on('ready', async () => {
     }
 
     // Check if we're using SignalR-based startup
+    // SignalR mode is activated by --unpackeddotnetsignalr or --dotnetpackedsignalr flags
+    // .NET passes the actual server URL via --electronurl parameter (no port scanning needed)
     if (unpackeddotnetsignalr || dotnetpackedsignalr) {
         if (!electronUrl) {
             console.error('[Electron] ERROR: SignalR mode requires --electronUrl parameter');
@@ -179,6 +181,7 @@ app.on('ready', async () => {
         }
         
         // Create a temporary invisible window to keep Electron alive during startup.
+        // Without any windows, Electron would quit immediately on macOS.
         // This will be destroyed once the first real window is created.
         const { BrowserWindow } = require('electron');
         const keepAliveWindow = new BrowserWindow({
@@ -420,6 +423,18 @@ function startSocketApiBridge(port) {
     });
 }
 
+/**
+ * Starts the SignalR API bridge for .NET-first SignalR mode.
+ * 
+ * Flow:
+ * 1. Connect to SignalR hub at /electron-hub endpoint
+ * 2. Register as Electron client
+ * 3. Load all API modules (same modules as Socket.IO mode)
+ * 4. Signal 'electron-host-ready' to .NET to trigger app ready callback
+ * 
+ * This ensures .NET doesn't call the app ready callback until all API modules
+ * are loaded and ready to handle requests from .NET code.
+ */
 async function startSignalRApiBridge(baseUrl) {
     const { SignalRBridge } = require('./api/signalr-bridge');
     const hubUrl = `${baseUrl}/electron-hub`;
