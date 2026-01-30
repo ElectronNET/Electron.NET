@@ -1,5 +1,8 @@
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using ElectronNET.AspNet.Services;
+using ElectronNET.AspNet.Middleware;
+using ElectronNET.Samples.BlazorSignalR.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,9 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+// Register Electron authentication service as singleton
+builder.Services.AddSingleton<IElectronAuthenticationService, ElectronAuthenticationService>();
 
 builder.Services.AddElectron();
 
@@ -40,6 +46,9 @@ builder.WebHost.UseElectron(args, async () =>
 });
 
 var app = builder.Build();
+
+// Register authentication middleware FIRST (before routing, static files, etc.)
+app.UseMiddleware<ElectronAuthenticationMiddleware>();
 
 // Enable routing
 app.UseRouting();
