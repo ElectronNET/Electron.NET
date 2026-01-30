@@ -4,13 +4,14 @@ namespace ElectronNET.API
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
+    using ElectronNET.API.Bridge;
     using ElectronNET.AspNet.Hubs;
 
     /// <summary>
     /// SignalR-based facade that mimics the SocketIoFacade interface
     /// for compatibility with existing Electron API code.
     /// </summary>
-    internal class SignalRFacade
+    internal class SignalRFacade : IFacade
     {
         private readonly IHubContext<ElectronHub> _hubContext;
         private string _connectionId;
@@ -25,6 +26,15 @@ namespace ElectronNET.API
 
         public event EventHandler BridgeDisconnected;
         public event EventHandler BridgeConnected;
+
+        /// <summary>
+        /// SignalR connections are managed by ASP.NET Core, so this is a no-op.
+        /// Connection establishment happens via the ElectronHub.
+        /// </summary>
+        public void Connect()
+        {
+            // No-op: SignalR connection is managed by ASP.NET Core
+        }
 
         public void SetConnectionId(string connectionId)
         {

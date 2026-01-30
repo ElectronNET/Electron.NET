@@ -1,6 +1,7 @@
 ﻿namespace ElectronNET.Runtime.Controllers
 {
     using ElectronNET.API;
+    using ElectronNET.API.Bridge;
     using ElectronNET.Runtime.Services;
     using ElectronNET.Runtime.Services.ElectronProcess;
     using ElectronNET.Runtime.Services.SocketBridge;
@@ -12,7 +13,7 @@
         {
         }
 
-        internal abstract SocketIoFacade Socket { get; }
+        internal abstract IFacade Socket { get; }
 
         internal abstract ElectronProcessBase ElectronProcess { get; }
 

@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using ElectronNET.API;
+    using ElectronNET.API.Bridge;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
@@ -25,7 +26,7 @@
 
         internal override SocketBridgeService SocketBridge => this.socketBridge;
 
-        internal override SocketIoFacade Socket
+        internal override IFacade Socket
         {
             get
             {

@@ -1,6 +1,7 @@
 ﻿namespace ElectronNET
 {
     using ElectronNET.API;
+    using ElectronNET.API.Bridge;
     using ElectronNET.Runtime;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
@@ -49,7 +50,7 @@
 
         internal static Func<Task> OnAppReadyCallback { get; set; }
 
-        internal static SocketIoFacade GetSocket()
+        internal static IFacade GetSocket()
         {
             return RuntimeControllerCore?.Socket;
         }

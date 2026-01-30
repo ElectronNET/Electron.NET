@@ -4,6 +4,7 @@ namespace ElectronNET.AspNet.Runtime
     using System.Linq;
     using System.Threading.Tasks;
     using ElectronNET.API;
+    using ElectronNET.API.Bridge;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.ElectronProcess;
@@ -44,11 +45,16 @@ namespace ElectronNET.AspNet.Runtime
         internal override ElectronProcessBase ElectronProcess => this.electronProcess;
         internal override SocketBridgeService SocketBridge => null;
         
-        internal override SocketIoFacade Socket
+        internal override IFacade Socket
         {
             get
             {
-                throw new NotImplementedException("SignalR mode uses SignalRFacade");
+                if (this.State == LifetimeState.Ready)
+                {
+                    return this.signalRFacade;
+                }
+
+                throw new Exception("Cannot access SignalR facade. Runtime is not in 'Ready' state");
             }
         }
 
