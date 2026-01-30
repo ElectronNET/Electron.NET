@@ -229,25 +229,41 @@ app.on('ready', async () => {
 });
 
 app.on('quit', async (event, exitCode) => {
-    try {
-        server.close();
-        server.closeAllConnections();
-    } catch (e) {
-        console.error(e);
-    }
-
-    try {
-        apiProcess?.kill();
-    } catch (e) {
-        console.error(e);
-    }
-
-    try {
-        if (io && typeof io.close === 'function') {
-            io.close();
+    // Clean up Socket.IO resources (legacy mode only)
+    if (typeof server !== 'undefined' && server) {
+        try {
+            server.close();
+            server.closeAllConnections();
+        } catch (e) {
+            console.error('Error closing Socket.IO server:', e);
         }
-    } catch (e) {
-        console.error(e);
+    }
+
+    // Clean up API process (Socket.IO mode only)
+    if (typeof apiProcess !== 'undefined' && apiProcess) {
+        try {
+            apiProcess.kill();
+        } catch (e) {
+            console.error('Error killing API process:', e);
+        }
+    }
+
+    // Clean up Socket.IO connection (legacy mode only)
+    if (typeof io !== 'undefined' && io && typeof io.close === 'function') {
+        try {
+            io.close();
+        } catch (e) {
+            console.error('Error closing Socket.IO connection:', e);
+        }
+    }
+    
+    // Clean up SignalR connection (SignalR mode only)
+    if (global['electronsignalr'] && typeof global['electronsignalr'].connection !== 'undefined') {
+        try {
+            await global['electronsignalr'].connection.stop();
+        } catch (e) {
+            console.error('Error closing SignalR connection:', e);
+        }
     }
 });
 
