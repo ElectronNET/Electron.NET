@@ -127,15 +127,10 @@ builder.WebHost.UseElectron(args, async () =>
 
 var app = builder.Build();
 
-// Enable WebSockets (required for SignalR)
-app.UseWebSockets();
 app.UseRouting();
 
-// Register SignalR hub endpoint
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ElectronHub>("/electron-hub");
-});
+// Map SignalR hub for Electron communication
+app.MapHub<ElectronHub>("/electron-hub");
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.Run();
@@ -144,7 +139,10 @@ app.Run();
 **Note**: `UseElectron()` automatically detects SignalR mode and configures everything. The rest happens automatically:
 1. Port 0 binding (dynamic port assignment)
 2. Electron launch with actual URL
-3. SignalR connection establishment
+3. SignalR connection establishment (WebSockets enabled automatically by MapHub)
+4. App ready callback execution
+2. Electron launch with actual URL
+3. SignalR connection establishment (WebSockets enabled automatically by `MapHub`)
 4. App ready callback execution
 
 ## Architecture Decisions

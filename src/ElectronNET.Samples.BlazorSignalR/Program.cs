@@ -42,9 +42,6 @@ builder.WebHost.UseElectron(args, async () =>
 
 var app = builder.Build();
 
-// Enable WebSockets (required for SignalR)
-app.UseWebSockets();
-
 // Enable routing
 app.UseRouting();
 
