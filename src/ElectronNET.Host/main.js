@@ -58,6 +58,13 @@ if (app.commandLine.hasSwitch('electronforcedport')) {
     electronforcedport = app.commandLine.getSwitchValue('electronforcedport');
 }
 
+let authToken;
+if (app.commandLine.hasSwitch('authtoken')) {
+    authToken = app.commandLine.getSwitchValue('authtoken');
+    // Store in global for access by browser windows
+    global.authToken = authToken;
+}
+
 if (app.commandLine.hasSwitch('electronurl')) {
     electronUrl = app.commandLine.getSwitchValue('electronurl');
 }

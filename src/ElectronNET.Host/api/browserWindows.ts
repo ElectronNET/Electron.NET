@@ -292,7 +292,13 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     if (loadUrl) {
-      window.loadURL(loadUrl);
+      // Append authentication token to initial URL if available
+      let urlToLoad = loadUrl;
+      if ((global as any).authToken) {
+        const separator = loadUrl.includes('?') ? '&' : '?';
+        urlToLoad = `${loadUrl}${separator}token=${(global as any).authToken}`;
+      }
+      window.loadURL(urlToLoad);
     }
 
     if (
