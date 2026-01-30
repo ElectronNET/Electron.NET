@@ -445,7 +445,9 @@ function startSocketApiBridge(port) {
 async function startSignalRApiBridge(baseUrl) {
     const { SignalRBridge } = require('./api/signalr-bridge');
     const hubUrl = `${baseUrl}/electron-hub`;
-    const signalRBridge = new SignalRBridge(hubUrl);
+    
+    // Pass the authentication token to the SignalR bridge
+    const signalRBridge = new SignalRBridge(hubUrl, global.authToken);
     
     try {
         const connected = await signalRBridge.connect();

@@ -30,8 +30,9 @@ const safeConsole = {
 };
 
 class SignalRBridge {
-    constructor(hubUrl) {
+    constructor(hubUrl, authToken) {
         this.hubUrl = hubUrl;
+        this.authToken = authToken;
         this.connection = null;
         this.isConnected = false;
         this.eventHandlers = new Map(); // For socket.io-style .on() handlers
@@ -39,8 +40,11 @@ class SignalRBridge {
     }
 
     async connect() {
+        // Append authentication token to the SignalR connection URL
+        const connectionUrl = this.authToken ? `${this.hubUrl}?token=${this.authToken}` : this.hubUrl;
+        
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(this.hubUrl)
+            .withUrl(connectionUrl)
             .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Warning)
             .build();

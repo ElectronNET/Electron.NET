@@ -24,13 +24,6 @@ namespace ElectronNET.AspNet.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Skip authentication for SignalR negotiation (will be handled by cookie)
-            if (context.Request.Path.StartsWithSegments("/electron-hub/negotiate"))
-            {
-                await _next(context);
-                return;
-            }
-
             // Check if authentication cookie exists
             var authCookie = context.Request.Cookies[AuthCookieName];
             
