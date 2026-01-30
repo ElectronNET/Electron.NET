@@ -34,7 +34,7 @@ class SignalRBridge {
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(this.hubUrl)
             .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.None) // Disable SignalR logging to avoid EPIPE
+            .configureLogging(signalR.LogLevel.Warning) // Enable warnings to debug connection issues
             .build();
 
         // Handle reconnection
@@ -59,15 +59,15 @@ class SignalRBridge {
         try {
             await this.connection.start();
             this.isConnected = true;
-            safeConsole.log(`[SignalRBridge] Connected successfully`);
+            console.log(`[SignalRBridge] Connected successfully`); // Use regular console for this critical message
             
             // Register with the hub
             await this.connection.invoke('RegisterElectronClient');
-            safeConsole.log(`[SignalRBridge] Registered as Electron client`);
+            console.log(`[SignalRBridge] Registered as Electron client`);
             
             return true;
         } catch (err) {
-            safeConsole.error(`[SignalRBridge] Connection failed:`, err);
+            console.error(`[SignalRBridge] Connection failed:`, err); // Use regular console to see the error
             this.isConnected = false;
             return false;
         }

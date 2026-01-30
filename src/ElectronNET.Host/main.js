@@ -417,7 +417,9 @@ async function startSignalRApiBridge(baseUrl) {
     const signalRBridge = new SignalRBridge(hubUrl);
     
     try {
+        console.log('[SignalRBridge] About to call connect()...');
         const connected = await signalRBridge.connect();
+        console.log(`[SignalRBridge] connect() returned: ${connected}`);
         
         if (!connected) {
             console.error('[SignalRBridge] Failed to connect to SignalR hub');
