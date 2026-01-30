@@ -427,11 +427,31 @@ async function startSignalRApiBridge(baseUrl) {
         // Store the bridge globally for API access
         global['electronsignalr'] = signalRBridge;
         
-        // Load API modules with SignalR bridge
+        // Load API modules with SignalR bridge (same as socket.io)
         console.log('[SignalRBridge] Loading API components...');
         
-        // TODO: Load API modules adapted for SignalR
-        // For now, just log that we're connected
+        if (appApi === undefined) appApi = require('./api/app')(signalRBridge, app);
+        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(signalRBridge, app);
+        if (commandLine === undefined) commandLine = require('./api/commandLine')(signalRBridge, app);
+        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(signalRBridge);
+        if (ipc === undefined) ipc = require('./api/ipc')(signalRBridge);
+        if (menu === undefined) menu = require('./api/menu')(signalRBridge);
+        if (dialogApi === undefined) dialogApi = require('./api/dialog')(signalRBridge);
+        if (notification === undefined) notification = require('./api/notification')(signalRBridge);
+        if (tray === undefined) tray = require('./api/tray')(signalRBridge);
+        if (webContents === undefined) webContents = require('./api/webContents')(signalRBridge);
+        if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(signalRBridge);
+        if (clipboard === undefined) clipboard = require('./api/clipboard')(signalRBridge);
+        if (screen === undefined) screen = require('./api/screen')(signalRBridge);
+        if (shell === undefined) shell = require('./api/shell')(signalRBridge);
+        if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(signalRBridge);
+        if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(signalRBridge);
+        if (dock === undefined) dock = require('./api/dock')(signalRBridge, app);
+        if (desktopCapturer === undefined) desktopCapturer = require('./api/desktopCapturer')(signalRBridge);
+        if (electronHostHook === undefined) electronHostHook = require('./api/hostHook')();
+        if (process.platform === 'darwin') {
+            if (touchBar === undefined) touchBar = require('./api/touchBar')(signalRBridge);
+        }
         
         console.log('[SignalRBridge] Startup complete');
         

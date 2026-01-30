@@ -6,7 +6,7 @@ class SignalRBridge {
         this.hubUrl = hubUrl;
         this.connection = null;
         this.isConnected = false;
-        this.pendingCalls = new Map(); // For tracking API calls
+        this.eventHandlers = new Map(); // For socket.io-style .on() handlers
         this.callIdCounter = 0;
     }
 
@@ -56,46 +56,46 @@ class SignalRBridge {
     }
 
     setupMessageHandlers() {
-        // Handle API calls from .NET
-        this.connection.on('electronApiCall', (method, data) => {
-            console.log(`[SignalRBridge] Received API call: ${method}`);
-            this.handleApiCall(method, data);
+        // Handle generic events from .NET - this is where .NET's Emit() calls arrive
+        this.connection.on('event', (eventName, ...args) => {
+            console.log(`[SignalRBridge] Received event: ${eventName}`);
+            
+            // Check if we have handlers registered for this event
+            if (this.eventHandlers.has(eventName)) {
+                const handlers = this.eventHandlers.get(eventName);
+                handlers.forEach(handler => {
+                    try {
+                        handler(...args);
+                    } catch (err) {
+                        console.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
+                    }
+                });
+            }
         });
     }
 
-    async handleApiCall(method, data) {
-        // This will be implemented to route to the actual Electron API
-        // For now, just log it
-        console.log(`[SignalRBridge] Handling API call: ${method} with data:`, data);
-        
-        // TODO: Route to actual Electron API handlers
-        // This will be connected to the existing API modules (browserWindows, dialog, etc.)
+    // Socket.io compatibility: register event handler
+    on(eventName, callback) {
+        if (!this.eventHandlers.has(eventName)) {
+            this.eventHandlers.set(eventName, []);
+        }
+        this.eventHandlers.get(eventName).push(callback);
+        console.log(`[SignalRBridge] Registered handler for event: ${eventName}`);
     }
 
-    async invokeMethod(methodName, ...args) {
+    // Socket.io compatibility: emit event (send to .NET)
+    async emit(eventName, ...args) {
         if (!this.isConnected) {
-            throw new Error('SignalR connection is not established');
-        }
-
-        try {
-            const result = await this.connection.invoke(methodName, ...args);
-            return result;
-        } catch (err) {
-            console.error(`[SignalRBridge] Error invoking ${methodName}:`, err);
-            throw err;
-        }
-    }
-
-    async sendElectronEvent(eventName, eventData) {
-        if (!this.isConnected) {
-            console.warn(`[SignalRBridge] Cannot send event - not connected`);
+            console.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
             return;
         }
 
         try {
-            await this.connection.invoke('ElectronEvent', eventName, JSON.stringify(eventData));
+            console.log(`[SignalRBridge] Emitting event: ${eventName}`);
+            await this.connection.invoke('ElectronEvent', eventName, ...args);
         } catch (err) {
-            console.error(`[SignalRBridge] Error sending event:`, err);
+            console.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
+            throw err;
         }
     }
 
@@ -105,19 +105,6 @@ class SignalRBridge {
             this.isConnected = false;
             console.log(`[SignalRBridge] Disconnected`);
         }
-    }
-
-    // Socket.io compatibility method - for easier transition
-    on(eventName, callback) {
-        if (this.connection) {
-            this.connection.on(eventName, callback);
-        }
-    }
-
-    // Socket.io compatibility method
-    emit(eventName, ...args) {
-        // Map to SignalR invoke
-        return this.invokeMethod(eventName, ...args);
     }
 }
 

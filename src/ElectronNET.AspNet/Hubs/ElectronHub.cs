@@ -61,6 +61,27 @@ namespace ElectronNET.AspNet.Hubs
         }
 
         /// <summary>
+        /// Receives events from Electron (e.g., "BrowserWindowCreated", "dialogResult").
+        /// Called by Electron to send data back to .NET.
+        /// </summary>
+        /// <param name="eventName">The event name</param>
+        /// <param name="args">The event arguments</param>
+        public async Task ElectronEvent(string eventName, params object[] args)
+        {
+            Console.WriteLine($"[ElectronHub] Received event from Electron: {eventName}");
+            
+            // Get the SignalRFacade and trigger the event handlers
+            var runtimeController = ElectronNetRuntime.RuntimeController as RuntimeControllerAspNetDotnetFirstSignalR;
+            if (runtimeController?.Socket is ElectronNET.API.SignalRFacade signalRFacade)
+            {
+                // Invoke the event handlers registered via On/Once
+                signalRFacade.TriggerEvent(eventName, args);
+            }
+            
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Invokes an Electron API method. Called by .NET to control Electron.
         /// </summary>
         /// <param name="method">The API method name (e.g., "createWindow", "showDialog")</param>
@@ -91,17 +112,5 @@ namespace ElectronNET.AspNet.Hubs
             await Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Handles events from Electron.
-        /// Called by Electron to notify .NET about events (e.g., window closed).
-        /// </summary>
-        /// <param name="eventName">The event name</param>
-        /// <param name="eventData">The event data as JSON</param>
-        public async Task ElectronEvent(string eventName, string eventData)
-        {
-            Console.WriteLine($"[ElectronHub] ElectronEvent received: {eventName}");
-            // This will be handled by the event system
-            await Task.CompletedTask;
-        }
     }
 }
