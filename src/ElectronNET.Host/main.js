@@ -159,7 +159,7 @@ function getForwardedArgs() {
 
 const forwardedArgs = getForwardedArgs();
 
-app.on('ready', () => {
+app.on('ready', async () => {
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
     ////protocol.registerFileProtocol('file', (request, callback) => {
@@ -179,7 +179,24 @@ app.on('ready', () => {
             return;
         }
         console.log('[Electron] Starting in SignalR mode');
-        startSignalRApiBridge(electronUrl);
+        
+        // Create an invisible window to keep Electron alive
+        // (otherwise Electron quits when the ready handler completes with 0 windows)
+        const { BrowserWindow } = require('electron');
+        const keepAliveWindow = new BrowserWindow({
+            show: false,
+            width: 1,
+            height: 1
+        });
+        console.log('[Electron] Created keep-alive window');
+        
+        // Prevent Electron from quitting when all windows are closed
+        app.on('window-all-closed', () => {
+            // Don't quit - we're in SignalR mode and windows will be created via API
+            console.log('[Electron] All windows closed, but staying alive (SignalR mode)');
+        });
+        
+        await startSignalRApiBridge(electronUrl);
         return;
     }
 
@@ -406,8 +423,25 @@ function startSocketApiBridge(port) {
 }
 
 async function startSignalRApiBridge(baseUrl) {
-    console.log('[SignalRBridge] Starting SignalR API bridge...');
-    console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
+    try {
+        console.log('[SignalRBridge] Starting SignalR API bridge...');
+        console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
+        
+        const { SignalRBridge } = require('./api/signalr-bridge');
+        const hubUrl = `${baseUrl}/electron-hub`;
+        
+        console.log(`[SignalRBridge] Connecting to hub: ${hubUrl}`);
+        
+        const signalRBridge = new SignalRBridge(hubUrl);
+        const connected = await signalRBridge.connect();
+        
+        console.log(`[SignalRBridge] connect() returned: ${connected}`);
+    } catch (error) {
+        console.error('[SignalRBridge] FATAL ERROR in startSignalRApiBridge:', error);
+        console.error('[SignalRBridge] Stack:', error.stack);
+        app.quit();
+        return;
+    }
     
     const { SignalRBridge } = require('./api/signalr-bridge');
     const hubUrl = `${baseUrl}/electron-hub`;

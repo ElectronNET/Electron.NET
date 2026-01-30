@@ -68,6 +68,8 @@ namespace ElectronNET.AspNet.Runtime
 
         protected override Task StopCore()
         {
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] StopCore called!");
+            Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Stack trace: {Environment.StackTrace}");
             this.electronProcess?.Stop();
             this.signalRFacade?.DisposeSocket();
             return Task.CompletedTask;
@@ -107,15 +109,17 @@ namespace ElectronNET.AspNet.Runtime
             Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Launching: {args}");
 
             this.electronProcess = new ElectronProcessActive(isUnPacked, ElectronNetRuntime.ElectronExecutable, args, this.port.Value);
-            this.electronProcess.Ready += this.ElectronProcess_Ready;
+            // Note: We do NOT subscribe to electronProcess.Ready in SignalR mode
+            // The "ready" signal comes from SignalR connection, not stdout
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
             _ = this.electronProcess.Start();
         }
 
+        // Keep this method but it won't be called in SignalR mode
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron ready");
-            this.TransitionState(LifetimeState.Started);
+            // Not used in SignalR mode - ready state comes from SignalR connection
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron process started (stdout ready)");
         }
 
         private async void SignalRFacade_Connected(object sender, EventArgs e)
@@ -146,6 +150,7 @@ namespace ElectronNET.AspNet.Runtime
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
         {
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] ElectronProcess_Stopped event fired!");
             this.HandleStopped();
         }
 

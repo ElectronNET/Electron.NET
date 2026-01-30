@@ -8,6 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Add CORS for SignalR
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ElectronPolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddElectron();
 
 // Configure Electron.NET with SignalR mode
@@ -44,6 +55,12 @@ var app = builder.Build();
 // Enable WebSockets (required for SignalR)
 app.UseWebSockets();
 
+// Enable routing
+app.UseRouting();
+
+// Enable CORS
+app.UseCors("ElectronPolicy");
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -55,10 +72,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
-app.UseAntiforgery();
+// Use endpoints for SignalR hub
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ElectronNET.AspNet.Hubs.ElectronHub>("/electron-hub");
+});
 
-// Map the Electron SignalR hub (required for SignalR mode)
-app.MapElectronHub();
+app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()

@@ -107,7 +107,11 @@
                         break;
                     case StartupMethod.PackagedDotnetFirstSignalR:
                     case StartupMethod.UnpackedDotnetFirstSignalR:
-                        services.AddSignalR();
+                        services.AddSignalR(options =>
+                        {
+                            // Enable detailed errors for debugging
+                            options.EnableDetailedErrors = true;
+                        });
                         services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirstSignalR>();
                         break;
                     default:
