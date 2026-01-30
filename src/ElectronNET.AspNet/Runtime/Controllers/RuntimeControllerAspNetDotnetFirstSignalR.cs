@@ -36,6 +36,9 @@ namespace ElectronNET.AspNet.Runtime
             
             this.signalRFacade.BridgeConnected += this.SignalRFacade_Connected;
             this.signalRFacade.BridgeDisconnected += this.SignalRFacade_Disconnected;
+            
+            // Subscribe to ASP.NET ready event to launch Electron
+            aspNetLifetimeAdapter.Ready += this.OnAspNetReady;
         }
 
         internal override ElectronProcessBase ElectronProcess => this.electronProcess;
@@ -64,9 +67,9 @@ namespace ElectronNET.AspNet.Runtime
             return Task.CompletedTask;
         }
 
-        // Hide HandleReady from base class to customize for SignalR mode
-        protected new void HandleReady()
+        private void OnAspNetReady(object sender, EventArgs e)
         {
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] ASP.NET Ready - launching Electron");
             if (!this.electronLaunched)
             {
                 this.CapturePortAndLaunchElectron();
