@@ -65,14 +65,11 @@ app.UseStaticFiles();
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
-// UseAntiforgery must be between UseRouting and UseEndpoints
+// UseAntiforgery must be after UseRouting
 app.UseAntiforgery();
 
-// Use endpoints for SignalR hub
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ElectronNET.AspNet.Hubs.ElectronHub>("/electron-hub");
-});
+// Map SignalR hub for Electron communication
+app.MapHub<ElectronNET.AspNet.Hubs.ElectronHub>("/electron-hub");
 
 app.MapStaticAssets();
 app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()
