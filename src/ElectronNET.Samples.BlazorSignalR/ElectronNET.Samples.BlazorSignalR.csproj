@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <!-- Enable Electron.NET Dev Mode to use local packages -->
+    <ElectronNetDevMode>true</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
+
+  <PropertyGroup Label="ElectronNetCommon">
+    <Title>Electron.NET Blazor SignalR Sample</Title>
+    <Version>1.0.0</Version>
+    <Product>com.electronnet.blazor-signalr-sample</Product>
+    <Description>Sample Blazor Server application using Electron.NET with SignalR mode</Description>
+    <Company>Electron.NET</Company>
+    <Copyright>Copyright © 2026, Electron.NET</Copyright>
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <License>MIT</License>
+    <ElectronSingleInstance>true</ElectronSingleInstance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+    <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.4.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.4.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+  </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
+
+</Project>
