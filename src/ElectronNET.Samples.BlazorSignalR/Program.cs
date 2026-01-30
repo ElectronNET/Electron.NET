@@ -1,6 +1,5 @@
 using ElectronNET.API;
 using ElectronNET.API.Entities;
-using ElectronNET.Samples.BlazorSignalR.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

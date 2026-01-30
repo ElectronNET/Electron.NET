@@ -31,6 +31,7 @@ namespace ElectronNET.AspNet.Runtime
         private int? port;
         private string actualUrl;
         private bool electronLaunched;
+        private string authenticationToken;
 
         public RuntimeControllerAspNetDotnetFirstSignalR(
             AspNetLifetimeAdapter aspNetLifetimeAdapter, 
@@ -108,9 +109,12 @@ namespace ElectronNET.AspNet.Runtime
 
         private void LaunchElectron()
         {
+            // Generate secure authentication token
+            this.authenticationToken = Guid.NewGuid().ToString("N"); // 32 hex chars, no hyphens
+            
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var flag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
-            var args = $"{flag} --electronurl={this.actualUrl}";
+            var args = $"{flag} --electronurl={this.actualUrl} --authtoken={this.authenticationToken}";
 
             this.electronProcess = new ElectronProcessActive(isUnPacked, ElectronNetRuntime.ElectronExecutable, args, this.port.Value);
             // Note: We do NOT subscribe to electronProcess.Ready in SignalR mode.
