@@ -13,9 +13,12 @@
     {
         public void Initialize()
         {
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
+            
             try
             {
                 ElectronNetRuntime.BuildInfo = this.GatherBuildInfo();
+                Console.WriteLine($"[Startup] GatherBuildInfo: {startTime.ElapsedMilliseconds}ms");
             }
             catch (Exception ex)
             {
@@ -24,15 +27,18 @@
 
             this.CollectProcessData();
             this.SetElectronExecutable();
-
+            Console.WriteLine($"[Startup] CollectProcessData+SetElectronExecutable: {startTime.ElapsedMilliseconds}ms");
 
             ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
-            Console.WriteLine((string)("Evaluated StartupMethod: " + ElectronNetRuntime.StartupMethod));
+            Console.WriteLine($"Evaluated StartupMethod: {ElectronNetRuntime.StartupMethod}");
+            Console.WriteLine($"[Startup] DetectAppTypeAndStartup: {startTime.ElapsedMilliseconds}ms");
 
             if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
                 ElectronNetRuntime.RuntimeControllerCore = this.CreateRuntimeController();
             }
+            
+            Console.WriteLine($"[Startup] Total StartupManager.Initialize: {startTime.ElapsedMilliseconds}ms");
         }
 
         private RuntimeControllerBase CreateRuntimeController()

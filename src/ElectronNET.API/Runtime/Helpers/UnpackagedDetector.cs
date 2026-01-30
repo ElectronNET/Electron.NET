@@ -8,6 +8,9 @@
 
     internal class UnpackagedDetector
     {
+        // Cache debugger state to avoid multiple expensive checks
+        private static bool? _debuggerAttached;
+        
         public static bool CheckIsUnpackaged()
         {
             var tests = new List<Func<bool?>>();
@@ -63,13 +66,16 @@
 
         private static bool? CheckUnpackaged2()
         {
-            var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var dir = new DirectoryInfo(baseDir);
+            
             if (dir.Name == "bin" && dir.Parent?.Name == "resources")
             {
                 return false;
             }
 
-            if (dir.GetDirectories().Any(e => e.Name == ".electron"))
+            // Faster: Direct path check instead of directory enumeration
+            if (Directory.Exists(Path.Combine(baseDir, ".electron")))
             {
                 return true;
             }
@@ -79,11 +85,16 @@
 
         private static bool? CheckUnpackaged3()
         {
-            if (Debugger.IsAttached)
+            // Cache debugger state to avoid multiple expensive checks
+            if (_debuggerAttached == null)
+            {
+                _debuggerAttached = Debugger.IsAttached;
+            }
+            
+            if (_debuggerAttached.Value)
             {
                 return true;
             }
-
 
             return null;
         }
