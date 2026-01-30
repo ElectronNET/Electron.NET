@@ -13,6 +13,7 @@ namespace ElectronNET.AspNet.Runtime
     using Microsoft.AspNetCore.Hosting.Server.Features;
     using Microsoft.AspNetCore.SignalR;
     using ElectronNET.AspNet.Hubs;
+    using ElectronNET.AspNet.Services;
 
     /// <summary>
     /// Runtime controller for SignalR-based .NET-first startup mode.
@@ -27,6 +28,7 @@ namespace ElectronNET.AspNet.Runtime
         private ElectronProcessBase electronProcess;
         private readonly IServer server;
         private readonly IHubContext<ElectronHub> hubContext;
+        private readonly IElectronAuthenticationService authenticationService;
         private SignalRFacade signalRFacade;
         private int? port;
         private string actualUrl;
@@ -36,11 +38,13 @@ namespace ElectronNET.AspNet.Runtime
         public RuntimeControllerAspNetDotnetFirstSignalR(
             AspNetLifetimeAdapter aspNetLifetimeAdapter, 
             IServer server,
-            IHubContext<ElectronHub> hubContext) 
+            IHubContext<ElectronHub> hubContext,
+            IElectronAuthenticationService authenticationService) 
             : base(aspNetLifetimeAdapter)
         {
             this.server = server;
             this.hubContext = hubContext;
+            this.authenticationService = authenticationService;
             this.signalRFacade = new SignalRFacade(hubContext);
             this.electronLaunched = false;
             
@@ -111,6 +115,9 @@ namespace ElectronNET.AspNet.Runtime
         {
             // Generate secure authentication token
             this.authenticationToken = Guid.NewGuid().ToString("N"); // 32 hex chars, no hyphens
+            
+            // Register token with authentication service for validation
+            this.authenticationService.SetExpectedToken(this.authenticationToken);
             
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var flag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
