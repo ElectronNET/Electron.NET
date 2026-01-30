@@ -64,7 +64,8 @@ namespace ElectronNET.AspNet.Runtime
             return Task.CompletedTask;
         }
 
-        protected override void HandleReady()
+        // Hide HandleReady from base class to customize for SignalR mode
+        protected new void HandleReady()
         {
             if (!this.electronLaunched)
             {

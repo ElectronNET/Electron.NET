@@ -3,6 +3,9 @@ namespace ElectronNET.AspNet.Hubs
     using Microsoft.AspNetCore.SignalR;
     using System;
     using System.Threading.Tasks;
+    using ElectronNET;
+    using ElectronNET.AspNet.Runtime;
+    using ElectronNET.Runtime;
 
     /// <summary>
     /// SignalR hub for bidirectional communication between ASP.NET Core and Electron.
@@ -16,6 +19,14 @@ namespace ElectronNET.AspNet.Hubs
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine($"[ElectronHub] Client connected: {Context.ConnectionId}");
+            
+            // Notify the runtime controller about the connection
+            var runtimeController = ElectronNetRuntime.RuntimeController as RuntimeControllerAspNetDotnetFirstSignalR;
+            if (runtimeController != null)
+            {
+                runtimeController.OnSignalRConnected(Context.ConnectionId);
+            }
+            
             await base.OnConnectedAsync();
         }
 
@@ -29,6 +40,14 @@ namespace ElectronNET.AspNet.Hubs
             {
                 Console.WriteLine($"[ElectronHub] Disconnect reason: {exception.Message}");
             }
+            
+            // Notify the runtime controller about the disconnection
+            var runtimeController = ElectronNetRuntime.RuntimeController as RuntimeControllerAspNetDotnetFirstSignalR;
+            if (runtimeController != null)
+            {
+                runtimeController.OnSignalRDisconnected();
+            }
+            
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -51,10 +70,12 @@ namespace ElectronNET.AspNet.Hubs
         {
             Console.WriteLine($"[ElectronHub] InvokeElectronApi called: {method}");
             
-            // This will be called by .NET code
-            // We need to forward it to the Electron client
-            var result = await Clients.Caller.SendAsync("electronApiCall", method, data);
-            return result?.ToString();
+            // Forward to Electron client
+            await Clients.Caller.SendAsync("electronApiCall", method, data);
+            
+            // TODO: Implement proper request-response pattern
+            // For now, return null - will be enhanced in Phase 6
+            return null;
         }
 
         /// <summary>
