@@ -66,7 +66,11 @@
             // work as expected, see issue #952
             Environment.SetEnvironmentVariable("ELECTRON_RUN_AS_NODE", null);
 
-            var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
+            // For SignalR modes, use port 0 for dynamic port assignment
+            var usePort0 = ElectronNetRuntime.StartupMethod == StartupMethod.PackagedDotnetFirstSignalR ||
+                          ElectronNetRuntime.StartupMethod == StartupMethod.UnpackedDotnetFirstSignalR;
+
+            var webPort = usePort0 ? 0 : PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
             ElectronNetRuntime.AspNetWebPort = webPort;
 
             // check for the content folder if its exists in base director otherwise no need to include

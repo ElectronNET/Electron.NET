@@ -54,15 +54,19 @@
         {
             var isLaunchedByDotNet = LaunchOrderDetector.CheckIsLaunchedByDotNet();
             var isUnPackaged = UnpackagedDetector.CheckIsUnpackaged();
+            
+            // Check for SignalR mode via environment variable
+            var useSignalR = Environment.GetEnvironmentVariable("ELECTRON_USE_SIGNALR");
+            var isSignalRMode = !string.IsNullOrEmpty(useSignalR) && useSignalR.Equals("true", StringComparison.OrdinalIgnoreCase);
 
             if (isLaunchedByDotNet)
             {
                 if (isUnPackaged)
                 {
-                    return StartupMethod.UnpackedDotnetFirst;
+                    return isSignalRMode ? StartupMethod.UnpackedDotnetFirstSignalR : StartupMethod.UnpackedDotnetFirst;
                 }
 
-                return StartupMethod.PackagedDotnetFirst;
+                return isSignalRMode ? StartupMethod.PackagedDotnetFirstSignalR : StartupMethod.PackagedDotnetFirst;
             }
             else
             {
