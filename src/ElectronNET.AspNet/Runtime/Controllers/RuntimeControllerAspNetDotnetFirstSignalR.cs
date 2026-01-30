@@ -113,10 +113,12 @@ namespace ElectronNET.AspNet.Runtime
 
         private void LaunchElectron()
         {
-            // Generate secure authentication token
+            // Generate secure authentication token (128-bit cryptographic random GUID)
+            // This token protects against unauthorized connections from other users on the same machine
             this.authenticationToken = Guid.NewGuid().ToString("N"); // 32 hex chars, no hyphens
             
             // Register token with authentication service for validation
+            // The middleware will validate this token on all HTTP and SignalR requests
             this.authenticationService.SetExpectedToken(this.authenticationToken);
             
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();

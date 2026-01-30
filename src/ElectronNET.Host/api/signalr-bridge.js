@@ -78,7 +78,13 @@ class SignalRBridge {
             
             return true;
         } catch (err) {
-            console.error(`[SignalRBridge] Connection failed:`, err);
+            // Check if this is an authentication error
+            if (err.message && err.message.includes('401')) {
+                console.error(`[SignalRBridge] Authentication failed: The authentication token is invalid or missing.`);
+                console.error(`[SignalRBridge] Please ensure the --authtoken parameter is correctly passed to Electron.`);
+            } else {
+                console.error(`[SignalRBridge] Connection failed:`, err);
+            }
             this.isConnected = false;
             return false;
         }
