@@ -94,6 +94,10 @@ namespace ElectronNET.AspNet.Runtime
 
             this.actualUrl = addresses.Addresses.First();
             this.port = new Uri(this.actualUrl).Port;
+            
+            // Update the runtime port so WindowManager uses the correct URL
+            ElectronNetRuntime.AspNetWebPort = this.port;
+            
             Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] URL: {this.actualUrl}");
             
             this.LaunchElectron();

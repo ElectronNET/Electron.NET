@@ -180,20 +180,21 @@ app.on('ready', async () => {
         }
         console.log('[Electron] Starting in SignalR mode');
         
-        // Create an invisible window to keep Electron alive
-        // (otherwise Electron quits when the ready handler completes with 0 windows)
+        // Create a temporary invisible window to keep Electron alive during startup
+        // This will be destroyed once the first real window is created
         const { BrowserWindow } = require('electron');
         const keepAliveWindow = new BrowserWindow({
             show: false,
             width: 1,
             height: 1
         });
-        console.log('[Electron] Created keep-alive window');
         
-        // Prevent Electron from quitting when all windows are closed
-        app.on('window-all-closed', () => {
-            // Don't quit - we're in SignalR mode and windows will be created via API
-            console.log('[Electron] All windows closed, but staying alive (SignalR mode)');
+        // Destroy the keep-alive window when the first real window is created
+        app.once('browser-window-created', (event, window) => {
+            if (keepAliveWindow && !keepAliveWindow.isDestroyed()) {
+                console.log('[Electron] First window created, destroying keep-alive window');
+                keepAliveWindow.destroy();
+            }
         });
         
         await startSignalRApiBridge(electronUrl);
