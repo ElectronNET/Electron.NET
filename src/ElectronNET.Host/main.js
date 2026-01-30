@@ -166,6 +166,9 @@ function getForwardedArgs() {
 const forwardedArgs = getForwardedArgs();
 
 app.on('ready', async () => {
+    // Start overall startup timer
+    console.time('[Startup] Total Electron Startup');
+    
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
     ////protocol.registerFileProtocol('file', (request, callback) => {
@@ -205,6 +208,7 @@ app.on('ready', async () => {
         });
         
         await startSignalRApiBridge(electronUrl);
+        console.timeEnd('[Startup] Total Electron Startup');
         return;
     }
 
@@ -466,7 +470,9 @@ async function startSignalRApiBridge(baseUrl) {
     const signalRBridge = new SignalRBridge(hubUrl, global.authToken);
     
     try {
+        console.time('[Startup] SignalR Connection');
         const connected = await signalRBridge.connect();
+        console.timeEnd('[Startup] SignalR Connection');
         
         if (!connected) {
             console.error('[SignalRBridge] Failed to connect to SignalR hub');
@@ -477,32 +483,75 @@ async function startSignalRApiBridge(baseUrl) {
         // Store the bridge globally for API access
         global['electronsignalr'] = signalRBridge;
         
-        // Load API modules with SignalR bridge (same as socket.io)
-        if (appApi === undefined) appApi = require('./api/app')(signalRBridge, app);
-        if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(signalRBridge, app);
-        if (commandLine === undefined) commandLine = require('./api/commandLine')(signalRBridge, app);
-        if (autoUpdater === undefined) autoUpdater = require('./api/autoUpdater')(signalRBridge);
-        if (ipc === undefined) ipc = require('./api/ipc')(signalRBridge);
-        if (menu === undefined) menu = require('./api/menu')(signalRBridge);
-        if (dialogApi === undefined) dialogApi = require('./api/dialog')(signalRBridge);
-        if (notification === undefined) notification = require('./api/notification')(signalRBridge);
-        if (tray === undefined) tray = require('./api/tray')(signalRBridge);
-        if (webContents === undefined) webContents = require('./api/webContents')(signalRBridge);
-        if (globalShortcut === undefined) globalShortcut = require('./api/globalShortcut')(signalRBridge);
-        if (clipboard === undefined) clipboard = require('./api/clipboard')(signalRBridge);
-        if (screen === undefined) screen = require('./api/screen')(signalRBridge);
-        if (shellApi === undefined) shellApi = require('./api/shell')(signalRBridge);
-        if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(signalRBridge);
-        if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(signalRBridge);
-        if (dock === undefined) dock = require('./api/dock')(signalRBridge, app);
-        if (processApi === undefined) processApi = require('./api/process')(signalRBridge);
-        if (process.platform === 'darwin') {
-            // touchBar only exists on macOS, skip for now
-            // if (touchBar === undefined) touchBar = require('./api/touchBar')(signalRBridge);
-        }
+        // Load API modules in parallel for faster startup
+        console.time('[Startup] Module Loading');
+        
+        // Define module loaders - each returns the initialized module
+        const loadModules = () => {
+            const modules = {};
+            
+            // Load all modules in parallel using Promise.all
+            return Promise.all([
+                // Critical modules (always needed)
+                Promise.resolve().then(() => modules.appApi = require('./api/app')(signalRBridge, app)),
+                Promise.resolve().then(() => modules.browserWindows = require('./api/browserWindows')(signalRBridge, app)),
+                Promise.resolve().then(() => modules.commandLine = require('./api/commandLine')(signalRBridge, app)),
+                Promise.resolve().then(() => modules.webContents = require('./api/webContents')(signalRBridge)),
+                Promise.resolve().then(() => modules.ipc = require('./api/ipc')(signalRBridge)),
+                Promise.resolve().then(() => modules.menu = require('./api/menu')(signalRBridge)),
+                
+                // Secondary modules (commonly used)
+                Promise.resolve().then(() => modules.dialogApi = require('./api/dialog')(signalRBridge)),
+                Promise.resolve().then(() => modules.notification = require('./api/notification')(signalRBridge)),
+                Promise.resolve().then(() => modules.shellApi = require('./api/shell')(signalRBridge)),
+                Promise.resolve().then(() => modules.clipboard = require('./api/clipboard')(signalRBridge)),
+                Promise.resolve().then(() => modules.screen = require('./api/screen')(signalRBridge)),
+                
+                // Utility modules (less frequently used)
+                Promise.resolve().then(() => modules.autoUpdater = require('./api/autoUpdater')(signalRBridge)),
+                Promise.resolve().then(() => modules.tray = require('./api/tray')(signalRBridge)),
+                Promise.resolve().then(() => modules.globalShortcut = require('./api/globalShortcut')(signalRBridge)),
+                Promise.resolve().then(() => modules.nativeTheme = require('./api/nativeTheme')(signalRBridge)),
+                Promise.resolve().then(() => modules.powerMonitor = require('./api/powerMonitor')(signalRBridge)),
+                Promise.resolve().then(() => modules.processApi = require('./api/process')(signalRBridge)),
+                
+                // Platform-specific modules
+                Promise.resolve().then(() => {
+                    if (process.platform === 'darwin') {
+                        modules.dock = require('./api/dock')(signalRBridge, app);
+                    }
+                })
+            ]).then(() => modules);
+        };
+        
+        const modules = await loadModules();
+        
+        // Assign to global variables (for backward compatibility)
+        if (appApi === undefined) appApi = modules.appApi;
+        if (browserWindows === undefined) browserWindows = modules.browserWindows;
+        if (commandLine === undefined) commandLine = modules.commandLine;
+        if (autoUpdater === undefined) autoUpdater = modules.autoUpdater;
+        if (ipc === undefined) ipc = modules.ipc;
+        if (menu === undefined) menu = modules.menu;
+        if (dialogApi === undefined) dialogApi = modules.dialogApi;
+        if (notification === undefined) notification = modules.notification;
+        if (tray === undefined) tray = modules.tray;
+        if (webContents === undefined) webContents = modules.webContents;
+        if (globalShortcut === undefined) globalShortcut = modules.globalShortcut;
+        if (clipboard === undefined) clipboard = modules.clipboard;
+        if (screen === undefined) screen = modules.screen;
+        if (shellApi === undefined) shellApi = modules.shellApi;
+        if (nativeTheme === undefined) nativeTheme = modules.nativeTheme;
+        if (powerMonitor === undefined) powerMonitor = modules.powerMonitor;
+        if (dock === undefined && modules.dock) dock = modules.dock;
+        if (processApi === undefined) processApi = modules.processApi;
+        
+        console.timeEnd('[Startup] Module Loading');
         
         // Signal to .NET that Electron is fully ready (API modules loaded)
+        console.time('[Startup] Host Ready Signal');
         await signalRBridge.emit('electron-host-ready');
+        console.timeEnd('[Startup] Host Ready Signal');
         
     } catch (error) {
         console.error('[SignalRBridge] Error during startup:', error);
