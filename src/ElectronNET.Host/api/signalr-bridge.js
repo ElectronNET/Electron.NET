@@ -1,6 +1,24 @@
 // SignalR connection module for Electron.NET
 const signalR = require('@microsoft/signalr');
 
+// Safe console wrapper that catches EPIPE errors
+const safeConsole = {
+    log: (...args) => {
+        try {
+            console.log(...args);
+        } catch (e) {
+            // Ignore EPIPE errors when console is detached
+        }
+    },
+    error: (...args) => {
+        try {
+            console.error(...args);
+        } catch (e) {
+            // Ignore EPIPE errors when console is detached
+        }
+    }
+};
+
 class SignalRBridge {
     constructor(hubUrl) {
         this.hubUrl = hubUrl;
@@ -11,27 +29,27 @@ class SignalRBridge {
     }
 
     async connect() {
-        console.log(`[SignalRBridge] Connecting to ${this.hubUrl}`);
+        safeConsole.log(`[SignalRBridge] Connecting to ${this.hubUrl}`);
 
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(this.hubUrl)
             .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Information)
+            .configureLogging(signalR.LogLevel.None) // Disable SignalR logging to avoid EPIPE
             .build();
 
         // Handle reconnection
         this.connection.onreconnecting((error) => {
-            console.log(`[SignalRBridge] Connection lost. Reconnecting...`, error);
+            safeConsole.log(`[SignalRBridge] Connection lost. Reconnecting...`, error);
             this.isConnected = false;
         });
 
         this.connection.onreconnected((connectionId) => {
-            console.log(`[SignalRBridge] Reconnected with ID: ${connectionId}`);
+            safeConsole.log(`[SignalRBridge] Reconnected with ID: ${connectionId}`);
             this.isConnected = true;
         });
 
         this.connection.onclose((error) => {
-            console.log(`[SignalRBridge] Connection closed`, error);
+            safeConsole.log(`[SignalRBridge] Connection closed`, error);
             this.isConnected = false;
         });
 
@@ -41,15 +59,15 @@ class SignalRBridge {
         try {
             await this.connection.start();
             this.isConnected = true;
-            console.log(`[SignalRBridge] Connected successfully`);
+            safeConsole.log(`[SignalRBridge] Connected successfully`);
             
             // Register with the hub
             await this.connection.invoke('RegisterElectronClient');
-            console.log(`[SignalRBridge] Registered as Electron client`);
+            safeConsole.log(`[SignalRBridge] Registered as Electron client`);
             
             return true;
         } catch (err) {
-            console.error(`[SignalRBridge] Connection failed:`, err);
+            safeConsole.error(`[SignalRBridge] Connection failed:`, err);
             this.isConnected = false;
             return false;
         }
@@ -58,7 +76,7 @@ class SignalRBridge {
     setupMessageHandlers() {
         // Handle generic events from .NET - this is where .NET's Emit() calls arrive
         this.connection.on('event', (eventName, ...args) => {
-            console.log(`[SignalRBridge] Received event: ${eventName}`);
+            safeConsole.log(`[SignalRBridge] Received event: ${eventName}`);
             
             // Check if we have handlers registered for this event
             if (this.eventHandlers.has(eventName)) {
@@ -67,7 +85,7 @@ class SignalRBridge {
                     try {
                         handler(...args);
                     } catch (err) {
-                        console.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
+                        safeConsole.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
                     }
                 });
             }
@@ -80,21 +98,21 @@ class SignalRBridge {
             this.eventHandlers.set(eventName, []);
         }
         this.eventHandlers.get(eventName).push(callback);
-        console.log(`[SignalRBridge] Registered handler for event: ${eventName}`);
+        safeConsole.log(`[SignalRBridge] Registered handler for event: ${eventName}`);
     }
 
     // Socket.io compatibility: emit event (send to .NET)
     async emit(eventName, ...args) {
         if (!this.isConnected) {
-            console.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
+            safeConsole.log(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
             return;
         }
 
         try {
-            console.log(`[SignalRBridge] Emitting event: ${eventName}`);
+            safeConsole.log(`[SignalRBridge] Emitting event: ${eventName}`);
             await this.connection.invoke('ElectronEvent', eventName, ...args);
         } catch (err) {
-            console.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
+            safeConsole.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
             throw err;
         }
     }
@@ -103,7 +121,7 @@ class SignalRBridge {
         if (this.connection) {
             await this.connection.stop();
             this.isConnected = false;
-            console.log(`[SignalRBridge] Disconnected`);
+            safeConsole.log(`[SignalRBridge] Disconnected`);
         }
     }
 }
