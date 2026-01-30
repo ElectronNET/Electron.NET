@@ -75,15 +75,18 @@ class SignalRBridge {
 
     setupMessageHandlers() {
         // Handle generic events from .NET - this is where .NET's Emit() calls arrive
-        this.connection.on('event', (eventName, ...args) => {
+        this.connection.on('event', (eventName, args) => {
             safeConsole.log(`[SignalRBridge] Received event: ${eventName}`);
+            
+            // args is an array from .NET - spread it when calling handlers
+            const argsArray = Array.isArray(args) ? args : [args];
             
             // Check if we have handlers registered for this event
             if (this.eventHandlers.has(eventName)) {
                 const handlers = this.eventHandlers.get(eventName);
                 handlers.forEach(handler => {
                     try {
-                        handler(...args);
+                        handler(...argsArray);
                     } catch (err) {
                         safeConsole.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
                     }
