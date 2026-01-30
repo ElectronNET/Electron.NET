@@ -97,6 +97,11 @@
                     case StartupMethod.UnpackedDotnetFirst:
                         services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirst>();
                         break;
+                    case StartupMethod.PackagedDotnetFirstSignalR:
+                    case StartupMethod.UnpackedDotnetFirstSignalR:
+                        services.AddSignalR();
+                        services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirstSignalR>();
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
