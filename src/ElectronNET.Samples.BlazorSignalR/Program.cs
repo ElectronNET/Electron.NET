@@ -52,6 +52,14 @@ builder.WebHost.UseElectron(args, async () =>
 
 var app = builder.Build();
 
+// Log all HTTP requests for debugging
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"[HTTP] {context.Request.Method} {context.Request.Path}{context.Request.QueryString}");
+    await next();
+    Console.WriteLine($"[HTTP] {context.Request.Method} {context.Request.Path} -> {context.Response.StatusCode}");
+});
+
 // Enable WebSockets (required for SignalR)
 app.UseWebSockets();
 
@@ -70,15 +78,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// Serve static files (CSS, JS, images, etc.)
+app.UseStaticFiles();
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+// UseAntiforgery must be between UseRouting and UseEndpoints
+app.UseAntiforgery();
 
 // Use endpoints for SignalR hub
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ElectronNET.AspNet.Hubs.ElectronHub>("/electron-hub");
 });
-
-app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()
