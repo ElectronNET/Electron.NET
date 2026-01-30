@@ -124,7 +124,20 @@ namespace ElectronNET.AspNet.Runtime
 
         private async void SignalRFacade_Connected(object sender, EventArgs e)
         {
-            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] SignalR connected!");
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] SignalR connected! Waiting for electron-host-ready...");
+            
+            // Register handler for 'electron-host-ready' signal from Electron
+            // This ensures API modules are loaded before we call the app ready callback
+            this.signalRFacade.Once("electron-host-ready", () =>
+            {
+                Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Received electron-host-ready signal");
+                this.OnElectronHostReady();
+            });
+        }
+
+        private async void OnElectronHostReady()
+        {
+            Console.WriteLine("[RuntimeControllerAspNetDotnetFirstSignalR] Electron host is fully ready!");
             this.TransitionState(LifetimeState.Ready);
             
             // Execute the app ready callback

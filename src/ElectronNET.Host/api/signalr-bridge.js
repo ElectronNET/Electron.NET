@@ -110,7 +110,8 @@ class SignalRBridge {
 
         try {
             safeConsole.log(`[SignalRBridge] Emitting event: ${eventName}`);
-            await this.connection.invoke('ElectronEvent', eventName, ...args);
+            // Always pass args as an array to match C# method signature
+            await this.connection.invoke('ElectronEvent', eventName, args);
         } catch (err) {
             safeConsole.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
             throw err;

@@ -4,6 +4,7 @@ namespace ElectronNET.AspNet.Hubs
     using System;
     using System.Threading.Tasks;
     using ElectronNET;
+    using ElectronNET.API;
     using ElectronNET.AspNet.Runtime;
     using ElectronNET.Runtime;
 
@@ -65,17 +66,17 @@ namespace ElectronNET.AspNet.Hubs
         /// Called by Electron to send data back to .NET.
         /// </summary>
         /// <param name="eventName">The event name</param>
-        /// <param name="args">The event arguments</param>
-        public async Task ElectronEvent(string eventName, params object[] args)
+        /// <param name="args">The event arguments as an array</param>
+        public async Task ElectronEvent(string eventName, object[] args)
         {
             Console.WriteLine($"[ElectronHub] Received event from Electron: {eventName}");
             
             // Get the SignalRFacade and trigger the event handlers
             var runtimeController = ElectronNetRuntime.RuntimeController as RuntimeControllerAspNetDotnetFirstSignalR;
-            if (runtimeController?.Socket is ElectronNET.API.SignalRFacade signalRFacade)
+            if (runtimeController?.SignalRSocket is SignalRFacade signalRFacade)
             {
                 // Invoke the event handlers registered via On/Once
-                signalRFacade.TriggerEvent(eventName, args);
+                signalRFacade.TriggerEvent(eventName, args ?? Array.Empty<object>());
             }
             
             await Task.CompletedTask;

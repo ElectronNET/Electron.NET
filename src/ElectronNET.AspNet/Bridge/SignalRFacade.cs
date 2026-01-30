@@ -2,6 +2,7 @@ namespace ElectronNET.API
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
     using ElectronNET.API.Bridge;
@@ -63,9 +64,14 @@ namespace ElectronNET.API
             {
                 _eventHandlers[eventName] = obj =>
                 {
-                    if (obj is T typedValue)
+                    var converted = ConvertToType<T>(obj);
+                    if (converted != null)
                     {
-                        Task.Run(() => action(typedValue));
+                        Task.Run(() => action(converted));
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine($"[SignalRFacade] Failed to convert event data to type {typeof(T).Name}");
                     }
                 };
             }
@@ -90,9 +96,14 @@ namespace ElectronNET.API
                 _eventHandlers[eventName] = obj =>
                 {
                     this.Off(eventName);
-                    if (obj is T typedValue)
+                    var converted = ConvertToType<T>(obj);
+                    if (converted != null)
                     {
-                        Task.Run(() => action(typedValue));
+                        Task.Run(() => action(converted));
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine($"[SignalRFacade] Failed to convert event data to type {typeof(T).Name} for event '{eventName}'");
                     }
                 };
             }
@@ -130,17 +141,88 @@ namespace ElectronNET.API
 
         public void TriggerEvent(string eventName, params object[] args)
         {
-            Console.WriteLine($"[SignalRFacade] Triggering event '{eventName}' for .NET handlers");
+            Console.WriteLine($"[SignalRFacade] Triggering event '{eventName}' for .NET handlers (args: {args.Length})");
             
             if (_eventHandlers.TryGetValue(eventName, out var handler))
             {
                 // If single arg, pass it directly; otherwise pass the array
                 var data = args.Length == 1 ? args[0] : args;
+                Console.WriteLine($"[SignalRFacade] Data type: {data?.GetType().Name ?? "null"}");
                 handler(data);
             }
             else
             {
                 Console.WriteLine($"[SignalRFacade] No handler registered for event '{eventName}'");
+            }
+        }
+
+        /// <summary>
+        /// Converts an object to the specified type, handling JsonElement and numeric conversions.
+        /// </summary>
+        private static T ConvertToType<T>(object obj)
+        {
+            if (obj == null)
+                return default;
+
+            // Direct type match
+            if (obj is T typedValue)
+                return typedValue;
+
+            var targetType = typeof(T);
+            
+            // Handle JsonElement (common from SignalR deserialization)
+            if (obj is JsonElement jsonElement)
+            {
+                try
+                {
+                    return JsonSerializer.Deserialize<T>(jsonElement.GetRawText());
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[SignalRFacade] JsonElement deserialization failed: {ex.Message}");
+                    return default;
+                }
+            }
+
+            // Handle numeric conversions (SignalR often sends numbers as long/double)
+            try
+            {
+                if (targetType == typeof(int) || targetType == typeof(int?))
+                {
+                    return (T)(object)Convert.ToInt32(obj);
+                }
+                if (targetType == typeof(long) || targetType == typeof(long?))
+                {
+                    return (T)(object)Convert.ToInt64(obj);
+                }
+                if (targetType == typeof(double) || targetType == typeof(double?))
+                {
+                    return (T)(object)Convert.ToDouble(obj);
+                }
+                if (targetType == typeof(bool) || targetType == typeof(bool?))
+                {
+                    return (T)(object)Convert.ToBoolean(obj);
+                }
+                if (targetType == typeof(string))
+                {
+                    return (T)(object)obj.ToString();
+                }
+
+                // For arrays, try JSON serialization roundtrip
+                if (targetType.IsArray && obj is object[] arr)
+                {
+                    var json = JsonSerializer.Serialize(arr);
+                    return JsonSerializer.Deserialize<T>(json);
+                }
+
+                // Last resort: try to serialize and deserialize
+                var serialized = JsonSerializer.Serialize(obj);
+                return JsonSerializer.Deserialize<T>(serialized);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[SignalRFacade] Type conversion failed from {obj.GetType().Name} to {targetType.Name}: {ex.Message}");
+                return default;
             }
         }
 

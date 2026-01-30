@@ -423,25 +423,8 @@ function startSocketApiBridge(port) {
 }
 
 async function startSignalRApiBridge(baseUrl) {
-    try {
-        console.log('[SignalRBridge] Starting SignalR API bridge...');
-        console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
-        
-        const { SignalRBridge } = require('./api/signalr-bridge');
-        const hubUrl = `${baseUrl}/electron-hub`;
-        
-        console.log(`[SignalRBridge] Connecting to hub: ${hubUrl}`);
-        
-        const signalRBridge = new SignalRBridge(hubUrl);
-        const connected = await signalRBridge.connect();
-        
-        console.log(`[SignalRBridge] connect() returned: ${connected}`);
-    } catch (error) {
-        console.error('[SignalRBridge] FATAL ERROR in startSignalRApiBridge:', error);
-        console.error('[SignalRBridge] Stack:', error.stack);
-        app.quit();
-        return;
-    }
+    console.log('[SignalRBridge] Starting SignalR API bridge...');
+    console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
     
     const { SignalRBridge } = require('./api/signalr-bridge');
     const hubUrl = `${baseUrl}/electron-hub`;
@@ -451,7 +434,6 @@ async function startSignalRApiBridge(baseUrl) {
     const signalRBridge = new SignalRBridge(hubUrl);
     
     try {
-        console.log('[SignalRBridge] About to call connect()...');
         const connected = await signalRBridge.connect();
         console.log(`[SignalRBridge] connect() returned: ${connected}`);
         
@@ -494,8 +476,13 @@ async function startSignalRApiBridge(baseUrl) {
         
         console.log('[SignalRBridge] Startup complete');
         
+        // Signal to .NET that Electron is fully ready (API modules loaded)
+        console.log('[SignalRBridge] Signaling electron-host-ready to .NET');
+        await signalRBridge.emit('electron-host-ready');
+        
     } catch (error) {
         console.error('[SignalRBridge] Error during startup:', error);
+        console.error('[SignalRBridge] Stack:', error.stack);
         app.quit();
     }
 }
