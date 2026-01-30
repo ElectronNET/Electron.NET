@@ -55,8 +55,8 @@ if (app.commandLine.hasSwitch('electronforcedport')) {
     electronforcedport = app.commandLine.getSwitchValue('electronforcedport');
 }
 
-if (app.commandLine.hasSwitch('electronUrl')) {
-    electronUrl = app.commandLine.getSwitchValue('electronUrl');
+if (app.commandLine.hasSwitch('electronurl')) {
+    electronUrl = app.commandLine.getSwitchValue('electronurl');
     console.log(`[Electron] Using URL from .NET: ${electronUrl}`);
 }
 

@@ -96,7 +96,7 @@ namespace ElectronNET.AspNet.Runtime
         {
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var flag = isUnPacked ? "--unpackeddotnetsignalr" : "--dotnetpackedsignalr";
-            var args = $"{flag} --electronUrl={this.actualUrl}";
+            var args = $"{flag} --electronurl={this.actualUrl}";
             
             Console.WriteLine($"[RuntimeControllerAspNetDotnetFirstSignalR] Launching: {args}");
 
