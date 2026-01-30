@@ -228,6 +228,156 @@ Blazor Server already uses SignalR for component communication (`/_blazor` hub).
 - Fixed middleware order: `UseAntiforgery()` must be between `UseRouting()` and `UseEndpoints()`
 - Updated scoped CSS asset reference to use lowercase name matching .NET 9+ convention
 
+## Authentication & Security
+
+### Token-Based Authentication (Multi-User Protection)
+
+SignalR mode includes built-in authentication to prevent unauthorized connections in multi-user scenarios (e.g., Windows Server with Terminal Services/RDP).
+
+**Threat Model**: On shared servers, multiple users can run the same application simultaneously. Without authentication, User A's Electron process could potentially connect to User B's ASP.NET backend.
+
+**Solution**: Token-based authentication with secure cookies.
+
+### Authentication Flow
+
+1. **.NET generates token**: When launching Electron, `RuntimeControllerAspNetDotnetFirstSignalR` generates a cryptographically secure GUID (128-bit entropy)
+2. **Token passed via command-line**: Electron receives `--authtoken=<guid>` parameter
+3. **Token appended to URLs**: 
+   - Initial page load: `http://localhost:PORT/?token=<guid>`
+   - SignalR connection: `http://localhost:PORT/electron-hub?token=<guid>`
+4. **Middleware validates token**: `ElectronAuthenticationMiddleware` checks every HTTP request
+5. **Cookie set on first request**: After successful token validation, secure HttpOnly cookie is set
+6. **Subsequent requests use cookie**: No token in URLs after initial authentication
+
+### Security Properties
+
+- **Cookie Settings**:
+  - `HttpOnly`: true (prevents JavaScript access, XSS protection)
+  - `SameSite`: Strict (prevents CSRF)
+  - `Path`: / (applies to all routes)
+  - `Secure`: false (localhost is HTTP, not HTTPS)
+  - `IsEssential`: true (required for app to function)
+  - **Lifetime**: Session scope (expires when Electron closes)
+
+- **Token Validation**:
+  - Constant-time string comparison (prevents timing attacks)
+  - Token stored in singleton service (one per .NET instance)
+  - Never logged in full (only first 8 characters for debugging)
+
+- **Protection Scope**:
+  - All HTTP endpoints (Blazor pages, static files, API calls)
+  - SignalR hub connection (negotiate and all hub traffic)
+  - Both initial request and cookie-based requests validated
+
+### What This Protects Against
+
+✅ **Protected**:
+- Cross-user connections (User A → User B's backend)
+- Port scanning attacks from other users
+- Accidental connections from misconfigured processes
+
+❌ **NOT Protected Against** (By Design):
+- Malicious same-user processes with debugger access
+- Process memory inspection tools (same privilege level)
+- Command-line parameter visibility (same user can see all processes)
+
+**Rationale**: Same-user attacks already have full access to process memory, files, and cookies. Token-based authentication focuses on cross-user isolation, which is the primary threat in multi-user environments.
+
+### Implementation Components
+
+1. **IElectronAuthenticationService** (`src/ElectronNET.AspNet/Services/`)
+   - Singleton service storing expected token
+   - Thread-safe with lock-based validation
+   - Constant-time comparison to prevent timing attacks
+
+2. **ElectronAuthenticationMiddleware** (`src/ElectronNET.AspNet/Middleware/`)
+   - Validates every HTTP request before routing
+   - Checks cookie first, then token query parameter
+   - Sets cookie on first valid token
+   - Returns 401 for invalid/missing authentication
+   - Structured logging for security monitoring
+
+3. **Token Generation** (`RuntimeControllerAspNetDotnetFirstSignalR.cs`)
+   - `Guid.NewGuid().ToString("N")` = 32 hex characters
+   - Called in `LaunchElectron()` method
+   - Registered with authentication service immediately
+
+4. **Electron Integration** (`main.js`, `signalr-bridge.js`)
+   - Extracts token from `--authtoken` parameter
+   - Stores in `global.authToken` for module access
+   - Appends to browser window URL and SignalR connection URL
+
+### Usage in Custom Applications
+
+Authentication is **enabled by default** in SignalR mode. No additional configuration required beyond service registration:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Register authentication service (singleton)
+builder.Services.AddSingleton<IElectronAuthenticationService, ElectronAuthenticationService>();
+
+builder.Services.AddElectron();
+
+var app = builder.Build();
+
+// Register middleware BEFORE UseRouting()
+app.UseMiddleware<ElectronAuthenticationMiddleware>();
+
+app.UseRouting();
+app.MapHub<ElectronHub>("/electron-hub");
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.Run();
+```
+
+The rest is automatic:
+- Token generation happens when Electron launches
+- Token validation happens on every request
+- Cookie management is handled by the middleware
+
+### Logging & Monitoring
+
+Authentication events are logged with structured logging:
+
+**Successful authentication**:
+```
+[Information] Authentication successful: Setting cookie for path /
+```
+
+**Failed authentication**:
+```
+[Warning] Authentication failed: Invalid token (prefix: a3f8b2c1...) for path / from 127.0.0.1
+[Warning] Authentication failed: No cookie or token provided for path /api/data from 127.0.0.1
+[Warning] Authentication failed: Invalid cookie for path /_blazor from 127.0.0.1
+```
+
+**SignalR connection failures**:
+```
+[SignalRBridge] Authentication failed: The authentication token is invalid or missing.
+[SignalRBridge] Please ensure the --authtoken parameter is correctly passed to Electron.
+```
+
+Log failed authentication attempts for security monitoring and troubleshooting.
+
+### Testing Multi-User Scenarios
+
+To test authentication in multi-user environments:
+
+1. **Run as different Windows users**:
+   ```powershell
+   # User A session
+   dotnet run
+   
+   # User B session (different RDP/Terminal Services session)
+   dotnet run
+   ```
+
+2. **Verify isolation**: User A's Electron cannot access User B's backend
+3. **Check logs**: Failed auth attempts should be logged
+4. **Monitor tokens**: Each instance generates unique token
+
+For development testing on single-user machines, simulate by running multiple instances and attempting to connect with wrong/missing tokens.
+
 ## Backward Compatibility
 
 This is a **new optional startup mode** - all existing modes continue to work unchanged:
@@ -244,15 +394,19 @@ Existing applications do not need to change. SignalR mode is opt-in via command-
 - `src/ElectronNET.AspNet/Bridge/SignalRFacade.cs` (225 lines)
 - `src/ElectronNET.AspNet/Hubs/ElectronHub.cs` (108 lines)
 - `src/ElectronNET.AspNet/Runtime/Controllers/RuntimeControllerAspNetDotnetFirstSignalR.cs` (163 lines)
+- `src/ElectronNET.AspNet/Services/IElectronAuthenticationService.cs` (20 lines)
+- `src/ElectronNET.AspNet/Services/ElectronAuthenticationService.cs` (65 lines)
+- `src/ElectronNET.AspNet/Middleware/ElectronAuthenticationMiddleware.cs` (105 lines)
 - `src/ElectronNET.Host/api/signalr-bridge.js` (125 lines)
 
 **Modified Files**:
 - `src/ElectronNET.AspNet/API/WebHostBuilderExtensions.cs` - Added SignalR service registration
-- `src/ElectronNET.Host/main.js` - Added SignalR startup flow
+- `src/ElectronNET.Host/main.js` - Added SignalR startup flow and token extraction
+- `src/ElectronNET.Host/api/browserWindows.js` - Token appended to window URLs
 - `src/ElectronNET.Host/package.json` - Added `@microsoft/signalr` dependency
-- `src/ElectronNET.Samples.BlazorSignalR/Program.cs` - Sample implementation
+- `src/ElectronNET.Samples.BlazorSignalR/Program.cs` - Sample with authentication
 
-**Total Changes**: ~1,030 lines added
+**Total Changes**: ~1,220 lines added
 
 ## Testing Recommendations
 
@@ -290,3 +444,7 @@ The implementation is considered complete and functional:
 - ✅ Both SignalR hubs coexist (Electron + Blazor)
 - ✅ Clean codebase with minimal debug logging
 - ✅ Comprehensive inline documentation
+- ✅ Token-based authentication for multi-user scenarios
+- ✅ Secure cookie-based session management
+- ✅ Structured logging for security monitoring
+- ✅ Protection against cross-user connection attempts
