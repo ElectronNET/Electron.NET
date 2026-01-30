@@ -33,7 +33,15 @@ if (app.commandLine.hasSwitch('manifest')) {
 
 console.log('Entry!!!:  ');
 
-if (app.commandLine.hasSwitch('unpackedelectron')) {
+// Check for SignalR modes first (these take precedence)
+if (app.commandLine.hasSwitch('unpackeddotnetsignalr')) {
+    unpackeddotnetsignalr = true;
+}
+else if (app.commandLine.hasSwitch('dotnetpackedsignalr')) {
+    dotnetpackedsignalr = true;
+}
+// Then check legacy modes
+else if (app.commandLine.hasSwitch('unpackedelectron')) {
     unpackedelectron = true;
 }
 else if (app.commandLine.hasSwitch('unpackeddotnet')) {
@@ -41,12 +49,6 @@ else if (app.commandLine.hasSwitch('unpackeddotnet')) {
 }
 else if (app.commandLine.hasSwitch('dotnetpacked')) {
     dotnetpacked = true;
-}
-else if (app.commandLine.hasSwitch('unpackeddotnetsignalr')) {
-    unpackeddotnetsignalr = true;
-}
-else if (app.commandLine.hasSwitch('dotnetpackedsignalr')) {
-    dotnetpackedsignalr = true;
 }
 
 if (app.commandLine.hasSwitch('electronforcedport')) {
