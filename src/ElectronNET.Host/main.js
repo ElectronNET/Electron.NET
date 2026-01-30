@@ -22,7 +22,10 @@ let manifestJsonFileName = 'package.json';
 let unpackedelectron = false;
 let unpackeddotnet = false;
 let dotnetpacked = false;
+let unpackeddotnetsignalr = false;
+let dotnetpackedsignalr = false;
 let electronforcedport;
+let electronUrl;
 
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
@@ -39,9 +42,20 @@ else if (app.commandLine.hasSwitch('unpackeddotnet')) {
 else if (app.commandLine.hasSwitch('dotnetpacked')) {
     dotnetpacked = true;
 }
+else if (app.commandLine.hasSwitch('unpackeddotnetsignalr')) {
+    unpackeddotnetsignalr = true;
+}
+else if (app.commandLine.hasSwitch('dotnetpackedsignalr')) {
+    dotnetpackedsignalr = true;
+}
 
 if (app.commandLine.hasSwitch('electronforcedport')) {
     electronforcedport = app.commandLine.getSwitchValue('electronforcedport');
+}
+
+if (app.commandLine.hasSwitch('electronUrl')) {
+    electronUrl = app.commandLine.getSwitchValue('electronUrl');
+    console.log(`[Electron] Using URL from .NET: ${electronUrl}`);
 }
 
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
@@ -152,6 +166,19 @@ app.on('ready', () => {
         startSplashScreen();
     }
 
+    // Check if we're using SignalR-based startup
+    if (unpackeddotnetsignalr || dotnetpackedsignalr) {
+        if (!electronUrl) {
+            console.error('[Electron] ERROR: SignalR mode requires --electronUrl parameter');
+            app.quit();
+            return;
+        }
+        console.log('[Electron] Starting in SignalR mode');
+        startSignalRApiBridge(electronUrl);
+        return;
+    }
+
+    // Legacy socket.io startup
     if (electronforcedport) {
         console.log('Electron Socket IO (forced) Port: ' + electronforcedport);
         startSocketApiBridge(electronforcedport);
@@ -371,6 +398,45 @@ function startSocketApiBridge(port) {
 
         console.log('Electron Socket: startup complete.');
     });
+}
+
+async function startSignalRApiBridge(baseUrl) {
+    console.log('[SignalRBridge] Starting SignalR API bridge...');
+    console.log(`[SignalRBridge] Base URL: ${baseUrl}`);
+    
+    const { SignalRBridge } = require('./api/signalr-bridge');
+    const hubUrl = `${baseUrl}/electron-hub`;
+    
+    console.log(`[SignalRBridge] Connecting to hub: ${hubUrl}`);
+    
+    const signalRBridge = new SignalRBridge(hubUrl);
+    
+    try {
+        const connected = await signalRBridge.connect();
+        
+        if (!connected) {
+            console.error('[SignalRBridge] Failed to connect to SignalR hub');
+            app.quit();
+            return;
+        }
+        
+        console.log('[SignalRBridge] Successfully connected');
+        
+        // Store the bridge globally for API access
+        global['electronsignalr'] = signalRBridge;
+        
+        // Load API modules with SignalR bridge
+        console.log('[SignalRBridge] Loading API components...');
+        
+        // TODO: Load API modules adapted for SignalR
+        // For now, just log that we're connected
+        
+        console.log('[SignalRBridge] Startup complete');
+        
+    } catch (error) {
+        console.error('[SignalRBridge] Error during startup:', error);
+        app.quit();
+    }
 }
 
 function startAspCoreBackend(electronPort) {
