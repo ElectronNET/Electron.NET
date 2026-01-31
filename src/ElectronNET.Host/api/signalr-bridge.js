@@ -11,6 +11,30 @@
  */
 const signalR = require('@microsoft/signalr');
 
+// Suppress EPIPE errors at the process stdout/stderr level
+// This prevents the error dialog when the .NET process terminates before Electron
+if (process.stdout && !process.stdout.listenerCount('error')) {
+    process.stdout.on('error', (err) => {
+        if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_WRITE_AFTER_END') {
+            // Ignore EPIPE errors - this happens when .NET process dies first
+            return;
+        }
+        // Re-throw other errors
+        throw err;
+    });
+}
+
+if (process.stderr && !process.stderr.listenerCount('error')) {
+    process.stderr.on('error', (err) => {
+        if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_WRITE_AFTER_END') {
+            // Ignore EPIPE errors - this happens when .NET process dies first
+            return;
+        }
+        // Re-throw other errors
+        throw err;
+    });
+}
+
 // Safe console wrapper that catches EPIPE errors
 const safeConsole = {
     log: (...args) => {
