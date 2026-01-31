@@ -2,6 +2,8 @@
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
 const path = require("path");
+const { logger } = require("../logger");
+
 const windows = (global["browserWindows"] =
     global["browserWindows"] || []);
 let readyToShowWindowsIds = [];
@@ -248,7 +250,7 @@ module.exports = (socket, app) => {
         if (app.commandLine.hasSwitch("clear-cache") &&
             app.commandLine.getSwitchValue("clear-cache")) {
             window.webContents.session.clearCache();
-            console.log("auto clear-cache active for new window.");
+            logger.debug("auto clear-cache active for new window.");
         }
         // set main window url
         if (app["mainWindowURL"] == undefined || app["mainWindowURL"] == "") {
@@ -478,7 +480,7 @@ module.exports = (socket, app) => {
             }
         }
         catch (e) {
-            console.warn("setRepresentedFilename failed (likely unsupported platform):", e);
+            logger.warn("setRepresentedFilename failed (likely unsupported platform):", e);
         }
     });
     socket.on("browserWindowGetRepresentedFilename", (id) => {
@@ -490,7 +492,7 @@ module.exports = (socket, app) => {
             }
         }
         catch (e) {
-            console.warn("getRepresentedFilename failed (likely unsupported platform):", e);
+            logger.warn("getRepresentedFilename failed (likely unsupported platform):", e);
         }
         electronSocket.emit("browserWindow-getRepresentedFilename-completed", pathname);
     });

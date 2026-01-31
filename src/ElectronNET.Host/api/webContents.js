@@ -2,6 +2,8 @@
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
 const fs = require("fs");
+const { logger } = require("../logger");
+
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -271,7 +273,7 @@ module.exports = (socket) => {
             electronSocket.emit("webContents-loadURL-complete" + id);
         })
             .catch((error) => {
-            console.error(error);
+            logger.error(error);
             electronSocket.emit("webContents-loadURL-error" + id, error);
         });
     });
