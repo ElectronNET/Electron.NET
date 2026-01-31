@@ -29,8 +29,16 @@ builder.Services.AddSingleton<IElectronAuthenticationService, ElectronAuthentica
 builder.Services.AddElectron();
 
 // Configure Electron.NET with SignalR mode
+// Note: Callback is registered now but executes after app starts
+IServiceProvider? serviceProvider = null;
+
 builder.WebHost.UseElectron(args, async () =>
 {
+    if (serviceProvider is null)
+    {
+        throw new InvalidOperationException("ServiceProvider not initialized. This callback should only execute after app.Build().");
+    }
+
     var options = new BrowserWindowOptions
     {
         Show = false,
@@ -39,7 +47,9 @@ builder.WebHost.UseElectron(args, async () =>
         IsRunningBlazor = true,
     };
 
-    Console.WriteLine($"App startup time until Electron launch: {watch.ElapsedMilliseconds} ms");
+    // Log startup time using ILogger - serviceProvider is captured after app.Build()
+    var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Electron.Startup");
+    logger.LogInformation("App startup time until Electron launch: {ElapsedMilliseconds} ms", watch.ElapsedMilliseconds);
 
     if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
         options.AutoHideMenuBar = true;
@@ -50,6 +60,7 @@ builder.WebHost.UseElectron(args, async () =>
 });
 
 var app = builder.Build();
+serviceProvider = app.Services; // Capture for use in Electron callback above
 
 // Register authentication middleware FIRST (before routing, static files, etc.)
 app.UseMiddleware<ElectronAuthenticationMiddleware>();
