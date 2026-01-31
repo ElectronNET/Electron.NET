@@ -10,6 +10,7 @@
     using ElectronNET.Runtime.Helpers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// Provides extension methods for <see cref="IWebHostBuilder"/> to enable Electron.NET
@@ -90,7 +91,7 @@
                 builder = builder.UseUrls($"http://{host}:{webPort}");
             }
 
-            builder = builder.ConfigureServices(services =>
+            builder = builder.ConfigureServices((context, services) =>
             {
                 services.AddTransient<IStartupFilter, ServerReadyStartupFilter>();
                 services.AddSingleton<AspNetLifetimeAdapter>();
@@ -109,8 +110,10 @@
                     case StartupMethod.UnpackedDotnetFirstSignalR:
                         services.AddSignalR(options =>
                         {
-                            // Enable detailed errors for debugging
-                            options.EnableDetailedErrors = true;
+                            // Enable detailed errors only in development for security
+                            options.EnableDetailedErrors =
+                                DebuggerHelper.IsAttached || 
+                                context.HostingEnvironment.IsDevelopment();
                         });
                         services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirstSignalR>();
                         break;
