@@ -10,29 +10,38 @@
  * - Supports automatic reconnection with configurable logging level
  */
 const signalR = require('@microsoft/signalr');
+const { app } = require('electron');
+
+// Flag to track if we've already initiated shutdown due to EPIPE
+let isShuttingDownFromEPIPE = false;
+
+// Handle EPIPE errors at the process stdout/stderr level
+// When the pipe breaks (e.g., .NET process terminates), quit Electron gracefully
+const handlePipeError = (err) => {
+    if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_WRITE_AFTER_END') {
+        // Pipe is broken - the .NET process has terminated
+        if (!isShuttingDownFromEPIPE) {
+            isShuttingDownFromEPIPE = true;
+            // Give a brief moment for any pending operations, then quit
+            setImmediate(() => {
+                if (app && app.quit) {
+                    app.quit();
+                }
+            });
+        }
+        return;
+    }
+    // Re-throw other errors
+    throw err;
+};
 
 // Suppress EPIPE errors at the process stdout/stderr level
-// This prevents the error dialog when the .NET process terminates before Electron
 if (process.stdout && !process.stdout.listenerCount('error')) {
-    process.stdout.on('error', (err) => {
-        if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_WRITE_AFTER_END') {
-            // Ignore EPIPE errors - this happens when .NET process dies first
-            return;
-        }
-        // Re-throw other errors
-        throw err;
-    });
+    process.stdout.on('error', handlePipeError);
 }
 
 if (process.stderr && !process.stderr.listenerCount('error')) {
-    process.stderr.on('error', (err) => {
-        if (err.code === 'EPIPE' || err.code === 'ERR_STREAM_WRITE_AFTER_END') {
-            // Ignore EPIPE errors - this happens when .NET process dies first
-            return;
-        }
-        // Re-throw other errors
-        throw err;
-    });
+    process.stderr.on('error', handlePipeError);
 }
 
 // Safe console wrapper that catches EPIPE errors
