@@ -7,9 +7,6 @@
 
     internal class LaunchOrderDetector
     {
-        // Cache debugger state to avoid multiple expensive checks
-        private static bool? _debuggerAttached;
-        
         public static bool CheckIsLaunchedByDotNet()
         {
             var tests = new List<Func<bool?>>();
@@ -64,13 +61,7 @@
 
         private static bool? CheckIsDotNetStartup3()
         {
-            // Cache debugger state to avoid multiple expensive checks
-            if (_debuggerAttached == null)
-            {
-                _debuggerAttached = Debugger.IsAttached;
-            }
-            
-            if (_debuggerAttached.Value)
+            if (DebuggerHelper.IsAttached)
             {
                 return true;
             }
