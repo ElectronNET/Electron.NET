@@ -1,8 +1,10 @@
 using ElectronNET.API;
 using ElectronNET.API.Entities;
-using ElectronNET.AspNet.Services;
 using ElectronNET.AspNet.Middleware;
-using ElectronNET.Samples.BlazorSignalR.Components;
+using ElectronNET.AspNet.Services;
+
+var watch = new System.Diagnostics.Stopwatch();
+watch.Start();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,8 @@ builder.WebHost.UseElectron(args, async () =>
         Height = 800,
         IsRunningBlazor = true,
     };
+
+    Console.WriteLine($"App startup time until Electron launch: {watch.ElapsedMilliseconds} ms");
 
     if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux())
         options.AutoHideMenuBar = true;
