@@ -20,6 +20,13 @@ const safeConsole = {
             // Ignore EPIPE errors when console is detached
         }
     },
+    warn: (...args) => {
+        try {
+            console.warn(...args);
+        } catch (e) {
+            // Ignore EPIPE errors when console is detached
+        }
+    },
     error: (...args) => {
         try {
             console.error(...args);
@@ -28,6 +35,26 @@ const safeConsole = {
         }
     }
 };
+
+// Custom logger for SignalR that uses safeConsole to prevent EPIPE errors
+class SafeLogger {
+    log(logLevel, message) {
+        switch (logLevel) {
+            case signalR.LogLevel.Critical:
+            case signalR.LogLevel.Error:
+                safeConsole.error(`[SignalR] ${message}`);
+                break;
+            case signalR.LogLevel.Warning:
+                safeConsole.warn(`[SignalR] ${message}`);
+                break;
+            case signalR.LogLevel.Information:
+            case signalR.LogLevel.Debug:
+            case signalR.LogLevel.Trace:
+                safeConsole.log(`[SignalR] ${message}`);
+                break;
+        }
+    }
+}
 
 class SignalRBridge {
     constructor(hubUrl, authToken) {
@@ -46,12 +73,12 @@ class SignalRBridge {
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(connectionUrl)
             .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Warning)
+            .configureLogging(new SafeLogger())
             .build();
 
         // Handle reconnection
         this.connection.onreconnecting((error) => {
-            console.error(`[SignalRBridge] Connection lost. Reconnecting...`, error);
+            safeConsole.error(`[SignalRBridge] Connection lost. Reconnecting...`, error);
             this.isConnected = false;
         });
 
@@ -61,7 +88,7 @@ class SignalRBridge {
 
         this.connection.onclose((error) => {
             if (error) {
-                console.error(`[SignalRBridge] Connection closed:`, error);
+                safeConsole.error(`[SignalRBridge] Connection closed:`, error);
             }
             this.isConnected = false;
         });
@@ -80,10 +107,10 @@ class SignalRBridge {
         } catch (err) {
             // Check if this is an authentication error
             if (err.message && err.message.includes('401')) {
-                console.error(`[SignalRBridge] Authentication failed: The authentication token is invalid or missing.`);
-                console.error(`[SignalRBridge] Please ensure the --authtoken parameter is correctly passed to Electron.`);
+                safeConsole.error(`[SignalRBridge] Authentication failed: The authentication token is invalid or missing.`);
+                safeConsole.error(`[SignalRBridge] Please ensure the --authtoken parameter is correctly passed to Electron.`);
             } else {
-                console.error(`[SignalRBridge] Connection failed:`, err);
+                safeConsole.error(`[SignalRBridge] Connection failed:`, err);
             }
             this.isConnected = false;
             return false;
@@ -103,7 +130,7 @@ class SignalRBridge {
                     try {
                         handler(...argsArray);
                     } catch (err) {
-                        console.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
+                        safeConsole.error(`[SignalRBridge] Error in event handler for ${eventName}:`, err);
                     }
                 });
             }
@@ -121,7 +148,7 @@ class SignalRBridge {
     // Socket.io compatibility: emit event (send to .NET)
     async emit(eventName, ...args) {
         if (!this.isConnected) {
-            console.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
+            safeConsole.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
             return;
         }
 
@@ -129,7 +156,7 @@ class SignalRBridge {
             // Always pass args as an array to match C# method signature
             await this.connection.invoke('ElectronEvent', eventName, args);
         } catch (err) {
-            console.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
+            safeConsole.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
             throw err;
         }
     }
