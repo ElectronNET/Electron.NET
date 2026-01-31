@@ -38,7 +38,8 @@
                 }
             }
 
-            Console.WriteLine("Probe scored for package mode:   Unpackaged {0} vs. {1} Packaged", scoreUnpackaged, scorePackaged);
+            // Debug trace - useful for diagnostics
+            System.Diagnostics.Debug.WriteLine($"Probe scored for package mode:   Unpackaged {scoreUnpackaged} vs. {scorePackaged} Packaged");
             return scoreUnpackaged > scorePackaged;
         }
 
