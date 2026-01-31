@@ -536,7 +536,7 @@
 
             if (e.Data != null)
             {
-                Console.WriteLine("|| " + e.Data);
+                System.Diagnostics.Debug.WriteLine(e.Data);
             }
             else
             {
@@ -570,7 +570,7 @@
 
             if (e.Data != null)
             {
-                Console.WriteLine("|| " + e.Data);
+                System.Diagnostics.Debug.WriteLine(e.Data);
             }
             else
             {

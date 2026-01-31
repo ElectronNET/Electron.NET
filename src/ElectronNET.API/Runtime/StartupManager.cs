@@ -18,7 +18,7 @@
             try
             {
                 ElectronNetRuntime.BuildInfo = this.GatherBuildInfo();
-                Console.WriteLine($"[Startup] GatherBuildInfo: {startTime.ElapsedMilliseconds}ms");
+                System.Diagnostics.Debug.WriteLine($"[Startup] GatherBuildInfo: {startTime.ElapsedMilliseconds}ms");
             }
             catch (Exception ex)
             {
@@ -27,18 +27,18 @@
 
             this.CollectProcessData();
             this.SetElectronExecutable();
-            Console.WriteLine($"[Startup] CollectProcessData+SetElectronExecutable: {startTime.ElapsedMilliseconds}ms");
+            System.Diagnostics.Debug.WriteLine($"[Startup] CollectProcessData+SetElectronExecutable: {startTime.ElapsedMilliseconds}ms");
 
             ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
-            Console.WriteLine($"Evaluated StartupMethod: {ElectronNetRuntime.StartupMethod}");
-            Console.WriteLine($"[Startup] DetectAppTypeAndStartup: {startTime.ElapsedMilliseconds}ms");
+            System.Diagnostics.Debug.WriteLine($"Evaluated StartupMethod: {ElectronNetRuntime.StartupMethod}");
+            System.Diagnostics.Debug.WriteLine($"[Startup] DetectAppTypeAndStartup: {startTime.ElapsedMilliseconds}ms");
 
             if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
                 ElectronNetRuntime.RuntimeControllerCore = this.CreateRuntimeController();
             }
             
-            Console.WriteLine($"[Startup] Total StartupManager.Initialize: {startTime.ElapsedMilliseconds}ms");
+            System.Diagnostics.Debug.WriteLine($"[Startup] Total StartupManager.Initialize: {startTime.ElapsedMilliseconds}ms");
         }
 
         private RuntimeControllerBase CreateRuntimeController()
@@ -142,18 +142,18 @@
 
             if (electronAssembly == null)
             {
-                Console.WriteLine("GatherBuildInfo: Early exit");
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Early exit");
                 return buildInfo;
             }
 
             if (electronAssembly.GetName().Name == "testhost" || electronAssembly.GetName().Name == "ReSharperTestRunner")
             {
-                Console.WriteLine("GatherBuildInfo: Detected testhost");
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Detected testhost");
                 electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
             }
             else
             {
-                Console.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
             }
 
             var attributes = electronAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
