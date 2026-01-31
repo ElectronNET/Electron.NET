@@ -163,7 +163,12 @@ namespace ElectronNET.AspNet.Runtime
 
         private void SignalRFacade_Disconnected(object sender, EventArgs e)
         {
-            this.HandleStopped();
+            // IMPORTANT: Do NOT call HandleStopped synchronously here!
+            // This event fires from within SignalR's OnDisconnectedAsync, and calling
+            // StopApplication() synchronously causes a deadlock: the host waits for
+            // OnDisconnectedAsync to complete, but we're waiting for the host to stop.
+            // Fire and forget to break the deadlock.
+            _ = Task.Run(() => this.HandleStopped());
         }
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
