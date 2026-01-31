@@ -47,7 +47,16 @@ if (process.stderr && !process.stderr.listenerCount('error')) {
 
 // Custom logger for SignalR that uses environment-aware logging
 class SafeLogger {
+    constructor(minLevel) {
+        this.minLevel = minLevel || signalR.LogLevel.Warning;
+    }
+    
     log(logLevel, message) {
+        // Skip if below minimum level
+        if (logLevel < this.minLevel) {
+            return;
+        }
+        
         switch (logLevel) {
             case signalR.LogLevel.Critical:
             case signalR.LogLevel.Error:
@@ -81,10 +90,23 @@ class SignalRBridge {
         // Append authentication token to the SignalR connection URL
         const connectionUrl = this.authToken ? `${this.hubUrl}?token=${this.authToken}` : this.hubUrl;
         
+        // Determine SignalR log level based on environment
+        // Warning level suppresses verbose packet-level logging
+        const { getLogLevel, LogLevel: AppLogLevel } = require('../logger');
+        let signalRLogLevel;
+        
+        if (getLogLevel() <= AppLogLevel.DEBUG) {
+            // Debug mode: show Info level (connection events without packet details)
+            signalRLogLevel = signalR.LogLevel.Information;
+        } else {
+            // Development/Production: only warnings and errors
+            signalRLogLevel = signalR.LogLevel.Warning;
+        }
+        
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(connectionUrl)
             .withAutomaticReconnect()
-            .configureLogging(new SafeLogger())
+            .configureLogging(new SafeLogger(signalRLogLevel))
             .build();
 
         // Handle reconnection
