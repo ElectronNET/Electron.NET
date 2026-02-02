@@ -1,3 +1,10 @@
+# 0.4.1
+
+## ElectronNET.Core
+
+- Fixed handling of `Center` property for windows (#1001)
+- Added missing methods on `Cookies` (#1000)
+
 # 0.4.0
 
 ## ElectronNET.Core

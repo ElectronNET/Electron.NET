@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.4110890">
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3864779">
   <ItemGroup>
     <None Include=".vscode\tasks.json" />
   </ItemGroup>

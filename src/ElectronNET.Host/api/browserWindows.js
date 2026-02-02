@@ -112,6 +112,12 @@ module.exports = (socket, app) => {
             electronSocket.emit("browserWindow-move" + id);
         });
     });
+    socket.on("register-browserWindow-bounds-changed", (id) => {
+        const window = getWindowById(id);
+        const cb = () => electronSocket.emit("browserWindow-bounds-changed" + id, window.getBounds());
+        window.on("resize", cb);
+        window.on("move", cb);
+    });
     socket.on("register-browserWindow-moved", (id) => {
         getWindowById(id).on("moved", () => {
             electronSocket.emit("browserWindow-moved" + id);
