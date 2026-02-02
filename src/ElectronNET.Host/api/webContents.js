@@ -1,7 +1,8 @@
 "use strict";
 const electron_1 = require("electron");
-const browserView_1 = require("./browserView");
 const fs = require("fs");
+const browserView_1 = require("./browserView");
+const { logger } = require("../logger");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;

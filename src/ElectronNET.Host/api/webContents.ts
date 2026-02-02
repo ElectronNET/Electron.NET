@@ -1,7 +1,8 @@
+import * as fs from "fs";
 import { Socket } from "net";
-import {BrowserWindow, BrowserView} from "electron";
+import { BrowserWindow, BrowserView } from "electron";
 import { browserViewMediateService } from "./browserView";
-const fs = require("fs");
+
 let electronSocket;
 
 export = (socket: Socket) => {
@@ -68,7 +69,7 @@ export = (socket: Socket) => {
           errorCode,
           validatedUrl,
         });
-      }
+      },
     );
   });
 
@@ -136,17 +137,17 @@ export = (socket: Socket) => {
     async (id, code, userGesture = false) => {
       const result = await getWindowById(id).webContents.executeJavaScript(
         code,
-        userGesture
+        userGesture,
       );
       electronSocket.emit("webContents-executeJavaScript-completed", result);
-    }
+    },
   );
 
   socket.on("webContents-getUrl", function (id) {
     const browserWindow = getWindowById(id);
     electronSocket.emit(
       "webContents-getUrl" + id,
-      browserWindow.webContents.getURL()
+      browserWindow.webContents.getURL(),
     );
   });
 
@@ -155,7 +156,7 @@ export = (socket: Socket) => {
     (id, domains) => {
       const browserWindow = getWindowById(id);
       browserWindow.webContents.session.allowNTLMCredentialsForDomains(domains);
-    }
+    },
   );
 
   socket.on("webContents-session-clearAuthCache", async (...args) => {
@@ -194,7 +195,7 @@ export = (socket: Socket) => {
     await browserWindow.webContents.session.clearHostResolverCache();
 
     electronSocket.emit(
-      "webContents-session-clearHostResolverCache-completed" + guid
+      "webContents-session-clearHostResolverCache-completed" + guid,
     );
   });
 
@@ -203,7 +204,7 @@ export = (socket: Socket) => {
     await browserWindow.webContents.session.clearStorageData({});
 
     electronSocket.emit(
-      "webContents-session-clearStorageData-completed" + guid
+      "webContents-session-clearStorageData-completed" + guid,
     );
   });
 
@@ -214,9 +215,9 @@ export = (socket: Socket) => {
       await browserWindow.webContents.session.clearStorageData(options);
 
       electronSocket.emit(
-        "webContents-session-clearStorageData-options-completed" + guid
+        "webContents-session-clearStorageData-options-completed" + guid,
       );
-    }
+    },
   );
 
   socket.on("webContents-session-createInterruptedDownload", (id, options) => {
@@ -241,13 +242,12 @@ export = (socket: Socket) => {
 
   socket.on("webContents-session-getBlobData", async (id, identifier, guid) => {
     const browserWindow = getWindowById(id);
-    const buffer = await browserWindow.webContents.session.getBlobData(
-      identifier
-    );
+    const buffer =
+      await browserWindow.webContents.session.getBlobData(identifier);
 
     electronSocket.emit(
       "webContents-session-getBlobData-completed" + guid,
-      buffer.buffer
+      buffer.buffer,
     );
   });
 
@@ -257,7 +257,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-getCacheSize-completed" + guid,
-      size
+      size,
     );
   });
 
@@ -267,7 +267,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-getPreloads-completed" + guid,
-      preloads
+      preloads,
     );
   });
 
@@ -277,7 +277,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-getUserAgent-completed" + guid,
-      userAgent
+      userAgent,
     );
   });
 
@@ -287,7 +287,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-resolveProxy-completed" + guid,
-      proxy
+      proxy,
     );
   });
 
@@ -314,9 +314,9 @@ export = (socket: Socket) => {
       const browserWindow = getWindowById(id);
       browserWindow.webContents.session.setUserAgent(
         userAgent,
-        acceptLanguages
+        acceptLanguages,
       );
-    }
+    },
   );
 
   socket.on(
@@ -328,17 +328,17 @@ export = (socket: Socket) => {
       session.webRequest.onBeforeRequest(filter, (details, callback) => {
         socket.emit(
           `webContents-session-webRequest-onBeforeRequest${id}`,
-          details
+          details,
         );
         // Listen for a response from C# to continue the request
         electronSocket.once(
           `webContents-session-webRequest-onBeforeRequest-response${id}`,
           (response) => {
             callback(response);
-          }
+          },
         );
       });
-    }
+    },
   );
 
   socket.on("register-webContents-session-cookies-changed", (id) => {
@@ -353,7 +353,7 @@ export = (socket: Socket) => {
           cause,
           removed,
         ]);
-      }
+      },
     );
   });
 
@@ -363,7 +363,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-cookies-get-completed" + guid,
-      cookies
+      cookies,
     );
   });
 
@@ -381,9 +381,9 @@ export = (socket: Socket) => {
       await browserWindow.webContents.session.cookies.remove(url, name);
 
       electronSocket.emit(
-        "webContents-session-cookies-remove-completed" + guid
+        "webContents-session-cookies-remove-completed" + guid,
       );
-    }
+    },
   );
 
   socket.on("webContents-session-cookies-flushStore", async (id, guid) => {
@@ -391,7 +391,7 @@ export = (socket: Socket) => {
     await browserWindow.webContents.session.cookies.flushStore();
 
     electronSocket.emit(
-      "webContents-session-cookies-flushStore-completed" + guid
+      "webContents-session-cookies-flushStore-completed" + guid,
     );
   });
 
@@ -441,7 +441,7 @@ export = (socket: Socket) => {
 
     electronSocket.emit(
       "webContents-session-getAllExtensions-completed",
-      chromeExtensionInfo
+      chromeExtensionInfo,
     );
   });
 
@@ -456,87 +456,108 @@ export = (socket: Socket) => {
       const browserWindow = getWindowById(id);
       const extension = await browserWindow.webContents.session.loadExtension(
         path,
-        { allowFileAccess: allowFileAccess }
+        { allowFileAccess: allowFileAccess },
       );
 
       electronSocket.emit(
         "webContents-session-loadExtension-completed",
-        extension
+        extension,
       );
-    }
+    },
   );
 
-    socket.on('webContents-getZoomFactor', (id) => {
-        const browserWindow = getWindowById(id);
-        const text = browserWindow.webContents.getZoomFactor();
-        electronSocket.emit('webContents-getZoomFactor-completed', text);
-    });
+  socket.on("webContents-getZoomFactor", (id) => {
+    const browserWindow = getWindowById(id);
+    const text = browserWindow.webContents.getZoomFactor();
+    electronSocket.emit("webContents-getZoomFactor-completed", text);
+  });
 
-    socket.on('webContents-setZoomFactor', (id, factor) => {
-        const browserWindow = getWindowById(id);
-        browserWindow.webContents.setZoomFactor(factor);
-    });
+  socket.on("webContents-setZoomFactor", (id, factor) => {
+    const browserWindow = getWindowById(id);
+    browserWindow.webContents.setZoomFactor(factor);
+  });
 
-    socket.on('webContents-getZoomLevel', (id) => {
-        const browserWindow = getWindowById(id);
-        const content = browserWindow.webContents.getZoomLevel();
-        electronSocket.emit('webContents-getZoomLevel-completed', content);
-    });
+  socket.on("webContents-getZoomLevel", (id) => {
+    const browserWindow = getWindowById(id);
+    const content = browserWindow.webContents.getZoomLevel();
+    electronSocket.emit("webContents-getZoomLevel-completed", content);
+  });
 
-    socket.on('webContents-setZoomLevel', (id, level) => {
-        const browserWindow = getWindowById(id);
-        browserWindow.webContents.setZoomLevel(level);
-    });
+  socket.on("webContents-setZoomLevel", (id, level) => {
+    const browserWindow = getWindowById(id);
+    browserWindow.webContents.setZoomLevel(level);
+  });
 
-    socket.on('webContents-setVisualZoomLevelLimits', async (id, minimumLevel, maximumLevel) => {
-        const browserWindow = getWindowById(id);
-        await browserWindow.webContents.setVisualZoomLevelLimits(minimumLevel, maximumLevel);
-        electronSocket.emit('webContents-setVisualZoomLevelLimits-completed');
-    });
+  socket.on(
+    "webContents-setVisualZoomLevelLimits",
+    async (id, minimumLevel, maximumLevel) => {
+      const browserWindow = getWindowById(id);
+      await browserWindow.webContents.setVisualZoomLevelLimits(
+        minimumLevel,
+        maximumLevel,
+      );
+      electronSocket.emit("webContents-setVisualZoomLevelLimits-completed");
+    },
+  );
 
-    socket.on("webContents-toggleDevTools", (id) => {
-        getWindowById(id).webContents.toggleDevTools();
-    });
+  socket.on("webContents-toggleDevTools", (id) => {
+    getWindowById(id).webContents.toggleDevTools();
+  });
 
-    socket.on("webContents-closeDevTools", (id) => {
-        getWindowById(id).webContents.closeDevTools();
-    });
+  socket.on("webContents-closeDevTools", (id) => {
+    getWindowById(id).webContents.closeDevTools();
+  });
 
-    socket.on("webContents-isDevToolsOpened", function (id) {
-        const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isDevToolsOpened-completed', browserWindow.webContents.isDevToolsOpened());
-    });
+  socket.on("webContents-isDevToolsOpened", function (id) {
+    const browserWindow = getWindowById(id);
+    electronSocket.emit(
+      "webContents-isDevToolsOpened-completed",
+      browserWindow.webContents.isDevToolsOpened(),
+    );
+  });
 
-    socket.on("webContents-isDevToolsFocused", function (id) {
-        const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isDevToolsFocused-completed', browserWindow.webContents.isDevToolsFocused());
-    });
+  socket.on("webContents-isDevToolsFocused", function (id) {
+    const browserWindow = getWindowById(id);
+    electronSocket.emit(
+      "webContents-isDevToolsFocused-completed",
+      browserWindow.webContents.isDevToolsFocused(),
+    );
+  });
 
-    socket.on("webContents-setAudioMuted", (id, muted) => {
-        getWindowById(id).webContents.setAudioMuted(muted);
-    });
+  socket.on("webContents-setAudioMuted", (id, muted) => {
+    getWindowById(id).webContents.setAudioMuted(muted);
+  });
 
-    socket.on("webContents-isAudioMuted", function (id) {
-        const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isAudioMuted-completed', browserWindow.webContents.isAudioMuted());
-    });
+  socket.on("webContents-isAudioMuted", function (id) {
+    const browserWindow = getWindowById(id);
+    electronSocket.emit(
+      "webContents-isAudioMuted-completed",
+      browserWindow.webContents.isAudioMuted(),
+    );
+  });
 
-    socket.on("webContents-isCurrentlyAudible", function (id) {
-        const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isCurrentlyAudible-completed', browserWindow.webContents.isCurrentlyAudible());
-    });
+  socket.on("webContents-isCurrentlyAudible", function (id) {
+    const browserWindow = getWindowById(id);
+    electronSocket.emit(
+      "webContents-isCurrentlyAudible-completed",
+      browserWindow.webContents.isCurrentlyAudible(),
+    );
+  });
 
-    socket.on("webContents-getUserAgent", function (id) {
-        const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-getUserAgent-completed', browserWindow.webContents.getUserAgent());
-    });
+  socket.on("webContents-getUserAgent", function (id) {
+    const browserWindow = getWindowById(id);
+    electronSocket.emit(
+      "webContents-getUserAgent-completed",
+      browserWindow.webContents.getUserAgent(),
+    );
+  });
 
-    socket.on("webContents-setUserAgent", (id, userAgent) => {
-        getWindowById(id).webContents.setUserAgent(userAgent);
-    });
+  socket.on("webContents-setUserAgent", (id, userAgent) => {
+    getWindowById(id).webContents.setUserAgent(userAgent);
+  });
 
-    function getWindowById(
-    id: number
+  function getWindowById(
+    id: number,
   ): Electron.BrowserWindow | Electron.BrowserView {
     if (id >= 1000) {
       return browserViewMediateService(id - 1000);

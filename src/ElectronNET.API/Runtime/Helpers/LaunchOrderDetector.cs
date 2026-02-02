@@ -32,7 +32,8 @@
                 }
             }
 
-            Console.WriteLine("Probe scored for launch origin:   DotNet {0} vs. {1} Electron", scoreDotNet, scoreElectron);
+            // Debug trace - useful for diagnostics
+            System.Diagnostics.Debug.WriteLine($"Probe scored for launch origin:   DotNet {scoreDotNet} vs. {scoreElectron} Electron");
             return scoreDotNet > scoreElectron;
         }
 
@@ -61,7 +62,7 @@
 
         private static bool? CheckIsDotNetStartup3()
         {
-            if (Debugger.IsAttached)
+            if (DebuggerHelper.IsAttached)
             {
                 return true;
             }

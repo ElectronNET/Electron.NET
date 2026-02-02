@@ -243,7 +243,13 @@ module.exports = (socket, app) => {
             }
         });
         if (loadUrl) {
-            window.loadURL(loadUrl);
+            // Append authentication token to initial URL if available
+            let urlToLoad = loadUrl;
+            if (global.authToken) {
+                const separator = loadUrl.includes('?') ? '&' : '?';
+                urlToLoad = `${loadUrl}${separator}token=${global.authToken}`;
+            }
+            window.loadURL(urlToLoad);
         }
         if (app.commandLine.hasSwitch("clear-cache") &&
             app.commandLine.getSwitchValue("clear-cache")) {

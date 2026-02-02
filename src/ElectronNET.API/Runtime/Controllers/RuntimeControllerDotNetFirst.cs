@@ -1,6 +1,7 @@
 ﻿namespace ElectronNET.Runtime.Controllers
 {
     using ElectronNET.API;
+    using ElectronNET.API.Bridge;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
@@ -19,7 +20,7 @@
         {
         }
 
-        internal override SocketIoFacade Socket
+        internal override IFacade Socket
         {
             get
             {

@@ -161,8 +161,8 @@
             {
                 await Task.Delay(10.ms()).ConfigureAwait(false);
 
-                Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
-                Console.Error.WriteLine("[StartInternal]: args: {0}", args);
+                System.Diagnostics.Debug.WriteLine($"[StartInternal]: startCmd: {startCmd}");
+                System.Diagnostics.Debug.WriteLine($"[StartInternal]: args: {args}");
 
                 this.process = new ProcessRunner("ElectronRunner");
                 this.process.ProcessExited += this.Process_Exited;
@@ -170,12 +170,10 @@
 
                 await Task.Delay(500.ms()).ConfigureAwait(false);
 
-                Console.Error.WriteLine("[StartInternal]: after run:");
-
                 if (!this.process.IsRunning)
                 {
-                    Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardError);
-                    Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardOutput);
+                    System.Diagnostics.Debug.WriteLine($"[StartInternal]: Process is not running: {this.process.StandardError}");
+                    System.Diagnostics.Debug.WriteLine($"[StartInternal]: Process is not running: {this.process.StandardOutput}");
 
                     Task.Run(() => this.TransitionState(LifetimeState.Stopped));
 
@@ -186,9 +184,9 @@
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("[StartInternal]: Exception: " + this.process?.StandardError);
-                Console.Error.WriteLine("[StartInternal]: Exception: " + this.process?.StandardOutput);
-                Console.Error.WriteLine("[StartInternal]: Exception: " + ex);
+                System.Diagnostics.Debug.WriteLine($"[StartInternal]: Exception: {this.process?.StandardError}");
+                System.Diagnostics.Debug.WriteLine($"[StartInternal]: Exception: {this.process?.StandardOutput}");
+                System.Diagnostics.Debug.WriteLine($"[StartInternal]: Exception: {ex}");
                 throw;
             }
         }

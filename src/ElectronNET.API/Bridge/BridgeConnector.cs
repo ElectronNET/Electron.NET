@@ -2,9 +2,11 @@
 // ReSharper disable once CheckNamespace
 namespace ElectronNET.API
 {
+    using ElectronNET.API.Bridge;
+
     internal static class BridgeConnector
     {
-        public static SocketIoFacade Socket
+        public static IFacade Socket
         {
             get
             {

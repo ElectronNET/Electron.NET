@@ -10,6 +10,7 @@
     using ElectronNET.Runtime.Helpers;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// Provides extension methods for <see cref="IWebHostBuilder"/> to enable Electron.NET
@@ -66,23 +67,31 @@
             // work as expected, see issue #952
             Environment.SetEnvironmentVariable("ELECTRON_RUN_AS_NODE", null);
 
-            var webPort = PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
+            // For SignalR modes, use port 0 for dynamic port assignment
+            var usePort0 = ElectronNetRuntime.StartupMethod == StartupMethod.PackagedDotnetFirstSignalR ||
+                          ElectronNetRuntime.StartupMethod == StartupMethod.UnpackedDotnetFirstSignalR;
+
+            var webPort = usePort0 ? 0 : PortHelper.GetFreePort(ElectronNetRuntime.AspNetWebPort ?? ElectronNetRuntime.DefaultWebPort);
             ElectronNetRuntime.AspNetWebPort = webPort;
 
             // check for the content folder if its exists in base director otherwise no need to include
             // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
             // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
+            
+            // For port 0 (dynamic port assignment), Kestrel requires binding to specific IP (127.0.0.1) not localhost
+            var host = usePort0 ? "127.0.0.1" : "localhost";
+            
             if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
             {
                 builder = builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
-                    .UseUrls("http://localhost:" + webPort);
+                    .UseUrls($"http://{host}:{webPort}");
             }
             else
             {
-                builder = builder.UseUrls("http://localhost:" + webPort);
+                builder = builder.UseUrls($"http://{host}:{webPort}");
             }
 
-            builder = builder.ConfigureServices(services =>
+            builder = builder.ConfigureServices((context, services) =>
             {
                 services.AddTransient<IStartupFilter, ServerReadyStartupFilter>();
                 services.AddSingleton<AspNetLifetimeAdapter>();
@@ -96,6 +105,17 @@
                     case StartupMethod.PackagedDotnetFirst:
                     case StartupMethod.UnpackedDotnetFirst:
                         services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirst>();
+                        break;
+                    case StartupMethod.PackagedDotnetFirstSignalR:
+                    case StartupMethod.UnpackedDotnetFirstSignalR:
+                        services.AddSignalR(options =>
+                        {
+                            // Enable detailed errors only in development for security
+                            options.EnableDetailedErrors =
+                                DebuggerHelper.IsAttached || 
+                                context.HostingEnvironment.IsDevelopment();
+                        });
+                        services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirstSignalR>();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

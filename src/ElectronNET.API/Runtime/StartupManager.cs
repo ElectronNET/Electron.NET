@@ -13,9 +13,12 @@
     {
         public void Initialize()
         {
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
+            
             try
             {
                 ElectronNetRuntime.BuildInfo = this.GatherBuildInfo();
+                System.Diagnostics.Debug.WriteLine($"[Startup] GatherBuildInfo: {startTime.ElapsedMilliseconds}ms");
             }
             catch (Exception ex)
             {
@@ -24,15 +27,18 @@
 
             this.CollectProcessData();
             this.SetElectronExecutable();
-
+            System.Diagnostics.Debug.WriteLine($"[Startup] CollectProcessData+SetElectronExecutable: {startTime.ElapsedMilliseconds}ms");
 
             ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
-            Console.WriteLine((string)("Evaluated StartupMethod: " + ElectronNetRuntime.StartupMethod));
+            System.Diagnostics.Debug.WriteLine($"Evaluated StartupMethod: {ElectronNetRuntime.StartupMethod}");
+            System.Diagnostics.Debug.WriteLine($"[Startup] DetectAppTypeAndStartup: {startTime.ElapsedMilliseconds}ms");
 
             if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
                 ElectronNetRuntime.RuntimeControllerCore = this.CreateRuntimeController();
             }
+            
+            System.Diagnostics.Debug.WriteLine($"[Startup] Total StartupManager.Initialize: {startTime.ElapsedMilliseconds}ms");
         }
 
         private RuntimeControllerBase CreateRuntimeController()
@@ -54,15 +60,19 @@
         {
             var isLaunchedByDotNet = LaunchOrderDetector.CheckIsLaunchedByDotNet();
             var isUnPackaged = UnpackagedDetector.CheckIsUnpackaged();
+            
+            // Check for SignalR mode via environment variable
+            var useSignalR = Environment.GetEnvironmentVariable("ELECTRON_USE_SIGNALR");
+            var isSignalRMode = !string.IsNullOrEmpty(useSignalR) && useSignalR.Equals("true", StringComparison.OrdinalIgnoreCase);
 
             if (isLaunchedByDotNet)
             {
                 if (isUnPackaged)
                 {
-                    return StartupMethod.UnpackedDotnetFirst;
+                    return isSignalRMode ? StartupMethod.UnpackedDotnetFirstSignalR : StartupMethod.UnpackedDotnetFirst;
                 }
 
-                return StartupMethod.PackagedDotnetFirst;
+                return isSignalRMode ? StartupMethod.PackagedDotnetFirstSignalR : StartupMethod.PackagedDotnetFirst;
             }
             else
             {
@@ -132,18 +142,18 @@
 
             if (electronAssembly == null)
             {
-                Console.WriteLine("GatherBuildInfo: Early exit");
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Early exit");
                 return buildInfo;
             }
 
             if (electronAssembly.GetName().Name == "testhost" || electronAssembly.GetName().Name == "ReSharperTestRunner")
             {
-                Console.WriteLine("GatherBuildInfo: Detected testhost");
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Detected testhost");
                 electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
             }
             else
             {
-                Console.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
+                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
             }
 
             var attributes = electronAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();

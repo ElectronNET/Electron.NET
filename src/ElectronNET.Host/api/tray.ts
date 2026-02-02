@@ -1,5 +1,6 @@
 import { Socket } from 'net';
 import { Menu, Tray, nativeImage } from 'electron';
+
 let tray: { value: Electron.Tray } = (global['$tray'] = global['tray'] || { value: null });
 let electronSocket;
 

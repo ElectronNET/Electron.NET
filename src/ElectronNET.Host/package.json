@@ -16,6 +16,7 @@
   "author": "Gregor Biswanger, Florian Rappl",
   "license": "MIT",
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "dasherize": "^2.0.0",
     "electron-host-hook": "file:./ElectronHostHook",
     "image-size": "^1.2.1",

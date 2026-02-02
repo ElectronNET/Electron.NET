@@ -38,7 +38,8 @@
                 }
             }
 
-            Console.WriteLine("Probe scored for package mode:   Unpackaged {0} vs. {1} Packaged", scoreUnpackaged, scorePackaged);
+            // Debug trace - useful for diagnostics
+            System.Diagnostics.Debug.WriteLine($"Probe scored for package mode:   Unpackaged {scoreUnpackaged} vs. {scorePackaged} Packaged");
             return scoreUnpackaged > scorePackaged;
         }
 
@@ -63,13 +64,16 @@
 
         private static bool? CheckUnpackaged2()
         {
-            var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var dir = new DirectoryInfo(baseDir);
+            
             if (dir.Name == "bin" && dir.Parent?.Name == "resources")
             {
                 return false;
             }
 
-            if (dir.GetDirectories().Any(e => e.Name == ".electron"))
+            // Faster: Direct path check instead of directory enumeration
+            if (Directory.Exists(Path.Combine(baseDir, ".electron")))
             {
                 return true;
             }
@@ -79,11 +83,10 @@
 
         private static bool? CheckUnpackaged3()
         {
-            if (Debugger.IsAttached)
+            if (DebuggerHelper.IsAttached)
             {
                 return true;
             }
-
 
             return null;
         }

@@ -4,11 +4,12 @@ namespace ElectronNET.API;
 
 using System;
 using System.Threading.Tasks;
+using ElectronNET.API.Bridge;
 using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
 using SocketIO = SocketIOClient.SocketIO;
 
-internal class SocketIoFacade
+internal class SocketIoFacade : IFacade
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
