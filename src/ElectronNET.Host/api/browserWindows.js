@@ -278,12 +278,14 @@ module.exports = (socket, app) => {
         });
         if (loadUrl) {
             // Append authentication token to initial URL if available
-            let urlToLoad = loadUrl;
-            if (global.authToken) {
-                const separator = loadUrl.includes('?') ? '&' : '?';
-                urlToLoad = `${loadUrl}${separator}token=${global.authToken}`;
+            const token = global["authToken"];
+            if (token) {
+                const separator = loadUrl.includes("?") ? "&" : "?";
+                window.loadURL(`${loadUrl}${separator}token=${token}`);
             }
-            window.loadURL(urlToLoad);
+            else {
+                window.loadURL(loadUrl);
+            }
         }
         if (app.commandLine.hasSwitch("clear-cache") &&
             app.commandLine.getSwitchValue("clear-cache")) {

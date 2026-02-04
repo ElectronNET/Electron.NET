@@ -13,12 +13,9 @@
     {
         public void Initialize()
         {
-            var startTime = System.Diagnostics.Stopwatch.StartNew();
-            
             try
             {
                 ElectronNetRuntime.BuildInfo = this.GatherBuildInfo();
-                System.Diagnostics.Debug.WriteLine($"[Startup] GatherBuildInfo: {startTime.ElapsedMilliseconds}ms");
             }
             catch (Exception ex)
             {
@@ -27,18 +24,13 @@
 
             this.CollectProcessData();
             this.SetElectronExecutable();
-            System.Diagnostics.Debug.WriteLine($"[Startup] CollectProcessData+SetElectronExecutable: {startTime.ElapsedMilliseconds}ms");
 
             ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
-            System.Diagnostics.Debug.WriteLine($"Evaluated StartupMethod: {ElectronNetRuntime.StartupMethod}");
-            System.Diagnostics.Debug.WriteLine($"[Startup] DetectAppTypeAndStartup: {startTime.ElapsedMilliseconds}ms");
 
             if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
                 ElectronNetRuntime.RuntimeControllerCore = this.CreateRuntimeController();
             }
-            
-            System.Diagnostics.Debug.WriteLine($"[Startup] Total StartupManager.Initialize: {startTime.ElapsedMilliseconds}ms");
         }
 
         private RuntimeControllerBase CreateRuntimeController()
@@ -142,18 +134,18 @@
 
             if (electronAssembly == null)
             {
-                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Early exit");
+                Console.WriteLine("GatherBuildInfo: Early exit");
                 return buildInfo;
             }
 
             if (electronAssembly.GetName().Name == "testhost" || electronAssembly.GetName().Name == "ReSharperTestRunner")
             {
-                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: Detected testhost");
+                Console.WriteLine("GatherBuildInfo: Detected testhost");
                 electronAssembly = AppDomain.CurrentDomain.GetData("ElectronTestAssembly") as Assembly ?? electronAssembly;
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
+                Console.WriteLine("GatherBuildInfo: No testhost detected: " + electronAssembly.GetName().Name);
             }
 
             var attributes = electronAssembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();

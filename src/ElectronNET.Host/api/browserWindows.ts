@@ -310,12 +310,14 @@ export = (socket: Socket, app: Electron.App) => {
 
     if (loadUrl) {
       // Append authentication token to initial URL if available
-      let urlToLoad = loadUrl;
-      if ((global as any).authToken) {
+      const token = global["authToken"];
+
+      if (token) {
         const separator = loadUrl.includes("?") ? "&" : "?";
-        urlToLoad = `${loadUrl}${separator}token=${(global as any).authToken}`;
+        window.loadURL(`${loadUrl}${separator}token=${token}`);
+      } else {
+        window.loadURL(loadUrl);
       }
-      window.loadURL(urlToLoad);
     }
 
     if (
