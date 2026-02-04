@@ -1,28 +1,27 @@
-﻿using ElectronNET.Runtime.Data;
-using ElectronNET.Runtime.Services;
-
-using Microsoft.Extensions.Hosting;
-
-using System.Threading.Tasks;
-
-namespace ElectronNET.AspNet.Runtime;
-
-internal class AspNetLifetimeAdapter : LifetimeServiceBase
+﻿namespace ElectronNET.AspNet.Runtime
 {
-    private readonly IHostApplicationLifetime lifetimeService;
+    using System.Threading.Tasks;
+    using ElectronNET.Runtime.Data;
+    using ElectronNET.Runtime.Services;
+    using Microsoft.Extensions.Hosting;
 
-    public AspNetLifetimeAdapter(IHostApplicationLifetime lifetimeService)
+    internal class AspNetLifetimeAdapter : LifetimeServiceBase
     {
-        this.lifetimeService = lifetimeService;
+        private readonly IHostApplicationLifetime lifetimeService;
 
-        this.lifetimeService.ApplicationStarted.Register(() => this.TransitionState(LifetimeState.Ready));
-        this.lifetimeService.ApplicationStopping.Register(() => this.TransitionState(LifetimeState.Stopping));
-        this.lifetimeService.ApplicationStopped.Register(() => this.TransitionState(LifetimeState.Stopped));
-    }
+        public AspNetLifetimeAdapter(IHostApplicationLifetime lifetimeService)
+        {
+            this.lifetimeService = lifetimeService;
 
-    protected override Task StopCore()
-    {
-        this.lifetimeService.StopApplication();
-        return Task.CompletedTask;
+            this.lifetimeService.ApplicationStarted.Register(() => this.TransitionState(LifetimeState.Ready));
+            this.lifetimeService.ApplicationStopping.Register(() => this.TransitionState(LifetimeState.Stopping));
+            this.lifetimeService.ApplicationStopped.Register(() => this.TransitionState(LifetimeState.Stopped));
+        }
+
+        protected override Task StopCore()
+        {
+            this.lifetimeService.StopApplication();
+            return Task.CompletedTask;
+        }
     }
 }
