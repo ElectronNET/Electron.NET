@@ -2,61 +2,61 @@
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
-    socket.on('process-execPath', () => {
+    socket.on("process-execPath", () => {
         const value = process.execPath;
-        electronSocket.emit('process-execPath-completed', value);
+        electronSocket.emit("process-execPath-completed", value);
     });
-    socket.on('process-argv', () => {
+    socket.on("process-argv", () => {
         const value = process.argv;
-        electronSocket.emit('process-argv-completed', value);
+        electronSocket.emit("process-argv-completed", value);
     });
-    socket.on('process-type', () => {
+    socket.on("process-type", () => {
         const value = process.type;
-        electronSocket.emit('process-type-completed', value);
+        electronSocket.emit("process-type-completed", value);
     });
-    socket.on('process-versions', () => {
+    socket.on("process-versions", () => {
         const value = process.versions;
-        electronSocket.emit('process-versions-completed', value);
+        electronSocket.emit("process-versions-completed", value);
     });
-    socket.on('process-defaultApp', () => {
+    socket.on("process-defaultApp", () => {
         if (process.defaultApp === undefined) {
-            electronSocket.emit('process-defaultApp-completed', false);
+            electronSocket.emit("process-defaultApp-completed", false);
             return;
         }
-        electronSocket.emit('process-defaultApp-completed', process.defaultApp);
+        electronSocket.emit("process-defaultApp-completed", process.defaultApp);
     });
-    socket.on('process-isMainFrame', () => {
+    socket.on("process-isMainFrame", () => {
         if (process.isMainFrame === undefined) {
-            electronSocket.emit('process-isMainFrame-completed', false);
+            electronSocket.emit("process-isMainFrame-completed", false);
             return;
         }
-        electronSocket.emit('process-isMainFrame-completed', process.isMainFrame);
+        electronSocket.emit("process-isMainFrame-completed", process.isMainFrame);
     });
-    socket.on('process-resourcesPath', () => {
+    socket.on("process-resourcesPath", () => {
         const value = process.resourcesPath;
-        electronSocket.emit('process-resourcesPath-completed', value);
+        electronSocket.emit("process-resourcesPath-completed", value);
     });
-    socket.on('process-upTime', () => {
+    socket.on("process-upTime", () => {
         let value = process.uptime();
         if (value === undefined) {
             value = -1;
         }
-        electronSocket.emit('process-upTime-completed', value);
+        electronSocket.emit("process-upTime-completed", value);
     });
-    socket.on('process-pid', () => {
+    socket.on("process-pid", () => {
         if (process.pid === undefined) {
-            electronSocket.emit('process-pid-completed', -1);
+            electronSocket.emit("process-pid-completed", -1);
             return;
         }
-        electronSocket.emit('process-pid-completed', process.pid);
+        electronSocket.emit("process-pid-completed", process.pid);
     });
-    socket.on('process-arch', () => {
+    socket.on("process-arch", () => {
         const value = process.arch;
-        electronSocket.emit('process-arch-completed', value);
+        electronSocket.emit("process-arch-completed", value);
     });
-    socket.on('process-platform', () => {
+    socket.on("process-platform", () => {
         const value = process.platform;
-        electronSocket.emit('process-platform-completed', value);
+        electronSocket.emit("process-platform-completed", value);
     });
 };
 //# sourceMappingURL=process.js.map

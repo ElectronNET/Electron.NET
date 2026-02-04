@@ -1,4 +1,4 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { BrowserWindow, dialog } from "electron";
 
 let electronSocket: Socket;

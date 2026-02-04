@@ -1,7 +1,7 @@
+import type { Socket } from "net";
 import { ipcMain, BrowserWindow, BrowserView, Menu } from "electron";
-import { Socket } from "net";
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;
@@ -55,6 +55,34 @@ export = (socket: Socket) => {
     if (view) {
       view.webContents.send(channel, ...data);
     }
+  });
+
+  socket.on("registerHandleIpcMainChannel", (channel) => {
+    ipcMain.handle(channel, (event, args) => {
+      return new Promise((resolve, _reject) => {
+        socket.removeAllListeners(channel + "Handle");
+        socket.on(channel + "Handle", (result) => {
+          resolve(result);
+        });
+        electronSocket.emit(channel, [event.preventDefault(), args]);
+      });
+    });
+  });
+
+  socket.on("registerHandleOnceIpcMainChannel", (channel) => {
+    ipcMain.handleOnce(channel, (event, args) => {
+      return new Promise((resolve, _reject) => {
+        socket.removeAllListeners(channel + "HandleOnce");
+        socket.once(channel + "HandleOnce", (result) => {
+          resolve(result);
+        });
+        electronSocket.emit(channel, [event.preventDefault(), args]);
+      });
+    });
+  });
+
+  socket.on("removeHandlerIpcMainChannel", (channel) => {
+    ipcMain.removeHandler(channel);
   });
 
   // Integration helpers: programmatically click menu items from renderer tests

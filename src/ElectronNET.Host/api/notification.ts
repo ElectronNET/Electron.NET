@@ -1,10 +1,10 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { Notification } from "electron";
 
 const notifications: Electron.Notification[] = (global["notifications"] =
   global["notifications"] || []) as Electron.Notification[];
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

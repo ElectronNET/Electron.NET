@@ -1,4 +1,4 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { BrowserView } from "electron";
 
 const browserViews: BrowserView[] = (global["browserViews"] =
@@ -7,7 +7,8 @@ const proxyToCredentialsMap: { [proxy: string]: string } = (global[
   "proxyToCredentialsMap"
 ] = global["proxyToCredentialsMap"] || []) as { [proxy: string]: string };
 
-let browserView: BrowserView, electronSocket;
+let browserView: BrowserView;
+let electronSocket: Socket;
 
 const browserViewApi = (socket: Socket) => {
   electronSocket = socket;

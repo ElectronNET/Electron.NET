@@ -1,9 +1,10 @@
 import * as fs from "fs";
-import { Socket } from "net";
+import type { Socket } from "net";
 import { BrowserWindow, BrowserView } from "electron";
+
 import { browserViewMediateService } from "./browserView";
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

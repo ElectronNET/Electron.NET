@@ -1,7 +1,7 @@
+import type { Socket } from "net";
 import { globalShortcut } from "electron";
-import { Socket } from "net";
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

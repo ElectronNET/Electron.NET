@@ -1,14 +1,14 @@
+import type { Socket } from "net";
 import {
   RelaunchOptions,
   LoginItemSettingsOptions,
   Settings,
   AboutPanelOptionsOptions,
 } from "electron";
-import { Socket } from "net";
 
 let isQuitWindowAllClosed = true;
-let appWindowAllClosedEventId;
-let electronSocket;
+let electronSocket: Socket;
+let appWindowAllClosedEventId: string;
 
 export = (socket: Socket, app: Electron.App) => {
   electronSocket = socket;

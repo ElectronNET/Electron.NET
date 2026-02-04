@@ -1,7 +1,7 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { nativeTheme } from "electron";
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

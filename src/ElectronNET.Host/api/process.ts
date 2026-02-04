@@ -1,6 +1,6 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

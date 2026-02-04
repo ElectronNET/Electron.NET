@@ -1,10 +1,10 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { Menu, BrowserWindow } from "electron";
 
 const contextMenuItems = (global["contextMenuItems"] =
   global["contextMenuItems"] || []);
 
-let electronSocket;
+let electronSocket: Socket;
 
 export = (socket: Socket) => {
   electronSocket = socket;

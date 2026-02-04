@@ -1,14 +1,17 @@
 import * as path from "path";
-import { Socket } from "net";
+import type { Socket } from "net";
 import { BrowserWindow, Menu } from "electron";
+
 import { browserViewMediateService } from "./browserView";
 
 const windows: Electron.BrowserWindow[] = (global["browserWindows"] =
   global["browserWindows"] || []) as Electron.BrowserWindow[];
 
 let readyToShowWindowsIds: number[] = [];
-let window, lastOptions, electronSocket;
-let mainWindowURL;
+
+let window;
+let lastOptions;
+let electronSocket;
 
 const proxyToCredentialsMap: { [proxy: string]: string } = (global[
   "proxyToCredentialsMap"

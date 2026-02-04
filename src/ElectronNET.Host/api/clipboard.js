@@ -3,63 +3,65 @@ const electron_1 = require("electron");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
-    socket.on('clipboard-readText', (type) => {
+    socket.on("clipboard-readText", (type) => {
         const text = electron_1.clipboard.readText(type);
-        electronSocket.emit('clipboard-readText-completed', text);
+        electronSocket.emit("clipboard-readText-completed", text);
     });
-    socket.on('clipboard-writeText', (text, type) => {
+    socket.on("clipboard-writeText", (text, type) => {
         electron_1.clipboard.writeText(text, type);
     });
-    socket.on('clipboard-readHTML', (type) => {
+    socket.on("clipboard-readHTML", (type) => {
         const content = electron_1.clipboard.readHTML(type);
-        electronSocket.emit('clipboard-readHTML-completed', content);
+        electronSocket.emit("clipboard-readHTML-completed", content);
     });
-    socket.on('clipboard-writeHTML', (markup, type) => {
+    socket.on("clipboard-writeHTML", (markup, type) => {
         electron_1.clipboard.writeHTML(markup, type);
     });
-    socket.on('clipboard-readRTF', (type) => {
+    socket.on("clipboard-readRTF", (type) => {
         const content = electron_1.clipboard.readRTF(type);
-        electronSocket.emit('clipboard-readRTF-completed', content);
+        electronSocket.emit("clipboard-readRTF-completed", content);
     });
-    socket.on('clipboard-writeRTF', (text, type) => {
+    socket.on("clipboard-writeRTF", (text, type) => {
         electron_1.clipboard.writeHTML(text, type);
     });
-    socket.on('clipboard-readBookmark', () => {
+    socket.on("clipboard-readBookmark", () => {
         const bookmark = electron_1.clipboard.readBookmark();
-        electronSocket.emit('clipboard-readBookmark-completed', bookmark);
+        electronSocket.emit("clipboard-readBookmark-completed", bookmark);
     });
-    socket.on('clipboard-writeBookmark', (title, url, type) => {
+    socket.on("clipboard-writeBookmark", (title, url, type) => {
         electron_1.clipboard.writeBookmark(title, url, type);
     });
-    socket.on('clipboard-readFindText', () => {
+    socket.on("clipboard-readFindText", () => {
         const content = electron_1.clipboard.readFindText();
-        electronSocket.emit('clipboard-readFindText-completed', content);
+        electronSocket.emit("clipboard-readFindText-completed", content);
     });
-    socket.on('clipboard-writeFindText', (text) => {
+    socket.on("clipboard-writeFindText", (text) => {
         electron_1.clipboard.writeFindText(text);
     });
-    socket.on('clipboard-clear', (type) => {
+    socket.on("clipboard-clear", (type) => {
         electron_1.clipboard.clear(type);
     });
-    socket.on('clipboard-availableFormats', (type) => {
+    socket.on("clipboard-availableFormats", (type) => {
         const formats = electron_1.clipboard.availableFormats(type);
-        electronSocket.emit('clipboard-availableFormats-completed', formats);
+        electronSocket.emit("clipboard-availableFormats-completed", formats);
     });
-    socket.on('clipboard-write', (data, type) => {
+    socket.on("clipboard-write", (data, type) => {
         electron_1.clipboard.write(data, type);
     });
-    socket.on('clipboard-readImage', (type) => {
+    socket.on("clipboard-readImage", (type) => {
         const image = electron_1.clipboard.readImage(type);
-        electronSocket.emit('clipboard-readImage-completed', { 1: image.toPNG().toString('base64') });
+        electronSocket.emit("clipboard-readImage-completed", {
+            1: image.toPNG().toString("base64"),
+        });
     });
-    socket.on('clipboard-writeImage', (data, type) => {
+    socket.on("clipboard-writeImage", (data, type) => {
         const dataContent = JSON.parse(data);
         const image = electron_1.nativeImage.createEmpty();
         // tslint:disable-next-line: forin
         for (const key in dataContent) {
             const scaleFactor = key;
             const bytes = data[key];
-            const buffer = Buffer.from(bytes, 'base64');
+            const buffer = Buffer.from(bytes, "base64");
             image.addRepresentation({ scaleFactor: +scaleFactor, buffer: buffer });
         }
         electron_1.clipboard.writeImage(image, type);
