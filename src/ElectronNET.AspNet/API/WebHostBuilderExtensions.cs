@@ -112,7 +112,7 @@
                         {
                             // Enable detailed errors only in development for security
                             options.EnableDetailedErrors =
-                                DebuggerHelper.IsAttached || 
+                                Debugger.IsAttached || 
                                 context.HostingEnvironment.IsDevelopment();
                         });
                         services.AddSingleton<IElectronNetRuntimeController, RuntimeControllerAspNetDotnetFirstSignalR>();

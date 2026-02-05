@@ -61,7 +61,7 @@
 
         private static bool? CheckIsDotNetStartup3()
         {
-            if (DebuggerHelper.IsAttached)
+            if (Debugger.IsAttached)
             {
                 return true;
             }
