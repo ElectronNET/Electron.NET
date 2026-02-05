@@ -71,7 +71,6 @@
                 return false;
             }
 
-            // Faster: Direct path check instead of directory enumeration
             if (Directory.Exists(Path.Combine(baseDir, ".electron")))
             {
                 return true;
