@@ -26,6 +26,7 @@
             this.SetElectronExecutable();
 
             ElectronNetRuntime.StartupMethod = this.DetectAppTypeAndStartup();
+            Console.WriteLine((string)("Evaluated StartupMethod: " + ElectronNetRuntime.StartupMethod));
 
             if (ElectronNetRuntime.DotnetAppType != DotnetAppType.AspNetCoreApp)
             {
