@@ -11,7 +11,6 @@
  */
 const signalR = require("@microsoft/signalr");
 const { app } = require("electron");
-const { logger } = require("../logger");
 
 // Flag to track if we've already initiated shutdown due to EPIPE
 let isShuttingDownFromEPIPE = false;
@@ -60,17 +59,17 @@ class SafeLogger {
     switch (logLevel) {
       case signalR.LogLevel.Critical:
       case signalR.LogLevel.Error:
-        logger.error(`[SignalR] ${message}`);
+        console.error(`[SignalR] ${message}`);
         break;
       case signalR.LogLevel.Warning:
-        logger.warn(`[SignalR] ${message}`);
+        console.warn(`[SignalR] ${message}`);
         break;
       case signalR.LogLevel.Information:
-        logger.info(`[SignalR] ${message}`);
+        console.info(`[SignalR] ${message}`);
         break;
       case signalR.LogLevel.Debug:
       case signalR.LogLevel.Trace:
-        logger.debug(`[SignalR] ${message}`);
+        console.debug(`[SignalR] ${message}`);
         break;
     }
   }
@@ -113,7 +112,7 @@ class SignalRBridge {
 
     // Handle reconnection
     this.connection.onreconnecting((error) => {
-      logger.error(`[SignalRBridge] Connection lost. Reconnecting...`, error);
+      console.error(`[SignalRBridge] Connection lost. Reconnecting...`, error);
       this.isConnected = false;
     });
 
@@ -123,7 +122,7 @@ class SignalRBridge {
 
     this.connection.onclose((error) => {
       if (error) {
-        logger.error(`[SignalRBridge] Connection closed:`, error);
+        console.error(`[SignalRBridge] Connection closed:`, error);
       }
       this.isConnected = false;
     });
@@ -142,14 +141,14 @@ class SignalRBridge {
     } catch (err) {
       // Check if this is an authentication error
       if (err.message && err.message.includes("401")) {
-        logger.error(
+        console.error(
           `[SignalRBridge] Authentication failed: The authentication token is invalid or missing.`,
         );
-        logger.error(
+        console.error(
           `[SignalRBridge] Please ensure the --authtoken parameter is correctly passed to Electron.`,
         );
       } else {
-        logger.error(`[SignalRBridge] Connection failed:`, err);
+        console.error(`[SignalRBridge] Connection failed:`, err);
       }
       this.isConnected = false;
       return false;
@@ -169,7 +168,7 @@ class SignalRBridge {
           try {
             handler(...argsArray);
           } catch (err) {
-            logger.error(
+            console.error(
               `[SignalRBridge] Error in event handler for ${eventName}:`,
               err,
             );
@@ -190,7 +189,7 @@ class SignalRBridge {
   // Socket.io compatibility: emit event (send to .NET)
   async emit(eventName, ...args) {
     if (!this.isConnected) {
-      logger.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
+      console.warn(`[SignalRBridge] Cannot emit ${eventName} - not connected`);
       return;
     }
 
@@ -198,7 +197,7 @@ class SignalRBridge {
       // Always pass args as an array to match C# method signature
       await this.connection.invoke("ElectronEvent", eventName, args);
     } catch (err) {
-      logger.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
+      console.error(`[SignalRBridge] Error emitting ${eventName}:`, err);
       throw err;
     }
   }

@@ -5,7 +5,6 @@ const path = require('path');
 const cProcess = require('child_process').spawn;
 const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
-const { logger } = require('./logger');
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
@@ -85,11 +84,11 @@ try {
                 try { app.exit(0); } catch (err) { process.exit(0); }
             }
         } else {
-            logger.warn('custom_main.js found but no onStartup function exported.');
+            console.warn('custom_main.js found but no onStartup function exported.');
         }
     }
 } catch (err) {
-    logger.error('Error while executing custom_main.js:', err);
+    console.error('Error while executing custom_main.js:', err);
 }
 
 const currentPath = __dirname;
@@ -98,7 +97,7 @@ let manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
 
 // if running unpackedelectron, lets change the path
 if (unpackedelectron || unpackeddotnet) {
-    logger.debug('Running in unpacked mode, dir: ' + currentPath);
+    console.debug('Running in unpacked mode, dir: ' + currentPath);
 
     manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
     currentBinPath = path.join(currentPath, '../'); // go to project directory
@@ -165,10 +164,7 @@ function getForwardedArgs() {
 
 const forwardedArgs = getForwardedArgs();
 
-app.on('ready', async () => {
-    // Start overall startup timer
-    logger.time('[Startup] Total Electron Startup');
-    
+app.on('ready', async () => {    
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
     ////protocol.registerFileProtocol('file', (request, callback) => {
@@ -185,7 +181,7 @@ app.on('ready', async () => {
     // .NET passes the actual server URL via --electronurl parameter (no port scanning needed)
     if (unpackeddotnetsignalr || dotnetpackedsignalr) {
         if (!electronUrl) {
-            logger.error('[Electron] ERROR: SignalR mode requires --electronUrl parameter');
+            console.error('[Electron] ERROR: SignalR mode requires --electronUrl parameter');
             app.quit();
             return;
         }
@@ -208,13 +204,12 @@ app.on('ready', async () => {
         });
         
         await startSignalRApiBridge(electronUrl);
-        logger.timeEnd('[Startup] Total Electron Startup');
         return;
     }
 
     // Legacy socket.io startup
     if (electronforcedport) {
-        logger.info('Electron Socket IO (forced) Port: ' + electronforcedport);
+        console.info('Electron Socket IO (forced) Port: ' + electronforcedport);
         startSocketApiBridge(electronforcedport);
         return;
     }
@@ -227,7 +222,7 @@ app.on('ready', async () => {
 
     // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
     portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
-        logger.info('Electron Socket IO Port: ' + port);
+        console.info('Electron Socket IO Port: ' + port);
         startSocketApiBridge(port);
     });
 });
@@ -239,7 +234,7 @@ app.on('quit', async (event, exitCode) => {
             server.close();
             server.closeAllConnections();
         } catch (e) {
-            logger.error('Error closing Socket.IO server:', e);
+            console.error('Error closing Socket.IO server:', e);
         }
     }
 
@@ -248,7 +243,7 @@ app.on('quit', async (event, exitCode) => {
         try {
             apiProcess.kill();
         } catch (e) {
-            logger.error('Error killing API process:', e);
+            console.error('Error killing API process:', e);
         }
     }
 
@@ -257,7 +252,7 @@ app.on('quit', async (event, exitCode) => {
         try {
             io.close();
         } catch (e) {
-            logger.error('Error closing Socket.IO connection:', e);
+            console.error('Error closing Socket.IO connection:', e);
         }
     }
     
@@ -266,7 +261,7 @@ app.on('quit', async (event, exitCode) => {
         try {
             await global['electronsignalr'].connection.stop();
         } catch (e) {
-            logger.error('Error closing SignalR connection:', e);
+            console.error('Error closing SignalR connection:', e);
         }
     }
 });
@@ -323,7 +318,7 @@ function startSplashScreen() {
     // it's an image, so we can compute the desired splash screen size
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            logger.error(`load splashscreen error:`, error);
+            console.error(`load splashscreen error:`, error);
             throw new Error(error.message);
         }
 
@@ -334,7 +329,7 @@ function startSplashScreen() {
 function startSocketApiBridge(port) {
     // instead of 'require('socket.io')(port);' we need to use this workaround
     // otherwise the Windows Firewall will be triggered
-    logger.debug('Electron Socket: starting...');
+    console.debug('Electron Socket: starting...');
     server = require('http').createServer();
     const { Server } = require('socket.io');
     let hostHook;
@@ -346,7 +341,7 @@ function startSocketApiBridge(port) {
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
-        logger.info('Electron Socket: listening on port %s at %s', server.address().port, server.address().address);
+        console.info('Electron Socket: listening on port %s at %s', server.address().port, server.address().address);
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
             startAspCoreBackendUnpackaged(port);
@@ -361,9 +356,9 @@ function startSocketApiBridge(port) {
 
     // @ts-ignore
     io.on('connection', (socket) => {
-        logger.info('Electron Socket: connected!');
+        console.info('Electron Socket: connected!');
         socket.on('disconnect', function (reason) {
-            logger.debug('Got disconnect! Reason: ' + reason);
+            console.debug('Got disconnect! Reason: ' + reason);
             try {
                 ////console.log('requireCache');
                 ////console.log(require.cache['electron-host-hook']);
@@ -374,7 +369,7 @@ function startSocketApiBridge(port) {
                     hostHook = undefined;
                 }
             } catch (err) {
-                logger.error(err.message);
+                console.error(err.message);
             }
         });
 
@@ -383,7 +378,7 @@ function startSocketApiBridge(port) {
             global['electronsocket'].setMaxListeners(0);
         }
 
-        logger.debug('Electron Socket: loading components...');
+        console.debug('Electron Socket: loading components...');
 
         if (appApi === undefined) appApi = require('./api/app')(socket, app);
         if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
@@ -441,10 +436,10 @@ function startSocketApiBridge(port) {
                 hostHook.onHostReady();
             }
         } catch (error) {
-            logger.error(error.message);
+            console.error(error.message);
         }
 
-        logger.info('Electron Socket: startup complete.');
+        console.info('Electron Socket: startup complete.');
     });
 }
 
@@ -468,21 +463,16 @@ async function startSignalRApiBridge(baseUrl) {
     const signalRBridge = new SignalRBridge(hubUrl, global.authToken);
     
     try {
-        logger.time('[Startup] SignalR Connection');
         const connected = await signalRBridge.connect();
-        logger.timeEnd('[Startup] SignalR Connection');
         
         if (!connected) {
-            logger.error('[SignalRBridge] Failed to connect to SignalR hub');
+            console.error('[SignalRBridge] Failed to connect to SignalR hub');
             app.quit();
             return;
         }
         
         // Store the bridge globally for API access
         global['electronsignalr'] = signalRBridge;
-        
-        // Load API modules in parallel for faster startup
-        logger.time('[Startup] Module Loading');
         
         // Define module loaders - each returns the initialized module
         const loadModules = () => {
@@ -544,16 +534,11 @@ async function startSignalRApiBridge(baseUrl) {
         if (dock === undefined && modules.dock) dock = modules.dock;
         if (processApi === undefined) processApi = modules.processApi;
         
-        logger.timeEnd('[Startup] Module Loading');
-        
-        // Signal to .NET that Electron is fully ready (API modules loaded)
-        logger.time('[Startup] Host Ready Signal');
         await signalRBridge.emit('electron-host-ready');
-        logger.timeEnd('[Startup] Host Ready Signal');
         
     } catch (error) {
-        logger.error('[SignalRBridge] Error during startup:', error);
-        logger.error('[SignalRBridge] Stack:', error.stack);
+        console.error('[SignalRBridge] Error during startup:', error);
+        console.error('[SignalRBridge] Stack:', error.stack);
         app.quit();
     }
 }
@@ -580,11 +565,11 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        logger.debug('Starting backend with parameters:', parameters.join(' '));
+        console.debug('Starting backend with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            logger.debug(`stdout: ${data.toString()}`);
+            console.debug(`stdout: ${data.toString()}`);
         });
     }
 }
@@ -610,11 +595,11 @@ function startAspCoreBackendUnpackaged(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        logger.debug('Starting backend (unpackaged) with parameters:', parameters.join(' '));
+        console.debug('Starting backend (unpackaged) with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            logger.debug(`stdout: ${data.toString()}`);
+            console.debug(`stdout: ${data.toString()}`);
         });
     }
 }
