@@ -33,7 +33,7 @@
 
         protected override Task StopCore()
         {
-            this.socket.DisposeSocket();
+            this.socket.Dispose();
             return Task.CompletedTask;
         }
 

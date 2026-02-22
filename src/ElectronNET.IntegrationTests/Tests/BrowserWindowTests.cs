@@ -266,8 +266,10 @@ namespace ElectronNET.IntegrationTests.Tests
             try
             {
                 window = await Electron.WindowManager.CreateWindowAsync(
-                    new BrowserWindowOptions { Show = false, Width = 300, Height = 200 },
+                    new BrowserWindowOptions { Show = true, Width = 300, Height = 200 },
                     "about:blank");
+
+                await Task.Delay(5.seconds());
 
                 var tcs = new TaskCompletionSource<Rectangle>(TaskCreationOptions.RunContinuationsAsynchronously);
                 window.OnBoundsChanged += bounds => tcs.TrySetResult(bounds);
