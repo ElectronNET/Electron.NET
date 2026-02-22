@@ -7,7 +7,7 @@ namespace ElectronNET.API.Bridge
     /// Common interface for communication facades (SocketIO and SignalR).
     /// Provides methods for bidirectional communication between .NET and Electron.
     /// </summary>
-    internal interface IFacade
+    internal interface ISocketConnection : IDisposable
     {
         /// <summary>
         /// Raised when the bridge connection is established.
@@ -53,10 +53,5 @@ namespace ElectronNET.API.Bridge
         /// Sends a message to Electron.
         /// </summary>
         Task Emit(string eventName, params object[] args);
-
-        /// <summary>
-        /// Disposes the connection.
-        /// </summary>
-        void DisposeSocket();
     }
 }

@@ -13,7 +13,7 @@
         {
         }
 
-        internal abstract IFacade Socket { get; }
+        internal abstract ISocketConnection Socket { get; }
 
         internal abstract ElectronProcessBase ElectronProcess { get; }
 

@@ -50,7 +50,7 @@
 
         internal static Func<Task> OnAppReadyCallback { get; set; }
 
-        internal static IFacade GetSocket()
+        internal static ISocketConnection GetSocket()
         {
             return RuntimeControllerCore?.Socket;
         }

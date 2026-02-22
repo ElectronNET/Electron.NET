@@ -9,7 +9,7 @@ namespace ElectronNET.API
     using ElectronNET.AspNet.Hubs;
 
     /// <summary>
-    /// SignalR-based facade that mimics the SocketIoFacade interface
+    /// SignalR-based facade that mimics the SocketIOConnection interface
     /// for compatibility with existing Electron API code.
     /// 
     /// Key implementation details:
@@ -19,14 +19,14 @@ namespace ElectronNET.API
     /// - Event args are passed as arrays to match SignalR serialization behavior
     /// - Connection ID is set by ElectronHub when Electron client connects
     /// </summary>
-    internal class SignalRFacade : IFacade
+    internal class SignalRConnection : ISocketConnection
     {
         private readonly IHubContext<ElectronHub> _hubContext;
         private string _connectionId;
         private readonly ConcurrentDictionary<string, Action<object>> _eventHandlers;
         private readonly object _lockObj = new object();
 
-        public SignalRFacade(IHubContext<ElectronHub> hubContext)
+        public SignalRConnection(IHubContext<ElectronHub> hubContext)
         {
             _hubContext = hubContext;
             _eventHandlers = new ConcurrentDictionary<string, Action<object>>();
@@ -76,7 +76,7 @@ namespace ElectronNET.API
                     }
                     else
                     {
-                        Console.Error.WriteLine($"[SignalRFacade] Failed to convert event data to type {typeof(T).Name}");
+                        Console.Error.WriteLine($"[SignalR] Failed to convert event data to type {typeof(T).Name}");
                     }
                 };
             }
@@ -108,7 +108,7 @@ namespace ElectronNET.API
                     }
                     else
                     {
-                        Console.Error.WriteLine($"[SignalRFacade] Failed to convert event data to type {typeof(T).Name} for event '{eventName}'");
+                        Console.Error.WriteLine($"[SignalR] Failed to convert event data to type {typeof(T).Name} for event '{eventName}'");
                     }
                 };
             }
@@ -126,7 +126,7 @@ namespace ElectronNET.API
         {
             if (string.IsNullOrEmpty(_connectionId))
             {
-                Console.Error.WriteLine($"[SignalRFacade] Cannot emit '{eventName}' - no connection ID");
+                Console.Error.WriteLine($"[SignalR] Cannot emit '{eventName}' - no connection ID");
                 return;
             }
 
@@ -138,7 +138,7 @@ namespace ElectronNET.API
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[SignalRFacade] Error emitting '{eventName}': {ex.Message}");
+                Console.Error.WriteLine($"[SignalR] Error emitting '{eventName}': {ex.Message}");
                 throw;
             }
         }
@@ -176,7 +176,7 @@ namespace ElectronNET.API
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"[SignalRFacade] JsonElement deserialization failed: {ex.Message}");
+                    Console.Error.WriteLine($"[SignalR] JsonElement deserialization failed: {ex.Message}");
                     return default;
                 }
             }
@@ -218,15 +218,25 @@ namespace ElectronNET.API
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"[SignalRFacade] Type conversion failed from {obj.GetType().Name} to {targetType.Name}: {ex.Message}");
+                Console.Error.WriteLine($"[SignalR] Type conversion failed from {obj.GetType().Name} to {targetType.Name}: {ex.Message}");
                 return default;
             }
         }
-
-        public void DisposeSocket()
+        
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
         {
-            // SignalR connections are managed by ASP.NET Core
-            _eventHandlers.Clear();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // SignalR connections are managed by ASP.NET Core
+                _eventHandlers.Clear();
+            }
         }
     }
 }

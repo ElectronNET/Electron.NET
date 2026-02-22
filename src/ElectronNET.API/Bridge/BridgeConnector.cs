@@ -6,7 +6,7 @@ namespace ElectronNET.API
 
     internal static class BridgeConnector
     {
-        public static IFacade Socket
+        public static ISocketConnection Socket
         {
             get
             {

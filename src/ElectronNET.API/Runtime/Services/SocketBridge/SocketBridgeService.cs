@@ -9,7 +9,7 @@
     {
         private readonly int socketPort;
         private readonly string socketUrl;
-        private SocketIoFacade socket;
+        private SocketIOConnection socket;
 
         public SocketBridgeService(int socketPort)
         {
@@ -19,11 +19,11 @@
 
         public int SocketPort => this.socketPort;
 
-        internal SocketIoFacade Socket => this.socket;
+        internal SocketIOConnection Socket => this.socket;
 
         protected override Task StartCore()
         {
-            this.socket = new SocketIoFacade(this.socketUrl);
+            this.socket = new SocketIOConnection(this.socketUrl);
             this.socket.BridgeConnected += this.Socket_BridgeConnected;
             this.socket.BridgeDisconnected += this.Socket_BridgeDisconnected;
             Task.Run(this.Connect);

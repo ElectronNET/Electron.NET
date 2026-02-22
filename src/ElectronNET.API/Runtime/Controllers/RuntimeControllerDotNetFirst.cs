@@ -20,7 +20,7 @@
         {
         }
 
-        internal override IFacade Socket
+        internal override ISocketConnection Socket
         {
             get
             {

@@ -17,7 +17,7 @@
         {
         }
 
-        internal override SocketIoFacade Socket
+        internal override SocketIOConnection Socket
         {
             get
             {

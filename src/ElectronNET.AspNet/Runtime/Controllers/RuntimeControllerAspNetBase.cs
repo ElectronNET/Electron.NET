@@ -26,7 +26,7 @@
 
         internal override SocketBridgeService SocketBridge => this.socketBridge;
 
-        internal override IFacade Socket
+        internal override ISocketConnection Socket
         {
             get
             {

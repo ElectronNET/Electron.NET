@@ -41,7 +41,7 @@ Blazor Server applications where:
 - Implemented Socket.IO-compatible interface for API compatibility
 
 ### Phase 4: API Bridge Adaptation ✅
-- Created `SignalRFacade` implementing `IFacade` interface
+- Created `SignalRConnection` implementing `ISocketConnection` interface
 - Ensured existing Electron API classes work with SignalR
 - Implemented type conversion helper for SignalR's JSON deserialization
 - Event routing from both directions (.NET ↔ Electron)
@@ -60,8 +60,8 @@ Blazor Server applications where:
 
 ## Key Components
 
-### 1. SignalRFacade (`src/ElectronNET.AspNet/Bridge/SignalRFacade.cs`)
-- Implements `IFacade` interface to match Socket.IO facade API
+### 1. SignalRConnection (`src/ElectronNET.AspNet/Bridge/SignalRConnection.cs`)
+- Implements `ISocketConnection` interface to match Socket.IO facade API
 - Handles bidirectional event routing using `IHubContext<ElectronHub>`
 - Includes `ConvertToType<T>` helper for handling SignalR's JSON deserialization quirks
 - Critical fix: Handles `JsonElement` and numeric type conversions (long → int)
@@ -155,8 +155,8 @@ SignalR mode uses .NET-first startup (vs. Electron-first in Socket.IO mode) beca
 4. **Better for Blazor Server** - Blazor is already running when Electron starts
 5. **Single process debugging** - Developer debugs .NET process which owns Electron
 
-### Why IFacade Interface?
-Introducing `IFacade` allows `BridgeConnector.Socket` to return either `SocketIOFacade` or `SignalRFacade` based on startup mode, ensuring existing API code works with both transport mechanisms without modification.
+### Why ISocketConnection Interface?
+Introducing `ISocketConnection` allows `BridgeConnector.Socket` to return either `SocketIOConnection` or `SignalRConnection` based on startup mode, ensuring existing API code works with both transport mechanisms without modification.
 
 ### Why Keep-Alive Window?
 Electron quits immediately on macOS if no windows exist. The keep-alive window ensures Electron stays running during the connection and API initialization phase. It's automatically destroyed when the first real window is created.
@@ -208,7 +208,7 @@ Blazor Server already uses SignalR for component communication (`/_blazor` hub).
 ### 3. Type Conversion Failures
 **Problem**: SignalR deserializes JSON numbers as `JsonElement` or `long`, causing `Once<int>` handlers to fail silently.
 
-**Solution**: `SignalRFacade.ConvertToType<T>` handles JsonElement deserialization and numeric conversions.
+**Solution**: `SignalRConnection.ConvertToType<T>` handles JsonElement deserialization and numeric conversions.
 
 ### 4. Window Shutdown Not Triggering Exit
 **Problem**: Keep-alive window prevented `window-all-closed` event from firing.
@@ -391,7 +391,7 @@ Existing applications do not need to change. SignalR mode is opt-in via command-
 ## File Changes Summary
 
 **New Files**:
-- `src/ElectronNET.AspNet/Bridge/SignalRFacade.cs` (225 lines)
+- `src/ElectronNET.AspNet/Bridge/SignalRConnection.cs` (225 lines)
 - `src/ElectronNET.AspNet/Hubs/ElectronHub.cs` (108 lines)
 - `src/ElectronNET.AspNet/Runtime/Controllers/RuntimeControllerAspNetDotnetFirstSignalR.cs` (163 lines)
 - `src/ElectronNET.AspNet/Services/IElectronAuthenticationService.cs` (20 lines)

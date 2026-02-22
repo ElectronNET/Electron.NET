@@ -107,7 +107,7 @@ The application will:
 ### .NET Side
 
 - **`ElectronHub`** - SignalR hub at `/electron-hub`
-- **`SignalRFacade`** - Mimics `SocketIoFacade` interface for compatibility
+- **`SignalRConnection`** - Mimics `SocketIOConnection` interface for compatibility
 - **`RuntimeControllerAspNetDotnetFirstSignalR`** - Lifecycle management
 - **`StartupMethod.PackagedDotnetFirstSignalR`** - For packaged apps
 - **`StartupMethod.UnpackedDotnetFirstSignalR`** - For debugging
@@ -128,7 +128,7 @@ The application will:
 
 ## Current Limitations (Phase 6 Work Needed)
 
-⚠️ **Electron API Integration** - Existing Electron APIs (WindowManager, Dialog, etc.) still use SocketIoFacade. Full integration requires:
+⚠️ **Electron API Integration** - Existing Electron APIs (WindowManager, Dialog, etc.) still use SocketIOConnection. Full integration requires:
 - Refactoring APIs to work with both facades, or
 - Creating an adapter pattern
 
@@ -158,7 +158,7 @@ The application will:
 - URL parameter handling
 
 ### Phase 4: API Bridge ✅ (Basic Structure)
-- `SignalRFacade` class
+- `SignalRConnection` class
 - Event handler system
 - Hub connection integration
 
@@ -182,7 +182,7 @@ To fully utilize this feature, the following work is recommended:
 ### .NET
 - `src/ElectronNET.API/Runtime/Data/StartupMethod.cs`
 - `src/ElectronNET.AspNet/Hubs/ElectronHub.cs`
-- `src/ElectronNET.AspNet/Bridge/SignalRFacade.cs`
+- `src/ElectronNET.AspNet/Bridge/SignalRConnection.cs`
 - `src/ElectronNET.AspNet/Runtime/Controllers/RuntimeControllerAspNetDotnetFirstSignalR.cs`
 - `src/ElectronNET.AspNet/API/ElectronEndpointRouteBuilderExtensions.cs`
 - `src/ElectronNET.AspNet/API/WebHostBuilderExtensions.cs`
@@ -200,8 +200,8 @@ To fully utilize this feature, the following work is recommended:
 8ee81f6 - Add ElectronHub and SignalR infrastructure for new startup modes
 40aed60 - Add RuntimeControllerAspNetDotnetFirstSignalR for SignalR-based startup
 c1740b5 - Add SignalR client support to Electron Host for new startup modes
-cb7d721 - Add SignalRFacade for SignalR-based API communication
-268b9c9 - Update RuntimeControllerAspNetDotnetFirstSignalR to use SignalRFacade
+cb7d721 - Add SignalRConnection for SignalR-based API communication
+268b9c9 - Update RuntimeControllerAspNetDotnetFirstSignalR to use SignalRConnection
 04ec522 - Fix compilation errors - Phase 4 complete (basic structure)
 054f5b1 - Complete Phase 5: Add SignalR startup detection and port 0 configuration
 ```
@@ -219,7 +219,7 @@ cb7d721 - Add SignalRFacade for SignalR-based API communication
 
 To contribute to Phase 6 (full API integration):
 
-1. Focus on adapting existing Electron API classes to work with SignalRFacade
+1. Focus on adapting existing Electron API classes to work with SignalRConnection
 2. Implement request-response pattern in ElectronHub
 3. Add integration tests
 4. Create sample applications

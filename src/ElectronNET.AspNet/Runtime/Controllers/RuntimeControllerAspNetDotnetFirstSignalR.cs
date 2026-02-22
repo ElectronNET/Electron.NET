@@ -20,7 +20,7 @@ namespace ElectronNET.AspNet.Runtime
     /// Key differences from Socket.IO mode:
     /// - Waits for ASP.NET server to start, then captures the dynamic port
     /// - Launches Electron with the actual URL (no port scanning needed)
-    /// - Uses SignalRFacade instead of SocketIOFacade for bidirectional communication
+    /// - Uses SignalRConnection instead of SocketIOConnection for bidirectional communication
     /// - Waits for 'electron-host-ready' signal to ensure API modules are loaded before calling app callback
     /// </summary>
     internal class RuntimeControllerAspNetDotnetFirstSignalR : RuntimeControllerAspNetBase
@@ -29,7 +29,7 @@ namespace ElectronNET.AspNet.Runtime
         private readonly IServer server;
         private readonly IHubContext<ElectronHub> hubContext;
         private readonly IElectronAuthenticationService authenticationService;
-        private SignalRFacade signalRFacade;
+        private SignalRConnection socket;
         private int? port;
         private string actualUrl;
         private bool electronLaunched;
@@ -45,11 +45,11 @@ namespace ElectronNET.AspNet.Runtime
             this.server = server;
             this.hubContext = hubContext;
             this.authenticationService = authenticationService;
-            this.signalRFacade = new SignalRFacade(hubContext);
+            this.socket = new SignalRConnection(hubContext);
             this.electronLaunched = false;
             
-            this.signalRFacade.BridgeConnected += this.SignalRFacade_Connected;
-            this.signalRFacade.BridgeDisconnected += this.SignalRFacade_Disconnected;
+            this.socket.BridgeConnected += this.SignalRConnection_Connected;
+            this.socket.BridgeDisconnected += this.SignalRConnection_Disconnected;
             
             // Subscribe to ASP.NET ready event to launch Electron
             aspNetLifetimeAdapter.Ready += this.OnAspNetReady;
@@ -58,20 +58,20 @@ namespace ElectronNET.AspNet.Runtime
         internal override ElectronProcessBase ElectronProcess => this.electronProcess;
         internal override SocketBridgeService SocketBridge => null;
         
-        internal override IFacade Socket
+        internal override ISocketConnection Socket
         {
             get
             {
                 if (this.State == LifetimeState.Ready)
                 {
-                    return this.signalRFacade;
+                    return this.socket;
                 }
 
                 throw new Exception("Cannot access SignalR facade. Runtime is not in 'Ready' state");
             }
         }
 
-        internal SignalRFacade SignalRSocket => this.signalRFacade;
+        internal SignalRConnection SignalRSocket => this.socket;
 
         protected override Task StartCore()
         {
@@ -81,7 +81,7 @@ namespace ElectronNET.AspNet.Runtime
         protected override Task StopCore()
         {
             this.electronProcess?.Stop();
-            this.signalRFacade?.DisposeSocket();
+            this.socket?.Dispose();
             return Task.CompletedTask;
         }
 
@@ -132,11 +132,11 @@ namespace ElectronNET.AspNet.Runtime
             _ = this.electronProcess.Start();
         }
 
-        private async void SignalRFacade_Connected(object sender, EventArgs e)
+        private async void SignalRConnection_Connected(object sender, EventArgs e)
         {
             // Register handler for 'electron-host-ready' signal from Electron.
             // This ensures API modules are fully loaded before calling the app ready callback.
-            this.signalRFacade.Once("electron-host-ready", () =>
+            this.socket.Once("electron-host-ready", () =>
             {
                 this.OnElectronHostReady();
             });
@@ -161,7 +161,7 @@ namespace ElectronNET.AspNet.Runtime
             }
         }
 
-        private void SignalRFacade_Disconnected(object sender, EventArgs e)
+        private void SignalRConnection_Disconnected(object sender, EventArgs e)
         {
             // IMPORTANT: Do NOT call HandleStopped synchronously here!
             // This event fires from within SignalR's OnDisconnectedAsync, and calling
@@ -178,12 +178,12 @@ namespace ElectronNET.AspNet.Runtime
 
         public void OnSignalRConnected(string connectionId)
         {
-            this.signalRFacade.SetConnectionId(connectionId);
+            this.socket.SetConnectionId(connectionId);
         }
 
         public void OnSignalRDisconnected()
         {
-            this.signalRFacade.OnDisconnected();
+            this.socket.OnDisconnected();
         }
     }
 }

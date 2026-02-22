@@ -65,12 +65,12 @@ namespace ElectronNET.AspNet.Hubs
         /// <param name="args">The event arguments as an array</param>
         public async Task ElectronEvent(string eventName, object[] args)
         {
-            // Get the SignalRFacade and trigger the event handlers
+            // Get the SignalRConnection and trigger the event handlers
             var runtimeController = ElectronNetRuntime.RuntimeController as RuntimeControllerAspNetDotnetFirstSignalR;
-            if (runtimeController?.SignalRSocket is SignalRFacade signalRFacade)
+            if (runtimeController?.SignalRSocket is SignalRConnection socket)
             {
                 // Invoke the event handlers registered via On/Once
-                signalRFacade.TriggerEvent(eventName, args ?? Array.Empty<object>());
+                socket.TriggerEvent(eventName, args ?? Array.Empty<object>());
             }
             
             await Task.CompletedTask;

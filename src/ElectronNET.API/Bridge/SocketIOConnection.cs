@@ -9,13 +9,13 @@ using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
 using SocketIO = SocketIOClient.SocketIO;
 
-internal class SocketIoFacade : IFacade, IDisposable
+internal class SocketIOConnection : ISocketConnection
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
     private bool _isDisposed;
 
-    public SocketIoFacade(string uri)
+    public SocketIOConnection(string uri)
     {
         _socket = new SocketIO(uri);
         _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
@@ -141,7 +141,7 @@ internal class SocketIoFacade : IFacade, IDisposable
     {
         if (this._isDisposed)
         {
-            throw new ObjectDisposedException(nameof(SocketIoFacade));
+            throw new ObjectDisposedException(nameof(SocketIOConnection));
         }
     }
 }
