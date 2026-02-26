@@ -63,7 +63,7 @@ namespace ElectronNET.API
 
         private event Action<Cookie, CookieChangedCause, bool> _changed;
 
-        
+
 
         /// <summary>
         /// Sends a request to get all cookies matching filter, and resolves a callack with the response.

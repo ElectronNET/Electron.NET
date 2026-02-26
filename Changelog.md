@@ -2,8 +2,16 @@
 
 ## ElectronNET.Core
 
+- Updated documentation for preload scripts (#1031) @AeonSake
+- Updated timeout for electron-builder (#1013) @softworkz
+- Updated disposal avoiding exceptions on teardown (#1026) @softworkz
+- Updated migration guide (#1015) @hilin
 - Fixed handling of `Center` property for windows (#1001)
+- Fixed false alarm for `ELECTRON001`, `ELECTRON008`, and `ELECTRON009` (#1012) @softworkz
 - Added missing methods on `Cookies` (#1000)
+- Added overload for `GetAllDisplaysAsync` with timeout (#1033) @softworkz
+- Added `OnBoundsChanged` event (#1014) @softworkz
+- Added new events for `ipcMain` (#1019) @DYH1319
 
 # 0.4.0
 

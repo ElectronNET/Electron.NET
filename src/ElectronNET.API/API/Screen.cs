@@ -125,6 +125,15 @@ namespace ElectronNET.API
         public Task<Display[]> GetAllDisplaysAsync() => this.InvokeAsync<Display[]>();
 
         /// <summary>
+        /// An array of displays that are currently available.
+        /// </summary>
+        /// <param name="invocationTimeout">The invocation timeout.</param>
+        /// <returns>
+        /// An array of displays that are currently available.
+        /// </returns>
+        public Task<Display[]> GetAllDisplaysAsync(TimeSpan invocationTimeout) => this.InvokeAsyncWithTimeout<Display[]>(invocationTimeout);
+
+        /// <summary>
         /// The display nearest the specified point.
         /// </summary>
         /// <returns>The display nearest the specified point.</returns>
