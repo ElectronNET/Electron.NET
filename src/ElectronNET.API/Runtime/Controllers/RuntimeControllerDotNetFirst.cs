@@ -14,7 +14,6 @@
     {
         private ElectronProcessBase electronProcess;
         private SocketBridgeService socketBridge;
-        private int? port;
 
         public RuntimeControllerDotNetFirst()
         {
@@ -42,19 +41,13 @@
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
             var args = string.Format("{0} {1}", ElectronNetRuntime.ElectronExtraArguments, Environment.CommandLine).Trim();
-            this.port = ElectronNetRuntime.ElectronSocketPort;
-
-            if (!this.port.HasValue)
-            {
-                this.port = PortHelper.GetFreePort(ElectronNetRuntime.DefaultSocketPort);
-                ElectronNetRuntime.ElectronSocketPort = this.port;
-            }
+            var port = ElectronNetRuntime.ElectronSocketPort ?? 0;
 
             Console.Error.WriteLine("[StartCore]: isUnPacked: {0}", isUnPacked);
             Console.Error.WriteLine("[StartCore]: electronBinaryName: {0}", electronBinaryName);
             Console.Error.WriteLine("[StartCore]: args: {0}", args);
 
-            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);
+            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, port);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 
@@ -64,8 +57,9 @@
 
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
+            var port = ElectronNetRuntime.ElectronSocketPort.Value;
             this.TransitionState(LifetimeState.Started);
-            this.socketBridge = new SocketBridgeService(this.port!.Value);
+            this.socketBridge = new SocketBridgeService(port, "");
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

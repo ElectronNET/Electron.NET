@@ -85,9 +85,6 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 // UseAntiforgery must be after UseRouting
 app.UseAntiforgery();
 
-// Map SignalR hub for Electron communication
-app.MapHub<ElectronNET.AspNet.Hubs.ElectronHub>("/electron-hub");
-
 app.MapStaticAssets();
 app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()
     .AddInteractiveServerRenderMode();

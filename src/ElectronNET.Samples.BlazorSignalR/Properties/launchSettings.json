@@ -7,8 +7,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:0",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ELECTRON_USE_SIGNALR": "true"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

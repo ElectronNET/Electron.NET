@@ -30,7 +30,7 @@
                 throw new Exception("No electronPID has been specified by Electron!");
             }
 
-            this.CreateSocketBridge(this.port!.Value);
+            this.CreateSocketBridge(this.port!.Value, "");
 
             this.electronProcess = new ElectronProcessPassive(ElectronNetRuntime.ElectronProcessId.Value);
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;

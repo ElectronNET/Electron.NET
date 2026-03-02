@@ -14,7 +14,6 @@ namespace ElectronNET.Common
             {
                 case StartupMethod.UnpackedElectronFirst:
                 case StartupMethod.UnpackedDotnetFirst:
-                case StartupMethod.UnpackedDotnetFirstSignalR:
                     return true;
                 default:
                     return false;

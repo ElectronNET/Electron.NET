@@ -4,7 +4,7 @@ namespace ElectronNET.API.Bridge
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Common interface for communication facades (SocketIO and SignalR).
+    /// Common interface for communication facades.
     /// Provides methods for bidirectional communication between .NET and Electron.
     /// </summary>
     internal interface ISocketConnection : IDisposable
