@@ -155,28 +155,31 @@
             return Task.CompletedTask;
         }
 
-        private void Read_SocketIO_Port(object sender, string line)
-        {
-            // Look for "Electron Socket: listening on port %s at"
-            var prefix = "Electron Socket: listening on port ";
-
-            if (line.StartsWith(prefix))
-            {
-                var start = prefix.Length;
-                var end = line.IndexOf(' ', start + 1);
-                var port = line[start..end];
-
-                if (int.TryParse(port, out var p))
-                {
-                    // We got the port, so no more need for reading this
-                    this.process.LineReceived -= this.Read_SocketIO_Port;
-                    ElectronNetRuntime.ElectronSocketPort = p;
-                }
-            }
-        }
-
         private async Task StartInternal(string startCmd, string args, string directoriy)
         {
+            var tcs = new TaskCompletionSource();
+
+            void Read_SocketIO_Port(object sender, string line)
+            {                
+                // Look for "Electron Socket: listening on port %s at"
+                var prefix = "Electron Socket: listening on port ";
+
+                if (line.StartsWith(prefix))
+                {
+                    var start = prefix.Length;
+                    var end = line.IndexOf(' ', start + 1);
+                    var port = line[start..end];
+
+                    if (int.TryParse(port, out var p))
+                    {
+                        // We got the port, so no more need for reading this
+                        this.process.LineReceived -= Read_SocketIO_Port;
+                        ElectronNetRuntime.ElectronSocketPort = p;
+                        tcs.SetResult();
+                    }
+                }
+            }
+
             try
             {
                 await Task.Delay(10.ms()).ConfigureAwait(false);
@@ -186,10 +189,10 @@
 
                 this.process = new ProcessRunner("ElectronRunner");
                 this.process.ProcessExited += this.Process_Exited;
-                this.process.LineReceived += this.Read_SocketIO_Port;
+                this.process.LineReceived += Read_SocketIO_Port;
                 this.process.Run(startCmd, args, directoriy);
 
-                await Task.Delay(500.ms()).ConfigureAwait(false);
+                await tcs.Task.ConfigureAwait(false);
 
                 Console.Error.WriteLine("[StartInternal]: after run:");
 
