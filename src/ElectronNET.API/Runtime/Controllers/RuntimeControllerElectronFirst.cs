@@ -49,7 +49,7 @@
             }
 
             this.TransitionState(LifetimeState.Starting);
-            this.socketBridge = new SocketBridgeService(this.port!.Value);
+            this.socketBridge = new SocketBridgeService(this.port!.Value, "");
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

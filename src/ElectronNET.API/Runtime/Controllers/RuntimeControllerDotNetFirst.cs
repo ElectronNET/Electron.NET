@@ -65,7 +65,7 @@
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
             this.TransitionState(LifetimeState.Started);
-            this.socketBridge = new SocketBridgeService(this.port!.Value);
+            this.socketBridge = new SocketBridgeService(this.port!.Value, "");
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

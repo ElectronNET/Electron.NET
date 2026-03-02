@@ -39,9 +39,9 @@
             }
         }
 
-        protected void CreateSocketBridge(int port)
+        protected void CreateSocketBridge(int port, string authorization)
         {
-            this.socketBridge = new SocketBridgeService(port);
+            this.socketBridge = new SocketBridgeService(port, authorization);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

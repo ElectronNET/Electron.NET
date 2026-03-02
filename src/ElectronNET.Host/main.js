@@ -1,9 +1,10 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
-const { protocol } = require('electron');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 const cProcess = require('child_process').spawn;
-const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
 
 let io, server, browserWindows, ipc, apiProcess, loadURL;
@@ -26,8 +27,6 @@ let manifestJsonFileName = 'package.json';
 let unpackedelectron = false;
 let unpackeddotnet = false;
 let dotnetpacked = false;
-let unpackeddotnetsignalr = false;
-let dotnetpackedsignalr = false;
 let electronforcedport;
 let electronUrl;
 
@@ -35,15 +34,7 @@ if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 }
 
-// Check for SignalR modes first (these take precedence)
-if (app.commandLine.hasSwitch('unpackeddotnetsignalr')) {
-    unpackeddotnetsignalr = true;
-}
-else if (app.commandLine.hasSwitch('dotnetpackedsignalr')) {
-    dotnetpackedsignalr = true;
-}
-// Then check legacy modes
-else if (app.commandLine.hasSwitch('unpackedelectron')) {
+if (app.commandLine.hasSwitch('unpackedelectron')) {
     unpackedelectron = true;
 }
 else if (app.commandLine.hasSwitch('unpackeddotnet')) {
@@ -58,11 +49,14 @@ if (app.commandLine.hasSwitch('electronforcedport')) {
 }
 
 let authToken;
+
 if (app.commandLine.hasSwitch('authtoken')) {
     authToken = app.commandLine.getSwitchValue('authtoken');
     // Store in global for access by browser windows
     global.authToken = authToken;
 }
+
+console.log('Started with token', authToken);
 
 if (app.commandLine.hasSwitch('electronurl')) {
     electronUrl = app.commandLine.getSwitchValue('electronurl');
@@ -71,7 +65,6 @@ if (app.commandLine.hasSwitch('electronurl')) {
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
 // If the hook returns false, abort Electron startup.
 try {
-    const fs = require('fs');
     const customMainPath = path.join(__dirname, 'custom_main.js');
     if (fs.existsSync(customMainPath)) {
         const customMain = require(customMainPath);
@@ -176,38 +169,6 @@ app.on('ready', async () => {
         startSplashScreen();
     }
 
-    // Check if we're using SignalR-based startup
-    // SignalR mode is activated by --unpackeddotnetsignalr or --dotnetpackedsignalr flags
-    // .NET passes the actual server URL via --electronurl parameter (no port scanning needed)
-    if (unpackeddotnetsignalr || dotnetpackedsignalr) {
-        if (!electronUrl) {
-            console.error('[Electron] ERROR: SignalR mode requires --electronUrl parameter');
-            app.quit();
-            return;
-        }
-        
-        // Create a temporary invisible window to keep Electron alive during startup.
-        // Without any windows, Electron would quit immediately on macOS.
-        // This will be destroyed once the first real window is created.
-        const { BrowserWindow } = require('electron');
-        const keepAliveWindow = new BrowserWindow({
-            show: false,
-            width: 1,
-            height: 1
-        });
-        
-        // Destroy the keep-alive window when the first real window is created
-        app.once('browser-window-created', (event, window) => {
-            if (keepAliveWindow && !keepAliveWindow.isDestroyed()) {
-                keepAliveWindow.destroy();
-            }
-        });
-        
-        await startSignalRApiBridge(electronUrl);
-        return;
-    }
-
-    // Legacy socket.io startup
     if (electronforcedport) {
         console.info('Electron Socket IO (forced) Port: ' + electronforcedport);
         startSocketApiBridge(electronforcedport);
@@ -220,11 +181,8 @@ app.on('ready', async () => {
         defaultElectronPort = manifestJsonFile.electronPort;
     }
 
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
-        console.info('Electron Socket IO Port: ' + port);
-        startSocketApiBridge(port);
-    });
+    console.info('Electron Socket dynamic IO Port');
+    startSocketApiBridge(0);
 });
 
 app.on('quit', async (event, exitCode) => {
@@ -330,8 +288,7 @@ function startSocketApiBridge(port) {
     // instead of 'require('socket.io')(port);' we need to use this workaround
     // otherwise the Windows Firewall will be triggered
     console.debug('Electron Socket: starting...');
-    server = require('http').createServer();
-    const { Server } = require('socket.io');
+    server = createServer();
     let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
@@ -341,7 +298,8 @@ function startSocketApiBridge(port) {
 
     server.listen(port, 'localhost');
     server.on('listening', function () {
-        console.info('Electron Socket: listening on port %s at %s', server.address().port, server.address().address);
+        const addr = server.address();
+        console.info('Electron Socket: listening on port %s at %s', addr.port, addr.address);
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
             startAspCoreBackendUnpackaged(port);
@@ -357,6 +315,13 @@ function startSocketApiBridge(port) {
     // @ts-ignore
     io.on('connection', (socket) => {
         console.info('Electron Socket: connected!');
+
+        if (authToken && socket.request.headers.authorization !== authToken) {
+            console.warn('Electron Socket authentication failed!');
+            socket.disconnect(true);
+            return;
+        }
+
         socket.on('disconnect', function (reason) {
             console.debug('Got disconnect! Reason: ' + reason);
             try {
@@ -441,106 +406,6 @@ function startSocketApiBridge(port) {
 
         console.info('Electron Socket: startup complete.');
     });
-}
-
-/**
- * Starts the SignalR API bridge for .NET-first SignalR mode.
- * 
- * Flow:
- * 1. Connect to SignalR hub at /electron-hub endpoint
- * 2. Register as Electron client
- * 3. Load all API modules (same modules as Socket.IO mode)
- * 4. Signal 'electron-host-ready' to .NET to trigger app ready callback
- * 
- * This ensures .NET doesn't call the app ready callback until all API modules
- * are loaded and ready to handle requests from .NET code.
- */
-async function startSignalRApiBridge(baseUrl) {
-    const { SignalRBridge } = require('./api/signalr-bridge');
-    const hubUrl = `${baseUrl}/electron-hub`;
-    
-    // Pass the authentication token to the SignalR bridge
-    const signalRBridge = new SignalRBridge(hubUrl, global.authToken);
-    
-    try {
-        const connected = await signalRBridge.connect();
-        
-        if (!connected) {
-            console.error('[SignalRBridge] Failed to connect to SignalR hub');
-            app.quit();
-            return;
-        }
-        
-        // Store the bridge globally for API access
-        global['electronsignalr'] = signalRBridge;
-        
-        // Define module loaders - each returns the initialized module
-        const loadModules = () => {
-            const modules = {};
-            
-            // Load all modules in parallel using Promise.all
-            return Promise.all([
-                // Critical modules (always needed)
-                Promise.resolve().then(() => modules.appApi = require('./api/app')(signalRBridge, app)),
-                Promise.resolve().then(() => modules.browserWindows = require('./api/browserWindows')(signalRBridge, app)),
-                Promise.resolve().then(() => modules.commandLine = require('./api/commandLine')(signalRBridge, app)),
-                Promise.resolve().then(() => modules.webContents = require('./api/webContents')(signalRBridge)),
-                Promise.resolve().then(() => modules.ipc = require('./api/ipc')(signalRBridge)),
-                Promise.resolve().then(() => modules.menu = require('./api/menu')(signalRBridge)),
-                
-                // Secondary modules (commonly used)
-                Promise.resolve().then(() => modules.dialogApi = require('./api/dialog')(signalRBridge)),
-                Promise.resolve().then(() => modules.notification = require('./api/notification')(signalRBridge)),
-                Promise.resolve().then(() => modules.shellApi = require('./api/shell')(signalRBridge)),
-                Promise.resolve().then(() => modules.clipboard = require('./api/clipboard')(signalRBridge)),
-                Promise.resolve().then(() => modules.screen = require('./api/screen')(signalRBridge)),
-                
-                // Utility modules (less frequently used)
-                Promise.resolve().then(() => modules.autoUpdater = require('./api/autoUpdater')(signalRBridge)),
-                Promise.resolve().then(() => modules.tray = require('./api/tray')(signalRBridge)),
-                Promise.resolve().then(() => modules.globalShortcut = require('./api/globalShortcut')(signalRBridge)),
-                Promise.resolve().then(() => modules.nativeTheme = require('./api/nativeTheme')(signalRBridge)),
-                Promise.resolve().then(() => modules.powerMonitor = require('./api/powerMonitor')(signalRBridge)),
-                Promise.resolve().then(() => modules.processApi = require('./api/process')(signalRBridge)),
-                
-                // Platform-specific modules
-                Promise.resolve().then(() => {
-                    if (process.platform === 'darwin') {
-                        modules.dock = require('./api/dock')(signalRBridge, app);
-                    }
-                })
-            ]).then(() => modules);
-        };
-        
-        const modules = await loadModules();
-        
-        // Assign to global variables (for backward compatibility)
-        if (appApi === undefined) appApi = modules.appApi;
-        if (browserWindows === undefined) browserWindows = modules.browserWindows;
-        if (commandLine === undefined) commandLine = modules.commandLine;
-        if (autoUpdater === undefined) autoUpdater = modules.autoUpdater;
-        if (ipc === undefined) ipc = modules.ipc;
-        if (menu === undefined) menu = modules.menu;
-        if (dialogApi === undefined) dialogApi = modules.dialogApi;
-        if (notification === undefined) notification = modules.notification;
-        if (tray === undefined) tray = modules.tray;
-        if (webContents === undefined) webContents = modules.webContents;
-        if (globalShortcut === undefined) globalShortcut = modules.globalShortcut;
-        if (clipboard === undefined) clipboard = modules.clipboard;
-        if (screen === undefined) screen = modules.screen;
-        if (shellApi === undefined) shellApi = modules.shellApi;
-        if (nativeTheme === undefined) nativeTheme = modules.nativeTheme;
-        if (powerMonitor === undefined) powerMonitor = modules.powerMonitor;
-        if (dock === undefined && modules.dock) dock = modules.dock;
-        if (processApi === undefined) processApi = modules.processApi;
-        
-        await signalRBridge.emit('electron-host-ready');
-        
-    } catch (error) {
-        console.error('[SignalRBridge] Error during startup:', error);
-        console.error('[SignalRBridge] Stack:', error.stack);
-        app.quit();
-    }
 }
 
 function startAspCoreBackend(electronPort) {

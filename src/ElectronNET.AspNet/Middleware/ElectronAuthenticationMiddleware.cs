@@ -15,7 +15,7 @@ namespace ElectronNET.AspNet.Middleware
     /// - First request includes token as query parameter (?token=guid)
     /// - Middleware validates token and sets secure HttpOnly cookie
     /// - Subsequent requests use cookie (no token in URL)
-    /// - Both HTTP endpoints and SignalR hub protected
+    /// - HTTP endpoints protected
     /// </summary>
     public class ElectronAuthenticationMiddleware
     {
