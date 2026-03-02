@@ -55,7 +55,7 @@ builder.WebHost.UseElectron(args, async () =>
         options.AutoHideMenuBar = true;
 
     var browserWindow = await Electron.WindowManager.CreateWindowAsync(options);
-    
+
     browserWindow.OnReadyToShow += () => browserWindow.Show();
 });
 

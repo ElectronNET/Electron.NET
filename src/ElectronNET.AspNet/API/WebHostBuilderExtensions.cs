@@ -74,10 +74,10 @@
             // check for the content folder if its exists in base director otherwise no need to include
             // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
             // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
-            
+
             // For port 0 (dynamic port assignment), Kestrel requires binding to specific IP (127.0.0.1) not localhost
             var host = "localhost";
-            
+
             if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
             {
                 builder = builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)

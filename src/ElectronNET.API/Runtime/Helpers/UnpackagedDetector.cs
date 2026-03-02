@@ -65,7 +65,7 @@
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var dir = new DirectoryInfo(baseDir);
-            
+
             if (dir.Name == "bin" && dir.Parent?.Name == "resources")
             {
                 return false;

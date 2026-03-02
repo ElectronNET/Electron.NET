@@ -25,7 +25,7 @@ namespace ElectronNET.AspNet.Middleware
         private const string AuthCookieName = "ElectronAuth";
 
         public ElectronAuthenticationMiddleware(
-            RequestDelegate next, 
+            RequestDelegate next,
             IElectronAuthenticationService authService,
             ILogger<ElectronAuthenticationMiddleware> logger)
         {
@@ -37,10 +37,10 @@ namespace ElectronNET.AspNet.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var path = context.Request.Path.Value;
-            
+
             // Check if authentication cookie exists
             var authCookie = context.Request.Cookies[AuthCookieName];
-            
+
             if (!string.IsNullOrEmpty(authCookie))
             {
                 // Cookie present - validate it
@@ -52,8 +52,7 @@ namespace ElectronNET.AspNet.Middleware
                 else
                 {
                     // Invalid cookie - reject
-                    _logger.LogWarning("Authentication failed: Invalid cookie for path {Path} from {RemoteIp}", 
-                        path, context.Connection.RemoteIpAddress);
+                    _logger.LogWarning("Authentication failed: Invalid cookie for path {Path} from {RemoteIp}", path, context.Connection.RemoteIpAddress);
                     context.Response.StatusCode = 401;
                     await context.Response.WriteAsync("Unauthorized: Invalid authentication");
                     return;
@@ -62,14 +61,14 @@ namespace ElectronNET.AspNet.Middleware
 
             // No cookie - check for token in query string (first-time authentication)
             var token = context.Request.Query["token"].ToString();
-            
+
             if (!string.IsNullOrEmpty(token))
             {
                 if (_authService.ValidateToken(token))
                 {
                     // Valid token - set cookie for future requests
                     _logger.LogInformation("Authentication successful: Setting cookie for path {Path}", path);
-                    
+
                     context.Response.Cookies.Append(AuthCookieName, token, new CookieOptions
                     {
                         HttpOnly = true,                     // Prevent JavaScript access (XSS protection)
@@ -78,15 +77,14 @@ namespace ElectronNET.AspNet.Middleware
                         Secure = false,                      // False because localhost is HTTP
                         IsEssential = true                   // Required for app to function
                     });
-                    
+
                     await _next(context);
                     return;
                 }
                 else
                 {
                     // Invalid token - reject
-                    _logger.LogWarning("Authentication failed: Invalid token (prefix: {TokenPrefix}...) for path {Path} from {RemoteIp}", 
-                        token.Length > 8 ? token.Substring(0, 8) : token, path, context.Connection.RemoteIpAddress);
+                    _logger.LogWarning("Authentication failed: Invalid token (prefix: {TokenPrefix}...) for path {Path} from {RemoteIp}", token.Length > 8 ? token.Substring(0, 8) : token, path, context.Connection.RemoteIpAddress);
                     context.Response.StatusCode = 401;
                     await context.Response.WriteAsync("Unauthorized: Invalid authentication");
                     return;
@@ -94,8 +92,7 @@ namespace ElectronNET.AspNet.Middleware
             }
 
             // Neither cookie nor valid token present - reject
-            _logger.LogWarning("Authentication failed: No cookie or token provided for path {Path} from {RemoteIp}", 
-                path, context.Connection.RemoteIpAddress);
+            _logger.LogWarning("Authentication failed: No cookie or token provided for path {Path} from {RemoteIp}", path, context.Connection.RemoteIpAddress);
             context.Response.StatusCode = 401;
             await context.Response.WriteAsync("Unauthorized: Authentication required");
         }
