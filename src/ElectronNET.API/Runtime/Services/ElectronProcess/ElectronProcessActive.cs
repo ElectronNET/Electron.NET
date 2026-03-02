@@ -155,6 +155,26 @@
             return Task.CompletedTask;
         }
 
+        private void Read_SocketIO_Port(object sender, string line)
+        {
+            // Look for "Electron Socket: listening on port %s at"
+            var prefix = "Electron Socket: listening on port ";
+
+            if (line.StartsWith(prefix))
+            {
+                var start = prefix.Length;
+                var end = line.IndexOf(' ', start + 1);
+                var port = line[start..end];
+
+                if (int.TryParse(port, out var p))
+                {
+                    // We got the port, so no more need for reading this
+                    this.process.LineReceived -= this.Read_SocketIO_Port;
+                    ElectronNetRuntime.ElectronSocketPort = p;
+                }
+            }
+        }
+
         private async Task StartInternal(string startCmd, string args, string directoriy)
         {
             try
@@ -166,6 +186,7 @@
 
                 this.process = new ProcessRunner("ElectronRunner");
                 this.process.ProcessExited += this.Process_Exited;
+                this.process.LineReceived += this.Read_SocketIO_Port;
                 this.process.Run(startCmd, args, directoriy);
 
                 await Task.Delay(500.ms()).ConfigureAwait(false);

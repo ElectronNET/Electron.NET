@@ -16,12 +16,8 @@ let processInfo;
 let splashScreen;
 let nativeTheme;
 let dock;
-let desktopCapturer;
-let electronHostHook;
-let touchBar;
 let launchFile;
 let launchUrl;
-let processApi;
 
 let manifestJsonFileName = 'package.json';
 let unpackedelectron = false;
@@ -45,7 +41,7 @@ else if (app.commandLine.hasSwitch('dotnetpacked')) {
 }
 
 if (app.commandLine.hasSwitch('electronforcedport')) {
-    electronforcedport = app.commandLine.getSwitchValue('electronforcedport');
+    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
 }
 
 let authToken;
@@ -172,17 +168,10 @@ app.on('ready', async () => {
     if (electronforcedport) {
         console.info('Electron Socket IO (forced) Port: ' + electronforcedport);
         startSocketApiBridge(electronforcedport);
-        return;
+    } else {
+        console.info('Electron Socket dynamic IO Port');
+        startSocketApiBridge(0);
     }
-
-    // Added default port as configurable for port restricted environments.
-    let defaultElectronPort = 8000;
-    if (manifestJsonFile.electronPort) {
-        defaultElectronPort = manifestJsonFile.electronPort;
-    }
-
-    console.info('Electron Socket dynamic IO Port');
-    startSocketApiBridge(0);
 });
 
 app.on('quit', async (event, exitCode) => {

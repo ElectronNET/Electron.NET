@@ -11,7 +11,6 @@
     internal class RuntimeControllerAspNetDotnetFirst : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;
-        private int? port;
         private readonly string authorization;
 
         public RuntimeControllerAspNetDotnetFirst(AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(aspNetLifetimeAdapter)
@@ -29,16 +28,10 @@
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
             var authToken = this.authorization;
-            this.port = ElectronNetRuntime.ElectronSocketPort;
-
-            if (!this.port.HasValue)
-            {
-                this.port = PortHelper.GetFreePort(ElectronNetRuntime.DefaultSocketPort);
-                ElectronNetRuntime.ElectronSocketPort = this.port;
-            }
-
+            var port = ElectronNetRuntime.ElectronSocketPort ?? 0;
             var args = $"{Environment.CommandLine} --authtoken={authToken}";
-            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);
+
+            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, port);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 
@@ -53,8 +46,9 @@
 
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
+            var port = ElectronNetRuntime.ElectronSocketPort.Value;
             this.TransitionState(LifetimeState.Started);
-            this.CreateSocketBridge(this.port!.Value, this.authorization);
+            this.CreateSocketBridge(port, this.authorization);
         }
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
