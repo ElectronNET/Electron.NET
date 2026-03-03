@@ -1,7 +1,11 @@
 ﻿namespace ElectronNET.AspNet.Runtime
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using Microsoft.AspNetCore.Hosting.Server.Features;
+    using Microsoft.Extensions.DependencyInjection;
     using ElectronNET.API;
     using ElectronNET.API.Bridge;
     using ElectronNET.Common;
@@ -11,11 +15,13 @@
 
     internal abstract class RuntimeControllerAspNetBase : RuntimeControllerBase
     {
+        private readonly IServer server;
         private readonly AspNetLifetimeAdapter aspNetLifetimeAdapter;
         private SocketBridgeService socketBridge;
 
-        protected RuntimeControllerAspNetBase(AspNetLifetimeAdapter aspNetLifetimeAdapter)
+        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter)
         {
+            this.server = server;
             this.aspNetLifetimeAdapter = aspNetLifetimeAdapter;
             this.aspNetLifetimeAdapter.Ready += this.AspNetLifetimeAdapter_Ready;
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
@@ -53,6 +59,12 @@
                 this.ElectronProcess.IsReady() &&
                 this.aspNetLifetimeAdapter.IsReady())
             {
+                var serverAddressesFeature = this.server.Features.Get<IServerAddressesFeature>();
+                var address = serverAddressesFeature.Addresses.First();
+                var uri = new Uri(address);
+
+                ElectronNetRuntime.AspNetWebPort = uri.Port;
+
                 this.TransitionState(LifetimeState.Ready);
                 Task.Run(this.RunReadyCallback);
             }

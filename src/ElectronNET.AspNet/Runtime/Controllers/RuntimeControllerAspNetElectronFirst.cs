@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting.Server;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.ElectronProcess;
 
@@ -10,7 +11,7 @@
         private ElectronProcessBase electronProcess;
         private int? port;
 
-        public RuntimeControllerAspNetElectronFirst(AspNetLifetimeAdapter aspNetLifetimeAdapter) : base(aspNetLifetimeAdapter)
+        public RuntimeControllerAspNetElectronFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter) : base(server, aspNetLifetimeAdapter)
         {
         }
 

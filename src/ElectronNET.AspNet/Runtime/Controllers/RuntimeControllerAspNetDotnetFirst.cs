@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting.Server;
     using ElectronNET.AspNet.Services;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
@@ -13,7 +14,7 @@
         private ElectronProcessBase electronProcess;
         private readonly string authorization;
 
-        public RuntimeControllerAspNetDotnetFirst(AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(aspNetLifetimeAdapter)
+        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter)
         {
             this.authorization = Guid.NewGuid().ToString("N"); // 32 hex chars, no hyphens
 
