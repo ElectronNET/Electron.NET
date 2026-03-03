@@ -19,13 +19,14 @@ internal class SocketIOConnection : ISocketConnection
 
     public SocketIOConnection(string uri, string authorization)
     {
-        _socket = new SocketIO(uri, new SocketIOOptions
+        var opts = string.IsNullOrEmpty(authorization) ? new SocketIOOptions() : new SocketIOOptions
         {
             ExtraHeaders = new Dictionary<string, string>
             {
                 ["authorization"] = authorization
             },
-        });
+        };
+        _socket = new SocketIO(uri, opts);
         _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
         // Use default System.Text.Json serializer from SocketIOClient.
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.

@@ -160,7 +160,7 @@
             var tcs = new TaskCompletionSource();
 
             void Read_SocketIO_Port(object sender, string line)
-            {                
+            {
                 // Look for "Electron Socket: listening on port %s at"
                 var prefix = "Electron Socket: listening on port ";
 
