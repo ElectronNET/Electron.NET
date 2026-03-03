@@ -75,10 +75,10 @@
             if (portArg != null)
             {
                 var parts = portArg.Split('=', StringSplitOptions.TrimEntries);
+
                 if (parts.Length > 1 && int.TryParse(parts[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
                 {
                     ElectronNetRuntime.ElectronSocketPort = result;
-
                     Console.WriteLine("Use Electron Port: " + result);
                 }
             }
@@ -88,18 +88,33 @@
             if (pidArg != null)
             {
                 var parts = pidArg.Split('=', StringSplitOptions.TrimEntries);
+
                 if (parts.Length > 1 && int.TryParse(parts[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var result))
                 {
                     ElectronNetRuntime.ElectronProcessId = result;
-
                     Console.WriteLine("Electron Process ID: " + result);
+                }
+            }
+
+            var authTokenArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronAuthTokenArgumentName, StringComparison.OrdinalIgnoreCase));
+
+            if (authTokenArg != null)
+            {
+                var parts = authTokenArg.Split('=', StringSplitOptions.TrimEntries);
+
+                if (parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]))
+                {
+                    var result = parts[1];
+                    ElectronNetRuntime.ElectronAuthToken = result;
+                    Console.WriteLine("Use Auth Token: " + result);
                 }
             }
         }
 
         private void SetElectronExecutable()
         {
-            string executable = ElectronNetRuntime.BuildInfo.ElectronExecutable;
+            var executable = ElectronNetRuntime.BuildInfo.ElectronExecutable;
+
             if (string.IsNullOrEmpty(executable))
             {
                 throw new Exception("AssemblyMetadataAttribute 'ElectronExecutable' could not be found!");

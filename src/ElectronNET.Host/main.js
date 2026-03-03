@@ -3,6 +3,7 @@ const { BrowserWindow } = require('electron');
 const { createServer } = require('http');
 const { randomUUID } = require('crypto');
 const { Server } = require('socket.io');
+const { platform } = require('os');
 const path = require('path');
 const fs = require('fs');
 const cProcess = require('child_process').spawn;
@@ -395,13 +396,13 @@ function startAspCoreBackend(electronPort) {
             envParam,
             `/electronPort=${electronPort}`,
             `/electronPID=${process.pid}`,
+            `/electronAuthToken=${authToken}`,
             // forward user supplied args (avoid duplicate environment)
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))
         ].filter(p => p);
         let binaryFile = manifestJsonFile.executable;
 
-        const os = require('os');
-        if (os.platform() === 'win32') {
+        if (platform() === 'win32') {
             binaryFile = binaryFile + '.exe';
         }
 
@@ -430,8 +431,7 @@ function startAspCoreBackendUnpackaged(electronPort) {
         ].filter(p => p);
         let binaryFile = manifestJsonFile.executable;
 
-        const os = require('os');
-        if (os.platform() === 'win32') {
+        if (platform() === 'win32') {
             binaryFile = binaryFile + '.exe';
         }
 
