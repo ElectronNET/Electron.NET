@@ -58,8 +58,9 @@
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
             var port = ElectronNetRuntime.ElectronSocketPort.Value;
+            var token = ElectronNetRuntime.ElectronAuthToken;
             this.TransitionState(LifetimeState.Started);
-            this.socketBridge = new SocketBridgeService(port, "");
+            this.socketBridge = new SocketBridgeService(port, token);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

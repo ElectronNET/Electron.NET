@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using ElectronNET.API;
     using ElectronNET.API.Bridge;
+    using ElectronNET.AspNet.Services;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
@@ -17,12 +18,14 @@
     {
         private readonly IServer server;
         private readonly AspNetLifetimeAdapter aspNetLifetimeAdapter;
+        private readonly IElectronAuthenticationService authenticationService;
         private SocketBridgeService socketBridge;
 
-        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter)
+        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null)
         {
             this.server = server;
             this.aspNetLifetimeAdapter = aspNetLifetimeAdapter;
+            this.authenticationService = authenticationService;
             this.aspNetLifetimeAdapter.Ready += this.AspNetLifetimeAdapter_Ready;
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
             this.aspNetLifetimeAdapter.Stopped += this.AspNetLifetimeAdapter_Stopped;
@@ -59,10 +62,13 @@
                 this.ElectronProcess.IsReady() &&
                 this.aspNetLifetimeAdapter.IsReady())
             {
+                var token = ElectronNetRuntime.ElectronAuthToken;
                 var serverAddressesFeature = this.server.Features.Get<IServerAddressesFeature>();
                 var address = serverAddressesFeature.Addresses.First();
                 var uri = new Uri(address);
 
+                // Only if somebody registered an IElectronAuthenticationService service - otherwise we do not care
+                this.authenticationService?.SetExpectedToken(token);
                 ElectronNetRuntime.AspNetWebPort = uri.Port;
 
                 this.TransitionState(LifetimeState.Ready);

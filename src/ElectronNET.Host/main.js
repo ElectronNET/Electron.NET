@@ -1,6 +1,7 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
 const { createServer } = require('http');
+const { randomUUID } = require('crypto');
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
@@ -25,6 +26,7 @@ let unpackeddotnet = false;
 let dotnetpacked = false;
 let electronforcedport;
 let electronUrl;
+let authToken = randomUUID().split('-').join('');
 
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
@@ -44,15 +46,8 @@ if (app.commandLine.hasSwitch('electronforcedport')) {
     electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
 }
 
-let authToken;
-
-if (app.commandLine.hasSwitch('authtoken')) {
-    authToken = app.commandLine.getSwitchValue('authtoken');
-    // Store in global for access by browser windows
-    global.authToken = authToken;
-}
-
-console.log('Started with token', authToken);
+// Store in global for access by browser windows
+global.authToken = authToken;
 
 if (app.commandLine.hasSwitch('electronurl')) {
     electronUrl = app.commandLine.getSwitchValue('electronurl');
@@ -194,21 +189,12 @@ app.on('quit', async (event, exitCode) => {
         }
     }
 
-    // Clean up Socket.IO connection (legacy mode only)
+    // Clean up Socket.IO connection
     if (typeof io !== 'undefined' && io && typeof io.close === 'function') {
         try {
             io.close();
         } catch (e) {
             console.error('Error closing Socket.IO connection:', e);
-        }
-    }
-    
-    // Clean up SignalR connection (SignalR mode only)
-    if (global['electronsignalr'] && typeof global['electronsignalr'].connection !== 'undefined') {
-        try {
-            await global['electronsignalr'].connection.stop();
-        } catch (e) {
-            console.error('Error closing SignalR connection:', e);
         }
     }
 });
@@ -278,6 +264,7 @@ function startSocketApiBridge(port) {
     // otherwise the Windows Firewall will be triggered
     console.debug('Electron Socket: starting...');
     server = createServer();
+    const host = !port ? '127.0.0.1' : 'localhost';
     let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
@@ -285,10 +272,11 @@ function startSocketApiBridge(port) {
     });
     io.attach(server);
 
-    server.listen(port, 'localhost');
+    server.listen(port, host);
     server.on('listening', function () {
         const addr = server.address();
-        console.info('Electron Socket: listening on port %s at %s', addr.port, addr.address);
+        console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address} using ${authToken}`);
+
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
             startAspCoreBackendUnpackaged(port);
