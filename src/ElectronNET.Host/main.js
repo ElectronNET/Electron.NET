@@ -280,9 +280,9 @@ function startSocketApiBridge(port) {
 
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
-            startAspCoreBackendUnpackaged(port);
+            startAspCoreBackendUnpackaged(addr.port);
         } else if (!unpackeddotnet && !dotnetpacked) {
-            startAspCoreBackend(port);
+            startAspCoreBackend(addr.port);
         }
     });
 
@@ -427,6 +427,7 @@ function startAspCoreBackendUnpackaged(electronPort) {
             envParam,
             `/electronPort=${electronPort}`,
             `/electronPID=${process.pid}`,
+            `/electronAuthToken=${authToken}`,
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))
         ].filter(p => p);
         let binaryFile = manifestJsonFile.executable;
