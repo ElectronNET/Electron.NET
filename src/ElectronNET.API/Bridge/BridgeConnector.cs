@@ -4,7 +4,7 @@ namespace ElectronNET.API
 {
     internal static class BridgeConnector
     {
-        public static SocketIoFacade Socket
+        public static ISocketConnection Socket
         {
             get
             {

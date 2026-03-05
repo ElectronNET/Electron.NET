@@ -52,7 +52,7 @@
 
         internal static Func<Task> OnAppReadyCallback { get; set; }
 
-        internal static SocketIoFacade GetSocket()
+        internal static ISocketConnection GetSocket()
         {
             return RuntimeControllerCore?.Socket;
         }

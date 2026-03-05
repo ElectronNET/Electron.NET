@@ -10,13 +10,13 @@ using SocketIO.Serializer.SystemTextJson;
 using SocketIO = SocketIOClient.SocketIO;
 using SocketIOOptions = SocketIOClient.SocketIOOptions;
 
-internal class SocketIoFacade : IDisposable
+internal class SocketIOConnection : ISocketConnection
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
     private bool _isDisposed;
 
-    public SocketIoFacade(string uri, string authorization)
+    public SocketIOConnection(string uri, string authorization)
     {
         var opts = string.IsNullOrEmpty(authorization) ? new SocketIOOptions() : new SocketIOOptions
         {
@@ -149,7 +149,7 @@ internal class SocketIoFacade : IDisposable
     {
         if (this._isDisposed)
         {
-            throw new ObjectDisposedException(nameof(SocketIoFacade));
+            throw new ObjectDisposedException(nameof(SocketIOConnection));
         }
     }
 }

@@ -34,7 +34,7 @@
 
         internal override SocketBridgeService SocketBridge => this.socketBridge;
 
-        internal override SocketIoFacade Socket
+        internal override ISocketConnection Socket
         {
             get
             {
