@@ -2,9 +2,11 @@
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
@@ -15,6 +17,7 @@
     [Localizable(false)]
     internal class ElectronProcessActive : ElectronProcessBase
     {
+        private readonly Regex extractor = new Regex("^Electron Socket: listening on port (\\d+) at .* using ([a-f0-9]+)$");
         private readonly bool isUnpackaged;
         private readonly string electronBinaryName;
         private readonly string extraArguments;
@@ -157,18 +160,36 @@
 
         private async Task StartInternal(string startCmd, string args, string directoriy)
         {
+            var tcs = new TaskCompletionSource();
+
+            void Read_SocketIO_Parameters(object sender, string line)
+            {
+                // Look for "Electron Socket: listening on port %s at ..."
+                var match = extractor.Match(line);
+
+                if (match?.Success ?? false)
+                {
+                    var port = int.Parse(match.Groups[1].Value);
+                    var token = match.Groups[2].Value;
+
+                    this.process.LineReceived -= Read_SocketIO_Parameters;
+                    ElectronNetRuntime.ElectronAuthToken = token;
+                    ElectronNetRuntime.ElectronSocketPort = port;
+                    tcs.SetResult();
+                }
+            }
+
             try
             {
-                await Task.Delay(10.ms()).ConfigureAwait(false);
-
                 Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
                 Console.Error.WriteLine("[StartInternal]: args: {0}", args);
 
                 this.process = new ProcessRunner("ElectronRunner");
                 this.process.ProcessExited += this.Process_Exited;
+                this.process.LineReceived += Read_SocketIO_Parameters;
                 this.process.Run(startCmd, args, directoriy);
 
-                await Task.Delay(500.ms()).ConfigureAwait(false);
+                await tcs.Task.ConfigureAwait(false);
 
                 Console.Error.WriteLine("[StartInternal]: after run:");
 

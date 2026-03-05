@@ -1,10 +1,14 @@
 ﻿const { app } = require('electron');
 const { BrowserWindow } = require('electron');
-const { protocol } = require('electron');
+const { createServer } = require('http');
+const { randomUUID } = require('crypto');
+const { Server } = require('socket.io');
+const { platform } = require('os');
 const path = require('path');
+const fs = require('fs');
 const cProcess = require('child_process').spawn;
-const portscanner = require('portscanner');
 const { imageSize } = require('image-size');
+
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
@@ -16,19 +20,18 @@ let nativeTheme;
 let dock;
 let launchFile;
 let launchUrl;
-let processApi;
 
 let manifestJsonFileName = 'package.json';
 let unpackedelectron = false;
 let unpackeddotnet = false;
 let dotnetpacked = false;
 let electronforcedport;
+let electronUrl;
+let authToken = randomUUID().split('-').join('');
 
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
 }
-
-console.log('Entry!!!:  ');
 
 if (app.commandLine.hasSwitch('unpackedelectron')) {
     unpackedelectron = true;
@@ -41,7 +44,14 @@ else if (app.commandLine.hasSwitch('dotnetpacked')) {
 }
 
 if (app.commandLine.hasSwitch('electronforcedport')) {
-    electronforcedport = app.commandLine.getSwitchValue('electronforcedport');
+    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
+}
+
+// Store in global for access by browser windows
+global.authToken = authToken;
+
+if (app.commandLine.hasSwitch('electronurl')) {
+    electronUrl = app.commandLine.getSwitchValue('electronurl');
 }
 
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
@@ -73,7 +83,7 @@ let manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
 
 // if running unpackedelectron, lets change the path
 if (unpackedelectron || unpackeddotnet) {
-    console.log('unpackedelectron! dir: ' + currentPath);
+    console.debug('Running in unpacked mode, dir: ' + currentPath);
 
     manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
     currentBinPath = path.join(currentPath, '../'); // go to project directory
@@ -153,44 +163,38 @@ app.on('ready', () => {
     }
 
     if (electronforcedport) {
-        console.log('Electron Socket IO (forced) Port: ' + electronforcedport);
+        console.info('Electron Socket IO (forced) Port: ' + electronforcedport);
         startSocketApiBridge(electronforcedport);
-        return;
+    } else {
+        console.info('Electron Socket dynamic IO Port');
+        startSocketApiBridge(0);
     }
-
-    // Added default port as configurable for port restricted environments.
-    let defaultElectronPort = 8000;
-    if (manifestJsonFile.electronPort) {
-        defaultElectronPort = manifestJsonFile.electronPort;
-    }
-
-    // hostname needs to be localhost, otherwise Windows Firewall will be triggered.
-    portscanner.findAPortNotInUse(defaultElectronPort, 65535, 'localhost', function (error, port) {
-        console.log('Electron Socket IO Port: ' + port);
-        startSocketApiBridge(port);
-    });
 });
 
 app.on('quit', async (event, exitCode) => {
-    try {
-        server.close();
-        server.closeAllConnections();
-    } catch (e) {
-        console.error(e);
-    }
-
-    try {
-        apiProcess?.kill();
-    } catch (e) {
-        console.error(e);
-    }
-
-    try {
-        if (io && typeof io.close === 'function') {
-            io.close();
+    if (server) {
+        try {
+            server.close();
+            server.closeAllConnections();
+        } catch (e) {
+            console.error(e);
         }
-    } catch (e) {
-        console.error(e);
+    }
+
+    if (apiProcess) {
+        try {
+            apiProcess.kill();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    if (io && io.close) {
+        try {
+            io.close();
+        } catch (e) {
+            console.error(e);
+        }
     }
 });
 
@@ -246,9 +250,7 @@ function startSplashScreen() {
     // it's an image, so we can compute the desired splash screen size
     imageSize(imageFile, (error, dimensions) => {
         if (error) {
-            console.log(`load splashscreen error:`);
-            console.error(error);
-
+            console.error(`load splashscreen error:`, error);
             throw new Error(error.message);
         }
 
@@ -259,9 +261,9 @@ function startSplashScreen() {
 function startSocketApiBridge(port) {
     // instead of 'require('socket.io')(port);' we need to use this workaround
     // otherwise the Windows Firewall will be triggered
-    console.log('Electron Socket: starting...');
-    server = require('http').createServer();
-    const { Server } = require('socket.io');
+    console.debug('Electron Socket: starting...');
+    server = createServer();
+    const host = !port ? '127.0.0.1' : 'localhost';
     let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
@@ -269,14 +271,16 @@ function startSocketApiBridge(port) {
     });
     io.attach(server);
 
-    server.listen(port, 'localhost');
+    server.listen(port, host);
     server.on('listening', function () {
-        console.log('Electron Socket: listening on port %s at %s', server.address().port, server.address().address);
+        const addr = server.address();
+        console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address} using ${authToken}`);
+
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
-            startAspCoreBackendUnpackaged(port);
+            startAspCoreBackendUnpackaged(addr.port);
         } else if (!unpackeddotnet && !dotnetpacked) {
-            startAspCoreBackend(port);
+            startAspCoreBackend(addr.port);
         }
     });
 
@@ -286,9 +290,16 @@ function startSocketApiBridge(port) {
 
     // @ts-ignore
     io.on('connection', (socket) => {
-        console.log('Electron Socket: connected!');
+        console.info('Electron Socket: connected!');
+
+        if (authToken && socket.request.headers.authorization !== authToken) {
+            console.warn('Electron Socket authentication failed!');
+            socket.disconnect(true);
+            return;
+        }
+
         socket.on('disconnect', function (reason) {
-            console.log('Got disconnect! Reason: ' + reason);
+            console.debug('Got disconnect! Reason: ' + reason);
             try {
                 ////console.log('requireCache');
                 ////console.log(require.cache['electron-host-hook']);
@@ -308,7 +319,7 @@ function startSocketApiBridge(port) {
             global['electronsocket'].setMaxListeners(0);
         }
 
-        console.log('Electron Socket: loading components...');
+        console.debug('Electron Socket: loading components...');
 
         if (appApi === undefined) appApi = require('./api/app')(socket, app);
         if (browserWindows === undefined) browserWindows = require('./api/browserWindows')(socket, app);
@@ -369,7 +380,7 @@ function startSocketApiBridge(port) {
             console.error(error.message);
         }
 
-        console.log('Electron Socket: startup complete.');
+        console.info('Electron Socket: startup complete.');
     });
 }
 
@@ -383,23 +394,23 @@ function startAspCoreBackend(electronPort) {
             envParam,
             `/electronPort=${electronPort}`,
             `/electronPID=${process.pid}`,
+            `/electronAuthToken=${authToken}`,
             // forward user supplied args (avoid duplicate environment)
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))
         ].filter(p => p);
         let binaryFile = manifestJsonFile.executable;
 
-        const os = require('os');
-        if (os.platform() === 'win32') {
+        if (platform() === 'win32') {
             binaryFile = binaryFile + '.exe';
         }
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        console.log('Starting backend with parameters:', parameters.join(' '));
+        console.debug('Starting backend with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+            console.debug(`stdout: ${data.toString()}`);
         });
     }
 }
@@ -414,22 +425,22 @@ function startAspCoreBackendUnpackaged(electronPort) {
             envParam,
             `/electronPort=${electronPort}`,
             `/electronPID=${process.pid}`,
+            `/electronAuthToken=${authToken}`,
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))
         ].filter(p => p);
         let binaryFile = manifestJsonFile.executable;
 
-        const os = require('os');
-        if (os.platform() === 'win32') {
+        if (platform() === 'win32') {
             binaryFile = binaryFile + '.exe';
         }
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        console.log('Starting backend (unpackaged) with parameters:', parameters.join(' '));
+        console.debug('Starting backend (unpackaged) with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data.toString()}`);
+            console.debug(`stdout: ${data.toString()}`);
         });
     }
 }

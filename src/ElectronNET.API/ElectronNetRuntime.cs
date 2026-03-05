@@ -16,6 +16,7 @@
         internal const int DefaultWebPort = 8001;
         internal const string ElectronPortArgumentName = "electronPort";
         internal const string ElectronPidArgumentName = "electronPID";
+        internal const string ElectronAuthTokenArgumentName = "electronAuthToken";
 
         /// <summary>Initializes the <see cref="ElectronNetRuntime"/> class.</summary>
         static ElectronNetRuntime()
@@ -25,6 +26,8 @@
         }
 
         public static string ElectronExtraArguments { get; set; }
+
+        public static string ElectronAuthToken { get; internal set; }
 
         public static int? ElectronSocketPort { get; internal set; }
 

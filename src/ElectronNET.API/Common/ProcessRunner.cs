@@ -26,6 +26,8 @@
         private readonly StringBuilder stdOut = new StringBuilder(4 * 1024);
         private readonly StringBuilder stdErr = new StringBuilder(4 * 1024);
 
+        public event EventHandler<string> LineReceived;
+
         private volatile ManualResetEvent stdOutEvent;
         private volatile ManualResetEvent stdErrEvent;
         private volatile Stopwatch stopwatch;
@@ -571,6 +573,7 @@
             if (e.Data != null)
             {
                 Console.WriteLine("|| " + e.Data);
+                LineReceived?.Invoke(this, e.Data);
             }
             else
             {
