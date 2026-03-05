@@ -397,19 +397,6 @@
 
     <Exec Command="cmd /c del Resources &amp;&amp; mklink /D Resources &quot;Versions\Current\Resources&quot;" WorkingDirectory="%(_ElectronFrameworkDirs.Identity)" Condition="'$(ElectronPlatform)' == 'mac' AND '$(_CurrentOSPlatform)' == 'win'" />
 
-    <!-- Fix psl dist folder issue - copy from source if it exists -->
-    <PropertyGroup>
-      <_PslSourceDist>$(ElectronSourceFilesPath)\node_modules\psl\dist</_PslSourceDist>
-      <_PslTargetDist>$(ElectronOutDir)node_modules\psl\dist</_PslTargetDist>
-    </PropertyGroup>
-    
-    <ItemGroup>
-      <_PslDistFiles Include="$(_PslSourceDist)\**\*.*" Condition="Exists('$(_PslSourceDist)')" />
-    </ItemGroup>
-    
-    <Message Importance="High" Text="Copying psl dist folder from source" Condition="@(_PslDistFiles->Count()) > 0" />
-    <Copy SourceFiles="@(_PslDistFiles)" DestinationFolder="$(_PslTargetDist)\%(RecursiveDir)" Condition="@(_PslDistFiles->Count()) > 0" />
-
   </Target>
 
   <Target Name="BeforePublishElectronApp" BeforeTargets="PrepareForPublish">

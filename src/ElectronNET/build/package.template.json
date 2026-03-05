@@ -32,11 +32,9 @@
     "start": "tsc -p ."
   },
   "dependencies": {
-    "@microsoft/signalr": "^8.0.7",
     "dasherize": "^2.0.0",
     "electron-updater": "^6.6.2",
     "image-size": "^1.2.1",
-    "portscanner": "^2.2.0",
     "socket.io": "^4.8.1",
     "electron-host-hook": "file:./ElectronHostHook"
   },

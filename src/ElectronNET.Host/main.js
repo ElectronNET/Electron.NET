@@ -149,7 +149,7 @@ function getForwardedArgs() {
 
 const forwardedArgs = getForwardedArgs();
 
-app.on('ready', async () => {    
+app.on('ready', () => {    
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
     ////protocol.registerFileProtocol('file', (request, callback) => {
@@ -172,7 +172,7 @@ app.on('ready', async () => {
 
 app.on('quit', async (event, exitCode) => {
     // Clean up Socket.IO resources (legacy mode only)
-    if (typeof server !== 'undefined' && server) {
+    if (server) {
         try {
             server.close();
             server.closeAllConnections();
