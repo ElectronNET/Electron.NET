@@ -83,7 +83,7 @@ let manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
 
 // if running unpackedelectron, lets change the path
 if (unpackedelectron || unpackeddotnet) {
-    console.debug('Running in unpacked mode, dir: ' + currentPath);
+    console.debug('Running in unpackaged mode, dir: ' + currentPath);
 
     manifestJsonFilePath = path.join(currentPath, manifestJsonFileName);
     currentBinPath = path.join(currentPath, '../'); // go to project directory
