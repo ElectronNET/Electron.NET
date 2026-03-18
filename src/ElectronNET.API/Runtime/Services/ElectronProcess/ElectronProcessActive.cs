@@ -162,7 +162,7 @@
         {
             var tcs = new TaskCompletionSource();
             using var cts = new CancellationTokenSource(2 * 60_000); // cancel after 2 minutes
-            using var _ = cts.Token.Register(() => 
+            using var _ = cts.Token.Register(() =>
             {
                 // Time is over - let's kill the process and move on
                 this.process.Cancel();
@@ -196,7 +196,7 @@
                 }
                 else
                 {
-                    tcs.SetResult();   
+                    tcs.SetResult();
                 }
             }
 
@@ -223,7 +223,7 @@
                 }
                 else
                 {
-                    this.TransitionState(LifetimeState.Ready);   
+                    this.TransitionState(LifetimeState.Ready);
                 }
             }
             catch (Exception ex)
