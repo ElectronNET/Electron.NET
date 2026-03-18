@@ -75,7 +75,7 @@
             // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
 
             // For port 0 (dynamic port assignment), Kestrel requires binding to specific IP (127.0.0.1) not localhost
-            var host = webPort == 0? "127.0.0.1" : "localhost";
+            var host = webPort == 0 ? "127.0.0.1" : "localhost";
 
             if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
             {
