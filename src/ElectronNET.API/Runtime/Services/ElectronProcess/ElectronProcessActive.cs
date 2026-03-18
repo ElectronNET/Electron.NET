@@ -104,7 +104,6 @@
             }
 
             var osPart = buildInfoRid.Split('-').First();
-
             var mismatch = false;
 
             switch (osPart)
@@ -161,6 +160,14 @@
         private async Task StartInternal(string startCmd, string args, string directoriy)
         {
             var tcs = new TaskCompletionSource();
+            using var cts = new CancellationTokenSource(2 * 60_000); // cancel after 2 minutes
+            using var _ = cts.Token.Register(() => 
+            {
+                // Time is over - let's kill the process and move on
+                this.process.Cancel();
+                // We don't want to raise exceptions here - just pass the barrier
+                tcs.SetResult();
+            });
 
             void Read_SocketIO_Parameters(object sender, string line)
             {
@@ -179,13 +186,26 @@
                 }
             }
 
+            void Monitor_SocketIO_Failure(object sender, EventArgs e)
+            {
+                // We don't want to raise exceptions here - just pass the barrier
+                if (tcs.Task.IsCompleted)
+                {
+                    this.Process_Exited(sender, e);
+                }
+                else
+                {
+                    tcs.SetResult();   
+                }
+            }
+
             try
             {
                 Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
                 Console.Error.WriteLine("[StartInternal]: args: {0}", args);
 
                 this.process = new ProcessRunner("ElectronRunner");
-                this.process.ProcessExited += this.Process_Exited;
+                this.process.ProcessExited += Monitor_SocketIO_Failure;
                 this.process.LineReceived += Read_SocketIO_Parameters;
                 this.process.Run(startCmd, args, directoriy);
 
@@ -199,11 +219,11 @@
                     Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardOutput);
 
                     Task.Run(() => this.TransitionState(LifetimeState.Stopped));
-
-                    throw new Exception("Failed to launch the Electron process.");
                 }
-
-                this.TransitionState(LifetimeState.Ready);
+                else
+                {
+                    this.TransitionState(LifetimeState.Ready);   
+                }
             }
             catch (Exception ex)
             {
