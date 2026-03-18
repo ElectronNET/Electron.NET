@@ -1,0 +1,21 @@
+using ElectronNET.API;
+using ElectronNET.AspNet.Hubs;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddElectron();
+
+// Configure Electron.NET with SignalR mode
+builder.WebHost.UseElectron(args, async () =>
+{
+    Console.WriteLine("[TEST] App ready callback started");
+});
+
+var app = builder.Build();
+
+// Absolute minimal setup
+app.MapHub<ElectronHub>("/electron-hub");
+
+Console.WriteLine("[TEST] Application starting...");
+
+app.Run();
