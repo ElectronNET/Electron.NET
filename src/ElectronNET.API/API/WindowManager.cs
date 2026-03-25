@@ -130,11 +130,8 @@ namespace ElectronNET.API
                 options.Height += 7;
             }
 
-            if (options.X == -1 && options.Y == -1)
+            if (!options.X.HasValue && !options.Y.HasValue)
             {
-                options.X = 0;
-                options.Y = 0;
-
                 await BridgeConnector.Socket.Emit("createBrowserWindow", options, loadUrl).ConfigureAwait(false);
             }
             else

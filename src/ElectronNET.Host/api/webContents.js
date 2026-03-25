@@ -1,7 +1,40 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+const fs = __importStar(require("fs"));
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
-const fs = require("fs");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -315,28 +348,28 @@ module.exports = (socket) => {
         const extension = await browserWindow.webContents.session.loadExtension(path, { allowFileAccess: allowFileAccess });
         electronSocket.emit("webContents-session-loadExtension-completed", extension);
     });
-    socket.on('webContents-getZoomFactor', (id) => {
+    socket.on("webContents-getZoomFactor", (id) => {
         const browserWindow = getWindowById(id);
         const text = browserWindow.webContents.getZoomFactor();
-        electronSocket.emit('webContents-getZoomFactor-completed', text);
+        electronSocket.emit("webContents-getZoomFactor-completed", text);
     });
-    socket.on('webContents-setZoomFactor', (id, factor) => {
+    socket.on("webContents-setZoomFactor", (id, factor) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.setZoomFactor(factor);
     });
-    socket.on('webContents-getZoomLevel', (id) => {
+    socket.on("webContents-getZoomLevel", (id) => {
         const browserWindow = getWindowById(id);
         const content = browserWindow.webContents.getZoomLevel();
-        electronSocket.emit('webContents-getZoomLevel-completed', content);
+        electronSocket.emit("webContents-getZoomLevel-completed", content);
     });
-    socket.on('webContents-setZoomLevel', (id, level) => {
+    socket.on("webContents-setZoomLevel", (id, level) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.setZoomLevel(level);
     });
-    socket.on('webContents-setVisualZoomLevelLimits', async (id, minimumLevel, maximumLevel) => {
+    socket.on("webContents-setVisualZoomLevelLimits", async (id, minimumLevel, maximumLevel) => {
         const browserWindow = getWindowById(id);
         await browserWindow.webContents.setVisualZoomLevelLimits(minimumLevel, maximumLevel);
-        electronSocket.emit('webContents-setVisualZoomLevelLimits-completed');
+        electronSocket.emit("webContents-setVisualZoomLevelLimits-completed");
     });
     socket.on("webContents-toggleDevTools", (id) => {
         getWindowById(id).webContents.toggleDevTools();
@@ -346,26 +379,26 @@ module.exports = (socket) => {
     });
     socket.on("webContents-isDevToolsOpened", function (id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isDevToolsOpened-completed', browserWindow.webContents.isDevToolsOpened());
+        electronSocket.emit("webContents-isDevToolsOpened-completed", browserWindow.webContents.isDevToolsOpened());
     });
     socket.on("webContents-isDevToolsFocused", function (id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isDevToolsFocused-completed', browserWindow.webContents.isDevToolsFocused());
+        electronSocket.emit("webContents-isDevToolsFocused-completed", browserWindow.webContents.isDevToolsFocused());
     });
     socket.on("webContents-setAudioMuted", (id, muted) => {
         getWindowById(id).webContents.setAudioMuted(muted);
     });
     socket.on("webContents-isAudioMuted", function (id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isAudioMuted-completed', browserWindow.webContents.isAudioMuted());
+        electronSocket.emit("webContents-isAudioMuted-completed", browserWindow.webContents.isAudioMuted());
     });
     socket.on("webContents-isCurrentlyAudible", function (id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-isCurrentlyAudible-completed', browserWindow.webContents.isCurrentlyAudible());
+        electronSocket.emit("webContents-isCurrentlyAudible-completed", browserWindow.webContents.isCurrentlyAudible());
     });
     socket.on("webContents-getUserAgent", function (id) {
         const browserWindow = getWindowById(id);
-        electronSocket.emit('webContents-getUserAgent-completed', browserWindow.webContents.getUserAgent());
+        electronSocket.emit("webContents-getUserAgent-completed", browserWindow.webContents.getUserAgent());
     });
     socket.on("webContents-setUserAgent", (id, userAgent) => {
         getWindowById(id).webContents.setUserAgent(userAgent);

@@ -85,6 +85,26 @@ BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
 ```
 
 
+### Preload Script
+
+If you require the use of a [preload script](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload), you can specify the file path of the script when creating a new window like so:
+
+```csharp
+WebPreferences wp = new WebPreferences();
+wp.Preload = "path/to/preload.js";
+BrowserWindowOptions browserWindowOptions = new BrowserWindowOptions
+{
+    WebPreferences = wp
+};
+```
+
+> [!IMPORTANT]
+> When using a preload script _AND_ running a Blazor app, `IsRunningBlazor` must be set to `false` (or removed) and the following lines must be added to the preload script:
+> ```js
+> global.process = undefined;
+> global.module = undefined;
+> ```
+
 
 ## 🚀 Next Steps
 

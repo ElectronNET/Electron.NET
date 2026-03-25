@@ -522,7 +522,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="900000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 

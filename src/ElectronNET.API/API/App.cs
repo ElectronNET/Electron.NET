@@ -427,7 +427,7 @@ namespace ElectronNET.API
 
         public void DisposeSocket()
         {
-            BridgeConnector.Socket.DisposeSocket();
+            BridgeConnector.Socket.Dispose();
         }
 
         /// <summary>

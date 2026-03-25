@@ -8,12 +8,13 @@ using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
 using SocketIO = SocketIOClient.SocketIO;
 
-internal class SocketIoFacade
+internal class SocketIOConnection : ISocketConnection
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
+    private bool _isDisposed;
 
-    public SocketIoFacade(string uri)
+    public SocketIOConnection(string uri)
     {
         _socket = new SocketIO(uri);
         _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
@@ -27,6 +28,8 @@ internal class SocketIoFacade
 
     public void Connect()
     {
+        this.CheckDisposed();
+
         _socket.OnError += (sender, e) => { Console.WriteLine($"BridgeConnector Error: {sender} {e}"); };
 
         _socket.OnConnected += (_, _) =>
@@ -46,6 +49,8 @@ internal class SocketIoFacade
 
     public void On(string eventName, Action action)
     {
+        this.CheckDisposed();
+
         lock (_lockObj)
         {
             _socket.On(eventName, _ => { Task.Run(action); });
@@ -54,6 +59,8 @@ internal class SocketIoFacade
 
     public void On<T>(string eventName, Action<T> action)
     {
+        this.CheckDisposed();
+
         lock (_lockObj)
         {
             _socket.On(eventName, response =>
@@ -66,6 +73,8 @@ internal class SocketIoFacade
 
     public void Once(string eventName, Action action)
     {
+        this.CheckDisposed();
+
         lock (_lockObj)
         {
             _socket.On(eventName, _ =>
@@ -78,6 +87,8 @@ internal class SocketIoFacade
 
     public void Once<T>(string eventName, Action<T> action)
     {
+        this.CheckDisposed();
+
         lock (_lockObj)
         {
             _socket.On(eventName, (socketIoResponse) =>
@@ -90,6 +101,11 @@ internal class SocketIoFacade
 
     public void Off(string eventName)
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
         lock (_lockObj)
         {
             _socket.Off(eventName);
@@ -98,11 +114,33 @@ internal class SocketIoFacade
 
     public async Task Emit(string eventName, params object[] args)
     {
-        await _socket.EmitAsync(eventName, args).ConfigureAwait(false);
+        if (!_isDisposed)
+        {
+            await _socket.EmitAsync(eventName, args).ConfigureAwait(false);
+        }
     }
 
-    public void DisposeSocket()
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    public void Dispose()
     {
-        _socket.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _isDisposed = true;
+            _socket.Dispose();
+        }
+    }
+
+    private void CheckDisposed()
+    {
+        if (this._isDisposed)
+        {
+            throw new ObjectDisposedException(nameof(SocketIOConnection));
+        }
     }
 }

@@ -1,13 +1,14 @@
 "use strict";
-let isQuitWindowAllClosed = true, electronSocket;
+let isQuitWindowAllClosed = true;
+let electronSocket;
 let appWindowAllClosedEventId;
 module.exports = (socket, app) => {
     electronSocket = socket;
     // By default, quit when all windows are closed
-    app.on('window-all-closed', () => {
+    app.on("window-all-closed", () => {
         // On macOS it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
-        if (process.platform !== 'darwin' && isQuitWindowAllClosed) {
+        if (process.platform !== "darwin" && isQuitWindowAllClosed) {
             app.quit();
         }
         else if (appWindowAllClosedEventId) {
@@ -15,220 +16,224 @@ module.exports = (socket, app) => {
             // - OR -
             // If the user has indicated NOT to quit when all windows are closed,
             // emit the event.
-            electronSocket.emit('app-window-all-closed' + appWindowAllClosedEventId);
+            electronSocket.emit("app-window-all-closed" + appWindowAllClosedEventId);
         }
     });
-    socket.on('quit-app-window-all-closed', (quit) => {
+    socket.on("quit-app-window-all-closed", (quit) => {
         isQuitWindowAllClosed = quit;
     });
-    socket.on('register-app-window-all-closed', (id) => {
+    socket.on("register-app-window-all-closed", (id) => {
         appWindowAllClosedEventId = id;
     });
-    socket.on('register-app-before-quit', (id) => {
-        app.on('before-quit', (event) => {
+    socket.on("register-app-before-quit", (id) => {
+        app.on("before-quit", (event) => {
             event.preventDefault();
-            electronSocket.emit('app-before-quit' + id);
+            electronSocket.emit("app-before-quit" + id);
         });
     });
-    socket.on('register-app-will-quit', (id) => {
-        app.on('will-quit', (event) => {
+    socket.on("register-app-will-quit", (id) => {
+        app.on("will-quit", (event) => {
             event.preventDefault();
-            electronSocket.emit('app-will-quit' + id);
+            electronSocket.emit("app-will-quit" + id);
         });
     });
-    socket.on('register-app-browser-window-blur', (id) => {
-        app.on('browser-window-blur', () => {
-            electronSocket.emit('app-browser-window-blur' + id);
+    socket.on("register-app-browser-window-blur", (id) => {
+        app.on("browser-window-blur", () => {
+            electronSocket.emit("app-browser-window-blur" + id);
         });
     });
-    socket.on('register-app-browser-window-focus', (id) => {
-        app.on('browser-window-focus', () => {
-            electronSocket.emit('app-browser-window-focus' + id);
+    socket.on("register-app-browser-window-focus", (id) => {
+        app.on("browser-window-focus", () => {
+            electronSocket.emit("app-browser-window-focus" + id);
         });
     });
-    socket.on('register-app-browser-window-created', (id) => {
-        app.on('browser-window-created', () => {
-            electronSocket.emit('app-browser-window-created' + id);
+    socket.on("register-app-browser-window-created", (id) => {
+        app.on("browser-window-created", () => {
+            electronSocket.emit("app-browser-window-created" + id);
         });
     });
-    socket.on('register-app-web-contents-created', (id) => {
-        app.on('web-contents-created', () => {
-            electronSocket.emit('app-web-contents-created' + id);
+    socket.on("register-app-web-contents-created", (id) => {
+        app.on("web-contents-created", () => {
+            electronSocket.emit("app-web-contents-created" + id);
         });
     });
-    socket.on('register-app-accessibility-support-changed', (id) => {
-        app.on('accessibility-support-changed', (event, accessibilitySupportEnabled) => {
-            electronSocket.emit('app-accessibility-support-changed' + id, accessibilitySupportEnabled);
+    socket.on("register-app-accessibility-support-changed", (id) => {
+        app.on("accessibility-support-changed", (event, accessibilitySupportEnabled) => {
+            electronSocket.emit("app-accessibility-support-changed" + id, accessibilitySupportEnabled);
         });
     });
-    socket.on('appQuit', () => {
+    socket.on("appQuit", () => {
         app.quit();
     });
-    socket.on('appExit', (exitCode = 0) => {
+    socket.on("appExit", (exitCode = 0) => {
         app.exit(exitCode);
     });
-    socket.on('appRelaunch', (options) => {
+    socket.on("appRelaunch", (options) => {
         app.relaunch(options);
     });
-    socket.on('appFocus', (options) => {
+    socket.on("appFocus", (options) => {
         app.focus(options);
     });
-    socket.on('appHide', () => {
+    socket.on("appHide", () => {
         app.hide();
     });
-    socket.on('appShow', () => {
+    socket.on("appShow", () => {
         app.show();
     });
-    socket.on('appGetAppPath', () => {
+    socket.on("appGetAppPath", () => {
         const path = app.getAppPath();
-        electronSocket.emit('appGetAppPathCompleted', path);
+        electronSocket.emit("appGetAppPathCompleted", path);
     });
-    socket.on('appSetAppLogsPath', (path) => {
+    socket.on("appSetAppLogsPath", (path) => {
         app.setAppLogsPath(path);
     });
-    socket.on('appGetPath', (name) => {
+    socket.on("appGetPath", (name) => {
         const path = app.getPath(name);
-        electronSocket.emit('appGetPathCompleted', path);
+        electronSocket.emit("appGetPathCompleted", path);
     });
-    socket.on('appGetFileIcon', async (path, options) => {
+    socket.on("appGetFileIcon", async (path, options) => {
         let error = {};
         if (options) {
-            const nativeImage = await app.getFileIcon(path, options).catch((errorFileIcon) => error = errorFileIcon);
-            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
+            const nativeImage = await app
+                .getFileIcon(path, options)
+                .catch((errorFileIcon) => (error = errorFileIcon));
+            electronSocket.emit("appGetFileIconCompleted", [error, nativeImage]);
         }
         else {
-            const nativeImage = await app.getFileIcon(path).catch((errorFileIcon) => error = errorFileIcon);
-            electronSocket.emit('appGetFileIconCompleted', [error, nativeImage]);
+            const nativeImage = await app
+                .getFileIcon(path)
+                .catch((errorFileIcon) => (error = errorFileIcon));
+            electronSocket.emit("appGetFileIconCompleted", [error, nativeImage]);
         }
     });
-    socket.on('appSetPath', (name, path) => {
+    socket.on("appSetPath", (name, path) => {
         app.setPath(name, path);
     });
-    socket.on('appGetVersion', () => {
+    socket.on("appGetVersion", () => {
         const version = app.getVersion();
-        electronSocket.emit('appGetVersionCompleted', version);
+        electronSocket.emit("appGetVersionCompleted", version);
     });
-    socket.on('appGetName', () => {
-        electronSocket.emit('appGetNameCompleted', app.name);
+    socket.on("appGetName", () => {
+        electronSocket.emit("appGetNameCompleted", app.name);
     });
-    socket.on('appSetName', (name) => {
+    socket.on("appSetName", (name) => {
         app.name = name;
     });
-    socket.on('appGetLocale', () => {
+    socket.on("appGetLocale", () => {
         const locale = app.getLocale();
-        electronSocket.emit('appGetLocaleCompleted', locale);
+        electronSocket.emit("appGetLocaleCompleted", locale);
     });
-    socket.on('appAddRecentDocument', (path) => {
+    socket.on("appAddRecentDocument", (path) => {
         app.addRecentDocument(path);
     });
-    socket.on('appClearRecentDocuments', () => {
+    socket.on("appClearRecentDocuments", () => {
         app.clearRecentDocuments();
     });
-    socket.on('appSetAsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on("appSetAsDefaultProtocolClient", (protocol, path, args) => {
         const success = app.setAsDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appSetAsDefaultProtocolClientCompleted', success);
+        electronSocket.emit("appSetAsDefaultProtocolClientCompleted", success);
     });
-    socket.on('appRemoveAsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on("appRemoveAsDefaultProtocolClient", (protocol, path, args) => {
         const success = app.removeAsDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appRemoveAsDefaultProtocolClientCompleted', success);
+        electronSocket.emit("appRemoveAsDefaultProtocolClientCompleted", success);
     });
-    socket.on('appIsDefaultProtocolClient', (protocol, path, args) => {
+    socket.on("appIsDefaultProtocolClient", (protocol, path, args) => {
         const success = app.isDefaultProtocolClient(protocol, path, args);
-        electronSocket.emit('appIsDefaultProtocolClientCompleted', success);
+        electronSocket.emit("appIsDefaultProtocolClientCompleted", success);
     });
-    socket.on('appSetUserTasks', (tasks) => {
+    socket.on("appSetUserTasks", (tasks) => {
         const success = app.setUserTasks(tasks);
-        electronSocket.emit('appSetUserTasksCompleted', success);
+        electronSocket.emit("appSetUserTasksCompleted", success);
     });
-    socket.on('appGetJumpListSettings', () => {
+    socket.on("appGetJumpListSettings", () => {
         const jumpListSettings = app.getJumpListSettings();
-        electronSocket.emit('appGetJumpListSettingsCompleted', jumpListSettings);
+        electronSocket.emit("appGetJumpListSettingsCompleted", jumpListSettings);
     });
-    socket.on('appSetJumpList', (categories) => {
+    socket.on("appSetJumpList", (categories) => {
         app.setJumpList(categories);
     });
-    socket.on('appRequestSingleInstanceLock', () => {
+    socket.on("appRequestSingleInstanceLock", () => {
         const success = app.requestSingleInstanceLock();
-        electronSocket.emit('appRequestSingleInstanceLockCompleted', success);
-        app.on('second-instance', (event, args = [], workingDirectory = '') => {
-            electronSocket.emit('secondInstance', [args, workingDirectory]);
+        electronSocket.emit("appRequestSingleInstanceLockCompleted", success);
+        app.on("second-instance", (event, args = [], workingDirectory = "") => {
+            electronSocket.emit("secondInstance", [args, workingDirectory]);
         });
     });
-    socket.on('appHasSingleInstanceLock', () => {
+    socket.on("appHasSingleInstanceLock", () => {
         const hasLock = app.hasSingleInstanceLock();
-        electronSocket.emit('appHasSingleInstanceLockCompleted', hasLock);
+        electronSocket.emit("appHasSingleInstanceLockCompleted", hasLock);
     });
-    socket.on('appReleaseSingleInstanceLock', () => {
+    socket.on("appReleaseSingleInstanceLock", () => {
         app.releaseSingleInstanceLock();
     });
-    socket.on('appSetUserActivity', (type, userInfo, webpageUrl) => {
+    socket.on("appSetUserActivity", (type, userInfo, webpageUrl) => {
         app.setUserActivity(type, userInfo, webpageUrl);
     });
-    socket.on('appGetCurrentActivityType', () => {
+    socket.on("appGetCurrentActivityType", () => {
         const activityType = app.getCurrentActivityType();
-        electronSocket.emit('appGetCurrentActivityTypeCompleted', activityType);
+        electronSocket.emit("appGetCurrentActivityTypeCompleted", activityType);
     });
-    socket.on('appInvalidateCurrentActivity', () => {
+    socket.on("appInvalidateCurrentActivity", () => {
         app.invalidateCurrentActivity();
     });
-    socket.on('appResignCurrentActivity', () => {
+    socket.on("appResignCurrentActivity", () => {
         app.resignCurrentActivity();
     });
-    socket.on('appSetAppUserModelId', (id) => {
+    socket.on("appSetAppUserModelId", (id) => {
         app.setAppUserModelId(id);
     });
-    socket.on('appImportCertificate', (options) => {
+    socket.on("appImportCertificate", (options) => {
         app.importCertificate(options, (result) => {
-            electronSocket.emit('appImportCertificateCompleted', result);
+            electronSocket.emit("appImportCertificateCompleted", result);
         });
     });
-    socket.on('appGetAppMetrics', () => {
+    socket.on("appGetAppMetrics", () => {
         const processMetrics = app.getAppMetrics();
-        electronSocket.emit('appGetAppMetricsCompleted', processMetrics);
+        electronSocket.emit("appGetAppMetricsCompleted", processMetrics);
     });
-    socket.on('appGetGpuFeatureStatus', () => {
+    socket.on("appGetGpuFeatureStatus", () => {
         const gpuFeatureStatus = app.getGPUFeatureStatus();
-        electronSocket.emit('appGetGpuFeatureStatusCompleted', gpuFeatureStatus);
+        electronSocket.emit("appGetGpuFeatureStatusCompleted", gpuFeatureStatus);
     });
-    socket.on('appSetBadgeCount', (count) => {
+    socket.on("appSetBadgeCount", (count) => {
         const success = app.setBadgeCount(count);
-        electronSocket.emit('appSetBadgeCountCompleted', success);
+        electronSocket.emit("appSetBadgeCountCompleted", success);
     });
-    socket.on('appGetBadgeCount', () => {
+    socket.on("appGetBadgeCount", () => {
         const count = app.getBadgeCount();
-        electronSocket.emit('appGetBadgeCountCompleted', count);
+        electronSocket.emit("appGetBadgeCountCompleted", count);
     });
-    socket.on('appIsUnityRunning', () => {
+    socket.on("appIsUnityRunning", () => {
         const isUnityRunning = app.isUnityRunning();
-        electronSocket.emit('appIsUnityRunningCompleted', isUnityRunning);
+        electronSocket.emit("appIsUnityRunningCompleted", isUnityRunning);
     });
-    socket.on('appGetLoginItemSettings', (options) => {
+    socket.on("appGetLoginItemSettings", (options) => {
         const loginItemSettings = app.getLoginItemSettings(options);
-        electronSocket.emit('appGetLoginItemSettingsCompleted', loginItemSettings);
+        electronSocket.emit("appGetLoginItemSettingsCompleted", loginItemSettings);
     });
-    socket.on('appSetLoginItemSettings', (settings) => {
+    socket.on("appSetLoginItemSettings", (settings) => {
         app.setLoginItemSettings(settings);
     });
-    socket.on('appIsAccessibilitySupportEnabled', () => {
+    socket.on("appIsAccessibilitySupportEnabled", () => {
         const isAccessibilitySupportEnabled = app.isAccessibilitySupportEnabled();
-        electronSocket.emit('appIsAccessibilitySupportEnabledCompleted', isAccessibilitySupportEnabled);
+        electronSocket.emit("appIsAccessibilitySupportEnabledCompleted", isAccessibilitySupportEnabled);
     });
-    socket.on('appSetAccessibilitySupportEnabled', (enabled) => {
+    socket.on("appSetAccessibilitySupportEnabled", (enabled) => {
         app.setAccessibilitySupportEnabled(enabled);
     });
-    socket.on('appShowAboutPanel', () => {
+    socket.on("appShowAboutPanel", () => {
         app.showAboutPanel();
     });
-    socket.on('appSetAboutPanelOptions', (options) => {
+    socket.on("appSetAboutPanelOptions", (options) => {
         app.setAboutPanelOptions(options);
     });
-    socket.on('appGetUserAgentFallback', () => {
-        electronSocket.emit('appGetUserAgentFallbackCompleted', app.userAgentFallback);
+    socket.on("appGetUserAgentFallback", () => {
+        electronSocket.emit("appGetUserAgentFallbackCompleted", app.userAgentFallback);
     });
-    socket.on('appSetUserAgentFallback', (userAgent) => {
+    socket.on("appSetUserAgentFallback", (userAgent) => {
         app.userAgentFallback = userAgent;
     });
-    socket.on('register-app-on-event', (eventName, listenerName) => {
+    socket.on("register-app-on-event", (eventName, listenerName) => {
         app.on(eventName, (...args) => {
             if (args.length > 1) {
                 electronSocket.emit(listenerName, args[1]);
@@ -238,7 +243,7 @@ module.exports = (socket, app) => {
             }
         });
     });
-    socket.on('register-app-once-event', (eventName, listenerName) => {
+    socket.on("register-app-once-event", (eventName, listenerName) => {
         app.once(eventName, (...args) => {
             if (args.length > 1) {
                 electronSocket.emit(listenerName, args[1]);

@@ -4,6 +4,8 @@
   <PropertyGroup>
     <ElectronMigrationChecksDependsOn>
       ElectronCheckNoPackageJson;
+      ElectronCheckRootPackageJsonNoElectron;
+      ElectronCheckRootPackageJsonNotCopied;
       ElectronCheckNoManifestJson;
       ElectronCheckElectronBuilderJson;
       ElectronCheckNoParentPaths;
@@ -19,14 +21,17 @@
   </Target>
 
   <!--
-    Check 1: No package.json must be present in the project (except ElectronHostHook folder)
+    Check 1: No package.json/package-lock.json must be present in the project (except ElectronHostHook folder)
+
+    NOTE: Root package.json is excluded from ELECTRON001 and checked by separate targets.
   -->
   <Target Name="ElectronCheckNoPackageJson">
 
-    <!-- Find all package.json files, excluding ElectronHostHook folder and output directories -->
+    <!-- Find all package.json files, excluding ElectronHostHook folder, root, and output directories -->
     <ItemGroup>
       <_InvalidPackageJson Include="$(MSBuildProjectDirectory)\**\package.json"
-                           Exclude="$(MSBuildProjectDirectory)\ElectronHostHook\**\package.json;
+                           Exclude="$(MSBuildProjectDirectory)\package.json;
+                                    $(MSBuildProjectDirectory)\ElectronHostHook\**\package.json;
                                     $(MSBuildProjectDirectory)\bin\**\package.json;
                                     $(MSBuildProjectDirectory)\obj\**\package.json;
                                     $(MSBuildProjectDirectory)\publish\**\package.json;
@@ -46,17 +51,87 @@
 
     <Warning Condition="'$(_HasInvalidPackageJson)' == 'true'"
              Code="ELECTRON001"
-             Text="Found package.json or package-lock.json file(s) in the project root or subdirectories. These files are no longer supported in this location.
+             Text="Found package.json or package-lock.json file(s) in unsupported location(s). These files are no longer supported in this location.
 
 Files found:
 @(_InvalidPackageJson, '%0A')@(_InvalidPackageLockJson, '%0A')
 
 MIGRATION REQUIRED:
-All properties from an existing package.json file must now be specified as MSBuild properties in the project file.
+All Electron.NET-related properties from an existing package.json must now be specified as MSBuild properties in the project file.
 
 For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#1-packagejson-not-allowed
 
-EXCEPTION: package.json and package-lock.json files ARE allowed in the 'ElectronHostHook' folder for custom host hook implementations." />
+EXCEPTION:
+- package.json and package-lock.json files ARE allowed in the 'ElectronHostHook' folder for custom host hook implementations.
+- A package.json in the project root is handled by separate migration checks." />
+
+  </Target>
+
+  <!--
+    Check 1b: Root package.json must not contain Electron-related configuration
+  -->
+  <Target Name="ElectronCheckRootPackageJsonNoElectron"
+          Condition="Exists('$(MSBuildProjectDirectory)\package.json')">
+
+    <ItemGroup>
+      <_RootPackageJsonLines Include="$([System.IO.File]::ReadAllLines('$(MSBuildProjectDirectory)\package.json'))" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_RootPackageJsonContent>@(_RootPackageJsonLines, ' ')</_RootPackageJsonContent>
+      <_RootPackageJsonHasElectron>false</_RootPackageJsonHasElectron>
+      <_RootPackageJsonHasElectron Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(_RootPackageJsonContent)', 'electron', System.Text.RegularExpressions.RegexOptions.IgnoreCase))">true</_RootPackageJsonHasElectron>
+    </PropertyGroup>
+
+    <Warning
+      Condition="'$(_RootPackageJsonHasElectron)' == 'true'"
+      Code="ELECTRON008"
+      Text="The project contains a root package.json that references 'electron' (case-insensitive).
+
+File:
+$(MSBuildProjectDirectory)\package.json
+
+MIGRATION REQUIRED:
+Electron.NET configuration must be defined via MSBuild properties and electron-builder.json (not via a user-provided package.json).
+
+HOW TO FIX:
+- Remove Electron-related entries from the root package.json, or delete the file if it's only used for Electron configuration.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#1-packagejson-not-allowed" />
+
+  </Target>
+
+  <!--
+    Check 1c: Root package.json must not be copied to output/publish
+  -->
+  <Target Name="ElectronCheckRootPackageJsonNotCopied"
+          Condition="Exists('$(MSBuildProjectDirectory)\package.json')">
+
+    <ItemGroup>
+      <_RootPackageJsonFile Include="@(Content);@(None)"
+                              Condition="'%(Identity)' == 'package.json' OR '%(Identity)' == '$(MSBuildProjectDirectory)\package.json'" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_RootPackageJsonIsCopied>false</_RootPackageJsonIsCopied>
+      <_RootPackageJsonIsCopied Condition="'@(_RootPackageJsonFile)' != '' AND ( '%(_RootPackageJsonFile.CopyToOutputDirectory)' != '' OR '%(_RootPackageJsonFile.CopyToPublishDirectory)' != '' )">true</_RootPackageJsonIsCopied>
+    </PropertyGroup>
+
+    <Warning
+      Condition="'$(_RootPackageJsonIsCopied)' == 'true'"
+      Code="ELECTRON009"
+      Text="The project contains a root package.json that is configured to be copied to the output/publish directory.
+
+File:
+$(MSBuildProjectDirectory)\package.json
+
+MIGRATION REQUIRED:
+Root package.json must not be copied during build/publish.
+
+HOW TO FIX:
+- Remove CopyToOutputDirectory / CopyToPublishDirectory metadata for package.json in your project file.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#1-packagejson-not-allowed" />
 
   </Target>
 

@@ -174,13 +174,15 @@ namespace ElectronNET.IntegrationTests.Tests
 
             try
             {
+                await Task.Delay(1.seconds());
+
                 window = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions { Show = true }, "about:blank");
 
-                await Task.Delay(3.seconds());
+                await Task.Delay(5.seconds());
 
                 window.WebContents.SetUserAgent("MyUserAgent/1.0");
 
-                await Task.Delay(1.seconds());
+                await Task.Delay(2.seconds());
 
                 var ok = await window.WebContents.GetUserAgentAsync();
                 ok.Should().Be("MyUserAgent/1.0");
