@@ -3,6 +3,12 @@ import { autoUpdater } from "electron-updater";
 
 let electronSocket: Socket;
 
+function normalize(updateInfo) {
+  if (typeof updateInfo?.releaseNotes === "string") {
+    updateInfo.releaseNotes = [updateInfo.releaseNotes];
+  }
+}
+
 export = (socket: Socket) => {
   electronSocket = socket;
 
@@ -20,12 +26,14 @@ export = (socket: Socket) => {
 
   socket.on("register-autoUpdater-update-available", (id) => {
     autoUpdater.on("update-available", (updateInfo) => {
+      normalize(updateInfo);
       electronSocket.emit("autoUpdater-update-available" + id, updateInfo);
     });
   });
 
   socket.on("register-autoUpdater-update-not-available", (id) => {
     autoUpdater.on("update-not-available", (updateInfo) => {
+      normalize(updateInfo);
       electronSocket.emit("autoUpdater-update-not-available" + id, updateInfo);
     });
   });
@@ -38,6 +46,7 @@ export = (socket: Socket) => {
 
   socket.on("register-autoUpdater-update-downloaded", (id) => {
     autoUpdater.on("update-downloaded", (updateInfo) => {
+      normalize(updateInfo);
       electronSocket.emit("autoUpdater-update-downloaded" + id, updateInfo);
     });
   });
@@ -143,6 +152,7 @@ export = (socket: Socket) => {
     autoUpdater
       .checkForUpdatesAndNotify()
       .then((updateCheckResult) => {
+        normalize(updateCheckResult?.updateInfo);
         electronSocket.emit(
           "autoUpdater-checkForUpdatesAndNotify-completed" + guid,
           updateCheckResult,
@@ -160,6 +170,7 @@ export = (socket: Socket) => {
     autoUpdater
       .checkForUpdates()
       .then((updateCheckResult) => {
+        normalize(updateCheckResult?.updateInfo);
         electronSocket.emit(
           "autoUpdater-checkForUpdates-completed" + guid,
           updateCheckResult,

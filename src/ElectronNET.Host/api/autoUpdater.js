@@ -1,6 +1,11 @@
 "use strict";
 const electron_updater_1 = require("electron-updater");
 let electronSocket;
+function normalize(updateInfo) {
+    if (typeof updateInfo?.releaseNotes === "string") {
+        updateInfo.releaseNotes = [updateInfo.releaseNotes];
+    }
+}
 module.exports = (socket) => {
     electronSocket = socket;
     socket.on("register-autoUpdater-error", (id) => {
@@ -15,11 +20,13 @@ module.exports = (socket) => {
     });
     socket.on("register-autoUpdater-update-available", (id) => {
         electron_updater_1.autoUpdater.on("update-available", (updateInfo) => {
+            normalize(updateInfo);
             electronSocket.emit("autoUpdater-update-available" + id, updateInfo);
         });
     });
     socket.on("register-autoUpdater-update-not-available", (id) => {
         electron_updater_1.autoUpdater.on("update-not-available", (updateInfo) => {
+            normalize(updateInfo);
             electronSocket.emit("autoUpdater-update-not-available" + id, updateInfo);
         });
     });
@@ -30,6 +37,7 @@ module.exports = (socket) => {
     });
     socket.on("register-autoUpdater-update-downloaded", (id) => {
         electron_updater_1.autoUpdater.on("update-downloaded", (updateInfo) => {
+            normalize(updateInfo);
             electronSocket.emit("autoUpdater-update-downloaded" + id, updateInfo);
         });
     });
@@ -89,6 +97,7 @@ module.exports = (socket) => {
         electron_updater_1.autoUpdater
             .checkForUpdatesAndNotify()
             .then((updateCheckResult) => {
+            normalize(updateCheckResult?.updateInfo);
             electronSocket.emit("autoUpdater-checkForUpdatesAndNotify-completed" + guid, updateCheckResult);
         })
             .catch((error) => {
@@ -99,6 +108,7 @@ module.exports = (socket) => {
         electron_updater_1.autoUpdater
             .checkForUpdates()
             .then((updateCheckResult) => {
+            normalize(updateCheckResult?.updateInfo);
             electronSocket.emit("autoUpdater-checkForUpdates-completed" + guid, updateCheckResult);
         })
             .catch((error) => {
