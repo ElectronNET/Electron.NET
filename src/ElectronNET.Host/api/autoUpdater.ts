@@ -5,7 +5,11 @@ let electronSocket: Socket;
 
 function normalize(updateInfo) {
   if (typeof updateInfo?.releaseNotes === "string") {
-    updateInfo.releaseNotes = [updateInfo.releaseNotes];
+    updateInfo.releaseNotes = [{ note: updateInfo.releaseNotes }];
+  } else if (Array.isArray(updateInfo?.releaseNotes)) {
+    updateInfo.releaseNotes = updateInfo.releaseNotes.map((entry) =>
+      typeof entry === "string" ? { note: entry } : entry,
+    );
   }
 }
 
