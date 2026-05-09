@@ -1,5 +1,6 @@
 namespace ElectronNET.IntegrationTests.Tests
 {
+    using System;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using ElectronNET.API.Entities;
@@ -85,6 +86,30 @@ namespace ElectronNET.IntegrationTests.Tests
             result.Should().NotBeNull();
             result.ReleaseNotes.Should().NotBeNull();
             result.ReleaseNotes.Should().BeEmpty();
+        }
+
+        // Empty array must serialize as [] not null, so round-trips and downstream
+        // consumers don't receive unexpected null for a non-null array value.
+        [Fact]
+        public void Serialize_WithEmptyReleaseNotes_ShouldProduceEmptyArray()
+        {
+            var updateInfo = new UpdateInfo { Version = "1.2.3", ReleaseNotes = Array.Empty<ReleaseNoteInfo>() };
+
+            var json = JsonSerializer.Serialize(updateInfo, Options);
+
+            json.Should().Contain("\"releaseNotes\":[]");
+        }
+
+        // Null value: with DefaultIgnoreCondition.WhenWritingNull the property is
+        // omitted entirely at the serializer level (before Write() is called).
+        [Fact]
+        public void Serialize_WithNullReleaseNotes_ShouldOmitProperty()
+        {
+            var updateInfo = new UpdateInfo { Version = "1.2.3", ReleaseNotes = null };
+
+            var json = JsonSerializer.Serialize(updateInfo, Options);
+
+            json.Should().NotContain("releaseNotes");
         }
     }
 }

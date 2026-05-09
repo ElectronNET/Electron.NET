@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ElectronNET.Converter;
+namespace ElectronNET.API.Converter;
 
 /// <summary>
 /// Handles the polymorphic shape of releaseNotes coming from electron-builder.
@@ -45,12 +45,7 @@ public class ReleaseNotesConverter : JsonConverter<ReleaseNoteInfo[]>
                     else if (reader.TokenType == JsonTokenType.StartObject)
                     {
                         // Array of objects: [{ "version": "1.0", "note": "..." }]
-                        using var doc = JsonDocument.ParseValue(ref reader);
-                        var entry = new ReleaseNoteInfo();
-                        if (doc.RootElement.TryGetProperty("version", out var version))
-                            entry.Version = version.GetString();
-                        if (doc.RootElement.TryGetProperty("note", out var note))
-                            entry.Note = note.GetString();
+                        var entry = JsonSerializer.Deserialize<ReleaseNoteInfo>(ref reader, options) ?? new ReleaseNoteInfo();
                         list.Add(entry);
                     }
                     else
@@ -67,9 +62,16 @@ public class ReleaseNotesConverter : JsonConverter<ReleaseNoteInfo[]>
 
     public override void Write(Utf8JsonWriter writer, ReleaseNoteInfo[] value, JsonSerializerOptions options)
     {
-        if (value is null || value.Length == 0)
+        if (value is null)
         {
             writer.WriteNullValue();
+            return;
+        }
+
+        if (value.Length == 0)
+        {
+            writer.WriteStartArray();
+            writer.WriteEndArray();
             return;
         }
 

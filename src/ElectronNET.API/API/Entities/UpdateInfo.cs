@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using ElectronNET.Converter;
+﻿using System;
+using System.Text.Json.Serialization;
+using ElectronNET.API.Converter;
 
 namespace ElectronNET.API.Entities
 {
@@ -28,7 +29,7 @@ namespace ElectronNET.API.Entities
         /// Gets or sets the release notes.
         /// </summary>
         [JsonConverter(typeof(ReleaseNotesConverter))]
-        public ReleaseNoteInfo[] ReleaseNotes { get; set; } = new ReleaseNoteInfo[0];
+        public ReleaseNoteInfo[] ReleaseNotes { get; set; } = Array.Empty<ReleaseNoteInfo>();
 
         /// <summary>
         /// Gets or sets the release date.
