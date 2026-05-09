@@ -59,14 +59,13 @@ public class MigrationChecksTargetsTests
 
             // Create a minimal csproj that only imports the migration checks targets.
             // We deliberately import just that one targets file to keep the build fast.
+            // Note: MSBuildProjectDirectory is a reserved MSBuild property — it must not be
+            // redefined manually. MSBuild sets it automatically to the csproj's folder (tempDir).
             var targetsPathEscaped = TargetsFilePath.Replace("'", "&apos;");
             await File.WriteAllTextAsync(
                 Path.Combine(tempDir, "TestApp.csproj"),
                 $"""
                 <Project>
-                  <PropertyGroup>
-                    <MSBuildProjectDirectory>{tempDir}</MSBuildProjectDirectory>
-                  </PropertyGroup>
                   <Import Project="{targetsPathEscaped}" />
                   <Target Name="Build" DependsOnTargets="ElectronMigrationChecks" />
                 </Project>
@@ -75,7 +74,10 @@ public class MigrationChecksTargetsTests
             // ACT — run the Build target
             var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
 
-            // ASSERT — the build must not produce the MSB4185 "unavailable function" error
+            // ASSERT — the build must succeed and must not produce MSB4185
+            exitCode.Should().Be(0,
+                $"the temporary MSBuild project should build successfully. Full build output:\n{output}");
+
             output.Should().NotContain(
                 "MSB4185",
                 $"ReadAllLines must not be used as an MSBuild property function. " +
