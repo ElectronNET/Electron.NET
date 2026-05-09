@@ -4,13 +4,14 @@ on:
   workflow_call:
 
 concurrency:
-  group: integration-tests-${{ github.ref }}
+  group: integration-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   tests:
     name: ${{ matrix.os }} API-${{ matrix.electronVersion }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -42,13 +43,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Random delay (0-20 seconds)
-        shell: bash
-        run: |
-          DELAY=$((RANDOM % 21))
-          echo "Waiting for $DELAY seconds..."
-          sleep $DELAY
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -79,27 +73,31 @@ jobs:
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
         continue-on-error: true
+        timeout-minutes: 15
         run: |
           mkdir -p test-results
           xvfb-run -a dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj \
             -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} \
             --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" \
             --logger "console;verbosity=detailed" \
+            --blame-hang --blame-hang-timeout 5min \
             --results-directory test-results
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         continue-on-error: true
+        timeout-minutes: 15
         run: |
           New-Item -ItemType Directory -Force -Path test-results | Out-Null
-          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --results-directory test-results
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --blame-hang --blame-hang-timeout 5min --results-directory test-results
 
       - name: Run tests (macOS)
         if: runner.os == 'macOS'
         continue-on-error: true
+        timeout-minutes: 15
         run: |
           mkdir -p test-results
-          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --results-directory test-results
+          dotnet test src/ElectronNET.IntegrationTests/ElectronNET.IntegrationTests.csproj -c Release --no-build -r ${{ matrix.rid }} -p:RuntimeIdentifier=${{ matrix.rid }} -p:ElectronVersion=${{ matrix.electronVersion }} --logger "trx;LogFileName=${{ matrix.os }}-electron-${{ matrix.electronVersion }}.trx" --logger "console;verbosity=detailed" --blame-hang --blame-hang-timeout 5min --results-directory test-results
 
       - name: Upload raw test results
         if: always()
@@ -114,6 +112,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: always()
     needs: [tests]
+    timeout-minutes: 10
 
     permissions:
       actions: read
