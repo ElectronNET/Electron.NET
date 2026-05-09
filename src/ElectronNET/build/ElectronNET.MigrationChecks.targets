@@ -73,12 +73,11 @@ EXCEPTION:
   <Target Name="ElectronCheckRootPackageJsonNoElectron"
           Condition="Exists('$(MSBuildProjectDirectory)\package.json')">
 
-    <ItemGroup>
-      <_RootPackageJsonLines Include="$([System.IO.File]::ReadAllLines('$(MSBuildProjectDirectory)\package.json'))" />
-    </ItemGroup>
-
     <PropertyGroup>
-      <_RootPackageJsonContent>@(_RootPackageJsonLines, ' ')</_RootPackageJsonContent>
+      <!-- ReadAllText is used here instead of ReadAllLines because ReadAllLines is not available
+           as an MSBuild property function on all platforms (e.g. macOS GitHub Actions), which
+           caused MSB4185. ReadAllText is universally supported. See GitHub issue #1035. -->
+      <_RootPackageJsonContent>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\package.json'))</_RootPackageJsonContent>
       <_RootPackageJsonHasElectron>false</_RootPackageJsonHasElectron>
       <_RootPackageJsonHasElectron Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(_RootPackageJsonContent)', 'electron', System.Text.RegularExpressions.RegexOptions.IgnoreCase))">true</_RootPackageJsonHasElectron>
     </PropertyGroup>
