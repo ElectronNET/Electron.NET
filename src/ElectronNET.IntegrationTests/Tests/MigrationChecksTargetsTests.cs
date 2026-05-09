@@ -9,14 +9,42 @@ namespace ElectronNET.IntegrationTests.Tests;
 /// </summary>
 public class MigrationChecksTargetsTests
 {
-    // AppContext.BaseDirectory resolves to:
-    //   src\ElectronNET.IntegrationTests\bin\Debug\net10.0\win-x64\
-    // Five levels up => src\
-    private static readonly string TargetsFilePath = Path.GetFullPath(
-        Path.Combine(
-            AppContext.BaseDirectory,
-            "..", "..", "..", "..", "..",
-            "ElectronNET", "build", "ElectronNET.MigrationChecks.targets"));
+    private static readonly string TargetsFilePath = FindTargetsFile();
+
+    /// <summary>
+    /// Walks up the directory tree from <see cref="AppContext.BaseDirectory"/> until it finds
+    /// the migration checks targets file. This is robust against varying output paths
+    /// (with or without RID subfolder, debug/release, etc.).
+    /// </summary>
+    private static string FindTargetsFile()
+    {
+        const string RelativeFromRepoRoot =
+            "src/ElectronNET/build/ElectronNET.MigrationChecks.targets";
+        const string RelativeFromSrc =
+            "ElectronNET/build/ElectronNET.MigrationChecks.targets";
+
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null)
+        {
+            var fromRepoRoot = Path.Combine(dir.FullName, RelativeFromRepoRoot);
+            if (File.Exists(fromRepoRoot))
+            {
+                return Path.GetFullPath(fromRepoRoot);
+            }
+
+            var fromSrc = Path.Combine(dir.FullName, RelativeFromSrc);
+            if (File.Exists(fromSrc))
+            {
+                return Path.GetFullPath(fromSrc);
+            }
+
+            dir = dir.Parent;
+        }
+
+        throw new FileNotFoundException(
+            "Could not locate ElectronNET.MigrationChecks.targets by walking up from " +
+            $"'{AppContext.BaseDirectory}'.");
+    }
 
     // -----------------------------------------------------------------------
     // Content-level test (RED before fix, GREEN after fix on ALL platforms)
