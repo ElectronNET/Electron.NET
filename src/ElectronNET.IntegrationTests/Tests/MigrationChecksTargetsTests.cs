@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace ElectronNET.IntegrationTests.Tests;
 
 /// <summary>
-/// Unit tests for ElectronNET.MigrationChecks.targets — no Electron runtime required.
+/// Unit tests for ElectronNET.MigrationChecks.targets - no Electron runtime required.
 /// Covers GitHub issue #1035: System.IO.File.ReadAllLines is not available as an MSBuild
 /// property function on all platforms (e.g. macOS GitHub Actions), causing MSB4185.
 /// </summary>
@@ -53,7 +53,7 @@ public class MigrationChecksTargetsTests
     [Fact]
     public void MigrationChecksTargets_ShouldNotUseReadAllLines()
     {
-        // The file must exist — if this fails the path constant above is wrong.
+        // The file must exist - if this fails the path constant above is wrong.
         File.Exists(TargetsFilePath).Should().BeTrue(
             $"targets file must exist at '{TargetsFilePath}'");
 
@@ -69,7 +69,7 @@ public class MigrationChecksTargetsTests
     }
 
     // -----------------------------------------------------------------------
-    // Functional build test — verifies no MSB4185 at runtime
+    // Functional build test - verifies no MSB4185 at runtime
     // (RED on platforms where ReadAllLines is restricted, GREEN after fix)
     // -----------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ public class MigrationChecksTargetsTests
 
             // Create a minimal csproj that only imports the migration checks targets.
             // We deliberately import just that one targets file to keep the build fast.
-            // Note: MSBuildProjectDirectory is a reserved MSBuild property — it must not be
+            // Note: MSBuildProjectDirectory is a reserved MSBuild property - it must not be
             // redefined manually. MSBuild sets it automatically to the csproj's folder (tempDir).
             var targetsPathEscaped = TargetsFilePath.Replace("'", "&apos;");
             await File.WriteAllTextAsync(
@@ -99,10 +99,10 @@ public class MigrationChecksTargetsTests
                 </Project>
                 """);
 
-            // ACT — run the Build target
+            // ACT - run the Build target
             var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
 
-            // ASSERT — the build must succeed and must not produce MSB4185
+            // ASSERT - the build must succeed and must not produce MSB4185
             exitCode.Should().Be(0,
                 $"the temporary MSBuild project should build successfully. Full build output:\n{output}");
 
