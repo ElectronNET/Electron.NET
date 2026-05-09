@@ -74,37 +74,26 @@ public class MigrationChecksTargetsTests
     // -----------------------------------------------------------------------
 
     [Fact]
-    public async Task MigrationChecksTargets_BuildWithPackageJsonContainingElectron_ShouldSucceedWithoutMSB4185()
+    public async Task MigrationChecksTargets_BuildWithCleanPackageJson_ShouldSucceedWithoutMSB4185()
     {
-        var tempDir = Path.Combine(Path.GetTempPath(), $"electron-net-test-{Guid.NewGuid():N}");
-        Directory.CreateDirectory(tempDir);
+        // Positive case: a package.json that does NOT mention electron.
+        // The migration check must successfully read the file via ReadAllText
+        // (the code path fixed by issue #1035) without producing MSB4185.
+
+        var tempDir = CreateTempProjectDirectory();
         try
         {
-            // Create a minimal package.json that contains "electron" so ELECTRON008 fires.
             await File.WriteAllTextAsync(
                 Path.Combine(tempDir, "package.json"),
-                """{ "devDependencies": { "electron": "^30.0.0" } }""");
+                """{ "devDependencies": { "vite": "^5.0.0" } }""");
 
-            // Create a minimal csproj that only imports the migration checks targets.
-            // We deliberately import just that one targets file to keep the build fast.
-            // Note: MSBuildProjectDirectory is a reserved MSBuild property - it must not be
-            // redefined manually. MSBuild sets it automatically to the csproj's folder (tempDir).
-            var targetsPathEscaped = TargetsFilePath.Replace("'", "&apos;");
-            await File.WriteAllTextAsync(
-                Path.Combine(tempDir, "TestApp.csproj"),
-                $"""
-                <Project>
-                  <Import Project="{targetsPathEscaped}" />
-                  <Target Name="Build" DependsOnTargets="ElectronMigrationChecks" />
-                </Project>
-                """);
+            await WriteMinimalCsprojAsync(tempDir);
 
-            // ACT - run the Build target
             var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
 
-            // ASSERT - the build must succeed and must not produce MSB4185
             exitCode.Should().Be(0,
-                $"the temporary MSBuild project should build successfully. Full build output:\n{output}");
+                $"the build must succeed when the package.json contains no electron references. " +
+                $"Full build output:\n{output}");
 
             output.Should().NotContain(
                 "MSB4185",
@@ -117,9 +106,72 @@ public class MigrationChecksTargetsTests
         }
     }
 
+    [Fact]
+    public async Task MigrationChecksTargets_BuildWithPackageJsonContainingElectron_ShouldEmitELECTRON008WarningWithoutMSB4185()
+    {
+        // Negative case: a package.json that DOES contain "electron".
+        // The migration check must still read the file successfully (no MSB4185)
+        // and must emit the expected ELECTRON008 warning. ELECTRON008 is a
+        // <Warning>, not an <Error>, so the build itself still succeeds.
+
+        var tempDir = CreateTempProjectDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(tempDir, "package.json"),
+                """{ "devDependencies": { "electron": "^30.0.0" } }""");
+
+            await WriteMinimalCsprojAsync(tempDir);
+
+            var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
+
+            exitCode.Should().Be(0,
+                $"ELECTRON008 is a Warning (not an Error) so the build itself must still " +
+                $"succeed. Full build output:\n{output}");
+
+            output.Should().NotContain(
+                "MSB4185",
+                $"ReadAllLines must not be used as an MSBuild property function. " +
+                $"Full build output:\n{output}");
+
+            output.Should().Contain(
+                "ELECTRON008",
+                $"the migration check must still detect electron references in package.json " +
+                $"after the ReadAllText migration. Full build output:\n{output}");
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
     // -----------------------------------------------------------------------
-    // Helper
+    // Helpers
     // -----------------------------------------------------------------------
+
+    private static string CreateTempProjectDirectory()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), $"electron-net-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+        return tempDir;
+    }
+
+    private static Task WriteMinimalCsprojAsync(string tempDir)
+    {
+        // A minimal csproj that only imports the migration checks targets to keep the
+        // build fast. Note: MSBuildProjectDirectory is a reserved MSBuild property and
+        // must not be redefined manually; MSBuild sets it automatically to the folder
+        // of the csproj (which is tempDir here).
+        var targetsPathEscaped = TargetsFilePath.Replace("'", "&apos;");
+        return File.WriteAllTextAsync(
+            Path.Combine(tempDir, "TestApp.csproj"),
+            $"""
+            <Project>
+              <Import Project="{targetsPathEscaped}" />
+              <Target Name="Build" DependsOnTargets="ElectronMigrationChecks" />
+            </Project>
+            """);
+    }
 
     private static async Task<(int ExitCode, string Output)> RunDotnetBuildAsync(string workingDirectory)
     {
