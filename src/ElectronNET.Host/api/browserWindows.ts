@@ -6,6 +6,7 @@ import { browserViewMediateService } from "./browserView";
 
 const windows: Electron.BrowserWindow[] = (global["browserWindows"] =
   global["browserWindows"] || []) as Electron.BrowserWindow[];
+
 let readyToShowWindowsIds: number[] = [];
 
 let window;
@@ -308,7 +309,15 @@ export = (socket: Socket, app: Electron.App) => {
     });
 
     if (loadUrl) {
-      window.loadURL(loadUrl);
+      // Append authentication token to initial URL if available
+      const token = global["authToken"];
+
+      if (token) {
+        const separator = loadUrl.includes("?") ? "&" : "?";
+        window.loadURL(`${loadUrl}${separator}token=${token}`);
+      } else {
+        window.loadURL(loadUrl);
+      }
     }
 
     if (

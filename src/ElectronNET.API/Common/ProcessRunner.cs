@@ -1,6 +1,7 @@
 ﻿namespace ElectronNET.Common
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
@@ -25,6 +26,8 @@
         private volatile Process process;
         private readonly StringBuilder stdOut = new StringBuilder(4 * 1024);
         private readonly StringBuilder stdErr = new StringBuilder(4 * 1024);
+
+        public event EventHandler<string> LineReceived;
 
         private volatile ManualResetEvent stdOutEvent;
         private volatile ManualResetEvent stdErrEvent;
@@ -110,6 +113,11 @@
 
         public bool Run(string exeFileName, string commandLineArgs, string workingDirectory)
         {
+            return this.Run(exeFileName, commandLineArgs, workingDirectory, null);
+        }
+
+        public bool Run(string exeFileName, string commandLineArgs, string workingDirectory, IDictionary<string, string> environmentVariables)
+        {
             this.CommandLine = commandLineArgs;
             this.WorkingFolder = workingDirectory;
             this.ExecutableFileName = exeFileName;
@@ -125,6 +133,14 @@
                 CreateNoWindow = true,
                 WorkingDirectory = workingDirectory
             };
+
+            if (environmentVariables != null)
+            {
+                foreach (var kv in environmentVariables)
+                {
+                    startInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                }
+            }
 
             return this.Run(startInfo);
         }
@@ -571,6 +587,7 @@
             if (e.Data != null)
             {
                 Console.WriteLine("|| " + e.Data);
+                LineReceived?.Invoke(this, e.Data);
             }
             else
             {

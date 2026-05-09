@@ -2,15 +2,16 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using ElectronNET.AspNet.Services;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Services.ElectronProcess;
 
     internal class RuntimeControllerAspNetElectronFirst : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;
-        private int? port;
 
-        public RuntimeControllerAspNetElectronFirst(AspNetLifetimeAdapter aspNetLifetimeAdapter) : base(aspNetLifetimeAdapter)
+        public RuntimeControllerAspNetElectronFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, authenticationService)
         {
         }
 
@@ -18,19 +19,15 @@
 
         protected override Task StartCore()
         {
-            this.port = ElectronNetRuntime.ElectronSocketPort;
-
-            if (!this.port.HasValue)
-            {
-                throw new Exception("No port has been specified by Electron!");
-            }
+            var port = ElectronNetRuntime.ElectronSocketPort.Value;
+            var token = ElectronNetRuntime.ElectronAuthToken;
 
             if (!ElectronNetRuntime.ElectronProcessId.HasValue)
             {
                 throw new Exception("No electronPID has been specified by Electron!");
             }
 
-            this.CreateSocketBridge(this.port!.Value);
+            this.CreateSocketBridge(port, token);
 
             this.electronProcess = new ElectronProcessPassive(ElectronNetRuntime.ElectronProcessId.Value);
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;

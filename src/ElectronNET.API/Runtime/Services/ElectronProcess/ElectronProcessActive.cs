@@ -1,10 +1,15 @@
 ﻿namespace ElectronNET.Runtime.Services.ElectronProcess
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
@@ -15,6 +20,9 @@
     [Localizable(false)]
     internal class ElectronProcessActive : ElectronProcessBase
     {
+        private const string AuthTokenEnvVar = "ELECTRONNET_AUTH_TOKEN";
+        private const string StartupInfoEnvVar = "ELECTRONNET_STARTUP_INFO";
+
         private readonly bool isUnpackaged;
         private readonly string electronBinaryName;
         private readonly string extraArguments;
@@ -88,8 +96,23 @@
                 workingDir = dir.FullName;
             }
 
+            // Generate the auth token on the .NET side (256 bit entropy) and pass it
+            // to Electron via an environment variable. Electron will report the
+            // OS-selected port via a temporary handshake file - this avoids any
+            // dependency on parsing Electron's console output.
+            var authToken = CreateAuthToken();
+            var startupInfoPath = Path.Combine(
+                Path.GetTempPath(),
+                $"electronnet-startup-{Environment.ProcessId}-{Guid.NewGuid():N}.json");
+
             // We don't await this in order to let the state transition to "Starting"
-            Task.Run(async () => await this.StartInternal(startCmd, args, workingDir).ConfigureAwait(false));
+            Task.Run(async () => await this.StartInternal(startCmd, args, workingDir, authToken, startupInfoPath).ConfigureAwait(false));
+        }
+
+        private static string CreateAuthToken()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(32);
+            return Convert.ToHexString(bytes).ToLowerInvariant();
         }
 
         private void CheckRuntimeIdentifier()
@@ -101,7 +124,6 @@
             }
 
             var osPart = buildInfoRid.Split('-').First();
-
             var mismatch = false;
 
             switch (osPart)
@@ -155,20 +177,56 @@
             return Task.CompletedTask;
         }
 
-        private async Task StartInternal(string startCmd, string args, string directoriy)
+        private async Task StartInternal(string startCmd, string args, string directoriy, string authToken, string startupInfoPath)
         {
+            var tcs = new TaskCompletionSource();
+            using var cts = new CancellationTokenSource(2 * 60_000); // cancel after 2 minutes
+            using var _ = cts.Token.Register(() =>
+            {
+                // Time is over - let's kill the process and move on
+                this.process.Cancel();
+                // We don't want to raise exceptions here - just pass the barrier
+                tcs.TrySetResult();
+            });
+
+            void Monitor_SocketIO_Failure(object sender, EventArgs e)
+            {
+                // We don't want to raise exceptions here - just pass the barrier
+                if (tcs.Task.IsCompleted)
+                {
+                    this.Process_Exited(sender, e);
+                }
+                else
+                {
+                    tcs.TrySetResult();
+                }
+            }
+
             try
             {
-                await Task.Delay(10.ms()).ConfigureAwait(false);
-
                 Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
                 Console.Error.WriteLine("[StartInternal]: args: {0}", args);
 
                 this.process = new ProcessRunner("ElectronRunner");
-                this.process.ProcessExited += this.Process_Exited;
-                this.process.Run(startCmd, args, directoriy);
+                this.process.ProcessExited += Monitor_SocketIO_Failure;
 
-                await Task.Delay(500.ms()).ConfigureAwait(false);
+                var env = new Dictionary<string, string>
+                {
+                    [AuthTokenEnvVar] = authToken,
+                    [StartupInfoEnvVar] = startupInfoPath,
+                };
+
+                this.process.Run(startCmd, args, directoriy, env);
+
+                // Wait for Electron to write the startup-info file (or for the process to die / timeout).
+                var waitTask = WaitForStartupInfoAsync(startupInfoPath, cts.Token);
+                var completed = await Task.WhenAny(waitTask, tcs.Task).ConfigureAwait(false);
+
+                int port = 0;
+                if (completed == waitTask && waitTask.Status == TaskStatus.RanToCompletion)
+                {
+                    port = waitTask.Result;
+                }
 
                 Console.Error.WriteLine("[StartInternal]: after run:");
 
@@ -178,11 +236,18 @@
                     Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardOutput);
 
                     Task.Run(() => this.TransitionState(LifetimeState.Stopped));
-
-                    throw new Exception("Failed to launch the Electron process.");
                 }
-
-                this.TransitionState(LifetimeState.Ready);
+                else if (port > 0)
+                {
+                    ElectronNetRuntime.ElectronAuthToken = authToken;
+                    ElectronNetRuntime.ElectronSocketPort = port;
+                    this.TransitionState(LifetimeState.Ready);
+                }
+                else
+                {
+                    Console.Error.WriteLine("[StartInternal]: Did not receive Electron startup info before process exit/timeout.");
+                    Task.Run(() => this.TransitionState(LifetimeState.Stopped));
+                }
             }
             catch (Exception ex)
             {
@@ -191,6 +256,63 @@
                 Console.Error.WriteLine("[StartInternal]: Exception: " + ex);
                 throw;
             }
+            finally
+            {
+                try
+                {
+                    if (File.Exists(startupInfoPath))
+                    {
+                        File.Delete(startupInfoPath);
+                    }
+                }
+                catch
+                {
+                    // best effort cleanup
+                }
+            }
+        }
+
+        private static async Task<int> WaitForStartupInfoAsync(string startupInfoPath, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    if (File.Exists(startupInfoPath))
+                    {
+                        var json = await File.ReadAllTextAsync(startupInfoPath, cancellationToken).ConfigureAwait(false);
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            using var doc = JsonDocument.Parse(json);
+                            if (doc.RootElement.TryGetProperty("port", out var portElement) &&
+                                portElement.TryGetInt32(out var port) &&
+                                port > 0)
+                            {
+                                return port;
+                            }
+                        }
+                    }
+                }
+                catch (JsonException)
+                {
+                    // File may be partially written / racing with the writer - retry.
+                }
+                catch (IOException)
+                {
+                    // Same - transient races on file access; retry.
+                }
+
+                try
+                {
+                    await Task.Delay(50, cancellationToken).ConfigureAwait(false);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+
+            return 0;
         }
 
         private void Process_Exited(object sender, EventArgs e)

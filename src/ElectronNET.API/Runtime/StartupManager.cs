@@ -106,6 +106,20 @@
                     Console.WriteLine("Electron Process ID: " + result);
                 }
             }
+
+            var authTokenArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronAuthTokenArgumentName, StringComparison.OrdinalIgnoreCase));
+
+            if (authTokenArg != null)
+            {
+                var parts = authTokenArg.Split('=', StringSplitOptions.TrimEntries);
+
+                if (parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]))
+                {
+                    var result = parts[1];
+                    ElectronNetRuntime.ElectronAuthToken = result;
+                    Console.WriteLine("Use Auth Token: " + result);
+                }
+            }
         }
 
         private void SetElectronExecutable()

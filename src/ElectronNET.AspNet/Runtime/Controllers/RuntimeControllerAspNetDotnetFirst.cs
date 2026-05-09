@@ -2,6 +2,9 @@
 {
     using System;
     using System.Threading.Tasks;
+    using System.Security.Principal;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using ElectronNET.AspNet.Services;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
@@ -10,9 +13,8 @@
     internal class RuntimeControllerAspNetDotnetFirst : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;
-        private int? port;
 
-        public RuntimeControllerAspNetDotnetFirst(AspNetLifetimeAdapter aspNetLifetimeAdapter) : base(aspNetLifetimeAdapter)
+        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, authenticationService)
         {
         }
 
@@ -23,15 +25,9 @@
             var isUnPacked = ElectronNetRuntime.StartupMethod.IsUnpackaged();
             var electronBinaryName = ElectronNetRuntime.ElectronExecutable;
             var args = Environment.CommandLine;
-            this.port = ElectronNetRuntime.ElectronSocketPort;
+            var port = ElectronNetRuntime.ElectronSocketPort ?? 0;
 
-            if (!this.port.HasValue)
-            {
-                this.port = PortHelper.GetFreePort(ElectronNetRuntime.DefaultSocketPort);
-                ElectronNetRuntime.ElectronSocketPort = this.port;
-            }
-
-            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, this.port.Value);
+            this.electronProcess = new ElectronProcessActive(isUnPacked, electronBinaryName, args, port);
             this.electronProcess.Ready += this.ElectronProcess_Ready;
             this.electronProcess.Stopped += this.ElectronProcess_Stopped;
 
@@ -46,8 +42,10 @@
 
         private void ElectronProcess_Ready(object sender, EventArgs e)
         {
+            var port = ElectronNetRuntime.ElectronSocketPort.Value;
+            var token = ElectronNetRuntime.ElectronAuthToken;
             this.TransitionState(LifetimeState.Started);
-            this.CreateSocketBridge(this.port!.Value);
+            this.CreateSocketBridge(port, token);
         }
 
         private void ElectronProcess_Stopped(object sender, EventArgs e)
