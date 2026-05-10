@@ -1,7 +1,6 @@
 ﻿namespace ElectronNET.Common
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
@@ -113,11 +112,6 @@
 
         public bool Run(string exeFileName, string commandLineArgs, string workingDirectory)
         {
-            return this.Run(exeFileName, commandLineArgs, workingDirectory, null);
-        }
-
-        public bool Run(string exeFileName, string commandLineArgs, string workingDirectory, IDictionary<string, string> environmentVariables)
-        {
             this.CommandLine = commandLineArgs;
             this.WorkingFolder = workingDirectory;
             this.ExecutableFileName = exeFileName;
@@ -133,14 +127,6 @@
                 CreateNoWindow = true,
                 WorkingDirectory = workingDirectory
             };
-
-            if (environmentVariables != null)
-            {
-                foreach (var kv in environmentVariables)
-                {
-                    startInfo.EnvironmentVariables[kv.Key] = kv.Value;
-                }
-            }
 
             return this.Run(startInfo);
         }

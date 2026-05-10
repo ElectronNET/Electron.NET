@@ -27,14 +27,7 @@ let unpackeddotnet = false;
 let dotnetpacked = false;
 let electronforcedport;
 let electronUrl;
-// Auth token: prefer the value provided by the .NET host via environment variable
-// (dotnet-first startup). Fall back to a freshly generated token so Electron can
-// still be launched stand-alone (e.g. for debugging).
-let authToken = process.env.ELECTRONNET_AUTH_TOKEN || randomUUID().split('-').join('');
-// Path to a temporary handshake file. When set by the .NET host, Electron writes
-// the OS-selected socket port into this file so .NET does not have to parse the
-// console output.
-const startupInfoPath = process.env.ELECTRONNET_STARTUP_INFO;
+let authToken = randomUUID().split('-').join('');
 
 if (app.commandLine.hasSwitch('manifest')) {
     manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
@@ -281,25 +274,7 @@ function startSocketApiBridge(port) {
     server.listen(port, host);
     server.on('listening', function () {
         const addr = server.address();
-        console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address}`);
-
-        // If the .NET host requested a startup-info handshake, write the selected
-        // port atomically (tmp + rename) so .NET can pick it up without parsing
-        // our console output. The auth token is intentionally NOT written to disk
-        // - the .NET host already knows it (it generated it).
-        if (startupInfoPath) {
-            try {
-                const payload = JSON.stringify({ port: addr.port, pid: process.pid });
-                const tmp = `${startupInfoPath}.tmp`;
-                const writeOptions = platform() === 'win32'
-                    ? { encoding: 'utf8' }
-                    : { encoding: 'utf8', mode: 0o600 };
-                fs.writeFileSync(tmp, payload, writeOptions);
-                fs.renameSync(tmp, startupInfoPath);
-            } catch (err) {
-                console.error('Failed to write Electron startup info file:', err);
-            }
-        }
+        console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address} using ${authToken}`);
 
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
@@ -431,8 +406,7 @@ function startAspCoreBackend(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        // Do not log the parameters: they include the auth token.
-        console.debug('Starting backend.');
+        console.debug('Starting backend with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
@@ -462,8 +436,7 @@ function startAspCoreBackendUnpackaged(electronPort) {
 
         let binFilePath = path.join(currentBinPath, binaryFile);
         var options = { cwd: currentBinPath };
-        // Do not log the parameters: they include the auth token.
-        console.debug('Starting backend (unpackaged).');
+        console.debug('Starting backend (unpackaged) with parameters:', parameters.join(' '));
         apiProcess = cProcess(binFilePath, parameters, options);
 
         apiProcess.stdout.on('data', (data) => {
