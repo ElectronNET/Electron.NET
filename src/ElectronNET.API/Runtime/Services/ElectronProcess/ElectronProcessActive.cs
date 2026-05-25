@@ -6,6 +6,7 @@
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using ElectronNET.Common;
@@ -208,7 +209,7 @@
                 this.process = new ProcessRunner("ElectronRunner");
                 this.process.ProcessExited += Monitor_SocketIO_Failure;
                 this.process.LineReceived += Read_SocketIO_Parameters;
-                this.process.Run(startCmd, args, directoriy);
+                this.process.Run(startCmd, args, directory);
 
                 await tcs.Task.ConfigureAwait(false);
 
