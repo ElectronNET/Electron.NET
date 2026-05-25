@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET.Samples.BlazorSignalR", "ElectronNET.Samples.BlazorSignalR.csproj", "{1A87C5B5-16EE-5DA0-33B4-17DA71675A87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronNET.Samples.AuthMiddleware", "ElectronNET.Samples.AuthMiddleware.csproj", "{1A87C5B5-16EE-5DA0-33B4-17DA71675A87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

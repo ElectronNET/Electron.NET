@@ -1,7 +1,7 @@
 using ElectronNET.API;
 using ElectronNET.API.Entities;
-// using ElectronNET.AspNet.Middleware;
-// using ElectronNET.AspNet.Services;
+using ElectronNET.AspNet.Middleware;
+using ElectronNET.AspNet.Services;
 
 var watch = new System.Diagnostics.Stopwatch();
 watch.Start();
@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 });
 
 // Register Electron authentication service as singleton
-// builder.Services.AddSingleton<IElectronAuthenticationService, ElectronAuthenticationService>();
+builder.Services.AddSingleton<IElectronAuthenticationService, ElectronAuthenticationService>();
 
 builder.Services.AddElectron();
 
@@ -63,7 +63,7 @@ var app = builder.Build();
 serviceProvider = app.Services; // Capture for use in Electron callback above
 
 // Register authentication middleware FIRST (before routing, static files, etc.)
-// app.UseMiddleware<ElectronAuthenticationMiddleware>();
+app.UseMiddleware<ElectronAuthenticationMiddleware>();
 
 // Enable routing
 app.UseRouting();
@@ -86,7 +86,7 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.MapRazorComponents<ElectronNET.Samples.BlazorSignalR.Components.App>()
+app.MapRazorComponents<ElectronNET.Samples.AuthMiddleware.Components.App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
