@@ -11,7 +11,6 @@
     {
         private ElectronProcessBase electronProcess;
         private SocketBridgeService socketBridge;
-        private int? port;
 
         public RuntimeControllerElectronFirst()
         {
@@ -36,12 +35,8 @@
 
         protected override Task StartCore()
         {
-            this.port = ElectronNetRuntime.ElectronSocketPort;
-
-            if (!this.port.HasValue)
-            {
-                throw new Exception("No port has been specified by Electron!");
-            }
+            var port = ElectronNetRuntime.ElectronSocketPort.Value;
+            var token = ElectronNetRuntime.ElectronAuthToken;
 
             if (!ElectronNetRuntime.ElectronProcessId.HasValue)
             {
@@ -49,7 +44,7 @@
             }
 
             this.TransitionState(LifetimeState.Starting);
-            this.socketBridge = new SocketBridgeService(this.port!.Value);
+            this.socketBridge = new SocketBridgeService(port, token);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

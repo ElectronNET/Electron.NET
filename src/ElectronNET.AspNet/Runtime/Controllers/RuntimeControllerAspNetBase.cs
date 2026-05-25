@@ -1,8 +1,13 @@
 ﻿namespace ElectronNET.AspNet.Runtime
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting.Server;
+    using Microsoft.AspNetCore.Hosting.Server.Features;
+    using Microsoft.Extensions.DependencyInjection;
     using ElectronNET.API;
+    using ElectronNET.AspNet.Services;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
@@ -10,12 +15,16 @@
 
     internal abstract class RuntimeControllerAspNetBase : RuntimeControllerBase
     {
+        private readonly IServer server;
         private readonly AspNetLifetimeAdapter aspNetLifetimeAdapter;
+        private readonly IElectronAuthenticationService authenticationService;
         private SocketBridgeService socketBridge;
 
-        protected RuntimeControllerAspNetBase(AspNetLifetimeAdapter aspNetLifetimeAdapter)
+        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null)
         {
+            this.server = server;
             this.aspNetLifetimeAdapter = aspNetLifetimeAdapter;
+            this.authenticationService = authenticationService;
             this.aspNetLifetimeAdapter.Ready += this.AspNetLifetimeAdapter_Ready;
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
             this.aspNetLifetimeAdapter.Stopped += this.AspNetLifetimeAdapter_Stopped;
@@ -38,9 +47,9 @@
             }
         }
 
-        protected void CreateSocketBridge(int port)
+        protected void CreateSocketBridge(int port, string authorization)
         {
-            this.socketBridge = new SocketBridgeService(port);
+            this.socketBridge = new SocketBridgeService(port, authorization);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();
@@ -52,6 +61,15 @@
                 this.ElectronProcess.IsReady() &&
                 this.aspNetLifetimeAdapter.IsReady())
             {
+                var token = ElectronNetRuntime.ElectronAuthToken;
+                var serverAddressesFeature = this.server.Features.Get<IServerAddressesFeature>();
+                var address = serverAddressesFeature.Addresses.First();
+                var uri = new Uri(address);
+
+                // Only if somebody registered an IElectronAuthenticationService service - otherwise we do not care
+                this.authenticationService?.SetExpectedToken(token);
+                ElectronNetRuntime.AspNetWebPort = uri.Port;
+
                 this.TransitionState(LifetimeState.Ready);
                 Task.Run(this.RunReadyCallback);
             }

@@ -215,7 +215,8 @@ namespace ElectronNET.API.Entities
         /// <summary>
         /// Whether window should have a shadow. Default is true.
         /// </summary>
-        public bool HasShadow { get; set; }
+        [DefaultValue(true)]
+        public bool HasShadow { get; set; } = true;
 
         /// <summary>
         /// Forces using dark theme for the window, only works on some GTK+3 desktop environments. Default is false.

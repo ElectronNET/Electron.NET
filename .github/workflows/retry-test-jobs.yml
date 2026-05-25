@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "Inspecting jobs of workflow run $RUN_ID in $REPO"
 
-          jobs_json="$(gh api -R $REPO repos/$REPO/actions/runs/$RUN_ID/jobs)"
+          jobs_json="$(gh api repos/$REPO/actions/runs/$RUN_ID/jobs)"
 
           echo "Jobs and conclusions:"
           echo "$jobs_json" | jq '.jobs[] | {name: .name, conclusion: .conclusion}'

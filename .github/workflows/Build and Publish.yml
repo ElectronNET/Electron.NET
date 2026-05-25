@@ -1,6 +1,8 @@
 name: Build and Publish
 
-on: [push]
+on:
+  push:
+    branches: [main, develop]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
