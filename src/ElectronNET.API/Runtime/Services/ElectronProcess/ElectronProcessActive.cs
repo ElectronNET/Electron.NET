@@ -2,9 +2,12 @@
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
@@ -15,6 +18,8 @@
     [Localizable(false)]
     internal class ElectronProcessActive : ElectronProcessBase
     {
+        private readonly Regex extractor = new Regex("^Electron Socket: listening on port (\\d+) at .* using ([a-f0-9]+)$");
+
         private readonly bool isUnpackaged;
         private readonly string electronBinaryName;
         private readonly string extraArguments;
@@ -101,7 +106,6 @@
             }
 
             var osPart = buildInfoRid.Split('-').First();
-
             var mismatch = false;
 
             switch (osPart)
@@ -155,20 +159,59 @@
             return Task.CompletedTask;
         }
 
-        private async Task StartInternal(string startCmd, string args, string directoriy)
+        private async Task StartInternal(string startCmd, string args, string directory)
         {
+            var tcs = new TaskCompletionSource();
+            using var cts = new CancellationTokenSource(2 * 60_000); // cancel after 2 minutes
+            using var _ = cts.Token.Register(() =>
+            {
+                // Time is over - let's kill the process and move on
+                this.process.Cancel();
+                // We don't want to raise exceptions here - just pass the barrier
+                tcs.TrySetResult();
+            });
+
+            void Read_SocketIO_Parameters(object sender, string line)
+            {
+                // Look for "Electron Socket: listening on port %s at ..."
+                var match = extractor.Match(line);
+
+                if (match?.Success ?? false)
+                {
+                    var port = int.Parse(match.Groups[1].Value);
+                    var token = match.Groups[2].Value;
+
+                    this.process.LineReceived -= Read_SocketIO_Parameters;
+                    ElectronNetRuntime.ElectronAuthToken = token;
+                    ElectronNetRuntime.ElectronSocketPort = port;
+                    tcs.SetResult();
+                }
+            }
+
+            void Monitor_SocketIO_Failure(object sender, EventArgs e)
+            {
+                // We don't want to raise exceptions here - just pass the barrier
+                if (tcs.Task.IsCompleted)
+                {
+                    this.Process_Exited(sender, e);
+                }
+                else
+                {
+                    tcs.TrySetResult();
+                }
+            }
+
             try
             {
-                await Task.Delay(10.ms()).ConfigureAwait(false);
-
                 Console.Error.WriteLine("[StartInternal]: startCmd: {0}", startCmd);
                 Console.Error.WriteLine("[StartInternal]: args: {0}", args);
 
                 this.process = new ProcessRunner("ElectronRunner");
-                this.process.ProcessExited += this.Process_Exited;
-                this.process.Run(startCmd, args, directoriy);
+                this.process.ProcessExited += Monitor_SocketIO_Failure;
+                this.process.LineReceived += Read_SocketIO_Parameters;
+                this.process.Run(startCmd, args, directory);
 
-                await Task.Delay(500.ms()).ConfigureAwait(false);
+                await tcs.Task.ConfigureAwait(false);
 
                 Console.Error.WriteLine("[StartInternal]: after run:");
 
@@ -178,11 +221,11 @@
                     Console.Error.WriteLine("[StartInternal]: Process is not running: " + this.process.StandardOutput);
 
                     Task.Run(() => this.TransitionState(LifetimeState.Stopped));
-
-                    throw new Exception("Failed to launch the Electron process.");
                 }
-
-                this.TransitionState(LifetimeState.Ready);
+                else
+                {
+                    this.TransitionState(LifetimeState.Ready);
+                }
             }
             catch (Exception ex)
             {

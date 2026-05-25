@@ -338,6 +338,7 @@
     <EnumValue Name="36.9.2" DisplayName="36.9.2" />
     <EnumValue Name="36.9.3" DisplayName="36.9.3" />
     <EnumValue Name="36.9.4" DisplayName="36.9.4" />
+    <EnumValue Name="36.9.5" DisplayName="36.9.5" />
     <EnumValue Name="37.0.0" DisplayName="37.0.0" />
     <EnumValue Name="37.1.0" DisplayName="37.1.0" />
     <EnumValue Name="37.2.0" DisplayName="37.2.0" />
@@ -354,6 +355,14 @@
     <EnumValue Name="37.5.1" DisplayName="37.5.1" />
     <EnumValue Name="37.6.0" DisplayName="37.6.0" />
     <EnumValue Name="37.6.1" DisplayName="37.6.1" />
+    <EnumValue Name="37.7.0" DisplayName="37.7.0" />
+    <EnumValue Name="37.7.1" DisplayName="37.7.1" />
+    <EnumValue Name="37.8.0" DisplayName="37.8.0" />
+    <EnumValue Name="37.9.0" DisplayName="37.9.0" />
+    <EnumValue Name="37.10.0" DisplayName="37.10.0" />
+    <EnumValue Name="37.10.1" DisplayName="37.10.1" />
+    <EnumValue Name="37.10.2" DisplayName="37.10.2" />
+    <EnumValue Name="37.10.3" DisplayName="37.10.3" />
     <EnumValue Name="38.0.0" DisplayName="38.0.0" />
     <EnumValue Name="38.1.0" DisplayName="38.1.0" />
     <EnumValue Name="38.1.1" DisplayName="38.1.1" />
@@ -361,6 +370,94 @@
     <EnumValue Name="38.2.0" DisplayName="38.2.0" />
     <EnumValue Name="38.2.1" DisplayName="38.2.1" />
     <EnumValue Name="38.2.2" DisplayName="38.2.2" />
+    <EnumValue Name="38.3.0" DisplayName="38.3.0" />
+    <EnumValue Name="38.4.0" DisplayName="38.4.0" />
+    <EnumValue Name="38.5.0" DisplayName="38.5.0" />
+    <EnumValue Name="38.6.0" DisplayName="38.6.0" />
+    <EnumValue Name="38.7.0" DisplayName="38.7.0" />
+    <EnumValue Name="38.7.1" DisplayName="38.7.1" />
+    <EnumValue Name="38.7.2" DisplayName="38.7.2" />
+    <EnumValue Name="38.8.0" DisplayName="38.8.0" />
+    <EnumValue Name="38.8.1" DisplayName="38.8.1" />
+    <EnumValue Name="38.8.2" DisplayName="38.8.2" />
+    <EnumValue Name="38.8.4" DisplayName="38.8.4" />
+    <EnumValue Name="38.8.6" DisplayName="38.8.6" />
+    <EnumValue Name="39.0.0" DisplayName="39.0.0" />
+    <EnumValue Name="39.1.0" DisplayName="39.1.0" />
+    <EnumValue Name="39.1.1" DisplayName="39.1.1" />
+    <EnumValue Name="39.1.2" DisplayName="39.1.2" />
+    <EnumValue Name="39.2.0" DisplayName="39.2.0" />
+    <EnumValue Name="39.2.1" DisplayName="39.2.1" />
+    <EnumValue Name="39.2.2" DisplayName="39.2.2" />
+    <EnumValue Name="39.2.3" DisplayName="39.2.3" />
+    <EnumValue Name="39.2.4" DisplayName="39.2.4" />
+    <EnumValue Name="39.2.5" DisplayName="39.2.5" />
+    <EnumValue Name="39.2.6" DisplayName="39.2.6" />
+    <EnumValue Name="39.2.7" DisplayName="39.2.7" />
+    <EnumValue Name="39.3.0" DisplayName="39.3.0" />
+    <EnumValue Name="39.4.0" DisplayName="39.4.0" />
+    <EnumValue Name="39.5.0" DisplayName="39.5.0" />
+    <EnumValue Name="39.5.1" DisplayName="39.5.1" />
+    <EnumValue Name="39.5.2" DisplayName="39.5.2" />
+    <EnumValue Name="39.6.0" DisplayName="39.6.0" />
+    <EnumValue Name="39.6.1" DisplayName="39.6.1" />
+    <EnumValue Name="39.7.0" DisplayName="39.7.0" />
+    <EnumValue Name="39.8.0" DisplayName="39.8.0" />
+    <EnumValue Name="39.8.1" DisplayName="39.8.1" />
+    <EnumValue Name="39.8.2" DisplayName="39.8.2" />
+    <EnumValue Name="39.8.3" DisplayName="39.8.3" />
+    <EnumValue Name="39.8.4" DisplayName="39.8.4" />
+    <EnumValue Name="39.8.5" DisplayName="39.8.5" />
+    <EnumValue Name="39.8.6" DisplayName="39.8.6" />
+    <EnumValue Name="39.8.7" DisplayName="39.8.7" />
+    <EnumValue Name="39.8.8" DisplayName="39.8.8" />
+    <EnumValue Name="39.8.9" DisplayName="39.8.9" />
+    <EnumValue Name="39.8.10" DisplayName="39.8.10" />
+    <EnumValue Name="40.0.0" DisplayName="40.0.0" />
+    <EnumValue Name="40.1.0" DisplayName="40.1.0" />
+    <EnumValue Name="40.2.0" DisplayName="40.2.0" />
+    <EnumValue Name="40.2.1" DisplayName="40.2.1" />
+    <EnumValue Name="40.3.0" DisplayName="40.3.0" />
+    <EnumValue Name="40.4.0" DisplayName="40.4.0" />
+    <EnumValue Name="40.4.1" DisplayName="40.4.1" />
+    <EnumValue Name="40.5.0" DisplayName="40.5.0" />
+    <EnumValue Name="40.6.0" DisplayName="40.6.0" />
+    <EnumValue Name="40.6.1" DisplayName="40.6.1" />
+    <EnumValue Name="40.7.0" DisplayName="40.7.0" />
+    <EnumValue Name="40.8.0" DisplayName="40.8.0" />
+    <EnumValue Name="40.8.1" DisplayName="40.8.1" />
+    <EnumValue Name="40.8.2" DisplayName="40.8.2" />
+    <EnumValue Name="40.8.3" DisplayName="40.8.3" />
+    <EnumValue Name="40.8.4" DisplayName="40.8.4" />
+    <EnumValue Name="40.8.5" DisplayName="40.8.5" />
+    <EnumValue Name="40.9.0" DisplayName="40.9.0" />
+    <EnumValue Name="40.9.1" DisplayName="40.9.1" />
+    <EnumValue Name="40.9.2" DisplayName="40.9.2" />
+    <EnumValue Name="40.9.3" DisplayName="40.9.3" />
+    <EnumValue Name="40.10.0" DisplayName="40.10.0" />
+    <EnumValue Name="40.10.1" DisplayName="40.10.1" />
+    <EnumValue Name="41.0.0" DisplayName="41.0.0" />
+    <EnumValue Name="41.0.1" DisplayName="41.0.1" />
+    <EnumValue Name="41.0.2" DisplayName="41.0.2" />
+    <EnumValue Name="41.0.3" DisplayName="41.0.3" />
+    <EnumValue Name="41.0.4" DisplayName="41.0.4" />
+    <EnumValue Name="41.1.0" DisplayName="41.1.0" />
+    <EnumValue Name="41.1.1" DisplayName="41.1.1" />
+    <EnumValue Name="41.2.0" DisplayName="41.2.0" />
+    <EnumValue Name="41.2.1" DisplayName="41.2.1" />
+    <EnumValue Name="41.2.2" DisplayName="41.2.2" />
+    <EnumValue Name="41.3.0" DisplayName="41.3.0" />
+    <EnumValue Name="41.4.0" DisplayName="41.4.0" />
+    <EnumValue Name="41.5.0" DisplayName="41.5.0" />
+    <EnumValue Name="41.5.1" DisplayName="41.5.1" />
+    <EnumValue Name="41.5.2" DisplayName="41.5.2" />
+    <EnumValue Name="41.6.0" DisplayName="41.6.0" />
+    <EnumValue Name="41.6.1" DisplayName="41.6.1" />
+    <EnumValue Name="41.7.0" DisplayName="41.7.0" />
+    <EnumValue Name="42.0.0" DisplayName="42.0.0" />
+    <EnumValue Name="42.0.1" DisplayName="42.0.1" />
+    <EnumValue Name="42.1.0" DisplayName="42.1.0" />
+    <EnumValue Name="42.2.0" DisplayName="42.2.0" />
   </EnumProperty>
 
   <EnumProperty Name="ElectronBuilderVersion"
@@ -401,6 +498,17 @@
       <EnumValue Name="24.12" DisplayName="24.12" />
       <EnumValue Name="24.13" DisplayName="24.13" />
       <EnumValue Name="26.0" DisplayName="26.0" />
+      <EnumValue Name="26.1" DisplayName="26.1" />
+      <EnumValue Name="26.2" DisplayName="26.2" />
+      <EnumValue Name="26.3" DisplayName="26.3" />
+      <EnumValue Name="26.4" DisplayName="26.4" />
+      <EnumValue Name="26.5" DisplayName="26.5" />
+      <EnumValue Name="26.6" DisplayName="26.6" />
+      <EnumValue Name="26.7" DisplayName="26.7" />
+      <EnumValue Name="26.8" DisplayName="26.8" />
+      <EnumValue Name="26.9" DisplayName="26.9" />
+      <EnumValue Name="26.10" DisplayName="26.10" />
+      <EnumValue Name="26.11" DisplayName="26.11" />
       <EnumValue Name="27" DisplayName="27" />
       <EnumValue Name="28" DisplayName="28" />
       <EnumValue Name="29" DisplayName="29" />

@@ -8,22 +8,24 @@
     internal class SocketBridgeService : LifetimeServiceBase
     {
         private readonly int socketPort;
+        private readonly string authorization;
         private readonly string socketUrl;
-        private SocketIoFacade socket;
+        private SocketIOConnection socket;
 
-        public SocketBridgeService(int socketPort)
+        public SocketBridgeService(int socketPort, string authorization)
         {
             this.socketPort = socketPort;
+            this.authorization = authorization;
             this.socketUrl = $"http://localhost:{this.socketPort}";
         }
 
         public int SocketPort => this.socketPort;
 
-        internal SocketIoFacade Socket => this.socket;
+        internal SocketIOConnection Socket => this.socket;
 
         protected override Task StartCore()
         {
-            this.socket = new SocketIoFacade(this.socketUrl);
+            this.socket = new SocketIOConnection(this.socketUrl, this.authorization);
             this.socket.BridgeConnected += this.Socket_BridgeConnected;
             this.socket.BridgeDisconnected += this.Socket_BridgeDisconnected;
             Task.Run(this.Connect);

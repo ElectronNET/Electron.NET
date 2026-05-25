@@ -134,4 +134,16 @@ TL;DR: Unless there is a technical reason (e.g., a crucial new API not being ava
 
 We pretty much release whenever we have something new (i.e., do fixes such as a 0.1.1, or add new features, such as a 0.2.0) quite quickly.
 
-We will go for a 1.0.0 release of this as early as ~mid of January 2026 (unless we find some critical things or want to extend the beta phase for ElectronNET.Core). This should be sufficient time to get some user input and have enough experience to call it stable.
+We will go for a 1.0.0 release of this as early as ~mid of June 2026 (unless we find some critical things or want to extend the beta phase for ElectronNET.Core). This should be sufficient time to get some user input and have enough experience to call it stable.
+
+## Updating Electron Versions
+
+The releases of Electron are found on the [releases.electronjs.org](https://releases.electronjs.org/release?page=1) website.
+
+You can update the `src\ElectronNET\build\ElectronNETRules.Project.xaml` file with new entries using the following script (run it in the browser's console when being on the Electron Releases website):
+
+```js
+[...new Set([...document.querySelectorAll('tbody tr a[href^="/release/v"]')].map(m => m.getAttribute('href').replace('/release/v', '')))].map(m => `<EnumValue Name="${m}" DisplayName="${m}" />`).sort().join('\n')
+```
+
+Alternatively, use the website's information to feed into an AI agent of your choice.

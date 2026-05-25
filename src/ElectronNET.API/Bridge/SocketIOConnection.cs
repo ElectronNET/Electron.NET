@@ -3,20 +3,29 @@
 namespace ElectronNET.API;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
 using SocketIO = SocketIOClient.SocketIO;
+using SocketIOOptions = SocketIOClient.SocketIOOptions;
 
-internal class SocketIoFacade : IDisposable
+internal class SocketIOConnection : ISocketConnection
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
     private bool _isDisposed;
 
-    public SocketIoFacade(string uri)
+    public SocketIOConnection(string uri, string authorization)
     {
-        _socket = new SocketIO(uri);
+        var opts = string.IsNullOrEmpty(authorization) ? new SocketIOOptions() : new SocketIOOptions
+        {
+            ExtraHeaders = new Dictionary<string, string>
+            {
+                ["authorization"] = authorization
+            },
+        };
+        _socket = new SocketIO(uri, opts);
         _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
         // Use default System.Text.Json serializer from SocketIOClient.
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.
@@ -140,7 +149,7 @@ internal class SocketIoFacade : IDisposable
     {
         if (this._isDisposed)
         {
-            throw new ObjectDisposedException(nameof(SocketIoFacade));
+            throw new ObjectDisposedException(nameof(SocketIOConnection));
         }
     }
 }

@@ -24,6 +24,7 @@
 - [Startup-Methods](Using/Startup-Methods.md)
 - [Debugging](Using/Debugging.md)
 - [Package Building](Using/Package-Building.md)
+- [Secure Communication](Using/Secure-Communication.md)
 - [Adding a `custom_main.js`](Using/Custom_main.md)
 
 # API Reference
