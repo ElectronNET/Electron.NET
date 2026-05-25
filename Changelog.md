@@ -2,7 +2,11 @@
 
 ## ElectronNET.Core
 
-- tbd
+- Updated internal facade from `SocketIoFacade` to `ISocketConnection` (#1037)
+- Fixed `HasShadow` is not `true` by default (#1049) @AeonSake
+- Fixed missing `ReadAllLines` in MSBuild execution (#1035)
+- Fixed serialization of release notes for the updater (#1041)
+- Added automatic port selection and secured IPC communication (#1038)
 
 # 0.4.1
 
