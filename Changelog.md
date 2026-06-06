@@ -1,4 +1,10 @@
-## 0.5.0
+# 0.5.1
+
+## ElectronNET.Core
+
+- Fixed slicing of arguments for packaged applications (#1072)
+
+# 0.5.0
 
 ## ElectronNET.Core
 
