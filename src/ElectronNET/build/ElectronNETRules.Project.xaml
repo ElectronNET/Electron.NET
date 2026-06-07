@@ -436,6 +436,7 @@
     <EnumValue Name="40.9.3" DisplayName="40.9.3" />
     <EnumValue Name="40.10.0" DisplayName="40.10.0" />
     <EnumValue Name="40.10.1" DisplayName="40.10.1" />
+    <EnumValue Name="40.10.2" DisplayName="40.10.2" />
     <EnumValue Name="41.0.0" DisplayName="41.0.0" />
     <EnumValue Name="41.0.1" DisplayName="41.0.1" />
     <EnumValue Name="41.0.2" DisplayName="41.0.2" />
@@ -454,10 +455,15 @@
     <EnumValue Name="41.6.0" DisplayName="41.6.0" />
     <EnumValue Name="41.6.1" DisplayName="41.6.1" />
     <EnumValue Name="41.7.0" DisplayName="41.7.0" />
+    <EnumValue Name="41.7.1" DisplayName="41.7.1" />
     <EnumValue Name="42.0.0" DisplayName="42.0.0" />
     <EnumValue Name="42.0.1" DisplayName="42.0.1" />
     <EnumValue Name="42.1.0" DisplayName="42.1.0" />
     <EnumValue Name="42.2.0" DisplayName="42.2.0" />
+    <EnumValue Name="42.3.0" DisplayName="42.3.0" />
+    <EnumValue Name="42.3.1" DisplayName="42.3.1" />
+    <EnumValue Name="42.3.2" DisplayName="42.3.2" />
+    <EnumValue Name="42.3.3" DisplayName="42.3.3" />
   </EnumProperty>
 
   <EnumProperty Name="ElectronBuilderVersion"

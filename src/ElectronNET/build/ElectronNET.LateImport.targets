@@ -46,6 +46,7 @@
     <ElectronDirName>.electron</ElectronDirName>
     <ElectronSplashScreenFileName Condition="'$(ElectronSplashScreen)' != ''">$([System.IO.Path]::GetFileName($(ElectronSplashScreen)))</ElectronSplashScreenFileName>
     <ElectronIconFileName Condition="'$(ElectronIcon)' != ''">$([System.IO.Path]::GetFileName($(ElectronIcon)))</ElectronIconFileName>
+    <ElectronMajor>$([System.String]::Copy('$(ElectronVersion)').Split('.')[0])</ElectronMajor>
   </PropertyGroup>
 
 
@@ -363,6 +364,7 @@
     <PropertyGroup>
       <ElectronOutputPath>$([System.IO.Path]::GetFullPath('$(ElectronOutDir)'))</ElectronOutputPath>
       <_NpmCmd>npm install --no-bin-links</_NpmCmd>
+      <_NpmCmd Condition="$(ElectronMajor) &gt;= 42">npx install-electron</_NpmCmd>
       <!-- Add cross-platform parameters when there's a platform mismatch (for remote debugging preparation) -->
       <_NpmCmd Condition="'$(_IsPlatformMismatch)' == 'true'">$(_NpmCmd) --os=$(NpmOs) --cpu=$(NpmCpu) --arch=$(NpmCpu) --platform=$(NpmOs)</_NpmCmd>
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
@@ -376,9 +378,22 @@
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <!--<Exec Command="powershell -Command &quot;Start-Sleep -Seconds 10&quot;" />-->
-
     <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+    <PropertyGroup>
+      <_NpmCmd>npx install-electron</_NpmCmd>
+      <!-- Add cross-platform parameters when there's a platform mismatch (for remote debugging preparation) -->
+      <_NpmCmd Condition="'$(_IsPlatformMismatch)' == 'true'">$(_NpmCmd) --os=$(NpmOs) --cpu=$(NpmCpu) --arch=$(NpmCpu) --platform=$(NpmOs)</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0" />
+
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <Message Importance="High" Text="Electron installation failed!" Condition="'$(ExecExitCode)' != '0'" />
 
     <!-- Fix up incorrect symlinks created by npm on Windows when targeting macOS -->
     <PropertyGroup>
