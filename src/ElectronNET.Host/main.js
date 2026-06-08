@@ -133,7 +133,8 @@ if (manifestJsonFile.singleInstance) {
 // Collect user supplied command line args (excluding those handled by Electron host itself)
 function getForwardedArgs() {
     const skipSwitches = new Set(['unpackedelectron', 'unpackeddotnet', 'dotnetpacked']);
-    return process.argv.slice(2).filter(arg => {
+    const sliceIndex = app.isPackaged ? 1 : 2;
+    return process.argv.slice(sliceIndex).filter(arg => {
         if (!arg) return false;
         // Node/Electron internal or we already process them
         if (arg.startsWith('--manifest')) return false;
