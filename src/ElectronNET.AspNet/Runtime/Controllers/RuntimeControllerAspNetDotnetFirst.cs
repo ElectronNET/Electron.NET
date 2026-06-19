@@ -14,7 +14,7 @@
     {
         private ElectronProcessBase electronProcess;
 
-        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, authenticationService)
+        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, callbackResolver, authenticationService)
         {
         }
 
