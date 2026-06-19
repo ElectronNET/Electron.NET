@@ -17,17 +17,26 @@ namespace ElectronNET.AspNet.Runtime
 
         public AppReadyCallbackResolver(string[] args, Func<string[], Task> callback)
         {
-            _callback = () => callback.Invoke(args);
+            if (callback != null)
+            {
+                _callback = () => callback.Invoke(args);
+            }
         }
 
         public AppReadyCallbackResolver(IServiceProvider serviceProvider, Func<IServiceProvider, Task> callback)
         {
-            _callback = () => callback.Invoke(serviceProvider);
+            if (callback != null)
+            {
+                _callback = () => callback.Invoke(serviceProvider);
+            }
         }
 
         public AppReadyCallbackResolver(IServiceProvider serviceProvider, string[] args, Func<IServiceProvider, string[], Task> callback)
         {
-            _callback = () => callback.Invoke(serviceProvider, args);
+            if (callback != null)
+            {
+                _callback = () => callback.Invoke(serviceProvider, args);
+            }
         }
 
         public bool HasCallback => _callback != null;
