@@ -50,8 +50,6 @@
 
         internal static int? ElectronProcessId { get; set; }
 
-        internal static Func<Task> OnAppReadyCallback { get; set; }
-
         internal static ISocketConnection GetSocket()
         {
             return RuntimeControllerCore?.Socket;

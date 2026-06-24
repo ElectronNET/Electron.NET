@@ -17,13 +17,15 @@
     {
         private readonly IServer server;
         private readonly AspNetLifetimeAdapter aspNetLifetimeAdapter;
+        private readonly IAppReadyCallbackResolver callbackResolver;
         private readonly IElectronAuthenticationService authenticationService;
         private SocketBridgeService socketBridge;
 
-        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IElectronAuthenticationService authenticationService = null)
+        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, IElectronAuthenticationService authenticationService = null)
         {
             this.server = server;
             this.aspNetLifetimeAdapter = aspNetLifetimeAdapter;
+            this.callbackResolver = callbackResolver;
             this.authenticationService = authenticationService;
             this.aspNetLifetimeAdapter.Ready += this.AspNetLifetimeAdapter_Ready;
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
@@ -130,15 +132,15 @@
 
         private async Task RunReadyCallback()
         {
-            if (ElectronNetRuntime.OnAppReadyCallback == null)
+            if (!callbackResolver.HasCallback)
             {
-                Console.WriteLine("Warning: Non OnReadyCallback provided in UseElectron() setup.");
+                Console.WriteLine("Warning: No OnReadyCallback provided in UseElectron() setup.");
                 return;
             }
 
             try
             {
-                await ElectronNetRuntime.OnAppReadyCallback().ConfigureAwait(false);
+                await callbackResolver.Invoke().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

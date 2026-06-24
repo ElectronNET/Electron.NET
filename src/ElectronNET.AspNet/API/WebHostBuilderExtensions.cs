@@ -61,8 +61,154 @@
         /// </example>
         public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<Task> onAppReadyCallback)
         {
-            ElectronNetRuntime.OnAppReadyCallback = onAppReadyCallback;
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IAppReadyCallbackResolver>(_ => new AppReadyCallbackResolver(onAppReadyCallback));
+            });
 
+            return UseElectronCore(builder, args);
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core web host and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="IWebHostBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="IWebHostBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// using Microsoft.AspNetCore.Hosting;
+        /// using Microsoft.Extensions.Hosting;
+        /// using ElectronNET.API;
+        ///
+        /// public class Program
+        /// {
+        ///     public static void Main(string[] args)
+        ///     {
+        ///         Host.CreateDefaultBuilder(args)
+        ///             .ConfigureWebHostDefaults(webBuilder =>
+        ///             {
+        ///                 webBuilder.UseStartup&lt;Startup&gt;();
+        ///                 webBuilder.UseElectron(args, async (processArgs) =>
+        ///                 {
+        ///                     // Create the main browser window or perform other startup tasks.
+        ///                 });
+        ///             })
+        ///             .Build()
+        ///             .Run();
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<string[], Task> onAppReadyCallback)
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IAppReadyCallbackResolver>(_ => new AppReadyCallbackResolver(args, onAppReadyCallback));
+            });
+
+            return UseElectronCore(builder, args);
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core web host and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="IWebHostBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="IWebHostBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// using Microsoft.AspNetCore.Hosting;
+        /// using Microsoft.Extensions.Hosting;
+        /// using ElectronNET.API;
+        ///
+        /// public class Program
+        /// {
+        ///     public static void Main(string[] args)
+        ///     {
+        ///         Host.CreateDefaultBuilder(args)
+        ///             .ConfigureWebHostDefaults(webBuilder =>
+        ///             {
+        ///                 webBuilder.UseStartup&lt;Startup&gt;();
+        ///                 webBuilder.UseElectron(args, async (serviceProvider) =>
+        ///                 {
+        ///                     // Create the main browser window or perform other startup tasks.
+        ///                 });
+        ///             })
+        ///             .Build()
+        ///             .Run();
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<IServiceProvider, Task> onAppReadyCallback)
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IAppReadyCallbackResolver>(provider => new AppReadyCallbackResolver(provider, onAppReadyCallback));
+            });
+
+            return UseElectronCore(builder, args);
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core web host and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="IWebHostBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="IWebHostBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// using Microsoft.AspNetCore.Hosting;
+        /// using Microsoft.Extensions.Hosting;
+        /// using ElectronNET.API;
+        ///
+        /// public class Program
+        /// {
+        ///     public static void Main(string[] args)
+        ///     {
+        ///         Host.CreateDefaultBuilder(args)
+        ///             .ConfigureWebHostDefaults(webBuilder =>
+        ///             {
+        ///                 webBuilder.UseStartup&lt;Startup&gt;();
+        ///                 webBuilder.UseElectron(args, async (serviceProvider, processArgs) =>
+        ///                 {
+        ///                     // Create the main browser window or perform other startup tasks.
+        ///                 });
+        ///             })
+        ///             .Build()
+        ///             .Run();
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        public static IWebHostBuilder UseElectron(this IWebHostBuilder builder, string[] args, Func<IServiceProvider, string[], Task> onAppReadyCallback)
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IAppReadyCallbackResolver>(provider => new AppReadyCallbackResolver(provider, args, onAppReadyCallback));
+            });
+
+            return UseElectronCore(builder, args);
+        }
+
+        private static IWebHostBuilder UseElectronCore(IWebHostBuilder builder, string[] args)
+        {
             // no matter how this is set - let's unset to prevent Electron not starting as expected
             // e.g., VS Code sets this env variable, but this will cause `require("electron")` to not
             // work as expected, see issue #952
