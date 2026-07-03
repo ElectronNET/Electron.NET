@@ -213,6 +213,32 @@
       </ElectronCustomHookPackageJson>
     </ItemGroup>
 
+    <!-- A custom host hook's TypeScript is not recompiled during a CLI build, so the committed
+         ElectronHostHook JavaScript (and source maps) must be packaged as-is. Reclassify them
+         from None into .electron\ElectronHostHook content (mirroring ElectronSourceFiles) so they
+         are copied to the build output and, at publish, swept into app\ -> app.asar. Without this
+         require('electron-host-hook') fails at runtime ('Cannot find module .../index.js'). -->
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+      <None Remove="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map" />
+      <ElectronCustomHookJsFiles Include="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map"
+                                 Exclude="ElectronHostHook\node_modules\**" />
+      <ElectronCustomHookJsFiles Update="@(ElectronCustomHookJsFiles)">
+        <Link>$(ElectronDirName)\ElectronHostHook\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ElectronCustomHookJsFiles>
+    </ItemGroup>
+
+    <AssignTargetPath Files="@(ElectronCustomHookJsFiles)" RootFolder="$(MSBuildProjectDirectory)"
+                      Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+      <Output TaskParameter="AssignedFiles" ItemName="ElectronCustomHookJsFilesWithTargetPath" />
+    </AssignTargetPath>
+
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+      <FilesForPackagingFromProject Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
+      <ContentWithTargetPath Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
+      <Content Include="@(ElectronCustomHookJsFiles->'%(Identity)')" />
+    </ItemGroup>
+
     <ItemGroup>
       <ElectronIntermediatePackageJson Include="$(ElectronIntermediatePackageJson)" />
     </ItemGroup>
@@ -449,6 +475,10 @@
       <PublishDir>$(_OriginalPublishDir)</PublishDir>
       <PublishDir Condition="'$(_NonIntermediatePublishDir)' != ''">$(_NonIntermediatePublishDir)</PublishDir>
       <ElectronPublishDir>$(_OriginalPublishDir)</ElectronPublishDir>
+      <!-- The Electron host files (main.js, package.json, runtime node_modules, ...) are packed
+           into app.asar. They live in a dedicated 'app' subfolder so the .NET app in 'bin' is NOT
+           swept into the asar by electron-builder's default 'files' glob. See directories.app below. -->
+      <ElectronAppDir>$(ElectronPublishDir)app\</ElectronAppDir>
     </PropertyGroup>
 
 
@@ -489,7 +519,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
 
     <ItemGroup>
       <ElectronPublishFilesToMove Update="@(ElectronPublishFilesToMove)" >
-        <MoveTargetPath>$(ElectronPublishDir)%(RecursiveDir)%(FileName)%(Extension)</MoveTargetPath>
+        <MoveTargetPath>$(ElectronAppDir)%(RecursiveDir)%(FileName)%(Extension)</MoveTargetPath>
       </ElectronPublishFilesToMove>
     </ItemGroup>
 
@@ -504,13 +534,54 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
     </PropertyGroup>
 
     <PropertyGroup>
+      <ElectronAppDirFullPath>$([System.IO.Path]::GetFullPath('$(ElectronAppDir)'))</ElectronAppDirFullPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
       <IsLinuxWsl>false</IsLinuxWsl>
       <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
-      <_NpmCmd>npm install electron-builder@$(ElectronBuilderVersion) --save-dev </_NpmCmd>
-      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
     <Message Importance="High" Text="ElectronPublishApp: ElectronPublishDirFullPath - $(ElectronPublishDirFullPath)" />
+    <Message Importance="High" Text="ElectronPublishApp: ElectronAppDirFullPath - $(ElectronAppDirFullPath)" />
+
+    <!-- Install the app's runtime (prod) dependencies into app\node_modules so they end up
+         inside app.asar. devDependencies (electron, eslint, typescript) are not needed here:
+         TypeScript is already compiled at build time and electron-builder fetches Electron itself. -->
+    <PropertyGroup>
+      <_NpmAppDepsCmd>npm install --omit=dev</_NpmAppDepsCmd>
+      <_NpmAppDepsCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmAppDepsCmd)'</_NpmAppDepsCmd>
+    </PropertyGroup>
+
+    <Exec Command="$(_NpmAppDepsCmd)" WorkingDirectory="$(ElectronAppDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <Message Importance="High" Text="Electron app dependency install failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+    <!-- Install electron-builder (the dev tool) into the publish root, which is the
+         electron-builder projectDir (cwd). app metadata + runtime deps are read from
+         app\ via directories.app (standard electron-builder two-package.json layout).
+         Render the dev package.json first: the two-package.json layout requires a
+         package.json at the projectDir, and electron-builder requires the 'build'
+         configuration to live in this development package.json (it is rejected in the
+         application package.json under app\). The .NET app's metadata/version come from
+         app\package.json instead. -->
+    <ItemGroup>
+      <DevTemplateProperty Include="ElectronPackageId" Value="$(ElectronPackageId)" />
+      <DevTemplateProperty Include="Title" Value="$(Title)" />
+      <DevTemplateProperty Include="Version" Value="$(Version)" />
+    </ItemGroup>
+
+    <ReplaceTemplateTask TemplateFile="$(MSBuildThisFileDirectory)package.dev.template.json"
+                         OutputFile="$([System.IO.Path]::Combine('$(ElectronPublishDirFullPath)', 'package.json'))"
+                         TemplateProperties="@(DevTemplateProperty)"
+                         Condition="@(CopiedFiles->Count()) > 0" />
+
+    <PropertyGroup>
+      <_NpmCmd>npm install electron-builder@$(ElectronBuilderVersion)</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
 
     <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
@@ -529,6 +600,10 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <ElectronPaParams Condition="'$(Version)' != ''">$(ElectronPaParams) -c.buildVersion &quot;$(Version)&quot;</ElectronPaParams>
       <ElectronPaParams Condition="'$(Copyright)' != ''">$(ElectronPaParams) -c.copyright &quot;$(Copyright)&quot;</ElectronPaParams>
       <ElectronPaParams>$(ElectronPaParams) -c.extraResources &quot;bin/**/*&quot;</ElectronPaParams>
+      <!-- Build app.asar from the 'app' subfolder only (host JS + runtime node_modules),
+           keeping the .NET app under 'bin' out of the asar. cwd stays the publish root so
+           extraResources and user icon paths under bin/ still resolve. -->
+      <ElectronPaParams>$(ElectronPaParams) -c.directories.app &quot;app&quot;</ElectronPaParams>
     </PropertyGroup>
 
     <PropertyGroup>
