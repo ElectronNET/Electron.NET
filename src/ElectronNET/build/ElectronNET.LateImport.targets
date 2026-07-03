@@ -177,9 +177,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <!-- tsconfig.json is a build-time config, not a runtime file. Excluding it also stops
+           Microsoft.TypeScript.MSBuild from discovering and compiling the host's tsconfig
+           (types:["node"]) in the consumer project when hook TypeScript compilation is enabled. -->
       <ElectronSourceFiles
         Include="$(ElectronSourceFilesPath)\**\*.js;$(ElectronSourceFilesPath)\**\*.json;$(ElectronSourceFilesPath)\**\*.html"
-        Exclude="$(ElectronSourceFilesPath)\**\build-helper.js" />
+        Exclude="$(ElectronSourceFilesPath)\**\build-helper.js;$(ElectronSourceFilesPath)\**\tsconfig.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -213,12 +216,15 @@
       </ElectronCustomHookPackageJson>
     </ItemGroup>
 
-    <!-- A custom host hook's TypeScript is not recompiled during a CLI build, so the committed
-         ElectronHostHook JavaScript (and source maps) must be packaged as-is. Reclassify them
-         from None into .electron\ElectronHostHook content (mirroring ElectronSourceFiles) so they
-         are copied to the build output and, at publish, swept into app\ -> app.asar. Without this
-         require('electron-host-hook') fails at runtime ('Cannot find module .../index.js'). -->
-    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+    <!-- Committed-JS mode (TypeScriptCompileBlocked=true): the hook TypeScript is not compiled
+         during the build, so the committed ElectronHostHook JavaScript (and source maps) are
+         packaged as-is. Reclassify them from None into .electron\ElectronHostHook content
+         (mirroring ElectronSourceFiles) so they reach the build output and, at publish, are swept
+         into app\ -> app.asar. When compilation is enabled (TypeScriptCompileBlocked!=true) this
+         is skipped: Microsoft.TypeScript.MSBuild compiles the hook and ElectronAdjustHostHookOutput
+         routes the output, so reclassifying would duplicate .electron\ElectronHostHook items.
+         Without one of these, require('electron-host-hook') fails ('Cannot find module .../index.js'). -->
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
       <None Remove="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map" />
       <ElectronCustomHookJsFiles Include="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map"
                                  Exclude="ElectronHostHook\node_modules\**" />
@@ -229,11 +235,11 @@
     </ItemGroup>
 
     <AssignTargetPath Files="@(ElectronCustomHookJsFiles)" RootFolder="$(MSBuildProjectDirectory)"
-                      Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+                      Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
       <Output TaskParameter="AssignedFiles" ItemName="ElectronCustomHookJsFilesWithTargetPath" />
     </AssignTargetPath>
 
-    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true'">
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
       <FilesForPackagingFromProject Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
       <ContentWithTargetPath Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
       <Content Include="@(ElectronCustomHookJsFiles->'%(Identity)')" />
@@ -257,13 +263,45 @@
   </Target>
 
 
+  <!-- When hook TypeScript compilation is enabled (TypeScriptCompileBlocked!=true), restore the
+       hook's npm dependencies into ElectronHostHook\node_modules before tsc runs so its imports
+       (e.g. socket.io) resolve. Incremental: only re-runs when the hook package.json changes or
+       node_modules is missing. Skipped in committed-JS mode and at design time. -->
+  <Target Name="ElectronRestoreHostHookDependencies"
+          BeforeTargets="CompileTypeScriptWithTSConfig;CompileTypeScript"
+          Condition="'@(ElectronCustomHookTsFiles->Count())' &gt; 1 AND Exists('$(MSBuildProjectDirectory)\ElectronHostHook\package.json') AND '$(TypeScriptCompileBlocked)' != 'true' AND '$(DesignTimeBuild)' != 'true'"
+          Inputs="$(MSBuildProjectDirectory)\ElectronHostHook\package.json"
+          Outputs="$(MSBuildProjectDirectory)\ElectronHostHook\node_modules\.package-lock.json">
+
+    <PropertyGroup>
+      <IsLinuxWsl>false</IsLinuxWsl>
+      <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
+      <_NpmCmd>npm install</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="Restoring ElectronHostHook npm dependencies for TypeScript compilation..." />
+
+    <Exec Command="$(_NpmCmd)"
+          WorkingDirectory="$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', 'ElectronHostHook'))"
+          Timeout="600000" StandardOutputImportance="Low" StandardErrorImportance="High" ContinueOnError="false" />
+  </Target>
+
+
   <!-- Run before GetTypeScriptOutputForPublishing to adjust the target directory -->
   <Target Name="ElectronAdjustHostHookOutput" BeforeTargets="GetTypeScriptOutputForPublishing" DependsOnTargets="CompileTypeScriptWithTSConfig">
 
     <ItemGroup>
+      <!-- Route the compiled hook JS to .electron\ElectronHostHook. Do NOT reuse
+           %(DestinationRelativePath): with no outDir in the hook tsconfig, VsTsc leaves it as
+           an absolute path, which would produce .electron\<absolute-path>. Derive the target
+           from the file name instead (hook files are flat). Link is set because
+           GetTypeScriptOutputForPublishing re-runs AssignTargetPath, which honors Link for the
+           publish TargetPath. -->
       <GeneratedJavascript Update="@(GeneratedJavascript)">
-        <DestinationRelativePath>$(ElectronDirName)\%(DestinationRelativePath)</DestinationRelativePath>
-        <TargetPath>$(ElectronDirName)\%(DestinationRelativePath)</TargetPath>
+        <DestinationRelativePath>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</DestinationRelativePath>
+        <TargetPath>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</TargetPath>
+        <Link>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </GeneratedJavascript>
     </ItemGroup>

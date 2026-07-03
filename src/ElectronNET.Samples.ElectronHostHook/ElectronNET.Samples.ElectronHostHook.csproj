@@ -14,7 +14,7 @@
     <TypeScriptUseNodeJS>true</TypeScriptUseNodeJS>
     <TypeScriptTSConfig>ElectronHostHook/tsconfig.json</TypeScriptTSConfig>
     <TypeScriptCompileOnSaveEnabled>true</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
