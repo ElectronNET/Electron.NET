@@ -6,7 +6,7 @@
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
     <!-- Default to the host SDK's RID (e.g. linux-x64, win-x64, osx-arm64) when none is passed,
          so `dotnet build/publish` without -r targets the current OS. -->
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)</RuntimeIdentifier>
     <ElectronSingleInstance>true</ElectronSingleInstance>
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
