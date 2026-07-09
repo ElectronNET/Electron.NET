@@ -44,5 +44,98 @@
 
             return builder;
         }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core application and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="WebApplicationBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process, forwarded to Electron.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="WebApplicationBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// var builder = WebApplication.CreateBuilder(args)
+        ///     .UseElectron(args, async (processArgs) =>
+        ///     {
+        ///         // Create the main browser window or perform other startup tasks.
+        ///     });
+        ///
+        /// var app = builder.Build();
+        /// app.MapRazorPages();
+        /// app.Run();
+        /// </code>
+        /// </example>
+        public static WebApplicationBuilder UseElectron(this WebApplicationBuilder builder, string[] args, Func<string[], Task> onAppReadyCallback)
+        {
+            builder.WebHost.UseElectron(args, onAppReadyCallback);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core application and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="WebApplicationBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process, forwarded to Electron.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="WebApplicationBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// var builder = WebApplication.CreateBuilder(args)
+        ///     .UseElectron(args, async (serviceProvider) =>
+        ///     {
+        ///         // Create the main browser window or perform other startup tasks.
+        ///     });
+        ///
+        /// var app = builder.Build();
+        /// app.MapRazorPages();
+        /// app.Run();
+        /// </code>
+        /// </example>
+        public static WebApplicationBuilder UseElectron(this WebApplicationBuilder builder, string[] args, Func<IServiceProvider, Task> onAppReadyCallback)
+        {
+            builder.WebHost.UseElectron(args, onAppReadyCallback);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Electron.NET support to the current ASP.NET Core application and registers an application-ready callback.
+        /// </summary>
+        /// <param name="builder">The <see cref="WebApplicationBuilder"/> to extend.</param>
+        /// <param name="args">The command-line arguments passed to the process, forwarded to Electron.</param>
+        /// <param name="onAppReadyCallback">
+        /// An asynchronous callback invoked when the Electron app is ready. Use this to create windows or perform initialization.
+        /// </param>
+        /// <returns>
+        /// The same <see cref="WebApplicationBuilder"/> instance to enable fluent configuration.
+        /// </returns>
+        /// <example>
+        /// <code language="csharp">
+        /// var builder = WebApplication.CreateBuilder(args)
+        ///     .UseElectron(args, async (serviceProvider, processArgs) =>
+        ///     {
+        ///         // Create the main browser window or perform other startup tasks.
+        ///     });
+        ///
+        /// var app = builder.Build();
+        /// app.MapRazorPages();
+        /// app.Run();
+        /// </code>
+        /// </example>
+        public static WebApplicationBuilder UseElectron(this WebApplicationBuilder builder, string[] args, Func<IServiceProvider, string[], Task> onAppReadyCallback)
+        {
+            builder.WebHost.UseElectron(args, onAppReadyCallback);
+
+            return builder;
+        }
     }
 }

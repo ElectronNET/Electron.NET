@@ -313,8 +313,23 @@ export = (socket: Socket, app: Electron.App) => {
       const token = global["authToken"];
 
       if (token) {
-        const separator = loadUrl.includes("?") ? "&" : "?";
-        window.loadURL(`${loadUrl}${separator}token=${token}`);
+        try {
+          const url = new URL(loadUrl);
+
+          const isLocal =
+            url.hostname === "localhost" ||
+            url.hostname === "127.0.0.1" ||
+            url.hostname === "::1";
+
+          if (isLocal) {
+            url.searchParams.set("token", token);
+          }
+
+          window.loadURL(url.toString());
+        } catch {
+          // Handle invalid URLs or file:// URLs if needed
+          window.loadURL(loadUrl);
+        }
       } else {
         window.loadURL(loadUrl);
       }

@@ -1,0 +1,19 @@
+{
+  "name": "electron-builder-host",
+  "version": "$(Version)",
+  "private": true,
+  "build": {
+    "appId": "$(ElectronPackageId)",
+    "linux": {
+      "desktop": {
+        "entry": { "Name": "$(Title)" }
+      },
+      "executableName": "$(ElectronPackageId)"
+    },
+    "deb": {
+      "desktop": {
+        "entry": { "Name": "$(Title)" }
+      }
+    }
+  }
+}

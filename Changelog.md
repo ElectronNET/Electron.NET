@@ -1,3 +1,10 @@
+# 0.5.2
+
+## ElectronNET.Core
+
+- Fixed token param being appended to external URLs (#1075)
+- Added more variants for `UseElectron` (#1076) @AeonSake
+
 # 0.5.1
 
 ## ElectronNET.Core
