@@ -145,7 +145,7 @@
             catch (Exception ex)
             {
                 Console.WriteLine("Exception while executing OnAppReadyCallback. Stopping...\n" + ex);
-                this.Stop();
+                _ = this.Stop();
             }
         }
     }
