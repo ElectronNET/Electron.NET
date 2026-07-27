@@ -121,7 +121,7 @@
       <!-- Electron Builder uses title for the installation dir on Linux, but it should not have spaces -->
       <LinuxPrefix>linux</LinuxPrefix>
       <ElectronTitle>$(Title)</ElectronTitle>
-      <ElectronTitle  Condition="'$(RuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'">$(Title.Replace(' ', '-'))</ElectronTitle>
+      <ElectronTitle  Condition="'$(ElectronRuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'">$(Title.Replace(' ', '-'))</ElectronTitle>
     </PropertyGroup>
 
     <ItemGroup>
@@ -365,18 +365,18 @@
   <Target Name="ElectronCheckVersionMismatch">
 
     <PropertyGroup>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
 
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86' OR '$(RuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm' OR '$(RuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64' OR '$(ElectronRuntimeIdentifier)' == 'win-x86' OR '$(ElectronRuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'linux-x64' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'osx-x64' OR '$(ElectronRuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
      
       <!-- npm uses different OS names than Electron -->
       <NpmOs Condition="'$(ElectronPlatform)' == 'win'">win32</NpmOs>
@@ -385,7 +385,7 @@
 
       <!-- npm CPU is same as ElectronArch except for linux-arm -->
       <NpmCpu>$(ElectronArch)</NpmCpu>
-      <NpmCpu Condition="'$(RuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
+      <NpmCpu Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
      
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Windows'))">win</_CurrentOSPlatform>
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux</_CurrentOSPlatform>
@@ -522,7 +522,7 @@
 
     <Error Condition="'$(_IsPlatformMismatch)' == 'true'"
            Code="ELECTRON100"
-           Text="The target RuntimeIdentifier '$(RuntimeIdentifier)' (platform: $(ElectronPlatform)) does not match the current operating system ($(_CurrentOSPlatform)).
+           Text="The target RuntimeIdentifier '$(ElectronRuntimeIdentifier)' (platform: $(ElectronPlatform)) does not match the current operating system ($(_CurrentOSPlatform)).
 
 Electron applications must be built on the target operating system:
 - Windows targets (win-x64, win-x86, win-arm64) must be built on Windows
@@ -645,7 +645,10 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
     </PropertyGroup>
 
     <PropertyGroup>
-      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson)</_NpxCmd>
+      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronPlatform)</_NpxCmd>
+      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronArch)</_NpxCmd>
+      <_NpxCmd>$(_NpxCmd) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 

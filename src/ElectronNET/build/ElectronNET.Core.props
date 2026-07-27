@@ -4,14 +4,12 @@
   <PropertyGroup Label="ElectronNetCommon">
     <ElectronVersion>30.4.0</ElectronVersion>
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
-    <!-- Default to the host SDK's RID (e.g. linux-x64, win-x64, osx-arm64) when none is passed,
-         so `dotnet build/publish` without -r targets the current OS.
-         RuntimeInformation.RuntimeIdentifier only exists on .NET 5+, so it's only safe to call
-         when MSBuild itself is hosted on .NET (Core). Visual Studio's bundled MSBuild.exe runs on
-         .NET Framework (MSBuildRuntimeType == 'Full'), where that member doesn't exist and the
-         property function would throw during evaluation, failing solution load. -->
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Core'">$([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <!-- Ensure runtime identifier can be overloaded -->
+    <ElectronRuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''" />
+    <!-- Using dotnet cli, itself builded with core runtime, we can access a self contained property with the runtime identifier -->
+    <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Core'">$([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)</ElectronRuntimeIdentifier>
+    <!-- Otherwhise Full target framework is only available on Windows systems -->
+    <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Full'">win-$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLower())</ElectronRuntimeIdentifier>
     <ElectronSingleInstance>true</ElectronSingleInstance>
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
