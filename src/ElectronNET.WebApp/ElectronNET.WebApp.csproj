@@ -34,7 +34,6 @@
     <ElectronSplashScreen>wwwroot\assets\img\about@2x.png</ElectronSplashScreen>
     <License>MIT</License>
     <ElectronSingleInstance>false</ElectronSingleInstance>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
   </PropertyGroup>
   <PropertyGroup>
