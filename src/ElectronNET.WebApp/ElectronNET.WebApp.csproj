@@ -34,7 +34,6 @@
     <ElectronSplashScreen>wwwroot\assets\img\about@2x.png</ElectronSplashScreen>
     <License>MIT</License>
     <ElectronSingleInstance>false</ElectronSingleInstance>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -76,8 +75,8 @@
     <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ElectronNET.Core" Version="0.5.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
-    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.5.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core" Version="0.5.2" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.5.2" Condition="'$(ElectronNetDevMode)' != 'true'" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3" />
   </ItemGroup>
 

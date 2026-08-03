@@ -230,7 +230,10 @@ module.exports = (socket, app) => {
             window = app["mainWindow"];
             if (window) {
                 window.reload();
-                windows.push(window);
+                synchronizeWindowRegistry();
+                if (!windows.some((entry) => tryGetWindowId(entry) === window.id)) {
+                    windows.push(window);
+                }
                 electronSocket.emit("BrowserWindowCreated", window.id);
                 return;
             }
@@ -253,21 +256,9 @@ module.exports = (socket, app) => {
             }
         });
         lastOptions = options;
-        window.on("closed", (sender) => {
-            for (let index = 0; index < windows.length; index++) {
-                const windowItem = windows[index];
-                try {
-                    windowItem.id;
-                }
-                catch (error) {
-                    if (error.message === "Object has been destroyed") {
-                        windows.splice(index, 1);
-                        const ids = [];
-                        windows.forEach((x) => ids.push(x.id));
-                        electronSocket.emit("BrowserWindowClosed", ids);
-                    }
-                }
-            }
+        window.on("closed", () => {
+            synchronizeWindowRegistry();
+            emitBrowserWindowClosed();
         });
         app.on("activate", () => {
             // On macOS it's common to re-create a window in the app when the
@@ -280,8 +271,20 @@ module.exports = (socket, app) => {
             // Append authentication token to initial URL if available
             const token = global["authToken"];
             if (token) {
-                const separator = loadUrl.includes("?") ? "&" : "?";
-                window.loadURL(`${loadUrl}${separator}token=${token}`);
+                try {
+                    const url = new URL(loadUrl);
+                    const isLocal = url.hostname === "localhost" ||
+                        url.hostname === "127.0.0.1" ||
+                        url.hostname === "::1";
+                    if (isLocal) {
+                        url.searchParams.set("token", token);
+                    }
+                    window.loadURL(url.toString());
+                }
+                catch {
+                    // Handle invalid URLs or file:// URLs if needed
+                    window.loadURL(loadUrl);
+                }
             }
             else {
                 window.loadURL(loadUrl);
@@ -691,12 +694,47 @@ module.exports = (socket, app) => {
         getWindowById(id).setBrowserView((0, browserView_1.browserViewMediateService)(browserViewId));
     });
     function getWindowById(id) {
+        const runtimeWindow = electron_1.BrowserWindow.fromId(id);
+        if (runtimeWindow) {
+            return runtimeWindow;
+        }
+        synchronizeWindowRegistry();
         for (let index = 0; index < windows.length; index++) {
             const element = windows[index];
-            if (element.id === id) {
+            if (tryGetWindowId(element) === id) {
                 return element;
             }
         }
+        throw new Error(`BrowserWindow with id '${id}' was not found.`);
+    }
+    function tryGetWindowId(element) {
+        try {
+            return element.id;
+        }
+        catch {
+            return null;
+        }
+    }
+    function synchronizeWindowRegistry() {
+        const runtimeWindows = electron_1.BrowserWindow.getAllWindows();
+        const runtimeWindowIds = new Set(runtimeWindows.map((entry) => entry.id));
+        for (let index = windows.length - 1; index >= 0; index--) {
+            const windowId = tryGetWindowId(windows[index]);
+            if (windowId === null || !runtimeWindowIds.has(windowId)) {
+                windows.splice(index, 1);
+            }
+        }
+        readyToShowWindowsIds = readyToShowWindowsIds.filter((entryId) => runtimeWindowIds.has(entryId));
+    }
+    function emitBrowserWindowClosed() {
+        const ids = [];
+        for (const entry of windows) {
+            const windowId = tryGetWindowId(entry);
+            if (windowId !== null) {
+                ids.push(windowId);
+            }
+        }
+        electronSocket.emit("BrowserWindowClosed", ids);
     }
 };
 //# sourceMappingURL=browserWindows.js.map

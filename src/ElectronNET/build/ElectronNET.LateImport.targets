@@ -121,7 +121,7 @@
       <!-- Electron Builder uses title for the installation dir on Linux, but it should not have spaces -->
       <LinuxPrefix>linux</LinuxPrefix>
       <ElectronTitle>$(Title)</ElectronTitle>
-      <ElectronTitle  Condition="'$(RuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'">$(Title.Replace(' ', '-'))</ElectronTitle>
+      <ElectronTitle  Condition="'$(ElectronRuntimeIdentifier.StartsWith($(LinuxPrefix)))' == 'true'">$(Title.Replace(' ', '-'))</ElectronTitle>
     </PropertyGroup>
 
     <ItemGroup>
@@ -177,9 +177,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <!-- tsconfig.json is a build-time config, not a runtime file. Excluding it also stops
+           Microsoft.TypeScript.MSBuild from discovering and compiling the host's tsconfig
+           (types:["node"]) in the consumer project when hook TypeScript compilation is enabled. -->
       <ElectronSourceFiles
         Include="$(ElectronSourceFilesPath)\**\*.js;$(ElectronSourceFilesPath)\**\*.json;$(ElectronSourceFilesPath)\**\*.html"
-        Exclude="$(ElectronSourceFilesPath)\**\build-helper.js" />
+        Exclude="$(ElectronSourceFilesPath)\**\build-helper.js;$(ElectronSourceFilesPath)\**\tsconfig.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -213,6 +216,35 @@
       </ElectronCustomHookPackageJson>
     </ItemGroup>
 
+    <!-- Committed-JS mode (TypeScriptCompileBlocked=true): the hook TypeScript is not compiled
+         during the build, so the committed ElectronHostHook JavaScript (and source maps) are
+         packaged as-is. Reclassify them from None into .electron\ElectronHostHook content
+         (mirroring ElectronSourceFiles) so they reach the build output and, at publish, are swept
+         into app\ -> app.asar. When compilation is enabled (TypeScriptCompileBlocked!=true) this
+         is skipped: Microsoft.TypeScript.MSBuild compiles the hook and ElectronAdjustHostHookOutput
+         routes the output, so reclassifying would duplicate .electron\ElectronHostHook items.
+         Without one of these, require('electron-host-hook') fails ('Cannot find module .../index.js'). -->
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
+      <None Remove="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map" />
+      <ElectronCustomHookJsFiles Include="ElectronHostHook\**\*.js;ElectronHostHook\**\*.js.map"
+                                 Exclude="ElectronHostHook\node_modules\**" />
+      <ElectronCustomHookJsFiles Update="@(ElectronCustomHookJsFiles)">
+        <Link>$(ElectronDirName)\ElectronHostHook\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </ElectronCustomHookJsFiles>
+    </ItemGroup>
+
+    <AssignTargetPath Files="@(ElectronCustomHookJsFiles)" RootFolder="$(MSBuildProjectDirectory)"
+                      Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
+      <Output TaskParameter="AssignedFiles" ItemName="ElectronCustomHookJsFilesWithTargetPath" />
+    </AssignTargetPath>
+
+    <ItemGroup Condition="'$(ElectronHasCustomHookCode)' == 'true' AND '$(TypeScriptCompileBlocked)' == 'true'">
+      <FilesForPackagingFromProject Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
+      <ContentWithTargetPath Include="@(ElectronCustomHookJsFilesWithTargetPath->'%(Identity)')" />
+      <Content Include="@(ElectronCustomHookJsFiles->'%(Identity)')" />
+    </ItemGroup>
+
     <ItemGroup>
       <ElectronIntermediatePackageJson Include="$(ElectronIntermediatePackageJson)" />
     </ItemGroup>
@@ -231,13 +263,45 @@
   </Target>
 
 
+  <!-- When hook TypeScript compilation is enabled (TypeScriptCompileBlocked!=true), restore the
+       hook's npm dependencies into ElectronHostHook\node_modules before tsc runs so its imports
+       (e.g. socket.io) resolve. Incremental: only re-runs when the hook package.json changes or
+       node_modules is missing. Skipped in committed-JS mode and at design time. -->
+  <Target Name="ElectronRestoreHostHookDependencies"
+          BeforeTargets="CompileTypeScriptWithTSConfig;CompileTypeScript"
+          Condition="'@(ElectronCustomHookTsFiles->Count())' &gt; 0 AND Exists('$(MSBuildProjectDirectory)\ElectronHostHook\package.json') AND '$(TypeScriptCompileBlocked)' != 'true' AND '$(DesignTimeBuild)' != 'true'"
+          Inputs="$(MSBuildProjectDirectory)\ElectronHostHook\package.json"
+          Outputs="$(MSBuildProjectDirectory)\ElectronHostHook\node_modules\.package-lock.json">
+
+    <PropertyGroup>
+      <IsLinuxWsl>false</IsLinuxWsl>
+      <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
+      <_NpmCmd>npm install</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="Restoring ElectronHostHook npm dependencies for TypeScript compilation..." />
+
+    <Exec Command="$(_NpmCmd)"
+          WorkingDirectory="$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', 'ElectronHostHook'))"
+          Timeout="600000" StandardOutputImportance="Low" StandardErrorImportance="High" ContinueOnError="false" />
+  </Target>
+
+
   <!-- Run before GetTypeScriptOutputForPublishing to adjust the target directory -->
   <Target Name="ElectronAdjustHostHookOutput" BeforeTargets="GetTypeScriptOutputForPublishing" DependsOnTargets="CompileTypeScriptWithTSConfig">
 
     <ItemGroup>
+      <!-- Route the compiled hook JS to .electron\ElectronHostHook. Do NOT reuse
+           %(DestinationRelativePath): with no outDir in the hook tsconfig, VsTsc leaves it as
+           an absolute path, which would produce .electron\<absolute-path>. Derive the target
+           from the file name instead (hook files are flat). Link is set because
+           GetTypeScriptOutputForPublishing re-runs AssignTargetPath, which honors Link for the
+           publish TargetPath. -->
       <GeneratedJavascript Update="@(GeneratedJavascript)">
-        <DestinationRelativePath>$(ElectronDirName)\%(DestinationRelativePath)</DestinationRelativePath>
-        <TargetPath>$(ElectronDirName)\%(DestinationRelativePath)</TargetPath>
+        <DestinationRelativePath>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</DestinationRelativePath>
+        <TargetPath>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</TargetPath>
+        <Link>$(ElectronDirName)\ElectronHostHook\%(Filename)%(Extension)</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </GeneratedJavascript>
     </ItemGroup>
@@ -249,7 +313,10 @@
     <ItemGroup>
       <!--<_ElectronFiles Include="$(ElectronIntermediatePackageJson)" />-->
       <_ElectronFiles Include="$(ElectronSplashScreen)"  Condition="'$(ElectronSplashScreen)'!=''" />
-      <_ElectronFiles Include="$(ElectronIcon)"  Condition="'$(ElectronIcon)'!=''" />
+      <_ElectronFiles Include="$(ElectronIcon)"
+                      Condition="'$(ElectronIcon)'!='' AND ( !Exists('$(ElectronIcon)') OR !$([System.IO.Directory]::Exists('$(ElectronIcon)') ) )" />
+      <_ElectronIconDirectoryFiles Include="$(ElectronIcon)\**\*"
+                                   Condition="'$(ElectronIcon)'!='' AND Exists('$(ElectronIcon)') AND $([System.IO.Directory]::Exists('$(ElectronIcon)') )" />
     </ItemGroup>
 
     <ItemGroup>
@@ -265,10 +332,15 @@
     </ItemGroup>
 
     <Message Importance="High" Text="_ElectronFilesToCopy: @(_ElectronFilesToCopy)" />
+    <Message Importance="High" Text="_ElectronIconDirectoryFiles: @(_ElectronIconDirectoryFiles)" />
 
     <ItemGroup>
       <_ElectronFilesToCopyWithTargetPath Include="@(_ElectronFilesToCopy)">
         <TargetPath>$(ElectronDirName)\%(FileName)%(Extension)</TargetPath>
+      </_ElectronFilesToCopyWithTargetPath>
+
+      <_ElectronFilesToCopyWithTargetPath Include="@(_ElectronIconDirectoryFiles)">
+        <TargetPath>$(ElectronDirName)\$(ElectronIconFileName)\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
       </_ElectronFilesToCopyWithTargetPath>
     </ItemGroup>
 
@@ -301,18 +373,18 @@
   <Target Name="ElectronCheckVersionMismatch">
 
     <PropertyGroup>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
-      <ElectronArch Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-x86'">ia32</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm'">armv7l</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm64'">arm64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'osx-x64'">x64</ElectronArch>
+      <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'osx-arm64'">arm64</ElectronArch>
 
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86' OR '$(RuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'linux-x64' OR '$(RuntimeIdentifier)' == 'linux-arm' OR '$(RuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
-      <ElectronPlatform Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64' OR '$(ElectronRuntimeIdentifier)' == 'win-x86' OR '$(ElectronRuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'linux-x64' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
+      <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'osx-x64' OR '$(ElectronRuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
      
       <!-- npm uses different OS names than Electron -->
       <NpmOs Condition="'$(ElectronPlatform)' == 'win'">win32</NpmOs>
@@ -321,7 +393,7 @@
 
       <!-- npm CPU is same as ElectronArch except for linux-arm -->
       <NpmCpu>$(ElectronArch)</NpmCpu>
-      <NpmCpu Condition="'$(RuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
+      <NpmCpu Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
      
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Windows'))">win</_CurrentOSPlatform>
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux</_CurrentOSPlatform>
@@ -449,12 +521,16 @@
       <PublishDir>$(_OriginalPublishDir)</PublishDir>
       <PublishDir Condition="'$(_NonIntermediatePublishDir)' != ''">$(_NonIntermediatePublishDir)</PublishDir>
       <ElectronPublishDir>$(_OriginalPublishDir)</ElectronPublishDir>
+      <!-- The Electron host files (main.js, package.json, runtime node_modules, ...) are packed
+           into app.asar. They live in a dedicated 'app' subfolder so the .NET app in 'bin' is NOT
+           swept into the asar by electron-builder's default 'files' glob. See directories.app below. -->
+      <ElectronAppDir>$(ElectronPublishDir)app\</ElectronAppDir>
     </PropertyGroup>
 
 
     <Error Condition="'$(_IsPlatformMismatch)' == 'true'"
            Code="ELECTRON100"
-           Text="The target RuntimeIdentifier '$(RuntimeIdentifier)' (platform: $(ElectronPlatform)) does not match the current operating system ($(_CurrentOSPlatform)).
+           Text="The target RuntimeIdentifier '$(ElectronRuntimeIdentifier)' (platform: $(ElectronPlatform)) does not match the current operating system ($(_CurrentOSPlatform)).
 
 Electron applications must be built on the target operating system:
 - Windows targets (win-x64, win-x86, win-arm64) must be built on Windows
@@ -489,7 +565,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
 
     <ItemGroup>
       <ElectronPublishFilesToMove Update="@(ElectronPublishFilesToMove)" >
-        <MoveTargetPath>$(ElectronPublishDir)%(RecursiveDir)%(FileName)%(Extension)</MoveTargetPath>
+        <MoveTargetPath>$(ElectronAppDir)%(RecursiveDir)%(FileName)%(Extension)</MoveTargetPath>
       </ElectronPublishFilesToMove>
     </ItemGroup>
 
@@ -504,13 +580,54 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
     </PropertyGroup>
 
     <PropertyGroup>
+      <ElectronAppDirFullPath>$([System.IO.Path]::GetFullPath('$(ElectronAppDir)'))</ElectronAppDirFullPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
       <IsLinuxWsl>false</IsLinuxWsl>
       <IsLinuxWsl Condition="'$(ElectronPlatform)' == 'linux' AND $([MSBuild]::IsOSPlatform('Windows'))">true</IsLinuxWsl>
-      <_NpmCmd>npm install electron-builder@$(ElectronBuilderVersion) --save-dev </_NpmCmd>
-      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
     <Message Importance="High" Text="ElectronPublishApp: ElectronPublishDirFullPath - $(ElectronPublishDirFullPath)" />
+    <Message Importance="High" Text="ElectronPublishApp: ElectronAppDirFullPath - $(ElectronAppDirFullPath)" />
+
+    <!-- Install the app's runtime (prod) dependencies into app\node_modules so they end up
+         inside app.asar. devDependencies (electron, eslint, typescript) are not needed here:
+         TypeScript is already compiled at build time and electron-builder fetches Electron itself. -->
+    <PropertyGroup>
+      <_NpmAppDepsCmd>npm install --omit=dev</_NpmAppDepsCmd>
+      <_NpmAppDepsCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmAppDepsCmd)'</_NpmAppDepsCmd>
+    </PropertyGroup>
+
+    <Exec Command="$(_NpmAppDepsCmd)" WorkingDirectory="$(ElectronAppDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+      <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
+    </Exec>
+
+    <Message Importance="High" Text="Electron app dependency install failed!" Condition="'$(ExecExitCode)' != '0'" />
+
+    <!-- Install electron-builder (the dev tool) into the publish root, which is the
+         electron-builder projectDir (cwd). app metadata + runtime deps are read from
+         app\ via directories.app (standard electron-builder two-package.json layout).
+         Render the dev package.json first: the two-package.json layout requires a
+         package.json at the projectDir, and electron-builder requires the 'build'
+         configuration to live in this development package.json (it is rejected in the
+         application package.json under app\). The .NET app's metadata/version come from
+         app\package.json instead. -->
+    <ItemGroup>
+      <DevTemplateProperty Include="ElectronPackageId" Value="$(ElectronPackageId)" />
+      <DevTemplateProperty Include="Title" Value="$(Title)" />
+      <DevTemplateProperty Include="Version" Value="$(Version)" />
+    </ItemGroup>
+
+    <ReplaceTemplateTask TemplateFile="$(MSBuildThisFileDirectory)package.dev.template.json"
+                         OutputFile="$([System.IO.Path]::Combine('$(ElectronPublishDirFullPath)', 'package.json'))"
+                         TemplateProperties="@(DevTemplateProperty)"
+                         Condition="@(CopiedFiles->Count()) > 0" />
+
+    <PropertyGroup>
+      <_NpmCmd>npm install electron-builder@$(ElectronBuilderVersion)</_NpmCmd>
+      <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
+    </PropertyGroup>
 
     <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
@@ -529,10 +646,17 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <ElectronPaParams Condition="'$(Version)' != ''">$(ElectronPaParams) -c.buildVersion &quot;$(Version)&quot;</ElectronPaParams>
       <ElectronPaParams Condition="'$(Copyright)' != ''">$(ElectronPaParams) -c.copyright &quot;$(Copyright)&quot;</ElectronPaParams>
       <ElectronPaParams>$(ElectronPaParams) -c.extraResources &quot;bin/**/*&quot;</ElectronPaParams>
+      <!-- Build app.asar from the 'app' subfolder only (host JS + runtime node_modules),
+           keeping the .NET app under 'bin' out of the asar. cwd stays the publish root so
+           extraResources and user icon paths under bin/ still resolve. -->
+      <ElectronPaParams>$(ElectronPaParams) -c.directories.app &quot;app&quot;</ElectronPaParams>
     </PropertyGroup>
 
     <PropertyGroup>
-      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson) --$(ElectronPlatform) --$(ElectronArch) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson)</_NpxCmd>
+      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronPlatform)</_NpxCmd>
+      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronArch)</_NpxCmd>
+      <_NpxCmd>$(_NpxCmd) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 

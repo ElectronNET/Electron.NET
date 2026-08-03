@@ -1,20 +1,6 @@
 {
   "name": "$(ElectronPackageId)",
   "productName": "$(ElectronTitle)",
-  "build": {
-    "appId": "$(ElectronPackageId)",
-    "linux": {
-      "desktop": {
-        "entry": { "Name": "$(Title)" }
-      },
-      "executableName": "$(ElectronPackageId)"
-    },
-    "deb": {
-      "desktop": {
-        "entry": { "Name": "$(Title)" }
-      }
-    }
-  },
   "description": "$(Description)",
   "version": "$(Version)",
   "main": "main.js",
