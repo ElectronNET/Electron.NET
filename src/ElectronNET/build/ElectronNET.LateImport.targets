@@ -313,10 +313,10 @@
     <ItemGroup>
       <!--<_ElectronFiles Include="$(ElectronIntermediatePackageJson)" />-->
       <_ElectronFiles Include="$(ElectronSplashScreen)"  Condition="'$(ElectronSplashScreen)'!=''" />
-      <_ElectronIconDirectories Include="$(ElectronIcon)"
-                                Condition="'$(ElectronIcon)'!='' AND Exists('$(ElectronIcon)') AND $([System.IO.Directory]::Exists('$(ElectronIcon)') )" />
       <_ElectronFiles Include="$(ElectronIcon)"
                       Condition="'$(ElectronIcon)'!='' AND ( !Exists('$(ElectronIcon)') OR !$([System.IO.Directory]::Exists('$(ElectronIcon)') ) )" />
+      <_ElectronIconDirectoryFiles Include="$(ElectronIcon)\**\*"
+                                   Condition="'$(ElectronIcon)'!='' AND Exists('$(ElectronIcon)') AND $([System.IO.Directory]::Exists('$(ElectronIcon)') )" />
     </ItemGroup>
 
     <ItemGroup>
@@ -331,14 +331,6 @@
       <_ElectronFilesToCopy Include="@(_ElectronFiles->'%(FullPath)')" />
     </ItemGroup>
 
-    <ItemGroup>
-      <_ElectronIconDirectoryFiles Include="@(_ElectronIconDirectories->'%(FullPath)\**\*')" />
-      <_ElectronIconDirectoryFiles Remove="@(_ElectronIconDirectoryFiles)" Condition="$([System.IO.Directory]::Exists('%(Identity)'))" />
-      <_ElectronIconDirectoryFiles Update="@(_ElectronIconDirectoryFiles)">
-        <ElectronIconRelativePath>$([System.String]::Copy('%(Identity)').Replace('$([MSBuild]::EnsureTrailingSlash(%(_ElectronIconDirectories.FullPath)))', ''))</ElectronIconRelativePath>
-      </_ElectronIconDirectoryFiles>
-    </ItemGroup>
-
     <Message Importance="High" Text="_ElectronFilesToCopy: @(_ElectronFilesToCopy)" />
     <Message Importance="High" Text="_ElectronIconDirectoryFiles: @(_ElectronIconDirectoryFiles)" />
 
@@ -348,7 +340,7 @@
       </_ElectronFilesToCopyWithTargetPath>
 
       <_ElectronFilesToCopyWithTargetPath Include="@(_ElectronIconDirectoryFiles)">
-        <TargetPath>$(ElectronDirName)\$(ElectronIconFileName)\%(ElectronIconRelativePath)</TargetPath>
+        <TargetPath>$(ElectronDirName)\$(ElectronIconFileName)\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
       </_ElectronFilesToCopyWithTargetPath>
     </ItemGroup>
 
