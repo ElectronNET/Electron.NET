@@ -216,14 +216,16 @@
 
             var webPort = ElectronNetRuntime.AspNetWebPort ?? 0;
 
-            // check for the content folder if its exists in base director otherwise no need to include
-            // It was used before because we are publishing the project which copies everything to bin folder and contentroot wwwroot was folder there.
-            // now we have implemented the live reload if app is run using /watch then we need to use the default project path.
+            // In packaged mode, static content is deployed alongside the app binaries, so we must
+            // point content root to the process base directory. In unpackaged/watch scenarios we
+            // keep the default project content root to preserve live reload behavior.
+            var isPackagedStartup = ElectronNetRuntime.StartupMethod == StartupMethod.PackagedElectronFirst ||
+                ElectronNetRuntime.StartupMethod == StartupMethod.PackagedDotnetFirst;
 
             // For port 0 (dynamic port assignment), Kestrel requires binding to specific IP (127.0.0.1) not localhost
             var host = webPort == 0 ? "127.0.0.1" : "localhost";
 
-            if (Directory.Exists($"{AppDomain.CurrentDomain.BaseDirectory}\\wwwroot"))
+            if (isPackagedStartup)
             {
                 builder = builder.UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                     .UseUrls($"http://{host}:{webPort}");

@@ -3,6 +3,11 @@
 ## ElectronNET.Core
 
 - Fixed token param being appended to external URLs (#1075)
+- Fixed startup mode discriminator in case of existing `wwwroot` (#1050)
+- Fixed CA1416 on ASP.NET project (#1091) @epsnm
+- Fixed loading issue in plain Visual Studio (#1084) @epsnm
+- Fixed bloated ASAR file (#1080) @epsnm
+- Improved selection of runtime identifier (#1081) @epsnm
 - Added more variants for `UseElectron` (#1076) @AeonSake
 
 # 0.5.1
