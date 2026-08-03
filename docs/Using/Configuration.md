@@ -70,6 +70,12 @@ Since electron builder still expects a `package.json` file to exist, ElectronNET
 }
 ```
 
+### App Icon Path
+
+The `ElectronIcon` property supports classic icon files (such as `.ico` and `.icns`) and modern macOS `.icon` app icon packages.
+
+For `.icon`, provide the folder path (for example `Assets/MyApp.icon`). During build/publish, Electron.NET copies the full directory into the Electron output so `electron-builder.json` can reference it (for example `"mac": { "icon": "MyApp.icon" }`).
+
 ### Node.js Integration
 
 Electron.NET requires Node.js integration to be enabled for IPC to function. If you are not using the IPC functionality you can disable Node.js integration like so:

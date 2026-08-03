@@ -572,7 +572,7 @@
 
   <StringProperty Name="ElectronIcon"
                   DisplayName="App Icon"
-                  Description="Choose a ICO file to be used as application icon"
+                  Description="Choose an icon path for the app (e.g. .ico, .icns, or modern macOS .icon folder)"
                   Subtype="File"
                   Category="General">
       <StringProperty.DataSource>
@@ -581,7 +581,7 @@
       <StringProperty.ValueEditors>
           <ValueEditor EditorType="FilePath">
               <ValueEditor.Metadata>
-                  <NameValuePair Name="FileTypeFilter" Value="Icon files (*.ico)|*.ico|All files (*.*)|*.*" />
+                <NameValuePair Name="FileTypeFilter" Value="Icon files (*.ico,*.icns)|*.ico;*.icns|All files (*.*)|*.*" />
               </ValueEditor.Metadata>
           </ValueEditor>
       </StringProperty.ValueEditors>

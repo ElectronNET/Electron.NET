@@ -9,6 +9,7 @@
 - Fixed bloated ASAR file (#1080) @epsnm
 - Improved selection of runtime identifier (#1081) @epsnm
 - Added more variants for `UseElectron` (#1076) @AeonSake
+- Added support for modern MacOS app icon (#1047)
 
 # 0.5.1
 
