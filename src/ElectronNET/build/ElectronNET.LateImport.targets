@@ -269,7 +269,7 @@
        node_modules is missing. Skipped in committed-JS mode and at design time. -->
   <Target Name="ElectronRestoreHostHookDependencies"
           BeforeTargets="CompileTypeScriptWithTSConfig;CompileTypeScript"
-          Condition="'@(ElectronCustomHookTsFiles->Count())' &gt; 1 AND Exists('$(MSBuildProjectDirectory)\ElectronHostHook\package.json') AND '$(TypeScriptCompileBlocked)' != 'true' AND '$(DesignTimeBuild)' != 'true'"
+          Condition="'@(ElectronCustomHookTsFiles->Count())' &gt; 0 AND Exists('$(MSBuildProjectDirectory)\ElectronHostHook\package.json') AND '$(TypeScriptCompileBlocked)' != 'true' AND '$(DesignTimeBuild)' != 'true'"
           Inputs="$(MSBuildProjectDirectory)\ElectronHostHook\package.json"
           Outputs="$(MSBuildProjectDirectory)\ElectronHostHook\node_modules\.package-lock.json">
 
