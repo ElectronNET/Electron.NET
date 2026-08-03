@@ -4,11 +4,11 @@
   <PropertyGroup Label="ElectronNetCommon">
     <ElectronVersion>30.4.0</ElectronVersion>
     <ElectronBuilderVersion>26.0</ElectronBuilderVersion>
-    <!-- Ensure runtime identifier can be overloaded -->
-    <ElectronRuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''" />
-    <!-- Using dotnet cli, itself builded with core runtime, we can access a self contained property with the runtime identifier -->
+    <!-- Allow ElectronRuntimeIdentifier to be overridden (explicitly or via RuntimeIdentifier) -->
+    <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</ElectronRuntimeIdentifier>
+    <!-- When using the dotnet CLI (Core MSBuild), infer the current RID as a default -->
     <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Core'">$([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)</ElectronRuntimeIdentifier>
-    <!-- Otherwhise Full target framework is only available on Windows systems -->
+    <!-- Otherwise, Full MSBuild runs only on Windows, so infer a Windows RID from OSArchitecture -->
     <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Full'">win-$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLower())</ElectronRuntimeIdentifier>
     <ElectronSingleInstance>true</ElectronSingleInstance>
     <ElectronSplashScreen></ElectronSplashScreen>
