@@ -255,7 +255,10 @@ export = (socket: Socket, app: Electron.App) => {
       window = app["mainWindow"];
       if (window) {
         window.reload();
-        windows.push(window);
+        synchronizeWindowRegistry();
+        if (!windows.some((entry) => tryGetWindowId(entry) === window.id)) {
+          windows.push(window);
+        }
         electronSocket.emit("BrowserWindowCreated", window.id);
         return;
       }
@@ -283,21 +286,9 @@ export = (socket: Socket, app: Electron.App) => {
 
     lastOptions = options;
 
-    window.on("closed", (sender) => {
-      for (let index = 0; index < windows.length; index++) {
-        const windowItem = windows[index];
-        try {
-          windowItem.id;
-        } catch (error) {
-          if (error.message === "Object has been destroyed") {
-            windows.splice(index, 1);
-
-            const ids = [];
-            windows.forEach((x) => ids.push(x.id));
-            electronSocket.emit("BrowserWindowClosed", ids);
-          }
-        }
-      }
+    window.on("closed", () => {
+      synchronizeWindowRegistry();
+      emitBrowserWindowClosed();
     });
 
     app.on("activate", () => {
@@ -907,11 +898,57 @@ export = (socket: Socket, app: Electron.App) => {
   });
 
   function getWindowById(id: number): Electron.BrowserWindow {
+    const runtimeWindow = BrowserWindow.fromId(id);
+    if (runtimeWindow) {
+      return runtimeWindow;
+    }
+
+    synchronizeWindowRegistry();
+
     for (let index = 0; index < windows.length; index++) {
       const element = windows[index];
-      if (element.id === id) {
+      if (tryGetWindowId(element) === id) {
         return element;
       }
     }
+
+    throw new Error(`BrowserWindow with id '${id}' was not found.`);
+  }
+
+  function tryGetWindowId(element: Electron.BrowserWindow): number | null {
+    try {
+      return element.id;
+    } catch {
+      return null;
+    }
+  }
+
+  function synchronizeWindowRegistry(): void {
+    const runtimeWindows = BrowserWindow.getAllWindows();
+    const runtimeWindowIds = new Set(runtimeWindows.map((entry) => entry.id));
+
+    for (let index = windows.length - 1; index >= 0; index--) {
+      const windowId = tryGetWindowId(windows[index]);
+      if (windowId === null || !runtimeWindowIds.has(windowId)) {
+        windows.splice(index, 1);
+      }
+    }
+
+    readyToShowWindowsIds = readyToShowWindowsIds.filter((entryId) =>
+      runtimeWindowIds.has(entryId),
+    );
+  }
+
+  function emitBrowserWindowClosed(): void {
+    const ids: number[] = [];
+
+    for (const entry of windows) {
+      const windowId = tryGetWindowId(entry);
+      if (windowId !== null) {
+        ids.push(windowId);
+      }
+    }
+
+    electronSocket.emit("BrowserWindowClosed", ids);
   }
 };

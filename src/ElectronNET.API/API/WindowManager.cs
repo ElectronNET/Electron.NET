@@ -19,6 +19,7 @@ namespace ElectronNET.API
 
         internal WindowManager()
         {
+            EnsureBrowserWindowClosedSubscription();
         }
 
         internal static WindowManager Instance
@@ -106,17 +107,6 @@ namespace ElectronNET.API
                 tcs.SetResult(browserWindow);
             });
 
-            BridgeConnector.Socket.Once<int[]>("BrowserWindowClosed", (ids) =>
-            {
-                for (int index = 0; index < _browserWindows.Count; index++)
-                {
-                    if (!ids.Contains(_browserWindows[index].Id))
-                    {
-                        _browserWindows.RemoveAt(index);
-                    }
-                }
-            });
-
             if (loadUrl.Equals("http://localhost", StringComparison.OrdinalIgnoreCase) && ElectronNetRuntime.AspNetWebPort.HasValue)
             {
                 loadUrl = $"{loadUrl}:{ElectronNetRuntime.AspNetWebPort}";
@@ -147,6 +137,40 @@ namespace ElectronNET.API
             }
 
             return await tcs.Task.ConfigureAwait(false);
+        }
+
+        private readonly object _browserWindowSubscriptionSync = new();
+        private bool _browserWindowClosedSubscribed;
+
+        private void EnsureBrowserWindowClosedSubscription()
+        {
+            if (_browserWindowClosedSubscribed)
+            {
+                return;
+            }
+
+            lock (_browserWindowSubscriptionSync)
+            {
+                if (_browserWindowClosedSubscribed)
+                {
+                    return;
+                }
+
+                BridgeConnector.Socket.On<int[]>("BrowserWindowClosed", HandleBrowserWindowClosed);
+                _browserWindowClosedSubscribed = true;
+            }
+        }
+
+        private void HandleBrowserWindowClosed(int[] ids)
+        {
+            if (ids == null || ids.Length == 0)
+            {
+                _browserWindows.Clear();
+                return;
+            }
+
+            var existingIds = ids.ToHashSet();
+            _browserWindows.RemoveAll(window => !existingIds.Contains(window.Id));
         }
 
         private bool IsWindows10()
