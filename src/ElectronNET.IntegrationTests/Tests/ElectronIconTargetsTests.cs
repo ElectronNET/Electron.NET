@@ -27,16 +27,17 @@ public class ElectronIconTargetsTests
             await WriteMinimalCsprojAsync(tempDir);
 
             var (exitCode, output) = await RunDotnetMsBuildAsync(tempDir, "DumpElectronIconCopyItems");
+            var normalizedOutput = NormalizePathSeparators(output);
 
             exitCode.Should().Be(0,
                 $"MSBuild target evaluation must succeed. Full output:\n{output}");
 
-            output.Should().Contain(
-                @".electron\MyApp.icon\manifest.json",
+            normalizedOutput.Should().Contain(
+                ".electron/MyApp.icon/manifest.json",
                 $"the icon package root file must be mapped into .electron/MyApp.icon. Full output:\n{output}");
 
-            output.Should().Contain(
-                @".electron\MyApp.icon\layers\foreground.png",
+            normalizedOutput.Should().Contain(
+                ".electron/MyApp.icon/layers/foreground.png",
                 $"nested files in .icon package must preserve structure in .electron output. Full output:\n{output}");
         }
         finally
@@ -93,7 +94,7 @@ public class ElectronIconTargetsTests
               <Import Project="{{propsPathEscaped}}" />
 
                             <PropertyGroup Label="ElectronNetCommon">
-                                <ElectronIcon>Assets\MyApp.icon</ElectronIcon>
+                                <ElectronIcon>Assets/MyApp.icon</ElectronIcon>
                             </PropertyGroup>
 
               <Import Project="{{targetsPathEscaped}}" />
@@ -123,5 +124,10 @@ public class ElectronIconTargetsTests
         await process.WaitForExitAsync();
 
         return (process.ExitCode, stdOut + stdErr);
+    }
+
+    private static string NormalizePathSeparators(string value)
+    {
+        return value.Replace('\\', '/');
     }
 }
