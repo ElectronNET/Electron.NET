@@ -653,10 +653,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
     </PropertyGroup>
 
     <PropertyGroup>
-      <_NpxCmd>npx electron-builder --config=./$(ElectronBuilderJson)</_NpxCmd>
-      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronPlatform)</_NpxCmd>
-      <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">$(_NpxCmd) --$(ElectronArch)</_NpxCmd>
-      <_NpxCmd>$(_NpxCmd) -c.electronVersion=$(ElectronVersion) -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
+      <_NpxCmd>npx electron-builder -c.$(ElectronPlatform).defaultArch=$(ElectronArch) --config=./$(ElectronBuilderJson) -c.electronVersion=$(ElectronVersion) --$(ElectronPlatform) --$(ElectronArch)  -c.directories.output &quot;$(ElectronPublishUrlFullPath)&quot; $(ElectronPaParams)</_NpxCmd>
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 
