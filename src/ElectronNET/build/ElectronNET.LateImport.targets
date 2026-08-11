@@ -52,7 +52,7 @@
 
   <!-- Targets -->
 
-  <Target Name="ElectronBeforeClean" AfterTargets="BeforeClean" DependsOnTargets="ElectronResolvePaths">
+  <Target Name="ElectronBeforeClean" AfterTargets="BeforeClean" DependsOnTargets="ElectronSetPaths">
     <ItemGroup>
       <Clean Include="$(ElectronOutDir)**" />
     </ItemGroup>
@@ -60,7 +60,7 @@
     <!--<Message Text="ElectronBeforeClean - Clean Files: @(Clean)" Importance="High" />-->
   </Target>
 
-  <Target Name="ElectronClean" AfterTargets="CoreClean" DependsOnTargets="ElectronResolvePaths">
+  <Target Name="ElectronClean" AfterTargets="CoreClean" DependsOnTargets="ElectronSetPaths">
 
     <RemoveDir Directories="$(ElectronOutDir)" />
 
