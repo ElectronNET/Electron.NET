@@ -18,6 +18,7 @@
     <FileVersion>$(Version)</FileVersion>
     <Version>$(Version)$(VersionPostFix)</Version>
     <InformationalVersion>$(Version)</InformationalVersion>
+    <ElectronNetTargetFrameworks Condition="'$(ElectronNetTargetFrameworks)' == ''">net6.0;net8.0;net10.0</ElectronNetTargetFrameworks>
   </PropertyGroup>
 </Project>
 
