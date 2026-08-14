@@ -5,4 +5,8 @@
   <!-- Uncomment to include parent Directory.Build.props file -->
   <!--<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />-->
 
+  <PropertyGroup>
+    <ElectronNetTargetFrameworks Condition=" '$(ElectronNetTargetFrameworks)' != '' ">$(ElectronNetTargetFrameworks)</ElectronNetTargetFrameworks>
+  </PropertyGroup>
+
 </Project>
