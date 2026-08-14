@@ -5,8 +5,7 @@
   <!-- Uncomment to include parent Directory.Build.props file -->
   <!--<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />-->
 
-  <PropertyGroup>
-    <ElectronNetTargetFrameworks Condition=" '$(ElectronNetTargetFrameworks)' != '' ">$(ElectronNetTargetFrameworks)</ElectronNetTargetFrameworks>
-  </PropertyGroup>
+  <!-- Only import specific project related MSBuild file -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('ElectronNet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 </Project>
