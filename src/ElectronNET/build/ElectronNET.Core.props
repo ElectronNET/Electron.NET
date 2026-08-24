@@ -14,9 +14,9 @@
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
     <PackageIcon></PackageIcon>
-    <ElectronPackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
+    <ElectronPackageId Condition="'$(ElectronPackageId)' == ''">$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
     <ElectronBuilderJson>electron-builder.json</ElectronBuilderJson>
-    <Title>$(MSBuildProjectName)</Title>
+    <Title Condition="'$(Title)' == ''">$(MSBuildProjectName)</Title>
   </PropertyGroup>
 
   <PropertyGroup>

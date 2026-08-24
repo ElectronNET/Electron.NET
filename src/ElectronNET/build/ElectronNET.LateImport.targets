@@ -39,6 +39,11 @@
     <ElectronCustomHookTsFiles Include="ElectronHostHook\*.ts" />
   </ItemGroup>
 
+  <!-- Skip Exec commands configuration (default: false) -->
+  <PropertyGroup>
+    <ElectronSkipExecCommands Condition="'$(ElectronSkipExecCommands)' == ''">false</ElectronSkipExecCommands>
+  </PropertyGroup>
+
   <!-- Create variables for our output paths -->
   <PropertyGroup>
     <ElectronSourceFilesPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..\ElectronNET.Host'))</ElectronSourceFilesPath>
@@ -151,10 +156,12 @@
           BeforeTargets="AssignTargetPaths"
           DependsOnTargets="ElectronResolvePaths">
 
+    <!-- ElectronPublishDir allows overriding the intermediate publish directory -->
     <PropertyGroup Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
       <_NonIntermediatePublishDir>$(PublishDir)</_NonIntermediatePublishDir>
       <PublishUrl>$(PublishDir)</PublishUrl>
-      <PublishDir>$(IntermediateOutputPath)PubTmp\</PublishDir>
+      <PublishDir Condition="'$(ElectronPublishDir)' != ''">$(ElectronPublishDir)</PublishDir>
+      <PublishDir Condition="'$(ElectronPublishDir)' == ''">$(IntermediateOutputPath)PubTmp\</PublishDir>
     </PropertyGroup>
 
     <RemoveDir Directories="$(PublishDir);$(PublishUrl)" Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
@@ -385,7 +392,7 @@
       <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64' OR '$(ElectronRuntimeIdentifier)' == 'win-x86' OR '$(ElectronRuntimeIdentifier)' == 'win-arm64'">win</ElectronPlatform>
       <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'linux-x64' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm' OR '$(ElectronRuntimeIdentifier)' == 'linux-arm64'">linux</ElectronPlatform>
       <ElectronPlatform Condition="'$(ElectronRuntimeIdentifier)' == 'osx-x64' OR '$(ElectronRuntimeIdentifier)' == 'osx-arm64'">mac</ElectronPlatform>
-     
+
       <!-- npm uses different OS names than Electron -->
       <NpmOs Condition="'$(ElectronPlatform)' == 'win'">win32</NpmOs>
       <NpmOs Condition="'$(ElectronPlatform)' == 'linux'">linux</NpmOs>
@@ -394,7 +401,7 @@
       <!-- npm CPU is same as ElectronArch except for linux-arm -->
       <NpmCpu>$(ElectronArch)</NpmCpu>
       <NpmCpu Condition="'$(ElectronRuntimeIdentifier)' == 'linux-arm'">arm</NpmCpu>
-     
+
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Windows'))">win</_CurrentOSPlatform>
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux</_CurrentOSPlatform>
       <_CurrentOSPlatform Condition="$([MSBuild]::IsOSPlatform('OSX'))">mac</_CurrentOSPlatform>
@@ -445,7 +452,7 @@
 
     <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="@(_CopiedFiles->Count()) > 0" />
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(_CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(_CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
@@ -629,7 +636,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
@@ -657,7 +664,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 

@@ -64,11 +64,20 @@
         private static bool? CheckUnpackaged2()
         {
             var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+
+            // Electron-First packaging mode: the .NET binary is in resources/bin.
             if (dir.Name == "bin" && dir.Parent?.Name == "resources")
             {
                 return false;
             }
 
+            // DotNet-First packaging mode: the Electron host is in the electron subdirectory.
+            if (dir.GetDirectories().Any(e => e.Name == "electron"))
+            {
+                return false;
+            }
+
+            // Development mode: the .electron subdirectory exists.
             if (dir.GetDirectories().Any(e => e.Name == ".electron"))
             {
                 return true;
