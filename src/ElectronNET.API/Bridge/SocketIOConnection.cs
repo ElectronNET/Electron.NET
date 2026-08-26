@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
-using SocketIO.Serializer.SystemTextJson;
+using SocketIOClient;
 using SocketIO = SocketIOClient.SocketIO;
 using SocketIOOptions = SocketIOClient.SocketIOOptions;
 
@@ -25,9 +25,7 @@ internal class SocketIOConnection : ISocketConnection
                 ["authorization"] = authorization
             },
         };
-        _socket = new SocketIO(uri, opts);
-        _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
-        // Use default System.Text.Json serializer from SocketIOClient.
+        _socket = new SocketIO(new Uri(uri), opts, services => services.AddSystemTextJson(ElectronJson.Options));
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.
     }
 
@@ -62,7 +60,11 @@ internal class SocketIOConnection : ISocketConnection
 
         lock (_lockObj)
         {
-            _socket.On(eventName, _ => { Task.Run(action); });
+            _socket.On(eventName, _ =>
+            {
+                Task.Run(action);
+                return Task.CompletedTask;
+            });
         }
     }
 
@@ -72,10 +74,11 @@ internal class SocketIOConnection : ISocketConnection
 
         lock (_lockObj)
         {
-            _socket.On(eventName, response =>
+            _socket.On(eventName, ctx =>
             {
-                var value = response.GetValue<T>();
+                var value = ctx.GetValue<T>(0);
                 Task.Run(() => action(value));
+                return Task.CompletedTask;
             });
         }
     }
@@ -90,6 +93,7 @@ internal class SocketIOConnection : ISocketConnection
             {
                 this.Off(eventName);
                 Task.Run(action);
+                return Task.CompletedTask;
             });
         }
     }
@@ -100,10 +104,11 @@ internal class SocketIOConnection : ISocketConnection
 
         lock (_lockObj)
         {
-            _socket.On(eventName, (socketIoResponse) =>
+            _socket.On(eventName, ctx =>
             {
                 this.Off(eventName);
-                Task.Run(() => action(socketIoResponse.GetValue<T>()));
+                Task.Run(() => action(ctx.GetValue<T>(0)));
+                return Task.CompletedTask;
             });
         }
     }
@@ -117,7 +122,9 @@ internal class SocketIOConnection : ISocketConnection
 
         lock (_lockObj)
         {
-            _socket.Off(eventName);
+            // SocketIOClient v4 has no Off(eventName) API; On() overwrites the
+            // handler dictionary entry, so registering a no-op emulates removal.
+            _socket.On(eventName, _ => Task.CompletedTask);
         }
     }
 
