@@ -1,9 +1,11 @@
 ﻿namespace ElectronNET.API
 {
+    using System;
+    using ElectronNET.Runtime;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class ServiceCollectionExtensions
     {
@@ -29,5 +31,15 @@
                 .AddSingleton(_ => PowerMonitor.Instance)
                 .AddSingleton(_ => NativeTheme.Instance)
                 .AddSingleton(_ => Dock.Instance);
+
+        /// <summary>
+        /// Lets the app customize the underlying SocketIOClient connection used to bridge to
+        /// Electron - e.g. register a custom <see cref="System.Net.Http.HttpClient"/> for
+        /// retries/observability, or add logging - without forking Electron.NET. Can be called
+        /// multiple times; contributions combine instead of overwriting each other. Call this on
+        /// the same <see cref="IServiceCollection"/> passed to <c>UseElectron(...)</c>.
+        /// </summary>
+        public static IServiceCollection ConfigureElectronSocketIO(this IServiceCollection services, Action<IServiceCollection> configure)
+            => services.Configure<ElectronSocketIOOptions>(options => options.ConfigureServices += configure);
     }
 }

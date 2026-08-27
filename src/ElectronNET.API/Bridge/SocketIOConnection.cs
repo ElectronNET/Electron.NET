@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using SocketIOClient;
 using SocketIO = SocketIOClient.SocketIO;
 using SocketIOOptions = SocketIOClient.SocketIOOptions;
@@ -18,7 +19,7 @@ internal class SocketIOConnection : ISocketConnection
     private readonly CancellationTokenSource _connectCts = new CancellationTokenSource();
     private bool _isDisposed;
 
-    public SocketIOConnection(string uri, string authorization)
+    public SocketIOConnection(string uri, string authorization, Action<IServiceCollection> configureSocketIO = null)
     {
         var opts = new SocketIOOptions
         {
@@ -35,7 +36,11 @@ internal class SocketIOConnection : ISocketConnection
                 ["authorization"] = authorization
             };
         }
-        _socket = new SocketIO(new Uri(uri), opts, services => services.AddSystemTextJson(ElectronJson.Options));
+        _socket = new SocketIO(new Uri(uri), opts, services =>
+        {
+            services.AddSystemTextJson(ElectronJson.Options);
+            configureSocketIO?.Invoke(services);
+        });
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.
     }
 

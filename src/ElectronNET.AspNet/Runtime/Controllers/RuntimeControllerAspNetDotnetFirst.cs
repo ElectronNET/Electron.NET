@@ -9,12 +9,13 @@
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
     using ElectronNET.Runtime.Services.ElectronProcess;
+    using ElectronNET.Runtime.Services.SocketBridge;
 
     internal class RuntimeControllerAspNetDotnetFirst : RuntimeControllerAspNetBase
     {
         private ElectronProcessBase electronProcess;
 
-        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, callbackResolver, authenticationService)
+        public RuntimeControllerAspNetDotnetFirst(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, ISocketBridgeServiceFactory socketBridgeFactory, IElectronAuthenticationService authenticationService = null) : base(server, aspNetLifetimeAdapter, callbackResolver, socketBridgeFactory, authenticationService)
         {
         }
 

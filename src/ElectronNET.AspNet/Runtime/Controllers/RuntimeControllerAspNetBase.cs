@@ -19,13 +19,15 @@
         private readonly AspNetLifetimeAdapter aspNetLifetimeAdapter;
         private readonly IAppReadyCallbackResolver callbackResolver;
         private readonly IElectronAuthenticationService authenticationService;
+        private readonly ISocketBridgeServiceFactory socketBridgeFactory;
         private SocketBridgeService socketBridge;
 
-        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, IElectronAuthenticationService authenticationService = null)
+        protected RuntimeControllerAspNetBase(IServer server, AspNetLifetimeAdapter aspNetLifetimeAdapter, IAppReadyCallbackResolver callbackResolver, ISocketBridgeServiceFactory socketBridgeFactory, IElectronAuthenticationService authenticationService = null)
         {
             this.server = server;
             this.aspNetLifetimeAdapter = aspNetLifetimeAdapter;
             this.callbackResolver = callbackResolver;
+            this.socketBridgeFactory = socketBridgeFactory;
             this.authenticationService = authenticationService;
             this.aspNetLifetimeAdapter.Ready += this.AspNetLifetimeAdapter_Ready;
             this.aspNetLifetimeAdapter.Stopping += this.AspNetLifetimeAdapter_Stopping;
@@ -51,7 +53,7 @@
 
         protected void CreateSocketBridge(int port, string authorization)
         {
-            this.socketBridge = new SocketBridgeService(port, authorization);
+            this.socketBridge = this.socketBridgeFactory.Create(port, authorization);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

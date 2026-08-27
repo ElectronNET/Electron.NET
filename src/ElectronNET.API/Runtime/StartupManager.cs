@@ -8,6 +8,8 @@
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
+    using ElectronNET.Runtime.Services.SocketBridge;
+    using Microsoft.Extensions.DependencyInjection;
 
     internal class StartupManager
     {
@@ -37,14 +39,19 @@
 
         private RuntimeControllerBase CreateRuntimeController()
         {
+            var services = new ServiceCollection();
+            services.AddSingleton<ISocketBridgeServiceFactory>(
+                new SocketBridgeServiceFactory(ElectronNetRuntime.SocketIOConfiguration));
+            using var provider = services.BuildServiceProvider();
+
             switch (ElectronNetRuntime.StartupMethod)
             {
                 case StartupMethod.PackagedDotnetFirst:
                 case StartupMethod.UnpackedDotnetFirst:
-                    return new RuntimeControllerDotNetFirst();
+                    return ActivatorUtilities.CreateInstance<RuntimeControllerDotNetFirst>(provider);
                 case StartupMethod.PackagedElectronFirst:
                 case StartupMethod.UnpackedElectronFirst:
-                    return new RuntimeControllerElectronFirst();
+                    return ActivatorUtilities.CreateInstance<RuntimeControllerElectronFirst>(provider);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

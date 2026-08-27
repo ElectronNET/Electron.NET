@@ -9,9 +9,11 @@
     using ElectronNET.Runtime;
     using ElectronNET.Runtime.Data;
     using ElectronNET.Runtime.Helpers;
+    using ElectronNET.Runtime.Services.SocketBridge;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Provides extension methods for <see cref="IWebHostBuilder"/> to enable Electron.NET
@@ -239,6 +241,8 @@
             {
                 services.AddTransient<IStartupFilter, ServerReadyStartupFilter>();
                 services.AddSingleton<AspNetLifetimeAdapter>();
+                services.AddSingleton<ISocketBridgeServiceFactory>(sp =>
+                    new SocketBridgeServiceFactory(sp.GetService<IOptions<ElectronSocketIOOptions>>()?.Value.ConfigureServices));
 
                 switch (ElectronNetRuntime.StartupMethod)
                 {

@@ -4,6 +4,7 @@
     using ElectronNET.Runtime;
     using ElectronNET.Runtime.Controllers;
     using ElectronNET.Runtime.Data;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
@@ -11,6 +12,8 @@
     public static class ElectronNetRuntime
     {
         internal static StartupManager StartupManager;
+
+        private static readonly ElectronSocketIOOptions SocketIOOptions = new ElectronSocketIOOptions();
 
         internal const int DefaultSocketPort = 8000;
         internal const int DefaultWebPort = 8001;
@@ -45,10 +48,25 @@
 
         public static IElectronNetRuntimeController RuntimeController => RuntimeControllerCore;
 
+        /// <summary>
+        /// Lets a plain (non ASP.NET Core hosted) app customize the underlying SocketIOClient
+        /// connection - e.g. register a custom <see cref="System.Net.Http.HttpClient"/> for
+        /// retries/observability, or add logging. Must be called before the runtime controller is
+        /// started (ideally at the very top of Main, since first touching this class triggers
+        /// eager bootstrap). For ASP.NET Core apps, use IServiceCollection.ConfigureElectronSocketIO(...)
+        /// instead.
+        /// </summary>
+        public static void ConfigureSocketIO(Action<IServiceCollection> configure)
+        {
+            SocketIOOptions.ConfigureServices += configure;
+        }
+
         // The below properties are non-public
         internal static RuntimeControllerBase RuntimeControllerCore { get; set; }
 
         internal static int? ElectronProcessId { get; set; }
+
+        internal static Action<IServiceCollection> SocketIOConfiguration => SocketIOOptions.ConfigureServices;
 
         internal static ISocketConnection GetSocket()
         {

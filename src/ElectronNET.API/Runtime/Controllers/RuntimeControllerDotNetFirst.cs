@@ -11,11 +11,13 @@
 
     internal class RuntimeControllerDotNetFirst : RuntimeControllerBase
     {
+        private readonly ISocketBridgeServiceFactory socketBridgeFactory;
         private ElectronProcessBase electronProcess;
         private SocketBridgeService socketBridge;
 
-        public RuntimeControllerDotNetFirst()
+        public RuntimeControllerDotNetFirst(ISocketBridgeServiceFactory socketBridgeFactory)
         {
+            this.socketBridgeFactory = socketBridgeFactory;
         }
 
         internal override ISocketConnection Socket
@@ -59,7 +61,7 @@
             var port = ElectronNetRuntime.ElectronSocketPort.Value;
             var token = ElectronNetRuntime.ElectronAuthToken;
             this.TransitionState(LifetimeState.Started);
-            this.socketBridge = new SocketBridgeService(port, token);
+            this.socketBridge = this.socketBridgeFactory.Create(port, token);
             this.socketBridge.Ready += this.SocketBridge_Ready;
             this.socketBridge.Stopped += this.SocketBridge_Stopped;
             this.socketBridge.Start();

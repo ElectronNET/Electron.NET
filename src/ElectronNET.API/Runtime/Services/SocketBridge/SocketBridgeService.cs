@@ -2,6 +2,7 @@
 {
     using ElectronNET.API;
     using ElectronNET.Runtime.Data;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
 
@@ -10,12 +11,14 @@
         private readonly int socketPort;
         private readonly string authorization;
         private readonly string socketUrl;
+        private readonly Action<IServiceCollection> configureSocketIO;
         private SocketIOConnection socket;
 
-        public SocketBridgeService(int socketPort, string authorization)
+        public SocketBridgeService(int socketPort, string authorization, Action<IServiceCollection> configureSocketIO = null)
         {
             this.socketPort = socketPort;
             this.authorization = authorization;
+            this.configureSocketIO = configureSocketIO;
             this.socketUrl = $"http://localhost:{this.socketPort}";
         }
 
@@ -25,7 +28,7 @@
 
         protected override Task StartCore()
         {
-            this.socket = new SocketIOConnection(this.socketUrl, this.authorization);
+            this.socket = new SocketIOConnection(this.socketUrl, this.authorization, this.configureSocketIO);
             this.socket.BridgeConnected += this.Socket_BridgeConnected;
             this.socket.BridgeDisconnected += this.Socket_BridgeDisconnected;
             Task.Run(this.Connect);
