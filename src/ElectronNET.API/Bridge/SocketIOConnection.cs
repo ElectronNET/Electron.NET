@@ -4,11 +4,14 @@ namespace ElectronNET.API;
 
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using SocketIOClient;
+using SocketIOClient.Protocol.WebSocket;
 using SocketIO = SocketIOClient.SocketIO;
 using SocketIOOptions = SocketIOClient.SocketIOOptions;
 
@@ -39,9 +42,27 @@ internal class SocketIOConnection : ISocketConnection
         _socket = new SocketIO(new Uri(uri), opts, services =>
         {
             services.AddSystemTextJson(ElectronJson.Options);
+
+            // Electron.NET always connects to http://localhost:{port} - a system/corporate
+            // proxy is never meaningful here and can break the connection. Force "no proxy"
+            // by default; apps can still override via ConfigureElectronSocketIO if they
+            // genuinely need one (e.g. a local debugging proxy).
+            services.AddSingleton<IWebProxy, NoProxy>();
+            services.AddSingleton(sp => new WebSocketOptions { Proxy = sp.GetRequiredService<IWebProxy>() });
+            services.AddSingleton(_ => new HttpClient(new HttpClientHandler { UseProxy = false }));
+
             configureSocketIO?.Invoke(services);
         });
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.
+    }
+
+    private sealed class NoProxy : IWebProxy
+    {
+        public ICredentials Credentials { get; set; }
+
+        public Uri GetProxy(Uri destination) => destination;
+
+        public bool IsBypassed(Uri host) => true;
     }
 
     public event EventHandler BridgeDisconnected;
