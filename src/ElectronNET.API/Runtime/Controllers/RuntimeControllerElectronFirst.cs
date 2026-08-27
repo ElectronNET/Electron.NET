@@ -95,8 +95,7 @@
 
         protected override Task StopCore()
         {
-            this.socketBridge.Stop();
-            return Task.CompletedTask;
+            return this.socketBridge.Stop();
         }
     }
 }

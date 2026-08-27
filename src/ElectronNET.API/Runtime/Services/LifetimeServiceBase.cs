@@ -51,7 +51,10 @@
 
         public virtual async Task Stop()
         {
-            this.ValidateMaxState(LifetimeState.Ready);
+            if (this.state >= LifetimeState.Stopping)
+            {
+                return;
+            }
 
             await this.StopCore().ConfigureAwait(false);
 

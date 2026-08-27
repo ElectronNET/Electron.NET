@@ -4,6 +4,7 @@ namespace ElectronNET.API;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
 using SocketIOClient;
@@ -14,17 +15,26 @@ internal class SocketIOConnection : ISocketConnection
 {
     private readonly SocketIO _socket;
     private readonly object _lockObj = new object();
+    private readonly CancellationTokenSource _connectCts = new CancellationTokenSource();
     private bool _isDisposed;
 
     public SocketIOConnection(string uri, string authorization)
     {
-        var opts = string.IsNullOrEmpty(authorization) ? new SocketIOOptions() : new SocketIOOptions
+        var opts = new SocketIOOptions
         {
-            ExtraHeaders = new Dictionary<string, string>
+            Transport = SocketIOClient.Common.TransportProtocol.WebSocket,
+            ConnectionTimeout = TimeSpan.FromSeconds(10),
+            Reconnection = true,
+            ReconnectionAttempts = 5,
+            ReconnectionDelayMax = 2000,
+        };
+        if (!string.IsNullOrEmpty(authorization))
+        {
+            opts.ExtraHeaders = new Dictionary<string, string>
             {
                 ["authorization"] = authorization
-            },
-        };
+            };
+        }
         _socket = new SocketIO(new Uri(uri), opts, services => services.AddSystemTextJson(ElectronJson.Options));
         // Outgoing args are normalized to camelCase via SerializeArg in Emit.
     }
@@ -37,7 +47,9 @@ internal class SocketIOConnection : ISocketConnection
     {
         this.CheckDisposed();
 
-        _socket.OnError += (sender, e) => { Console.WriteLine($"BridgeConnector Error: {sender} {e}"); };
+        _socket.OnError += (sender, e) => { Console.Error.WriteLine($"BridgeConnector Error: {sender} {e}"); };
+
+        _socket.OnReconnectError += (sender, e) => { Console.Error.WriteLine($"BridgeConnector reconnect error: {sender} {e}"); };
 
         _socket.OnConnected += (_, _) =>
         {
@@ -51,7 +63,14 @@ internal class SocketIOConnection : ISocketConnection
             this.BridgeDisconnected?.Invoke(this, EventArgs.Empty);
         };
 
-        _socket.ConnectAsync().GetAwaiter().GetResult();
+        try
+        {
+            _socket.ConnectAsync(_connectCts.Token).GetAwaiter().GetResult();
+        }
+        catch (OperationCanceledException)
+        {
+            // Connection attempt was cancelled during shutdown; nothing to do.
+        }
     }
 
     public void On(string eventName, Action action)
@@ -148,7 +167,16 @@ internal class SocketIOConnection : ISocketConnection
         if (disposing)
         {
             _isDisposed = true;
-            _socket.Dispose();
+            _connectCts.Cancel();
+            try
+            {
+                _socket.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"SocketIOConnection: dispose error (ignored): {ex}");
+            }
+            _connectCts.Dispose();
         }
     }
 

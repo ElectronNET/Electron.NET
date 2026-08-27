@@ -41,10 +41,18 @@
 
         private void Connect()
         {
-            this.socket.Connect();
-            if (this.State < LifetimeState.Started)
+            try
             {
-                this.TransitionState(LifetimeState.Started);
+                this.socket.Connect();
+                if (this.State < LifetimeState.Started)
+                {
+                    this.TransitionState(LifetimeState.Started);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"SocketBridgeService: connect failed: {ex}");
+                this.TransitionState(LifetimeState.Stopped);
             }
         }
 

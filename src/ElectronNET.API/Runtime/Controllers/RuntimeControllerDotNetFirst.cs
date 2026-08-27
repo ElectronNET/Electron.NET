@@ -98,8 +98,7 @@
 
         protected override Task StopCore()
         {
-            this.electronProcess.Stop();
-            return Task.CompletedTask;
+            return this.electronProcess.Stop();
         }
     }
 }
