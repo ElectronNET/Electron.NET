@@ -499,7 +499,7 @@
             try
             {
                 // This shouldn't throw here, but the mono process implementation doesn't always behave as it should.
-                this.process.WaitForExit();
+                this.process.WaitForExit(1000);
             }
             catch (Exception ex)
             {
