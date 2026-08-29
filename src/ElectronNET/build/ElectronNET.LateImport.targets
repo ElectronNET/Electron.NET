@@ -450,13 +450,11 @@
 
     <!--<Message Importance="High" Text="ElectronConfigureApp: CopiedFiles - @(_CopiedFiles)" />-->
 
-    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="@(_CopiedFiles->Count()) > 0" />
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(_CopiedFiles->Count()) > 0" />
 
     <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(_CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
-
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
 
     <PropertyGroup>
       <_NpmCmd>node node_modules/electron/install.js</_NpmCmd>
@@ -465,13 +463,11 @@
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
-    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0" />
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="'$(ElectronSkipExecCommands)' != 'true' AND $(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0" />
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND $(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
-
-    <Message Importance="High" Text="Electron installation failed!" Condition="'$(ExecExitCode)' != '0'" />
 
     <!-- Fix up incorrect symlinks created by npm on Windows when targeting macOS -->
     <PropertyGroup>
@@ -610,8 +606,6 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron app dependency install failed!" Condition="'$(ExecExitCode)' != '0'" />
-
     <!-- Install electron-builder (the dev tool) into the publish root, which is the
          electron-builder projectDir (cwd). app metadata + runtime deps are read from
          app\ via directories.app (standard electron-builder two-package.json layout).
@@ -640,8 +634,6 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
-
     <!-- Transform ElectronPublishUrlFullPath to a wslpath if IsLinuxWsl is true -->
     <Exec Command="wsl wslpath '$(ElectronPublishUrlFullPath)'" ConsoleToMsBuild="true" Condition="'$(IsLinuxWsl)' == 'true'">
       <Output TaskParameter="ConsoleOutput" PropertyName="ElectronPublishUrlFullPath" />
@@ -668,7 +660,6 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
 
   </Target>
 
