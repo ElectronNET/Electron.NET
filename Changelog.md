@@ -1,3 +1,12 @@
+# 0.6.0
+
+## ElectronNET.Core
+
+- Updated dependencies
+- Fixed cross-compilation behavior on same platform (#1098) @epsnm
+- Fixed resolution of unrelated target (#1099) @epsnm
+- Added target framework customization (#1095) @epsnm
+
 # 0.5.2
 
 ## ElectronNET.Core
