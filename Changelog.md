@@ -3,6 +3,7 @@
 ## ElectronNET.Core
 
 - Updated dependencies
+- Fixed socket bridge connection when a system proxy is configured (#1105)
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm
 - Fixed resolution of unrelated target (#1099) @epsnm
 - Added target framework customization (#1095) @epsnm
