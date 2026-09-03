@@ -95,8 +95,24 @@
  </Target>
 
 
+  <!-- Resolved at execution time, so that a RuntimeIdentifier coming from the project file,
+       a publish profile or the CLI wins over the host RID. -->
+  <Target Name="ElectronResolveRuntimeIdentifier">
+
+    <PropertyGroup>
+      <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</ElectronRuntimeIdentifier>
+      <!-- When using the dotnet CLI (Core MSBuild), infer the current RID as a default -->
+      <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Core'">$([System.Runtime.InteropServices.RuntimeInformation]::RuntimeIdentifier)</ElectronRuntimeIdentifier>
+      <!-- Otherwise, Full MSBuild runs only on Windows, so infer a Windows RID from OSArchitecture -->
+      <ElectronRuntimeIdentifier Condition="'$(ElectronRuntimeIdentifier)' == '' AND '$(MSBuildRuntimeType)' == 'Full'">win-$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLower())</ElectronRuntimeIdentifier>
+    </PropertyGroup>
+
+    <Message Text="ElectronRuntimeIdentifier: $(ElectronRuntimeIdentifier)" Importance="High" />
+
+  </Target>
+
   <!-- This is also run at design time, each time when a property of the project is changed -->
-  <Target Name="ElectronCreatePackageJson" DependsOnTargets="ResolveProjectReferences;ElectronSetPaths">
+  <Target Name="ElectronCreatePackageJson" DependsOnTargets="ResolveProjectReferences;ElectronSetPaths;ElectronResolveRuntimeIdentifier">
 
     <Message Text="Creating package.json from template..." Importance="High" />
     <Message Text="OutDir: $(OutDir)" Importance="High" />
@@ -370,7 +386,7 @@
     <RemoveDir Directories="$(ElectronHookTargetModuleDir)" Condition="Exists($(ElectronHookTargetModuleDir))" />
   </Target>
 
-  <Target Name="ElectronCheckVersionMismatch">
+  <Target Name="ElectronCheckVersionMismatch" DependsOnTargets="ElectronResolveRuntimeIdentifier">
 
     <PropertyGroup>
       <ElectronArch Condition="'$(ElectronRuntimeIdentifier)' == 'win-x64'">x64</ElectronArch>
