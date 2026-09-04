@@ -131,6 +131,34 @@ public class WebContents : ApiBase
         remove => RemoveEvent(value, Id);
     }
 
+    /// <summary>
+    /// Emitted when media becomes audible or inaudible. The parameter is true if one or more
+    /// frames or child web contents are emitting audio.
+    /// </summary>
+    public event Action<bool> OnAudioStateChanged
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
+    /// <summary>
+    /// Emitted when media starts playing.
+    /// </summary>
+    public event Action OnMediaStartedPlaying
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
+    /// <summary>
+    /// Emitted when media is paused or done playing.
+    /// </summary>
+    public event Action OnMediaPaused
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
     internal WebContents(int id)
     {
         Id = id;
@@ -609,6 +637,22 @@ public class WebContents : ApiBase
     public void CenterSelection()
     {
         BridgeConnector.Socket.Emit("webContents-centerSelection", Id);
+    }
+
+    /// <summary>
+    /// Scrolls to the top of the current web page.
+    /// </summary>
+    public void ScrollToTop()
+    {
+        BridgeConnector.Socket.Emit("webContents-scrollToTop", Id);
+    }
+
+    /// <summary>
+    /// Scrolls to the bottom of the current web page.
+    /// </summary>
+    public void ScrollToBottom()
+    {
+        BridgeConnector.Socket.Emit("webContents-scrollToBottom", Id);
     }
 
     /// <summary>

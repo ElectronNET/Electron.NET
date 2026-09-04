@@ -17,6 +17,8 @@
 - Added `WebContents.InsertCSSAsync` and `WebContents.RemoveInsertedCSSAsync` for dynamic CSS (#956)
 - Added `WebContents` editing and selection APIs (undo, redo, cut, copy, paste, insert text, select, ...) (#956)
 - Added `WebContents.FindInPageAsync`, `WebContents.StopFindInPage` and the `OnFoundInPage` event (#956)
+- Added `WebContents` audio events `OnAudioStateChanged`, `OnMediaStartedPlaying` and `OnMediaPaused` (#956)
+- Added `WebContents.ScrollToTop` and `WebContents.ScrollToBottom` (#956)
 - Added target framework customization (#1095) @epsnm
 - Added configurable Electron root directory for custom packaging layouts (#1106) @DYH1319
 - Added ability for `custom_main.js` to modify command line switches (#1029) @AeonSake

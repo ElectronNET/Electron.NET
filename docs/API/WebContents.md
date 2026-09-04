@@ -162,6 +162,18 @@ Loads the given HTML file, relative to the root of the application.
 - `filePath` - Path to the HTML file
 - `options` - Optional `Query`, `Search` and `Hash` parts of the resulting URL
 
+#### 🧊 `void SetAudioMuted(bool muted)`
+Mutes or unmutes the audio on the current web page.
+
+#### 🧊 `Task<bool> IsAudioMutedAsync()`
+Whether this page has been muted.
+
+#### 🧊 `Task<bool> IsCurrentlyAudibleAsync()`
+Whether audio is currently playing.
+
+#### 🧊 `Task<string> GetUserAgentAsync()` / `void SetUserAgent(string userAgent)`
+Gets or overrides the user agent for this web page.
+
 #### 🧊 `Task<bool> IsLoadingAsync()`
 Whether the web page is still loading resources.
 
@@ -191,6 +203,9 @@ Copies the image at the given position to the clipboard.
 
 #### 🧊 `void SelectAll()` / `void Unselect()` / `void CenterSelection()`
 Selects all content, clears the selection, or scrolls to the current selection.
+
+#### 🧊 `void ScrollToTop()` / `void ScrollToBottom()`
+Scrolls to the top or the bottom of the current web page.
 
 #### 🧊 `void AdjustSelection(AdjustSelectionOptions options)`
 Adjusts the start and end points of the current text selection by the given amounts. Negative amounts move towards the beginning of the document.
@@ -249,6 +264,15 @@ Emitted when the user changes the zoom level using the mouse wheel or the keyboa
 
 #### ⚡ `OnFoundInPage`
 Emitted when a result is available for a `FindInPageAsync` request. The handler receives a `FoundInPageResult`.
+
+#### ⚡ `OnAudioStateChanged`
+Emitted when media becomes audible or inaudible. The handler receives `true` if one or more frames or child web contents are emitting audio.
+
+#### ⚡ `OnMediaStartedPlaying`
+Emitted when media starts playing.
+
+#### ⚡ `OnMediaPaused`
+Emitted when media is paused or done playing.
 
 ## Usage Examples
 
@@ -444,6 +468,23 @@ webContents.OnFoundInPage += (result) =>
 };
 
 var requestId = await webContents.FindInPageAsync("electron", new FindInPageOptions { MatchCase = false });
+```
+
+### Audio
+
+```csharp
+webContents.SetAudioMuted(true);
+
+var muted = await webContents.IsAudioMutedAsync();
+var audible = await webContents.IsCurrentlyAudibleAsync();
+
+webContents.OnAudioStateChanged += (isAudible) =>
+{
+    Console.WriteLine(isAudible ? "Page started emitting audio" : "Page went silent");
+};
+
+webContents.OnMediaStartedPlaying += () => Console.WriteLine("Media playing");
+webContents.OnMediaPaused += () => Console.WriteLine("Media paused");
 ```
 
 ## Related APIs

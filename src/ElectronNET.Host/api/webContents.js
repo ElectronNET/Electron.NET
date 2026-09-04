@@ -125,6 +125,27 @@ module.exports = (socket) => {
             electronSocket.emit("webContents-foundInPage" + id, result);
         });
     });
+    socket.on("register-webContents-audioStateChanged", (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners("audio-state-changed");
+        browserWindow.webContents.on("audio-state-changed", (event) => {
+            electronSocket.emit("webContents-audioStateChanged" + id, event.audible);
+        });
+    });
+    socket.on("register-webContents-mediaStartedPlaying", (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners("media-started-playing");
+        browserWindow.webContents.on("media-started-playing", () => {
+            electronSocket.emit("webContents-mediaStartedPlaying" + id);
+        });
+    });
+    socket.on("register-webContents-mediaPaused", (id) => {
+        const browserWindow = getWindowById(id);
+        browserWindow.webContents.removeAllListeners("media-paused");
+        browserWindow.webContents.on("media-paused", () => {
+            electronSocket.emit("webContents-mediaPaused" + id);
+        });
+    });
     socket.on("webContents-openDevTools", (id, options) => {
         if (options) {
             getWindowById(id).webContents.openDevTools(options);
@@ -490,6 +511,12 @@ module.exports = (socket) => {
     });
     socket.on("webContents-centerSelection", (id) => {
         getWindowById(id).webContents.centerSelection();
+    });
+    socket.on("webContents-scrollToTop", (id) => {
+        getWindowById(id).webContents.scrollToTop();
+    });
+    socket.on("webContents-scrollToBottom", (id) => {
+        getWindowById(id).webContents.scrollToBottom();
     });
     socket.on("webContents-insertText", async (id, text) => {
         await getWindowById(id).webContents.insertText(text);
