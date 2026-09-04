@@ -17,6 +17,10 @@ When you build an Electron.NET project, the following validation checks are perf
 | [ELECTRON005](#4-parent-paths-not-allowed-in-electron-builderjson) | Parent paths not allowed | Checks for `..` references in config |
 | [ELECTRON006](#5-publish-profile-validation) | ASP.NET publish profile mismatch | Warns when ASP.NET projects have console-style profiles |
 | [ELECTRON007](#5-publish-profile-validation) | Console publish profile mismatch | Warns when console projects have ASP.NET-style profiles |
+| [ELECTRON010](#6-electronhosthook-folder-validation) | ElectronHostHook without package.json | Warns when hook TypeScript files exist without a `package.json` |
+| [ELECTRON011](#6-electronhosthook-folder-validation) | ElectronHostHook without tsconfig.json | Warns when hook TypeScript files exist without a `tsconfig.json` |
+
+All checks skip the build output folders (`bin`, `obj`, `publish`, `.electron`, `node_modules`) as well as any custom output paths configured via `BaseOutputPath` / `BaseIntermediateOutputPath` (for example the .NET `artifacts` output layout).
 
 ---
 
@@ -32,7 +36,7 @@ Rules:
 
 - **ELECTRON001**: `package.json` / `package-lock.json` must not exist in the project directory or subdirectories
   - Exception: `ElectronHostHook` folder is allowed
-  - Note: a **root** `package.json` is **excluded** from `ELECTRON001` and validated by `ELECTRON008` / `ELECTRON009`
+  - Note: a **root** `package.json` (and its `package-lock.json`) is **excluded** from `ELECTRON001` and validated by `ELECTRON008` / `ELECTRON009`
 
 - **ELECTRON008**: If a root `package.json` exists, it must **not** contain electron-related dependencies or configuration.
 
@@ -208,7 +212,7 @@ The build system examines `.pubxml` files in the `Properties/PublishProfiles` fo
 
 - **ELECTRON006**: For **ASP.NET projects** (using `Microsoft.NET.Sdk.Web`), checks that publish profiles include `WebPublishMethod`. This property is required for proper ASP.NET publishing.
 
-- **ELECTRON007**: For **console/other projects** (not using the Web SDK), checks that publish profiles do NOT include the `WebPublishMethod`  property. These ASP.NET-specific properties are incorrect for non-web applications.
+- **ELECTRON007**: For **console/other projects** (not using the Web SDK), checks that publish profiles do NOT include the `WebPublishMethod` or `ProjectGuid` property. These ASP.NET-specific properties are incorrect for non-web applications.
 
 ### Why this matters
 
@@ -233,9 +237,54 @@ For correct publish profile examples for both ASP.NET and Console applications, 
 
 ---
 
+## 6. ElectronHostHook Folder Validation
+
+**Warning Codes:** `ELECTRON010`, `ELECTRON011`
+
+### What is checked
+
+If the project contains an `ElectronHostHook` folder with TypeScript files:
+
+- **ELECTRON010**: The folder must contain a `package.json`
+- **ELECTRON011**: The folder must contain a `tsconfig.json`
+
+### Why this matters
+
+Custom host hook code is only compiled and packaged when the `ElectronHostHook` folder declares its npm dependencies in a `package.json`. If that file is missing, the hook is silently dropped and the corresponding `Electron.HostHook` calls fail at runtime. The `tsconfig.json` is required so the hook sources are compiled with the expected settings.
+
+### How to fix
+
+Add the missing files to the `ElectronHostHook` folder:
+
+```json
+{
+    "name": "electron-host-hook",
+    "version": "1.0.0",
+    "main": "index.js",
+    "dependencies": {
+        "socket.io": "^4.8.1"
+    },
+    "devDependencies": {
+        "typescript": "^5.9.3"
+    }
+}
+```
+
+> **See also:** [HostHook API](../API/HostHook.md)
+
+---
+
 ## Disabling Migration Checks
 
-If you need to disable specific migration checks (not recommended), you can set the following properties in your `.csproj` file:
+Individual checks can be downgraded to messages by their warning code:
+
+```xml
+<PropertyGroup>
+  <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);ELECTRON005</MSBuildWarningsAsMessages>
+</PropertyGroup>
+```
+
+If you need to disable all migration checks (not recommended), you can set the following property in your `.csproj` file:
 
 ```xml
 <PropertyGroup>

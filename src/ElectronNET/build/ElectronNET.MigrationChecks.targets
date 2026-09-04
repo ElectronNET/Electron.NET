@@ -9,8 +9,20 @@
       ElectronCheckNoManifestJson;
       ElectronCheckElectronBuilderJson;
       ElectronCheckNoParentPaths;
-      ElectronCheckPubxmlFiles
+      ElectronCheckPubxmlFiles;
+      ElectronCheckHostHookFolder
     </ElectronMigrationChecksDependsOn>
+  </PropertyGroup>
+
+  <!--
+    Directories that are never scanned by the migration checks. Besides the well-known
+    bin/obj/publish/node_modules folders this also honors custom output paths (e.g. the
+    .NET 'artifacts' output layout) so that generated files never trigger false alarms.
+  -->
+  <PropertyGroup>
+    <_ElectronCheckExcludes>$(MSBuildProjectDirectory)\bin\**\*;$(MSBuildProjectDirectory)\obj\**\*;$(MSBuildProjectDirectory)\publish\**\*;$(MSBuildProjectDirectory)\node_modules\**\*;$(MSBuildProjectDirectory)\.electron\**\*</_ElectronCheckExcludes>
+    <_ElectronCheckExcludes Condition="'$(BaseOutputPath)' != ''">$(_ElectronCheckExcludes);$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(BaseOutputPath)'))**\*</_ElectronCheckExcludes>
+    <_ElectronCheckExcludes Condition="'$(BaseIntermediateOutputPath)' != ''">$(_ElectronCheckExcludes);$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)'))**\*</_ElectronCheckExcludes>
   </PropertyGroup>
 
   <!-- Main migration checks target that runs before build -->
@@ -32,16 +44,13 @@
       <_InvalidPackageJson Include="$(MSBuildProjectDirectory)\**\package.json"
                            Exclude="$(MSBuildProjectDirectory)\package.json;
                                     $(MSBuildProjectDirectory)\ElectronHostHook\**\package.json;
-                                    $(MSBuildProjectDirectory)\bin\**\package.json;
-                                    $(MSBuildProjectDirectory)\obj\**\package.json;
-                                    $(MSBuildProjectDirectory)\publish\**\package.json;
-                                    $(MSBuildProjectDirectory)\node_modules\**\package.json" />
+                                    $(_ElectronCheckExcludes)" />
+      <!-- The root package-lock.json belongs to the root package.json, which is validated
+           by ELECTRON008/ELECTRON009 instead of ELECTRON001. -->
       <_InvalidPackageLockJson Include="$(MSBuildProjectDirectory)\**\package-lock.json"
-                               Exclude="$(MSBuildProjectDirectory)\ElectronHostHook\**\package-lock.json;
-                                        $(MSBuildProjectDirectory)\bin\**\package-lock.json;
-                                        $(MSBuildProjectDirectory)\obj\**\package-lock.json;
-                                        $(MSBuildProjectDirectory)\publish\**\package-lock.json;
-                                        $(MSBuildProjectDirectory)\node_modules\**\package-lock.json" />
+                               Exclude="$(MSBuildProjectDirectory)\package-lock.json;
+                                        $(MSBuildProjectDirectory)\ElectronHostHook\**\package-lock.json;
+                                        $(_ElectronCheckExcludes)" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -141,10 +150,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
 
     <ItemGroup>
       <_InvalidManifestJson Include="$(MSBuildProjectDirectory)\**\electron.manifest.json;$(MSBuildProjectDirectory)\**\electron-manifest.json"
-                            Exclude="$(MSBuildProjectDirectory)\bin\**\*;
-                                     $(MSBuildProjectDirectory)\obj\**\*;
-                                     $(MSBuildProjectDirectory)\publish\**\*;
-                                     $(MSBuildProjectDirectory)\node_modules\**\*" />
+                            Exclude="$(_ElectronCheckExcludes)" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -187,10 +193,7 @@ MIGRATION REQUIRED:
     <ItemGroup>
       <_ElectronBuilderJsonWrongLocation Include="$(MSBuildProjectDirectory)\**\electron-builder.json"
                                           Exclude="$(MSBuildProjectDirectory)\Properties\electron-builder.json;
-                                                   $(MSBuildProjectDirectory)\bin\**\*;
-                                                   $(MSBuildProjectDirectory)\obj\**\*;
-                                                   $(MSBuildProjectDirectory)\publish\**\*;
-                                                   $(MSBuildProjectDirectory)\node_modules\**\*" />
+                                                   $(_ElectronCheckExcludes)" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -296,10 +299,11 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       </_PubxmlFileInfo>
     </ItemGroup>
 
-    <!-- Check each file for WebPublishMethod presence -->
+    <!-- Check each file for the ASP.NET specific properties (WebPublishMethod / ProjectGuid) -->
     <ItemGroup Condition="'$(_HasPubxmlFiles)' == 'true'">
       <_PubxmlFileInfoWithFlags Include="@(_PubxmlFileInfo)" Condition="'%(Identity)' != ''">
         <HasWebPublishMethod>$([System.Text.RegularExpressions.Regex]::IsMatch('%(FileContent)', '&lt;WebPublishMethod&gt;'))</HasWebPublishMethod>
+        <HasProjectGuid>$([System.Text.RegularExpressions.Regex]::IsMatch('%(FileContent)', '&lt;ProjectGuid&gt;'))</HasProjectGuid>
       </_PubxmlFileInfoWithFlags>
     </ItemGroup>
 
@@ -309,10 +313,10 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
                                        Condition="'$(_IsAspNetProject)' == 'true' AND '%(HasWebPublishMethod)' == 'False'" />
     </ItemGroup>
 
-    <!-- For Console/Non-ASP.NET projects: find pubxml files that HAVE WebPublishMethod -->
+    <!-- For Console/Non-ASP.NET projects: find pubxml files that HAVE ASP.NET specific properties -->
     <ItemGroup>
       <_ConsolePubxmlWithAspNetProperties Include="@(_PubxmlFileInfoWithFlags)"
-                                           Condition="'$(_IsAspNetProject)' != 'true' AND '%(HasWebPublishMethod)' == 'True'" />
+                                           Condition="'$(_IsAspNetProject)' != 'true' AND ('%(HasWebPublishMethod)' == 'True' OR '%(HasProjectGuid)' == 'True')" />
     </ItemGroup>
 
     <!-- Warning for ASP.NET projects with incorrect pubxml files -->
@@ -336,7 +340,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
     <Warning
       Condition="'@(_ConsolePubxmlWithAspNetProperties)' != ''"
       Code="ELECTRON007"
-      Text="The publish profile '%(_ConsolePubxmlWithAspNetProperties.Identity)' appears to be configured for ASP.NET publishing (containing the WebPublishMethod property), but this is a console application project.
+      Text="The publish profile '%(_ConsolePubxmlWithAspNetProperties.Identity)' appears to be configured for ASP.NET publishing (containing the WebPublishMethod and/or ProjectGuid property), but this is a console application project.
 
 RECOMMENDED ACTION:
 1. Delete the existing publish profiles
@@ -348,6 +352,61 @@ RECOMMENDED ACTION:
 Note: Console Electron.NET projects should not use ASP.NET-style publish profiles.
 
 For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#5-publish-profile-validation" />
+
+  </Target>
+
+  <!--
+    Check 6: The ElectronHostHook folder must be set up correctly
+
+    Custom host hook TypeScript code is only compiled and packaged when the folder also
+    contains a package.json (and a tsconfig.json for the TypeScript compilation). Without
+    those files the hook code is silently ignored.
+  -->
+  <Target Name="ElectronCheckHostHookFolder"
+          Condition="Exists('$(MSBuildProjectDirectory)\ElectronHostHook')">
+
+    <ItemGroup>
+      <_HostHookTsFiles Include="$(MSBuildProjectDirectory)\ElectronHostHook\*.ts" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_HasHostHookTsFiles>false</_HasHostHookTsFiles>
+      <_HasHostHookTsFiles Condition="@(_HostHookTsFiles-&gt;Count()) &gt; 0">true</_HasHostHookTsFiles>
+    </PropertyGroup>
+
+    <Warning Condition="'$(_HasHostHookTsFiles)' == 'true' AND !Exists('$(MSBuildProjectDirectory)\ElectronHostHook\package.json')"
+             Code="ELECTRON010"
+             Text="The 'ElectronHostHook' folder contains TypeScript files but no package.json.
+
+Folder: $(MSBuildProjectDirectory)\ElectronHostHook
+
+The host hook code is only compiled and packaged when the folder contains a package.json declaring its npm dependencies. Without it the hook is silently ignored at runtime.
+
+HOW TO FIX:
+Add a package.json to the 'ElectronHostHook' folder, for example:
+
+{
+  &quot;name&quot;: &quot;electron-host-hook&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;main&quot;: &quot;index.js&quot;,
+  &quot;dependencies&quot;: { &quot;socket.io&quot;: &quot;^4.8.1&quot; },
+  &quot;devDependencies&quot;: { &quot;typescript&quot;: &quot;^5.9.3&quot; }
+}
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#6-electronhosthook-folder-validation" />
+
+    <Warning Condition="'$(_HasHostHookTsFiles)' == 'true' AND !Exists('$(MSBuildProjectDirectory)\ElectronHostHook\tsconfig.json')"
+             Code="ELECTRON011"
+             Text="The 'ElectronHostHook' folder contains TypeScript files but no tsconfig.json.
+
+Folder: $(MSBuildProjectDirectory)\ElectronHostHook
+
+Without a tsconfig.json the hook TypeScript sources are not compiled with the expected settings.
+
+HOW TO FIX:
+Add a tsconfig.json to the 'ElectronHostHook' folder.
+
+For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migration-Checks#6-electronhosthook-folder-validation" />
 
   </Target>
 

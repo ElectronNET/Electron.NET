@@ -145,6 +145,111 @@ public class MigrationChecksTargetsTests
         }
     }
 
+    [Fact]
+    public async Task MigrationChecksTargets_BuildWithRootPackageLockJson_ShouldNotEmitELECTRON001Warning()
+    {
+        // A root package.json is validated by ELECTRON008/ELECTRON009 and therefore allowed.
+        // Its accompanying package-lock.json must not be reported by ELECTRON001.
+
+        var tempDir = CreateTempProjectDirectory();
+        try
+        {
+            await File.WriteAllTextAsync(
+                Path.Combine(tempDir, "package.json"),
+                """{ "devDependencies": { "vite": "^5.0.0" } }""");
+            await File.WriteAllTextAsync(
+                Path.Combine(tempDir, "package-lock.json"),
+                """{ "lockfileVersion": 3 }""");
+
+            await WriteMinimalCsprojAsync(tempDir);
+
+            var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
+
+            exitCode.Should().Be(0, $"Full build output:\n{output}");
+
+            output.Should().NotContain(
+                "ELECTRON001",
+                $"a root package-lock.json belongs to the allowed root package.json. " +
+                $"Full build output:\n{output}");
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task MigrationChecksTargets_BuildWithIncompleteHostHookFolder_ShouldEmitELECTRON010AndELECTRON011Warnings()
+    {
+        // Host hook TypeScript sources are silently ignored when package.json/tsconfig.json
+        // are missing, so the migration checks must point that out.
+
+        var tempDir = CreateTempProjectDirectory();
+        try
+        {
+            var hookDir = Path.Combine(tempDir, "ElectronHostHook");
+            Directory.CreateDirectory(hookDir);
+            await File.WriteAllTextAsync(Path.Combine(hookDir, "index.ts"), "export class HookService {}");
+
+            await WriteMinimalCsprojAsync(tempDir);
+
+            var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
+
+            exitCode.Should().Be(0, $"Full build output:\n{output}");
+
+            output.Should().Contain(
+                "ELECTRON010",
+                $"the ElectronHostHook folder has TypeScript files but no package.json. " +
+                $"Full build output:\n{output}");
+            output.Should().Contain(
+                "ELECTRON011",
+                $"the ElectronHostHook folder has TypeScript files but no tsconfig.json. " +
+                $"Full build output:\n{output}");
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task MigrationChecksTargets_BuildWithConsoleProfileContainingProjectGuid_ShouldEmitELECTRON007Warning()
+    {
+        // ProjectGuid is an ASP.NET publish profile property and must be reported for
+        // non-web projects, just like WebPublishMethod.
+
+        var tempDir = CreateTempProjectDirectory();
+        try
+        {
+            var profilesDir = Path.Combine(tempDir, "Properties", "PublishProfiles");
+            Directory.CreateDirectory(profilesDir);
+            await File.WriteAllTextAsync(
+                Path.Combine(profilesDir, "FolderProfile.pubxml"),
+                """
+                <Project>
+                  <PropertyGroup>
+                    <ProjectGuid>00000000-0000-0000-0000-000000000000</ProjectGuid>
+                  </PropertyGroup>
+                </Project>
+                """);
+
+            await WriteMinimalCsprojAsync(tempDir);
+
+            var (exitCode, output) = await RunDotnetBuildAsync(tempDir);
+
+            exitCode.Should().Be(0, $"Full build output:\n{output}");
+
+            output.Should().Contain(
+                "ELECTRON007",
+                $"a console project must not use an ASP.NET publish profile. " +
+                $"Full build output:\n{output}");
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
