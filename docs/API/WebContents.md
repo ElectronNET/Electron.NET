@@ -113,6 +113,31 @@ Prints window's web page as PDF with Chromium's preview printing custom settings
 
 Whether the PDF generation succeeded.
 
+#### 🧊 `Task<double> GetZoomFactorAsync()`
+Returns the current zoom factor. A factor of `1.0` means 100%.
+
+#### 🧊 `void SetZoomFactor(double factor)`
+Changes the zoom factor to the specified factor. The zoom factor is the zoom percent divided by 100, so 300% = `3.0`. The factor must be greater than `0.0`.
+
+**Parameters:**
+- `factor` - The zoom factor
+
+#### 🧊 `Task<double> GetZoomLevelAsync()`
+Returns the current zoom level.
+
+#### 🧊 `void SetZoomLevel(double level)`
+Changes the zoom level to the specified level. The original size is `0` and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of the original size, respectively.
+
+**Parameters:**
+- `level` - The zoom level
+
+#### 🧊 `Task SetVisualZoomLevelLimitsAsync(double minimumLevel, double maximumLevel)`
+Sets the maximum and minimum pinch-to-zoom level.
+
+**Parameters:**
+- `minimumLevel` - The minimum pinch-to-zoom level
+- `maximumLevel` - The maximum pinch-to-zoom level
+
 ## Events
 
 #### ⚡ `InputEvent`
@@ -141,6 +166,9 @@ Emitted when the document in the top-level frame is loaded.
 
 #### ⚡ `OnWillRedirect`
 Emitted when a server side redirect occurs during navigation.
+
+#### ⚡ `OnZoomChanged`
+Emitted when the user changes the zoom level using the mouse wheel or the keyboard. The handler receives the `ZoomDirection` (`In` or `Out`).
 
 ## Usage Examples
 
@@ -278,6 +306,30 @@ webContents.OnCrashed += (killed) =>
     // Optionally reload the page
 };
 ```
+
+### Zoom Control
+
+```csharp
+// Set the zoom to 150%
+webContents.SetZoomFactor(1.5);
+
+var factor = await webContents.GetZoomFactorAsync();
+Console.WriteLine($"Current zoom: {factor * 100}%");
+
+// Zoom levels are relative: each step is 20% larger/smaller, 0 is the original size
+webContents.SetZoomLevel(2);
+
+// Restrict pinch-to-zoom
+await webContents.SetVisualZoomLevelLimitsAsync(1, 3);
+
+// React to zoom changes triggered by the user
+webContents.OnZoomChanged += (direction) =>
+{
+    Console.WriteLine($"User zoomed {direction}");
+};
+```
+
+> **Note:** The zoom factor is shared by all windows using the same session partition. Assign a unique `WebPreferences.Partition` per window if each window should keep its own zoom.
 
 ## Related APIs
 

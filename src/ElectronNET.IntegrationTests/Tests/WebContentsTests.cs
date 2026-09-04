@@ -108,13 +108,19 @@ namespace ElectronNET.IntegrationTests.Tests
                 await Task.Delay(500.ms());
 
                 var ok = await window.WebContents.GetZoomLevelAsync();
-                ok.Should().Be(0);
+                ok.Should().Be(0.0);
 
                 window.WebContents.SetZoomLevel(2);
                 await Task.Delay(500.ms());
 
                 ok = await window.WebContents.GetZoomLevelAsync();
-                ok.Should().Be(2);
+                ok.Should().Be(2.0);
+
+                window.WebContents.SetZoomLevel(0.5);
+                await Task.Delay(500.ms());
+
+                ok = await window.WebContents.GetZoomLevelAsync();
+                ok.Should().BeApproximately(0.5, 0.001);
             }
             finally
             {

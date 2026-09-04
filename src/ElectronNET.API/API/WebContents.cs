@@ -113,6 +113,15 @@ public class WebContents : ApiBase
         remove => RemoveEvent(value, Id);
     }
 
+    /// <summary>
+    /// Emitted when the user is requesting to change the zoom level using the mouse wheel or the keyboard.
+    /// </summary>
+    public event Action<ZoomDirection> OnZoomChanged
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
     internal WebContents(int id)
     {
         Id = id;
@@ -337,14 +346,14 @@ public class WebContents : ApiBase
     /// Returns number - The current zoom level.
     /// </summary>
     /// <returns></returns>
-    public Task<int> GetZoomLevelAsync() => InvokeAsync<int>();
+    public Task<double> GetZoomLevelAsync() => InvokeAsync<double>();
 
     /// <summary>
     /// Changes the zoom level to the specified level.
     /// The original size is 0 and each increment above or below represents zooming 20% larger or smaller to default limits of 300% and 50% of original size, respectively.
     /// </summary>
     /// <param name="level"></param>
-    public void SetZoomLevel(int level)
+    public void SetZoomLevel(double level)
     {
         BridgeConnector.Socket.Emit("webContents-setZoomLevel", Id, level);
     }
@@ -354,7 +363,7 @@ public class WebContents : ApiBase
     /// </summary>
     /// <param name="minimumLevel"></param>
     /// <param name="maximumLevel"></param>
-    public Task SetVisualZoomLevelLimitsAsync(int minimumLevel, int maximumLevel)
+    public Task SetVisualZoomLevelLimitsAsync(double minimumLevel, double maximumLevel)
     {
         var tcs = new TaskCompletionSource();
 

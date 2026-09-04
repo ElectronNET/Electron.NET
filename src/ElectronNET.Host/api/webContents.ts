@@ -103,6 +103,15 @@ export = (socket: Socket) => {
     });
   });
 
+  socket.on("register-webContents-zoomChanged", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("zoom-changed");
+    browserWindow.webContents.on("zoom-changed", (_, zoomDirection) => {
+      electronSocket.emit("webContents-zoomChanged" + id, zoomDirection);
+    });
+  });
+
   socket.on("webContents-openDevTools", (id, options) => {
     if (options) {
       getWindowById(id).webContents.openDevTools(options);
