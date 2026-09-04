@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "Framework": {
+      "longName": "framework",
+      "shortName": "f"
+    },
+    "ElectronVersion": {
+      "longName": "electron-version",
+      "shortName": "e"
+    },
+    "Port": {
+      "longName": "port",
+      "shortName": "p"
+    },
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": ""
+    }
+  }
+}

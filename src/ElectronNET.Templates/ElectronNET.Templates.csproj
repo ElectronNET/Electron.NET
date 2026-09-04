@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageOutputPath>..\..\artifacts</PackageOutputPath>
+    <PackageId>$(PackageNamePrefix).Templates</PackageId>
+    <Title>$(PackageId)</Title>
+    <Description>$(DescriptionFirstPart) This package contains the 'dotnet new' project templates.</Description>
+    <PackageTags>electron aspnetcore blazor dotnet-new templates</PackageTags>
+    <PackageType>Template</PackageType>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <!-- Template content contains dot-prefixed folders (.template.config) that must be packed -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IncludeSymbols>false</IncludeSymbols>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <Nullable>disable</Nullable>
+    <!-- Must match the Electron.NET package version referenced by the templates -->
+    <ElectronNetTemplatePackageVersion>0.6.0</ElectronNetTemplatePackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\ElectronNET\PackageIcon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <Target Name="ValidateTemplatePackageVersion" BeforeTargets="Build">
+    <Error Condition="!$(Version.StartsWith('$(ElectronNetTemplatePackageVersion)'))"
+           Text="The templates reference Electron.NET $(ElectronNetTemplatePackageVersion) but the current version is $(Version). Update the PackageReference versions in templates\**\*.csproj and the ElectronNetTemplatePackageVersion property." />
+  </Target>
+
+</Project>

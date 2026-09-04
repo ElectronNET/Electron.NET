@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Electron hosts the app out of process -->
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Label="ElectronNetCommon">
+    <ElectronPackageId>electron-blazor-app</ElectronPackageId>
+    <Title>ElectronBlazorApp</Title>
+    <Description>A Blazor app running in Electron.</Description>
+    <Version>1.0.0</Version>
+    <Company>My Company</Company>
+    <Copyright>Copyright © $(Company)</Copyright>
+    <ElectronVersion>ELECTRON_VERSION</ElectronVersion>
+    <ElectronSingleInstance>true</ElectronSingleInstance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.6.0" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.6.0" />
+  </ItemGroup>
+
+</Project>

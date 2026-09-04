@@ -10,6 +10,11 @@ See [System Requirements](../GettingStarted/System-Requirements.md).
 
 ## 🚀 Quick Start
 
+> [!Tip]
+> To skip the manual setup below, scaffold a ready-to-run app with the
+> [project templates](Templates.md): `dotnet new install ElectronNET.Core.Templates` followed by
+> `dotnet new electron-blazor -n MyDesktopApp`.
+
 ### 1. Create ASP.NET Core Project
 
 #### Visual Studio

@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Electron.NET",
+  "classifications": [ "Blazor", "Desktop", "Electron", "Web" ],
+  "identity": "ElectronNET.Core.Templates.Blazor.CSharp",
+  "groupIdentity": "ElectronNET.Core.Templates.Blazor",
+  "name": "Electron.NET Blazor App",
+  "description": "A Blazor Server app hosted in an Electron shell, wired up with Electron.NET.",
+  "shortName": "electron-blazor",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "ElectronBlazorApp",
+  "preferNameDirectory": true,
+  "defaultName": "ElectronBlazorApp",
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net10.0",
+          "description": "Target net10.0"
+        },
+        {
+          "choice": "net8.0",
+          "description": "Target net8.0"
+        }
+      ],
+      "replaces": "net8.0",
+      "defaultValue": "net8.0"
+    },
+    "ElectronVersion": {
+      "type": "parameter",
+      "description": "The version of Electron to build the app against.",
+      "datatype": "text",
+      "replaces": "ELECTRON_VERSION",
+      "defaultValue": "38.2.2"
+    },
+    "Port": {
+      "type": "parameter",
+      "description": "Port number to use for the ASP.NET server during development.",
+      "datatype": "integer",
+      "replaces": "8001",
+      "defaultValue": "8001"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "If specified, skips the automatic restore of the project on create.",
+      "defaultValue": "false"
+    }
+  },
+  "primaryOutputs": [
+    {
+      "path": "ElectronBlazorApp.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "id": "restore",
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}

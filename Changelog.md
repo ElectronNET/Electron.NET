@@ -12,6 +12,7 @@
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm
 - Fixed resolution of unrelated target (#1099) @epsnm
 - Fixed false alarm for `ELECTRON001` on a root `package-lock.json` (#946)
+- Added `ElectronNET.Core.Templates` package with a `dotnet new electron-blazor` template (#414)
 - Added `WebContents.OnZoomChanged` event (#956)
 - Added `WebContents` page loading APIs `LoadFileAsync`, `IsLoadingAsync`, `IsLoadingMainFrameAsync`, `IsWaitingForResponseAsync`, `Reload`, `ReloadIgnoringCache` and `Stop` (#956)
 - Added `WebContents.InsertCSSAsync` and `WebContents.RemoveInsertedCSSAsync` for dynamic CSS (#956)

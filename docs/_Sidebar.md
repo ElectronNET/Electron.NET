@@ -15,6 +15,7 @@
 # Getting Started
 
 - [System Requirements](GettingStarted/System-Requirements.md)
+- [Project Templates](GettingStarted/Templates.md)
 - [With ASP.Net](GettingStarted/ASP.Net.md)
 - [With a Console App](GettingStarted/Console-App.md)
 

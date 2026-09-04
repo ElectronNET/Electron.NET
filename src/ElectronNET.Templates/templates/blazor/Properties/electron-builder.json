@@ -1,0 +1,22 @@
+{
+  "compression": "maximum",
+  "linux": {
+    "target": [ "AppImage" ],
+    "executableArgs": [ "--no-sandbox" ]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": "x64"
+      }
+    ]
+  },
+  "mac": {
+    "target": [ "dmg" ]
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false
+  }
+}

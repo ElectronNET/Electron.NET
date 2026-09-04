@@ -1,0 +1,34 @@
+@page "/"
+@rendermode InteractiveServer
+@using ElectronNET.API
+@using ElectronNET.API.Entities
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello from Electron.NET!</h1>
+
+<p>
+    This Blazor app is served by ASP.NET Core and displayed in an Electron window.
+    Everything in the <code>ElectronNET.API</code> namespace is available from your components.
+</p>
+
+<button class="btn" @onclick="ShowNotification">Show a native notification</button>
+
+<p role="status">@status</p>
+
+@code {
+    private string? status;
+
+    private void ShowNotification()
+    {
+        if (HybridSupport.IsElectronActive)
+        {
+            Electron.Notification.Show(new NotificationOptions("ElectronBlazorApp", "Hello from Blazor!"));
+            status = "Notification sent.";
+        }
+        else
+        {
+            status = "Not running inside Electron.";
+        }
+    }
+}
