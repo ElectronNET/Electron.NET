@@ -58,6 +58,23 @@ Works for both BrowserWindows and BrowserViews.
 - `isBrowserWindow` - Whether the webContents belong to a BrowserWindow or not (the other option is a BrowserView)
 - `path` - Absolute path to the CSS file location
 
+#### 🧊 `Task<string> InsertCSSAsync(string css, string cssOrigin = null)`
+Injects CSS into the current web page and returns a unique key for the inserted style sheet.
+
+**Parameters:**
+- `css` - The style sheet to inject
+- `cssOrigin` - Can be either `user` or `author`, defaults to `author`
+
+**Returns:**
+
+The key of the inserted style sheet, to be used with `RemoveInsertedCSSAsync`.
+
+#### 🧊 `Task RemoveInsertedCSSAsync(string key)`
+Removes a previously inserted style sheet from the current web page.
+
+**Parameters:**
+- `key` - The key returned by `InsertCSSAsync`
+
 #### 🧊 `Task LoadURLAsync(string url)`
 Loads the url in the window. The url must contain the protocol prefix.
 
@@ -138,6 +155,66 @@ Sets the maximum and minimum pinch-to-zoom level.
 - `minimumLevel` - The minimum pinch-to-zoom level
 - `maximumLevel` - The maximum pinch-to-zoom level
 
+#### 🧊 `Task LoadFileAsync(string filePath, LoadFileOptions options = null)`
+Loads the given HTML file, relative to the root of the application.
+
+**Parameters:**
+- `filePath` - Path to the HTML file
+- `options` - Optional `Query`, `Search` and `Hash` parts of the resulting URL
+
+#### 🧊 `Task<bool> IsLoadingAsync()`
+Whether the web page is still loading resources.
+
+#### 🧊 `Task<bool> IsLoadingMainFrameAsync()`
+Whether the main frame (and not just iframes or frames within it) is still loading.
+
+#### 🧊 `Task<bool> IsWaitingForResponseAsync()`
+Whether the web page is waiting for a first response from the main resource of the page.
+
+#### 🧊 `void Reload()`
+Reloads the current web page.
+
+#### 🧊 `void ReloadIgnoringCache()`
+Reloads the current web page and ignores the cache.
+
+#### 🧊 `void Stop()`
+Stops any pending navigation.
+
+#### 🧊 `void Undo()` / `void Redo()`
+Executes the `undo` / `redo` editing command in the web page.
+
+#### 🧊 `void Cut()` / `void Copy()` / `void Paste()` / `void PasteAndMatchStyle()` / `void Delete()`
+Executes the corresponding editing command in the web page.
+
+#### 🧊 `void CopyImageAt(int x, int y)`
+Copies the image at the given position to the clipboard.
+
+#### 🧊 `void SelectAll()` / `void Unselect()` / `void CenterSelection()`
+Selects all content, clears the selection, or scrolls to the current selection.
+
+#### 🧊 `void AdjustSelection(AdjustSelectionOptions options)`
+Adjusts the start and end points of the current text selection by the given amounts. Negative amounts move towards the beginning of the document.
+
+#### 🧊 `Task InsertTextAsync(string text)`
+Inserts text into the focused element.
+
+#### 🧊 `void Replace(string text)` / `void ReplaceMisspelling(string text)`
+Replaces the current selection, or the currently misspelled word, with the given text.
+
+#### 🧊 `Task<int> FindInPageAsync(string text, FindInPageOptions options = null)`
+Starts a request to find all matches for the text in the web page. Results are reported via the `OnFoundInPage` event.
+
+**Parameters:**
+- `text` - Content to be searched, must not be empty
+- `options` - Optional `Forward`, `FindNext` and `MatchCase` flags
+
+**Returns:**
+
+The request id of the find request.
+
+#### 🧊 `void StopFindInPage(StopFindInPageAction action)`
+Stops any `FindInPageAsync` request with the given action (`ClearSelection`, `KeepSelection` or `ActivateSelection`).
+
 ## Events
 
 #### ⚡ `InputEvent`
@@ -169,6 +246,9 @@ Emitted when a server side redirect occurs during navigation.
 
 #### ⚡ `OnZoomChanged`
 Emitted when the user changes the zoom level using the mouse wheel or the keyboard. The handler receives the `ZoomDirection` (`In` or `Out`).
+
+#### ⚡ `OnFoundInPage`
+Emitted when a result is available for a `FindInPageAsync` request. The handler receives a `FoundInPageResult`.
 
 ## Usage Examples
 
@@ -330,6 +410,41 @@ webContents.OnZoomChanged += (direction) =>
 ```
 
 > **Note:** The zoom factor is shared by all windows using the same session partition. Assign a unique `WebPreferences.Partition` per window if each window should keep its own zoom.
+
+### Dynamic CSS
+
+```csharp
+var key = await webContents.InsertCSSAsync("body { background-color: #202020; }");
+
+// ... later
+await webContents.RemoveInsertedCSSAsync(key);
+```
+
+### Editing and Selection
+
+```csharp
+await webContents.InsertTextAsync("Hello from .NET");
+
+webContents.SelectAll();
+webContents.Copy();
+webContents.Unselect();
+```
+
+### Find in Page
+
+```csharp
+webContents.OnFoundInPage += (result) =>
+{
+    Console.WriteLine($"{result.ActiveMatchOrdinal}/{result.Matches} matches");
+
+    if (result.FinalUpdate)
+    {
+        webContents.StopFindInPage(StopFindInPageAction.ClearSelection);
+    }
+};
+
+var requestId = await webContents.FindInPageAsync("electron", new FindInPageOptions { MatchCase = false });
+```
 
 ## Related APIs
 

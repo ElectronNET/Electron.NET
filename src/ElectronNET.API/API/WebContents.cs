@@ -122,6 +122,15 @@ public class WebContents : ApiBase
         remove => RemoveEvent(value, Id);
     }
 
+    /// <summary>
+    /// Emitted when a result is available for a <see cref="FindInPageAsync(string, FindInPageOptions)"/> request.
+    /// </summary>
+    public event Action<FoundInPageResult> OnFoundInPage
+    {
+        add => AddEvent(value, Id);
+        remove => RemoveEvent(value, Id);
+    }
+
     internal WebContents(int id)
     {
         Id = id;
@@ -314,6 +323,68 @@ public class WebContents : ApiBase
     }
 
     /// <summary>
+    /// Loads the given file in the window. The file path must be a path to an HTML file
+    /// relative to the root of your application.
+    /// </summary>
+    /// <param name="filePath">Path to the HTML file.</param>
+    /// <param name="options">Optional query, search and hash parts of the resulting URL.</param>
+    public Task LoadFileAsync(string filePath, LoadFileOptions options = null)
+    {
+        var tcs = new TaskCompletionSource();
+
+        BridgeConnector.Socket.Once("webContents-loadFile-complete" + Id, () =>
+        {
+            BridgeConnector.Socket.Off("webContents-loadFile-error" + Id);
+            tcs.SetResult();
+        });
+
+        BridgeConnector.Socket.Once<string>("webContents-loadFile-error" + Id, (error) => { tcs.SetException(new InvalidOperationException(error)); });
+
+        BridgeConnector.Socket.Emit("webContents-loadFile", Id, filePath, options);
+
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Returns boolean - Whether web page is still loading resources.
+    /// </summary>
+    public Task<bool> IsLoadingAsync() => InvokeAsync<bool>();
+
+    /// <summary>
+    /// Returns boolean - Whether the main frame (and not just iframes or frames within it) is still loading.
+    /// </summary>
+    public Task<bool> IsLoadingMainFrameAsync() => InvokeAsync<bool>();
+
+    /// <summary>
+    /// Returns boolean - Whether the web page is waiting for a first-response from the main resource of the page.
+    /// </summary>
+    public Task<bool> IsWaitingForResponseAsync() => InvokeAsync<bool>();
+
+    /// <summary>
+    /// Reloads the current web page.
+    /// </summary>
+    public void Reload()
+    {
+        BridgeConnector.Socket.Emit("webContents-reload", Id);
+    }
+
+    /// <summary>
+    /// Reloads the current page and ignores cache.
+    /// </summary>
+    public void ReloadIgnoringCache()
+    {
+        BridgeConnector.Socket.Emit("webContents-reloadIgnoringCache", Id);
+    }
+
+    /// <summary>
+    /// Stops any pending navigation.
+    /// </summary>
+    public void Stop()
+    {
+        BridgeConnector.Socket.Emit("webContents-stop", Id);
+    }
+
+    /// <summary>
     /// Inserts CSS into the web page.
     /// See: https://www.electronjs.org/docs/api/web-contents#contentsinsertcsscss-options
     /// Works for both BrowserWindows and BrowserViews.
@@ -323,6 +394,37 @@ public class WebContents : ApiBase
     public void InsertCSS(bool isBrowserWindow, string path)
     {
         BridgeConnector.Socket.Emit("webContents-insertCSS", Id, isBrowserWindow, path);
+    }
+
+    /// <summary>
+    /// Injects CSS into the current web page and returns a unique key for the inserted
+    /// stylesheet, which can be used with <see cref="RemoveInsertedCSSAsync"/>.
+    /// </summary>
+    /// <param name="css">The style sheet to inject.</param>
+    /// <param name="cssOrigin">Can be either 'user' or 'author'. Defaults to 'author'.</param>
+    /// <returns>The key of the inserted style sheet.</returns>
+    public Task<string> InsertCSSAsync(string css, string cssOrigin = null)
+    {
+        var tcs = new TaskCompletionSource<string>();
+
+        BridgeConnector.Socket.Once<string>("webContents-insertCSSText-completed" + Id, tcs.SetResult);
+        BridgeConnector.Socket.Emit("webContents-insertCSSText", Id, css, cssOrigin);
+
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Removes the inserted CSS from the current web page.
+    /// </summary>
+    /// <param name="key">The key returned by <see cref="InsertCSSAsync"/>.</param>
+    public Task RemoveInsertedCSSAsync(string key)
+    {
+        var tcs = new TaskCompletionSource();
+
+        BridgeConnector.Socket.Once("webContents-removeInsertedCSS-completed" + Id, tcs.SetResult);
+        BridgeConnector.Socket.Emit("webContents-removeInsertedCSS", Id, key);
+
+        return tcs.Task;
     }
 
     /// <summary>
@@ -407,5 +509,163 @@ public class WebContents : ApiBase
     public void SetUserAgent(string userAgent)
     {
         BridgeConnector.Socket.Emit("webContents-setUserAgent", Id, userAgent);
+    }
+
+    /// <summary>
+    /// Executes the editing command undo in web page.
+    /// </summary>
+    public void Undo()
+    {
+        BridgeConnector.Socket.Emit("webContents-undo", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command redo in web page.
+    /// </summary>
+    public void Redo()
+    {
+        BridgeConnector.Socket.Emit("webContents-redo", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command cut in web page.
+    /// </summary>
+    public void Cut()
+    {
+        BridgeConnector.Socket.Emit("webContents-cut", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command copy in web page.
+    /// </summary>
+    public void Copy()
+    {
+        BridgeConnector.Socket.Emit("webContents-copy", Id);
+    }
+
+    /// <summary>
+    /// Copies the image at the given position to the clipboard.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public void CopyImageAt(int x, int y)
+    {
+        BridgeConnector.Socket.Emit("webContents-copyImageAt", Id, x, y);
+    }
+
+    /// <summary>
+    /// Executes the editing command paste in web page.
+    /// </summary>
+    public void Paste()
+    {
+        BridgeConnector.Socket.Emit("webContents-paste", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command pasteAndMatchStyle in web page.
+    /// </summary>
+    public void PasteAndMatchStyle()
+    {
+        BridgeConnector.Socket.Emit("webContents-pasteAndMatchStyle", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command delete in web page.
+    /// </summary>
+    public void Delete()
+    {
+        BridgeConnector.Socket.Emit("webContents-delete", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command selectAll in web page.
+    /// </summary>
+    public void SelectAll()
+    {
+        BridgeConnector.Socket.Emit("webContents-selectAll", Id);
+    }
+
+    /// <summary>
+    /// Executes the editing command unselect in web page.
+    /// </summary>
+    public void Unselect()
+    {
+        BridgeConnector.Socket.Emit("webContents-unselect", Id);
+    }
+
+    /// <summary>
+    /// Adjusts the current text selection starting and ending points by the given amounts.
+    /// A negative amount moves the selection towards the beginning of the document.
+    /// </summary>
+    /// <param name="options"></param>
+    public void AdjustSelection(AdjustSelectionOptions options)
+    {
+        BridgeConnector.Socket.Emit("webContents-adjustSelection", Id, options);
+    }
+
+    /// <summary>
+    /// Scrolls to the current text selection.
+    /// </summary>
+    public void CenterSelection()
+    {
+        BridgeConnector.Socket.Emit("webContents-centerSelection", Id);
+    }
+
+    /// <summary>
+    /// Inserts text to the focused element.
+    /// </summary>
+    /// <param name="text">The text to be inserted.</param>
+    public Task InsertTextAsync(string text)
+    {
+        var tcs = new TaskCompletionSource();
+
+        BridgeConnector.Socket.Once("webContents-insertText-completed" + Id, tcs.SetResult);
+        BridgeConnector.Socket.Emit("webContents-insertText", Id, text);
+
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Executes the editing command replace in web page.
+    /// </summary>
+    /// <param name="text"></param>
+    public void Replace(string text)
+    {
+        BridgeConnector.Socket.Emit("webContents-replace", Id, text);
+    }
+
+    /// <summary>
+    /// Executes the editing command replaceMisspelling in web page.
+    /// </summary>
+    /// <param name="text"></param>
+    public void ReplaceMisspelling(string text)
+    {
+        BridgeConnector.Socket.Emit("webContents-replaceMisspelling", Id, text);
+    }
+
+    /// <summary>
+    /// Starts a request to find all matches for the text in the web page.
+    /// The result of the request can be obtained by subscribing to the <see cref="OnFoundInPage"/> event.
+    /// </summary>
+    /// <param name="text">Content to be searched, must not be empty.</param>
+    /// <param name="options"></param>
+    /// <returns>The request id used for the request.</returns>
+    public Task<int> FindInPageAsync(string text, FindInPageOptions options = null)
+    {
+        var tcs = new TaskCompletionSource<int>();
+
+        BridgeConnector.Socket.Once<int>("webContents-findInPage-completed" + Id, tcs.SetResult);
+        BridgeConnector.Socket.Emit("webContents-findInPage", Id, text, options);
+
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Stops any findInPage request for the web contents with the provided action.
+    /// </summary>
+    /// <param name="action"></param>
+    public void StopFindInPage(StopFindInPageAction action)
+    {
+        BridgeConnector.Socket.Emit("webContents-stopFindInPage", Id, action);
     }
 }

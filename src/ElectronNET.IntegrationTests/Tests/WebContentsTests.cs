@@ -199,5 +199,94 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
+        [IntegrationFact]
+        public async Task InsertAndRemoveCSS_check()
+        {
+            var wc = this.MainWindow.WebContents;
+            await wc.LoadURLAsync("data:text/html,<html><body><p>CSS Test</p></body></html>");
+
+            var key = await wc.InsertCSSAsync("body { background-color: rgb(255, 0, 0); }");
+            key.Should().NotBeNullOrEmpty();
+
+            var color = await wc.ExecuteJavaScriptAsync<string>("getComputedStyle(document.body).backgroundColor");
+            color.Should().Be("rgb(255, 0, 0)");
+
+            await wc.RemoveInsertedCSSAsync(key);
+
+            color = await wc.ExecuteJavaScriptAsync<string>("getComputedStyle(document.body).backgroundColor");
+            color.Should().NotBe("rgb(255, 0, 0)");
+        }
+
+        [IntegrationFact]
+        public async Task EditCommands_check()
+        {
+            var wc = this.MainWindow.WebContents;
+            await wc.LoadURLAsync("data:text/html,<html><body><input id='in' autofocus /></body></html>");
+            await Task.Delay(500.ms());
+
+            await wc.InsertTextAsync("Electron.NET");
+            await Task.Delay(500.ms());
+
+            var value = await wc.ExecuteJavaScriptAsync<string>("document.getElementById('in').value");
+            value.Should().Be("Electron.NET");
+
+            wc.SelectAll();
+            wc.Delete();
+            await Task.Delay(500.ms());
+
+            value = await wc.ExecuteJavaScriptAsync<string>("document.getElementById('in').value");
+            value.Should().BeEmpty();
+        }
+
+        [IntegrationFact]
+        public async Task FindInPage_check()
+        {
+            var wc = this.MainWindow.WebContents;
+            await wc.LoadURLAsync("data:text/html,<html><body><p>needle in a haystack</p></body></html>");
+            await Task.Delay(500.ms());
+
+            var tcs = new TaskCompletionSource<FoundInPageResult>();
+
+            void OnFound(FoundInPageResult result) => tcs.TrySetResult(result);
+
+            wc.OnFoundInPage += OnFound;
+
+            try
+            {
+                var requestId = await wc.FindInPageAsync("needle");
+                requestId.Should().BeGreaterThan(0);
+
+                var completed = await Task.WhenAny(tcs.Task, Task.Delay(5.seconds()));
+                completed.Should().Be(tcs.Task);
+
+                var result = await tcs.Task;
+                result.RequestId.Should().Be(requestId);
+                result.Matches.Should().BeGreaterThan(0);
+            }
+            finally
+            {
+                wc.OnFoundInPage -= OnFound;
+                wc.StopFindInPage(StopFindInPageAction.ClearSelection);
+            }
+        }
+
+        [IntegrationFact]
+        public async Task Reload_and_loading_state_check()
+        {
+            var wc = this.MainWindow.WebContents;
+            await wc.LoadURLAsync("data:text/html,<html><body><h1>Reload Test</h1></body></html>");
+            await Task.Delay(500.ms());
+
+            (await wc.IsLoadingAsync()).Should().BeFalse();
+            (await wc.IsLoadingMainFrameAsync()).Should().BeFalse();
+            (await wc.IsWaitingForResponseAsync()).Should().BeFalse();
+
+            wc.Reload();
+            await Task.Delay(1.seconds());
+
+            var title = await wc.ExecuteJavaScriptAsync<string>("document.querySelector('h1').textContent");
+            title.Should().Be("Reload Test");
+        }
+
     }
 }

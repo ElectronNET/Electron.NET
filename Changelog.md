@@ -13,6 +13,10 @@
 - Fixed resolution of unrelated target (#1099) @epsnm
 - Fixed false alarm for `ELECTRON001` on a root `package-lock.json` (#946)
 - Added `WebContents.OnZoomChanged` event (#956)
+- Added `WebContents` page loading APIs `LoadFileAsync`, `IsLoadingAsync`, `IsLoadingMainFrameAsync`, `IsWaitingForResponseAsync`, `Reload`, `ReloadIgnoringCache` and `Stop` (#956)
+- Added `WebContents.InsertCSSAsync` and `WebContents.RemoveInsertedCSSAsync` for dynamic CSS (#956)
+- Added `WebContents` editing and selection APIs (undo, redo, cut, copy, paste, insert text, select, ...) (#956)
+- Added `WebContents.FindInPageAsync`, `WebContents.StopFindInPage` and the `OnFoundInPage` event (#956)
 - Added target framework customization (#1095) @epsnm
 - Added configurable Electron root directory for custom packaging layouts (#1106) @DYH1319
 - Added ability for `custom_main.js` to modify command line switches (#1029) @AeonSake
