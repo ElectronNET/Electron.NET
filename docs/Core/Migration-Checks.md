@@ -117,6 +117,10 @@ The `electron.manifest.json` file format is deprecated. All configuration should
     "mac": {
         "icon": "Assets/app.icns",
         "target": ["dmg", "zip"]
+    },
+    "nsis": {
+        "oneClick": true,
+        "perMachine": false
     }
 }
 ```

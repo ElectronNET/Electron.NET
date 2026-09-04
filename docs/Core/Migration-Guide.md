@@ -48,17 +48,19 @@ You can also manually edit `electron-builder.json`:
 ```json
 {
   "linux": {
-    "target": [
-      "tar.xz"
-    ]
+    "target": ["tar.xz"]
   },
   "win": {
     "target": [
       {
-        "target": "portable",
+        "target": "nsis",
         "arch": "x64"
       }
     ]
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false
   }
 }
 ```
