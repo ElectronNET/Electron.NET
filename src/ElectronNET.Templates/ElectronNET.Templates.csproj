@@ -20,12 +20,16 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <Nullable>disable</Nullable>
-    <!-- Must match the Electron.NET package version referenced by the templates -->
-    <ElectronNetTemplatePackageVersion>0.6.0</ElectronNetTemplatePackageVersion>
+    <!-- The version pinned in the template project files on disk. It is replaced by the
+         actual package version while packing, so a template always scaffolds an app that
+         references the Electron.NET packages it was shipped with. -->
+    <TemplatePlaceholderVersion>0.6.0</TemplatePlaceholderVersion>
+    <TemplateProjectFile>templates\blazor\ElectronBlazorApp.csproj</TemplateProjectFile>
+    <TemplateProjectPackagePath>content\templates\blazor\ElectronBlazorApp.csproj</TemplateProjectPackagePath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;$(TemplateProjectFile)" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
@@ -34,9 +38,28 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <Target Name="ValidateTemplatePackageVersion" BeforeTargets="Build">
-    <Error Condition="!$(Version.StartsWith('$(ElectronNetTemplatePackageVersion)'))"
-           Text="The templates reference Electron.NET $(ElectronNetTemplatePackageVersion) but the current version is $(Version). Update the PackageReference versions in templates\**\*.csproj and the ElectronNetTemplatePackageVersion property." />
+  <Target Name="RewriteTemplateProjectVersion" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <_TemplateProjectSource>$(MSBuildProjectDirectory)\$(TemplateProjectFile)</_TemplateProjectSource>
+      <_TemplateProjectTarget>$(IntermediateOutputPath)templates\blazor\ElectronBlazorApp.csproj</_TemplateProjectTarget>
+      <_TemplateProjectContent>$([System.IO.File]::ReadAllText('$(_TemplateProjectSource)'))</_TemplateProjectContent>
+    </PropertyGroup>
+
+    <Error Condition="!$(_TemplateProjectContent.Contains('Version=&quot;$(TemplatePlaceholderVersion)&quot;'))"
+           Text="'$(TemplateProjectFile)' contains no PackageReference pinned to $(TemplatePlaceholderVersion), so the package version cannot be injected. Align the template's PackageReference versions with the TemplatePlaceholderVersion property." />
+
+    <PropertyGroup>
+      <_TemplateProjectContent>$(_TemplateProjectContent.Replace('Version="$(TemplatePlaceholderVersion)"', 'Version="$(Version)"'))</_TemplateProjectContent>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(_TemplateProjectTarget)"
+                      Lines="$([MSBuild]::Escape($(_TemplateProjectContent)))"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Content Include="$(_TemplateProjectTarget)" Pack="true" PackagePath="$(TemplateProjectPackagePath)" />
+    </ItemGroup>
   </Target>
 
 </Project>
