@@ -29,32 +29,11 @@ let electronforcedport;
 let electronUrl;
 let authToken = randomUUID().split('-').join('');
 
-if (app.commandLine.hasSwitch('manifest')) {
-    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
-}
-
-if (app.commandLine.hasSwitch('unpackedelectron')) {
-    unpackedelectron = true;
-}
-else if (app.commandLine.hasSwitch('unpackeddotnet')) {
-    unpackeddotnet = true;
-}
-else if (app.commandLine.hasSwitch('dotnetpacked')) {
-    dotnetpacked = true;
-}
-
-if (app.commandLine.hasSwitch('electronforcedport')) {
-    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
-}
-
 // Store in global for access by browser windows
 global.authToken = authToken;
 
-if (app.commandLine.hasSwitch('electronurl')) {
-    electronUrl = app.commandLine.getSwitchValue('electronurl');
-}
-
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
+// Runs before any command line switch is evaluated so the hook can still modify them.
 // If the hook returns false, abort Electron startup.
 try {
     const fs = require('fs');
@@ -75,6 +54,28 @@ try {
     }
 } catch (err) {
     console.error('Error while executing custom_main.js:', err);
+}
+
+if (app.commandLine.hasSwitch('manifest')) {
+    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
+}
+
+if (app.commandLine.hasSwitch('unpackedelectron')) {
+    unpackedelectron = true;
+}
+else if (app.commandLine.hasSwitch('unpackeddotnet')) {
+    unpackeddotnet = true;
+}
+else if (app.commandLine.hasSwitch('dotnetpacked')) {
+    dotnetpacked = true;
+}
+
+if (app.commandLine.hasSwitch('electronforcedport')) {
+    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
+}
+
+if (app.commandLine.hasSwitch('electronurl')) {
+    electronUrl = app.commandLine.getSwitchValue('electronurl');
 }
 
 const currentPath = __dirname;

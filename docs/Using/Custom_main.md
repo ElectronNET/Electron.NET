@@ -7,6 +7,7 @@ This guide explains how to include and use a `custom_main.js` file in your Elect
 - Register custom protocol handlers (e.g., `myapp://`) — protocols must be registered before the app is fully initialized
 - Integrate Node.js modules (e.g., telemetry, OS APIs)
 - Control startup logic (abort, environment checks)
+- Modify Chromium / Electron.NET command line switches before they are evaluated
 - Set up IPC messaging or preload scripts
 
 ## Step-by-Step Process
@@ -65,10 +66,29 @@ Use environment variables to control features:
   if (env === 'Development') { /* enable dev features */ }
   ```
 
+### Modifying Command Line Switches
+
+`onStartup` is invoked before Electron.NET reads any of its own switches (`manifest`, `unpackedelectron`, `unpackeddotnet`, `dotnetpacked`, `electronforcedport`, `electronurl`), so the hook can append or override them:
+
+```javascript
+module.exports.onStartup = function (host) {
+    const { app } = require('electron');
+
+    // Force a fixed socket bridge port
+    app.commandLine.appendSwitch('electronforcedport', '8000');
+
+    // Chromium switches, e.g. to disable the GPU sandbox
+    app.commandLine.appendSwitch('disable-gpu-sandbox');
+
+    return true;
+};
+```
+
 ## Notes
 
 - `custom_main.js` must use CommonJS syntax (`module.exports.onStartup = ...`).
 - Place the file in your source directory and copy it to `.electron` using `.csproj`.
 - Electron.NET will abort startup if `onStartup` returns `false`.
+- `onStartup` runs before the Electron.NET command line switches are evaluated, so switches set there are picked up by the host.
 
 ### Complete example is available here [ElectronNetSampleApp](https://github.com/niteshsinghal85/ElectronNetSampleApp)

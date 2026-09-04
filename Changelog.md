@@ -11,6 +11,7 @@
 - Fixed resolution of unrelated target (#1099) @epsnm
 - Added target framework customization (#1095) @epsnm
 - Added configurable Electron root directory for custom packaging layouts (#1106) @DYH1319
+- Added ability for `custom_main.js` to modify command line switches (#1029) @AeonSake
 - Added `ElectronExecutableName` to separate the product name from the executable name (#1003) @AeonSake
 - Added build extensibility properties `ElectronSkipExecCommands` and `ElectronIntermediatePublishDir` (#1106) @DYH1319
 
