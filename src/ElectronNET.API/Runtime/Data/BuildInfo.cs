@@ -6,6 +6,8 @@
 
         public string ElectronVersion { get; internal set; }
 
+        public string ElectronRootDir { get; internal set; }
+
         public string RuntimeIdentifier { get; internal set; }
 
         public bool ElectronSingleInstance { get; internal set; }

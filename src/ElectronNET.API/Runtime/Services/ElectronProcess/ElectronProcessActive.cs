@@ -11,6 +11,7 @@
     using System.Threading.Tasks;
     using ElectronNET.Common;
     using ElectronNET.Runtime.Data;
+    using ElectronNET.Runtime.Helpers;
 
     /// <summary>
     /// Launches and manages the Electron app process.
@@ -87,7 +88,7 @@
             }
             else
             {
-                dir = dir.Parent!.Parent!;
+                dir = ElectronRootDirResolver.Resolve(dir);
                 startCmd = Path.Combine(dir.FullName, this.electronBinaryName);
                 args = $"-dotnetpacked -electronforcedport={this.socketPort:D} " + this.extraArguments;
                 workingDir = dir.FullName;

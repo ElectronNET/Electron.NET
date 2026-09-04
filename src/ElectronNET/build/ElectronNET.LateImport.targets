@@ -170,7 +170,9 @@
     <PropertyGroup Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
       <_NonIntermediatePublishDir>$(PublishDir)</_NonIntermediatePublishDir>
       <PublishUrl>$(PublishDir)</PublishUrl>
-      <PublishDir>$(IntermediateOutputPath)PubTmp\</PublishDir>
+      <!-- ElectronIntermediatePublishDir allows overriding the intermediate publish directory -->
+      <PublishDir Condition="'$(ElectronIntermediatePublishDir)' != ''">$(ElectronIntermediatePublishDir)</PublishDir>
+      <PublishDir Condition="'$(ElectronIntermediatePublishDir)' == ''">$(IntermediateOutputPath)PubTmp\</PublishDir>
     </PropertyGroup>
 
     <RemoveDir Directories="$(PublishDir);$(PublishUrl)" Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'" />
@@ -459,13 +461,13 @@
 
     <!--<Message Importance="High" Text="ElectronConfigureApp: CopiedFiles - @(_CopiedFiles)" />-->
 
-    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="@(_CopiedFiles->Count()) > 0" />
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(_CopiedFiles->Count()) > 0" />
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(_CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(_CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '' AND '$(ExecExitCode)' != '0'" />
 
     <PropertyGroup>
       <_NpmCmd>node node_modules/electron/install.js</_NpmCmd>
@@ -474,13 +476,13 @@
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
-    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0" />
+    <Message Importance="High" Text="Running command: $(_NpmCmd) in folder:  $(ElectronOutputPath)" Condition="'$(ElectronSkipExecCommands)' != 'true' AND $(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0" />
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="$(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronOutputPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND $(ElectronMajor) &gt;= 42 AND @(_CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron installation failed!" Condition="'$(ExecExitCode)' != '0'" />
+    <Message Importance="High" Text="Electron installation failed!" Condition="'$(ExecExitCode)' != '' AND '$(ExecExitCode)' != '0'" />
 
     <!-- Fix up incorrect symlinks created by npm on Windows when targeting macOS -->
     <PropertyGroup>
@@ -615,11 +617,11 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpmAppDepsCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmAppDepsCmd)'</_NpmAppDepsCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpmAppDepsCmd)" WorkingDirectory="$(ElectronAppDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmAppDepsCmd)" WorkingDirectory="$(ElectronAppDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron app dependency install failed!" Condition="'$(ExecExitCode)' != '0'" />
+    <Message Importance="High" Text="Electron app dependency install failed!" Condition="'$(ExecExitCode)' != '' AND '$(ExecExitCode)' != '0'" />
 
     <!-- Install electron-builder (the dev tool) into the publish root, which is the
          electron-builder projectDir (cwd). app metadata + runtime deps are read from
@@ -645,11 +647,11 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpmCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpmCmd)'</_NpmCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpmCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="600000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '' AND '$(ExecExitCode)' != '0'" />
 
     <!-- Transform ElectronPublishUrlFullPath to a wslpath if IsLinuxWsl is true -->
     <Exec Command="wsl wslpath '$(ElectronPublishUrlFullPath)'" ConsoleToMsBuild="true" Condition="'$(IsLinuxWsl)' == 'true'">
@@ -673,11 +675,11 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
       <_NpxCmd Condition="'$(IsLinuxWsl)' == 'true'">wsl bash -ic '$(_NpxCmd)'</_NpxCmd>
     </PropertyGroup>
 
-    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="@(CopiedFiles->Count()) > 0">
+    <Exec Command="$(_NpxCmd)" WorkingDirectory="$(ElectronPublishDirFullPath)" Timeout="1800000" StandardOutputImportance="High" StandardErrorImportance="High" ContinueOnError="false" Condition="'$(ElectronSkipExecCommands)' != 'true' AND @(CopiedFiles->Count()) > 0">
       <Output TaskParameter="ExitCode" PropertyName="ExecExitCode"/>
     </Exec>
 
-    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '0'" />
+    <Message Importance="High" Text="Electron setup failed!" Condition="'$(ExecExitCode)' != '' AND '$(ExecExitCode)' != '0'" />
 
   </Target>
 

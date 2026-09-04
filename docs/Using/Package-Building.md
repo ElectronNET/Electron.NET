@@ -222,6 +222,15 @@ The publish process will:
 > macOS builds can't be created on Windows machines because they require symlinks that aren't supported on Windows (per [this Electron issue](https://github.com/electron-userland/electron-packager/issues/71)). macOS builds can be produced on either Linux or macOS machines.
 
 
+## Custom Packaging Pipelines
+
+The default layout is Electron-First: electron-builder produces the Electron package and the .NET app is placed in `resources/bin`. If you assemble the package yourself and put the .NET executable at the package root with Electron in a subdirectory, set `ElectronRootDir` so the .NET app can locate the Electron binary at runtime.
+
+For pipelines that provide the npm dependencies themselves, `ElectronSkipExecCommands` suppresses all `npm`/`npx` invocations, and `ElectronIntermediatePublishDir` redirects the intermediate publish output.
+
+See [Configuration](Configuration.md#custom-packaging-layout) for details.
+
+
 ## 🚀 Next Steps
 
 - **[Startup Methods](Startup-Methods.md)** - Understanding different launch modes for packaged apps

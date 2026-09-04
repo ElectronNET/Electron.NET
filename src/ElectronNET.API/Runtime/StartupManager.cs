@@ -178,6 +178,7 @@
             {
                 buildInfo.ElectronExecutable = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronExecutable))?.Value;
                 buildInfo.ElectronVersion = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronVersion))?.Value;
+                buildInfo.ElectronRootDir = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.ElectronRootDir))?.Value;
                 buildInfo.RuntimeIdentifier = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.RuntimeIdentifier))?.Value;
                 buildInfo.Title = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.Title))?.Value;
                 buildInfo.Version = attributes.FirstOrDefault(e => e.Key == nameof(buildInfo.Version))?.Value;

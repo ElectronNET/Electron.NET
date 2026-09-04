@@ -11,9 +11,14 @@
     <ElectronSplashScreen></ElectronSplashScreen>
     <ElectronIcon></ElectronIcon>
     <PackageIcon></PackageIcon>
-    <ElectronPackageId>$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
+    <ElectronPackageId Condition="'$(ElectronPackageId)' == ''">$(MSBuildProjectName.Replace(".", "-").ToLower())</ElectronPackageId>
     <ElectronBuilderJson>electron-builder.json</ElectronBuilderJson>
-    <Title>$(MSBuildProjectName)</Title>
+    <Title Condition="'$(Title)' == ''">$(MSBuildProjectName)</Title>
+    <!-- Location of the Electron binary relative to the .NET application directory of a packaged app.
+         The default matches the standard layout, where the .NET app is placed in 'resources/bin'. -->
+    <ElectronRootDir Condition="'$(ElectronRootDir)' == ''">../..</ElectronRootDir>
+    <!-- Set to true to suppress the npm/npx invocations of the Electron build and publish targets. -->
+    <ElectronSkipExecCommands Condition="'$(ElectronSkipExecCommands)' == ''">false</ElectronSkipExecCommands>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -19,6 +19,7 @@
   <ItemGroup>
     <AssemblyMetadata Include="ElectronExecutable" Value="$(ElectronExecutable)" />
     <AssemblyMetadata Include="ElectronVersion" Value="$(ElectronVersion)" />
+    <AssemblyMetadata Include="ElectronRootDir" Value="$(ElectronRootDir)" />
     <AssemblyMetadata Include="RuntimeIdentifier" Value="$(RuntimeIdentifier)" />
     <AssemblyMetadata Include="ElectronSingleInstance" Value="$(ElectronSingleInstance)" />
     <AssemblyMetadata Include="Title" Value="$(Title)" />
