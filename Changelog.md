@@ -3,6 +3,7 @@
 ## ElectronNET.Core
 
 - Updated dependencies
+- Fixed single instance handling on macOS (#1040)
 - Fixed socket bridge connection when a system proxy is configured (#1105)
 - Fixed electron-builder using the host RID instead of the target RID (#1097)
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm

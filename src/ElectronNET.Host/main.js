@@ -103,9 +103,44 @@ app.on('will-finish-launching', () => {
 
 const manifestJsonFile = require(manifestJsonFilePath);
 
+// Brings the app back to the foreground: focuses an already existing window or - if
+// all windows have been closed (which keeps the app alive on macOS) - recreates the
+// main window.
+function activateApp() {
+    const windows = BrowserWindow.getAllWindows().filter((window) => !window.isDestroyed());
+
+    if (!windows.length) {
+        return typeof global.recreateMainWindow === 'function' && global.recreateMainWindow();
+    }
+
+    const target = windows.find((window) => window.isVisible()) || windows[0];
+
+    if (target.isMinimized()) {
+        target.restore();
+    }
+
+    if (!target.isVisible()) {
+        target.show();
+    }
+
+    target.focus();
+
+    if (platform() === 'darwin') {
+        // On macOS focusing a window does not necessarily bring the app itself to the front
+        app.focus({ steal: true });
+    }
+
+    return true;
+}
+
 if (manifestJsonFile.singleInstance) {
-    const mainInstance = app.requestSingleInstanceLock();
-    app.on('second-instance', (events, args = []) => {
+    if (!app.requestSingleInstanceLock()) {
+        // Another instance already owns the lock. Exit right away so that neither the
+        // socket bridge nor the .NET backend process of this instance is started.
+        app.exit(0);
+    }
+
+    app.on('second-instance', (event, args = []) => {
         args.forEach((parameter) => {
             const words = parameter.split('=');
 
@@ -116,19 +151,15 @@ if (manifestJsonFile.singleInstance) {
             }
         });
 
-        const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
-            if (windows[0].isMinimized()) {
-                windows[0].restore();
-            }
-            windows[0].focus();
-        }
+        activateApp();
     });
-
-    if (!mainInstance) {
-        app.quit();
-    }
 }
+
+// On macOS launching an already running app (or clicking its dock icon) does not
+// start a second instance - the 'activate' event is raised instead.
+app.on('activate', () => {
+    activateApp();
+});
 
 // Collect user supplied command line args (excluding those handled by Electron host itself)
 function getForwardedArgs() {

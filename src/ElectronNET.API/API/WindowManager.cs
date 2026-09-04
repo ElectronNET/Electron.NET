@@ -157,7 +157,16 @@ namespace ElectronNET.API
                 }
 
                 BridgeConnector.Socket.On<int[]>("BrowserWindowClosed", HandleBrowserWindowClosed);
+                BridgeConnector.Socket.On<int>("BrowserWindowRecreated", HandleBrowserWindowRecreated);
                 _browserWindowClosedSubscribed = true;
+            }
+        }
+
+        private void HandleBrowserWindowRecreated(int id)
+        {
+            if (_browserWindows.All(window => window.Id != id))
+            {
+                _browserWindows.Add(new BrowserWindow(id));
             }
         }
 
