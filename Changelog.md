@@ -4,6 +4,7 @@
 
 - Updated dependencies
 - Fixed single instance handling on macOS (#1040)
+- Fixed slow socket bridge startup by binding to an explicit loopback address (#1103)
 - Fixed socket bridge connection when a system proxy is configured (#1105)
 - Fixed electron-builder using the host RID instead of the target RID (#1097)
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm

@@ -94,8 +94,20 @@
                 }
             }
 
-            var pidArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
+            var hostArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronHostArgumentName, StringComparison.OrdinalIgnoreCase));
 
+            if (hostArg != null)
+            {
+                var parts = hostArg.Split('=', StringSplitOptions.TrimEntries);
+
+                if (parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]))
+                {
+                    ElectronNetRuntime.ElectronSocketHost = parts[1];
+
+                    Console.WriteLine("Use Electron Host: " + parts[1]);
+                }
+            }
+            var pidArg = argsList.FirstOrDefault(e => e.Contains(ElectronNetRuntime.ElectronPidArgumentName, StringComparison.OrdinalIgnoreCase));
             if (pidArg != null)
             {
                 var parts = pidArg.Split('=', StringSplitOptions.TrimEntries);

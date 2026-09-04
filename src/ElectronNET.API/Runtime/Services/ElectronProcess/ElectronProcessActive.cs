@@ -18,7 +18,7 @@
     [Localizable(false)]
     internal class ElectronProcessActive : ElectronProcessBase
     {
-        private readonly Regex extractor = new Regex("^Electron Socket: listening on port (\\d+) at .* using ([a-f0-9]+)$");
+        private readonly Regex extractor = new Regex("^Electron Socket: listening on port (\\d+) at (\\S+) using ([a-f0-9]+)$");
 
         private readonly bool isUnpackaged;
         private readonly string electronBinaryName;
@@ -179,11 +179,13 @@
                 if (match?.Success ?? false)
                 {
                     var port = int.Parse(match.Groups[1].Value);
-                    var token = match.Groups[2].Value;
+                    var host = match.Groups[2].Value;
+                    var token = match.Groups[3].Value;
 
                     this.process.LineReceived -= Read_SocketIO_Parameters;
                     ElectronNetRuntime.ElectronAuthToken = token;
                     ElectronNetRuntime.ElectronSocketPort = port;
+                    ElectronNetRuntime.ElectronSocketHost = host;
                     tcs.SetResult();
                 }
             }

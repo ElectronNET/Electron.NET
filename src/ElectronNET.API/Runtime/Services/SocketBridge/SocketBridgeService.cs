@@ -16,7 +16,19 @@
         {
             this.socketPort = socketPort;
             this.authorization = authorization;
-            this.socketUrl = $"http://localhost:{this.socketPort}";
+            this.socketUrl = $"http://{FormatHost(ElectronNetRuntime.ElectronSocketHost)}:{this.socketPort}";
+        }
+
+        // The Electron host reports the loopback address it is actually listening on; only
+        // when it is unknown we have to fall back to the ambiguous hostname.
+        private static string FormatHost(string socketHost)
+        {
+            if (string.IsNullOrWhiteSpace(socketHost))
+            {
+                return "localhost";
+            }
+
+            return socketHost.Contains(':') ? $"[{socketHost}]" : socketHost;
         }
 
         public int SocketPort => this.socketPort;

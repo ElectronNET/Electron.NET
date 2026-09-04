@@ -175,6 +175,7 @@ function getForwardedArgs() {
         if (cleaned.startsWith('remote-debugging-port')) return false;
         // We add /electronPort ourselves later
         if (cleaned.startsWith('electronPort=')) return false;
+        if (cleaned.startsWith('electronHost=')) return false;
         if (cleaned.startsWith('electronWebPort=')) return false;
         return true;
     });
@@ -295,7 +296,6 @@ function startSocketApiBridge(port) {
     // otherwise the Windows Firewall will be triggered
     console.debug('Electron Socket: starting...');
     server = createServer();
-    const host = !port ? '127.0.0.1' : 'localhost';
     let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
@@ -303,16 +303,35 @@ function startSocketApiBridge(port) {
     });
     io.attach(server);
 
-    server.listen(port, host);
+    // Never bind to the 'localhost' hostname: it may resolve to ::1 and 127.0.0.1 in any
+    // order, so server and client can end up on different stacks - which costs a failed
+    // connection attempt (or a DNS lookup) on every startup.
+    const hostCandidates = ['127.0.0.1', '::1'];
+    let hostIndex = 0;
+
+    server.on('error', (error) => {
+        const isUnavailable = error.code === 'EADDRNOTAVAIL' || error.code === 'EAFNOSUPPORT' || error.code === 'EINVAL';
+
+        if (isUnavailable && hostIndex + 1 < hostCandidates.length) {
+            console.warn(`Electron Socket: cannot bind to ${hostCandidates[hostIndex]} (${error.code}), falling back to ${hostCandidates[hostIndex + 1]}.`);
+            hostIndex++;
+            server.listen(port, hostCandidates[hostIndex]);
+            return;
+        }
+
+        console.error('Electron Socket: ' + error.message);
+    });
+
+    server.listen(port, hostCandidates[hostIndex]);
     server.on('listening', function () {
         const addr = server.address();
         console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address} using ${authToken}`);
 
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
-            startAspCoreBackendUnpackaged(addr.port);
+            startAspCoreBackendUnpackaged(addr.port, addr.address);
         } else if (!unpackeddotnet && !dotnetpacked) {
-            startAspCoreBackend(addr.port);
+            startAspCoreBackend(addr.port, addr.address);
         }
     });
 
@@ -416,7 +435,7 @@ function startSocketApiBridge(port) {
     });
 }
 
-function startAspCoreBackend(electronPort) {
+function startAspCoreBackend(electronPort, electronHost) {
     startBackend();
 
     function startBackend() {
@@ -425,6 +444,7 @@ function startAspCoreBackend(electronPort) {
         const parameters = [
             envParam,
             `/electronPort=${electronPort}`,
+            `/electronHost=${electronHost}`,
             `/electronPID=${process.pid}`,
             `/electronAuthToken=${authToken}`,
             // forward user supplied args (avoid duplicate environment)
@@ -447,7 +467,7 @@ function startAspCoreBackend(electronPort) {
     }
 }
 
-function startAspCoreBackendUnpackaged(electronPort) {
+function startAspCoreBackendUnpackaged(electronPort, electronHost) {
     startBackend();
 
     function startBackend() {
@@ -456,6 +476,7 @@ function startAspCoreBackendUnpackaged(electronPort) {
         const parameters = [
             envParam,
             `/electronPort=${electronPort}`,
+            `/electronHost=${electronHost}`,
             `/electronPID=${process.pid}`,
             `/electronAuthToken=${authToken}`,
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))
