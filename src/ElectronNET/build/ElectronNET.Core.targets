@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Condition="'$(ElectronExecutable)' == ''">
+  <PropertyGroup Condition="'$(ElectronExecutableName)' == ''">
     <WinPrefix>win</WinPrefix>
-    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' == 'true'">$(Title)</ElectronExecutable>
-    <ElectronExecutable Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' != 'true'">$(ElectronPackageId)</ElectronExecutable>
+    <ElectronExecutableName Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' == 'true'">$(Title)</ElectronExecutableName>
+    <ElectronExecutableName Condition="'$(RuntimeIdentifier.StartsWith($(WinPrefix)))' != 'true'">$(ElectronPackageId)</ElectronExecutableName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- The binary Electron.NET launches. It only differs from the packaged executable in advanced
+         scenarios, e.g. when a build hook adds a launcher stub to the package. -->
+    <ElectronExecutable Condition="'$(ElectronExecutable)' == ''">$(ElectronExecutableName)</ElectronExecutable>
   </PropertyGroup>
 
   <PropertyGroup>

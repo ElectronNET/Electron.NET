@@ -553,6 +553,12 @@
                   Category="General">
   </StringProperty>
 
+  <StringProperty Name="ElectronExecutableName"
+                  DisplayName="Executable Name"
+                  Description="Name of the executable inside the package, without extension. Defaults to the title on Windows and to the package id on Linux and macOS"
+                  Category="General">
+  </StringProperty>
+
   <StringProperty Name="ElectronRootDir"
                   DisplayName="Electron Root Directory"
                   Description="Location of the Electron binary relative to the .NET application directory of a packaged app. Default: ../.. (the .NET app lives in resources/bin)"

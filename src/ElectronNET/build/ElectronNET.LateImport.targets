@@ -633,6 +633,7 @@ For more information, see: https://github.com/ElectronNET/Electron.NET/wiki/Migr
          app\package.json instead. -->
     <ItemGroup>
       <DevTemplateProperty Include="ElectronPackageId" Value="$(ElectronPackageId)" />
+      <DevTemplateProperty Include="ElectronExecutableName" Value="$(ElectronExecutableName)" />
       <DevTemplateProperty Include="Title" Value="$(Title)" />
       <DevTemplateProperty Include="Version" Value="$(Version)" />
     </ItemGroup>
