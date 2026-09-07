@@ -36,7 +36,7 @@ Then start it in the Electron shell:
 
 ```bash
 dotnet build
-electronize start
+dotnet run
 ```
 
 ### Options
