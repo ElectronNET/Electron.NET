@@ -4,11 +4,17 @@
   "private": true,
   "build": {
     "appId": "$(ElectronPackageId)",
+    "win": {
+      "executableName": "$(ElectronExecutableName)"
+    },
+    "mac": {
+      "executableName": "$(ElectronExecutableName)"
+    },
     "linux": {
       "desktop": {
         "entry": { "Name": "$(Title)" }
       },
-      "executableName": "$(ElectronPackageId)"
+      "executableName": "$(ElectronExecutableName)"
     },
     "deb": {
       "desktop": {

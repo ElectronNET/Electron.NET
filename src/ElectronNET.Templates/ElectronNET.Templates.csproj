@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageOutputPath>..\..\artifacts</PackageOutputPath>
+    <PackageId>$(PackageNamePrefix).Templates</PackageId>
+    <Title>$(PackageId)</Title>
+    <Description>$(DescriptionFirstPart) This package contains the 'dotnet new' project templates.</Description>
+    <PackageTags>electron aspnetcore blazor dotnet-new templates</PackageTags>
+    <PackageType>Template</PackageType>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <!-- Template content contains dot-prefixed folders (.template.config) that must be packed -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IncludeSymbols>false</IncludeSymbols>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <Nullable>disable</Nullable>
+    <!-- The version pinned in the template project files on disk. It is replaced by the
+         actual package version while packing, so a template always scaffolds an app that
+         references the Electron.NET packages it was shipped with. -->
+    <TemplatePlaceholderVersion>0.6.0</TemplatePlaceholderVersion>
+    <TemplateProjectFile>templates\blazor\ElectronBlazorApp.csproj</TemplateProjectFile>
+    <TemplateProjectPackagePath>content\templates\blazor\ElectronBlazorApp.csproj</TemplateProjectPackagePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;$(TemplateProjectFile)" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\ElectronNET\PackageIcon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <Target Name="RewriteTemplateProjectVersion" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <_TemplateProjectSource>$(MSBuildProjectDirectory)\$(TemplateProjectFile)</_TemplateProjectSource>
+      <_TemplateProjectTarget>$(IntermediateOutputPath)templates\blazor\ElectronBlazorApp.csproj</_TemplateProjectTarget>
+      <_TemplateProjectContent>$([System.IO.File]::ReadAllText('$(_TemplateProjectSource)'))</_TemplateProjectContent>
+    </PropertyGroup>
+
+    <Error Condition="!$(_TemplateProjectContent.Contains('Version=&quot;$(TemplatePlaceholderVersion)&quot;'))"
+           Text="'$(TemplateProjectFile)' contains no PackageReference pinned to $(TemplatePlaceholderVersion), so the package version cannot be injected. Align the template's PackageReference versions with the TemplatePlaceholderVersion property." />
+
+    <PropertyGroup>
+      <_TemplateProjectContent>$(_TemplateProjectContent.Replace('Version="$(TemplatePlaceholderVersion)"', 'Version="$(Version)"'))</_TemplateProjectContent>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(_TemplateProjectTarget)"
+                      Lines="$([MSBuild]::Escape($(_TemplateProjectContent)))"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Content Include="$(_TemplateProjectTarget)" Pack="true" PackagePath="$(TemplateProjectPackagePath)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

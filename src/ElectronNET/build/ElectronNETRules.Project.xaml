@@ -553,6 +553,30 @@
                   Category="General">
   </StringProperty>
 
+  <StringProperty Name="ElectronExecutableName"
+                  DisplayName="Executable Name"
+                  Description="Name of the executable inside the package, without extension. Defaults to the title on Windows and to the package id on Linux and macOS"
+                  Category="General">
+  </StringProperty>
+
+  <StringProperty Name="ElectronRootDir"
+                  DisplayName="Electron Root Directory"
+                  Description="Location of the Electron binary relative to the .NET application directory of a packaged app. Default: ../.. (the .NET app lives in resources/bin)"
+                  Category="General">
+  </StringProperty>
+
+  <BoolProperty Name="ElectronSkipExecCommands"
+                DisplayName="Skip npm/npx Commands"
+                Description="If enabled, the npm and npx invocations of the Electron build and publish targets are skipped"
+                Category="General">
+  </BoolProperty>
+
+  <StringProperty Name="ElectronIntermediatePublishDir"
+                  DisplayName="Intermediate Publish Directory"
+                  Description="Overrides the intermediate publish directory used while packaging. Default: $(IntermediateOutputPath)PubTmp\"
+                  Category="General">
+  </StringProperty>
+
   <StringProperty Name="ElectronSplashScreen"
                   DisplayName="Splash Screen Image"
                   Description="Choose a PNG image to be shown as splash screen on startup"

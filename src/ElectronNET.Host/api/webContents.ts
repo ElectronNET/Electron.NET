@@ -103,6 +103,51 @@ export = (socket: Socket) => {
     });
   });
 
+  socket.on("register-webContents-zoomChanged", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("zoom-changed");
+    browserWindow.webContents.on("zoom-changed", (_, zoomDirection) => {
+      electronSocket.emit("webContents-zoomChanged" + id, zoomDirection);
+    });
+  });
+
+  socket.on("register-webContents-foundInPage", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("found-in-page");
+    browserWindow.webContents.on("found-in-page", (_, result) => {
+      electronSocket.emit("webContents-foundInPage" + id, result);
+    });
+  });
+
+  socket.on("register-webContents-audioStateChanged", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("audio-state-changed");
+    browserWindow.webContents.on("audio-state-changed", (event) => {
+      electronSocket.emit("webContents-audioStateChanged" + id, event.audible);
+    });
+  });
+
+  socket.on("register-webContents-mediaStartedPlaying", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("media-started-playing");
+    browserWindow.webContents.on("media-started-playing", () => {
+      electronSocket.emit("webContents-mediaStartedPlaying" + id);
+    });
+  });
+
+  socket.on("register-webContents-mediaPaused", (id) => {
+    const browserWindow = getWindowById(id);
+
+    browserWindow.webContents.removeAllListeners("media-paused");
+    browserWindow.webContents.on("media-paused", () => {
+      electronSocket.emit("webContents-mediaPaused" + id);
+    });
+  });
+
   socket.on("webContents-openDevTools", (id, options) => {
     if (options) {
       getWindowById(id).webContents.openDevTools(options);
@@ -409,6 +454,52 @@ export = (socket: Socket) => {
       });
   });
 
+  socket.on("webContents-loadFile", (id, filePath, options) => {
+    const browserWindow = getWindowById(id);
+    browserWindow.webContents
+      .loadFile(filePath, options ?? undefined)
+      .then(() => {
+        electronSocket.emit("webContents-loadFile-complete" + id);
+      })
+      .catch((error) => {
+        console.error(error);
+        electronSocket.emit("webContents-loadFile-error" + id, error);
+      });
+  });
+
+  socket.on("webContents-isLoading", (id) => {
+    electronSocket.emit(
+      "webContents-isLoading-completed",
+      getWindowById(id).webContents.isLoading(),
+    );
+  });
+
+  socket.on("webContents-isLoadingMainFrame", (id) => {
+    electronSocket.emit(
+      "webContents-isLoadingMainFrame-completed",
+      getWindowById(id).webContents.isLoadingMainFrame(),
+    );
+  });
+
+  socket.on("webContents-isWaitingForResponse", (id) => {
+    electronSocket.emit(
+      "webContents-isWaitingForResponse-completed",
+      getWindowById(id).webContents.isWaitingForResponse(),
+    );
+  });
+
+  socket.on("webContents-reload", (id) => {
+    getWindowById(id).webContents.reload();
+  });
+
+  socket.on("webContents-reloadIgnoringCache", (id) => {
+    getWindowById(id).webContents.reloadIgnoringCache();
+  });
+
+  socket.on("webContents-stop", (id) => {
+    getWindowById(id).webContents.stop();
+  });
+
   socket.on("webContents-insertCSS", (id, isBrowserWindow, path) => {
     if (isBrowserWindow) {
       const browserWindow = getWindowById(id);
@@ -429,6 +520,19 @@ export = (socket: Socket) => {
         view.webContents.insertCSS(fs.readFileSync(path, "utf8"));
       }
     }
+  });
+
+  socket.on("webContents-insertCSSText", async (id, css, cssOrigin) => {
+    const key = await getWindowById(id).webContents.insertCSS(
+      css,
+      cssOrigin ? { cssOrigin } : undefined,
+    );
+    electronSocket.emit("webContents-insertCSSText-completed" + id, key);
+  });
+
+  socket.on("webContents-removeInsertedCSS", async (id, key) => {
+    await getWindowById(id).webContents.removeInsertedCSS(key);
+    electronSocket.emit("webContents-removeInsertedCSS-completed" + id);
   });
 
   socket.on("webContents-session-getAllExtensions", (id) => {
@@ -555,6 +659,87 @@ export = (socket: Socket) => {
 
   socket.on("webContents-setUserAgent", (id, userAgent) => {
     getWindowById(id).webContents.setUserAgent(userAgent);
+  });
+
+  socket.on("webContents-undo", (id) => {
+    getWindowById(id).webContents.undo();
+  });
+
+  socket.on("webContents-redo", (id) => {
+    getWindowById(id).webContents.redo();
+  });
+
+  socket.on("webContents-cut", (id) => {
+    getWindowById(id).webContents.cut();
+  });
+
+  socket.on("webContents-copy", (id) => {
+    getWindowById(id).webContents.copy();
+  });
+
+  socket.on("webContents-copyImageAt", (id, x, y) => {
+    getWindowById(id).webContents.copyImageAt(x, y);
+  });
+
+  socket.on("webContents-paste", (id) => {
+    getWindowById(id).webContents.paste();
+  });
+
+  socket.on("webContents-pasteAndMatchStyle", (id) => {
+    getWindowById(id).webContents.pasteAndMatchStyle();
+  });
+
+  socket.on("webContents-delete", (id) => {
+    getWindowById(id).webContents.delete();
+  });
+
+  socket.on("webContents-selectAll", (id) => {
+    getWindowById(id).webContents.selectAll();
+  });
+
+  socket.on("webContents-unselect", (id) => {
+    getWindowById(id).webContents.unselect();
+  });
+
+  socket.on("webContents-adjustSelection", (id, options) => {
+    getWindowById(id).webContents.adjustSelection(options ?? {});
+  });
+
+  socket.on("webContents-centerSelection", (id) => {
+    getWindowById(id).webContents.centerSelection();
+  });
+
+  socket.on("webContents-scrollToTop", (id) => {
+    getWindowById(id).webContents.scrollToTop();
+  });
+
+  socket.on("webContents-scrollToBottom", (id) => {
+    getWindowById(id).webContents.scrollToBottom();
+  });
+
+  socket.on("webContents-insertText", async (id, text) => {
+    await getWindowById(id).webContents.insertText(text);
+    electronSocket.emit("webContents-insertText-completed" + id);
+  });
+
+  socket.on("webContents-replace", (id, text) => {
+    getWindowById(id).webContents.replace(text);
+  });
+
+  socket.on("webContents-replaceMisspelling", (id, text) => {
+    getWindowById(id).webContents.replaceMisspelling(text);
+  });
+
+  socket.on("webContents-findInPage", (id, text, options) => {
+    const requestId = getWindowById(id).webContents.findInPage(
+      text,
+      options ?? undefined,
+    );
+    electronSocket.emit("webContents-findInPage-completed" + id, requestId);
+  });
+
+  socket.on("webContents-stopFindInPage", (id, action) => {
+    getWindowById(id).webContents.stopFindInPage(action);
   });
 
   function getWindowById(

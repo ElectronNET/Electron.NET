@@ -1,3 +1,32 @@
+# 0.6.0
+
+## ElectronNET.Core
+
+- Updated dependencies
+- Updated `WebContents` zoom level APIs to use `double` instead of `int` (#956)
+- Improved migration checks to honor custom output paths and to detect `ProjectGuid` in publish profiles (#946)
+- Fixed single instance handling on macOS (#1040)
+- Fixed slow socket bridge startup by binding to an explicit loopback address (#1103)
+- Fixed socket bridge connection when a system proxy is configured (#1105)
+- Fixed electron-builder using the host RID instead of the target RID (#1097)
+- Fixed cross-compilation behavior on same platform (#1098) @epsnm
+- Fixed resolution of unrelated target (#1099) @epsnm
+- Fixed false alarm for `ELECTRON001` on a root `package-lock.json` (#946)
+- Added `ElectronNET.Core.Templates` package with a `dotnet new electron-blazor` template (#414)
+- Added `WebContents.OnZoomChanged` event (#956)
+- Added `WebContents` page loading APIs `LoadFileAsync`, `IsLoadingAsync`, `IsLoadingMainFrameAsync`, `IsWaitingForResponseAsync`, `Reload`, `ReloadIgnoringCache` and `Stop` (#956)
+- Added `WebContents.InsertCSSAsync` and `WebContents.RemoveInsertedCSSAsync` for dynamic CSS (#956)
+- Added `WebContents` editing and selection APIs (undo, redo, cut, copy, paste, insert text, select, ...) (#956)
+- Added `WebContents.FindInPageAsync`, `WebContents.StopFindInPage` and the `OnFoundInPage` event (#956)
+- Added `WebContents` audio events `OnAudioStateChanged`, `OnMediaStartedPlaying` and `OnMediaPaused` (#956)
+- Added `WebContents.ScrollToTop` and `WebContents.ScrollToBottom` (#956)
+- Added target framework customization (#1095) @epsnm
+- Added configurable Electron root directory for custom packaging layouts (#1106) @DYH1319
+- Added ability for `custom_main.js` to modify command line switches (#1029) @AeonSake
+- Added migration checks for incomplete `ElectronHostHook` folders (`ELECTRON010`, `ELECTRON011`) (#946)
+- Added `ElectronExecutableName` to separate the product name from the executable name (#1003) @AeonSake
+- Added build extensibility properties `ElectronSkipExecCommands` and `ElectronIntermediatePublishDir` (#1106) @DYH1319
+
 # 0.5.2
 
 ## ElectronNET.Core

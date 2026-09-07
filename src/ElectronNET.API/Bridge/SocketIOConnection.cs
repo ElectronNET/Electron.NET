@@ -4,6 +4,7 @@ namespace ElectronNET.API;
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using ElectronNET.API.Serialization;
 using SocketIO.Serializer.SystemTextJson;
@@ -18,13 +19,21 @@ internal class SocketIOConnection : ISocketConnection
 
     public SocketIOConnection(string uri, string authorization)
     {
-        var opts = string.IsNullOrEmpty(authorization) ? new SocketIOOptions() : new SocketIOOptions
+        var opts = new SocketIOOptions
         {
-            ExtraHeaders = new Dictionary<string, string>
+            // The bridge is a loopback IPC channel, so it must never go through a
+            // (system) proxy - otherwise the handshake never reaches the socket server.
+            Proxy = DirectProxy.Instance,
+        };
+
+        if (!string.IsNullOrEmpty(authorization))
+        {
+            opts.ExtraHeaders = new Dictionary<string, string>
             {
                 ["authorization"] = authorization
-            },
-        };
+            };
+        }
+
         _socket = new SocketIO(uri, opts);
         _socket.Serializer = new SystemTextJsonSerializer(ElectronJson.Options);
         // Use default System.Text.Json serializer from SocketIOClient.
@@ -151,5 +160,16 @@ internal class SocketIOConnection : ISocketConnection
         {
             throw new ObjectDisposedException(nameof(SocketIOConnection));
         }
+    }
+
+    private sealed class DirectProxy : IWebProxy
+    {
+        public static readonly DirectProxy Instance = new DirectProxy();
+
+        public ICredentials Credentials { get; set; }
+
+        public Uri GetProxy(Uri destination) => destination;
+
+        public bool IsBypassed(Uri host) => true;
     }
 }

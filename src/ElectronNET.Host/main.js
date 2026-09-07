@@ -29,32 +29,11 @@ let electronforcedport;
 let electronUrl;
 let authToken = randomUUID().split('-').join('');
 
-if (app.commandLine.hasSwitch('manifest')) {
-    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
-}
-
-if (app.commandLine.hasSwitch('unpackedelectron')) {
-    unpackedelectron = true;
-}
-else if (app.commandLine.hasSwitch('unpackeddotnet')) {
-    unpackeddotnet = true;
-}
-else if (app.commandLine.hasSwitch('dotnetpacked')) {
-    dotnetpacked = true;
-}
-
-if (app.commandLine.hasSwitch('electronforcedport')) {
-    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
-}
-
 // Store in global for access by browser windows
 global.authToken = authToken;
 
-if (app.commandLine.hasSwitch('electronurl')) {
-    electronUrl = app.commandLine.getSwitchValue('electronurl');
-}
-
 // Custom startup hook: look for custom_main.js and invoke its onStartup(host) if present.
+// Runs before any command line switch is evaluated so the hook can still modify them.
 // If the hook returns false, abort Electron startup.
 try {
     const fs = require('fs');
@@ -75,6 +54,28 @@ try {
     }
 } catch (err) {
     console.error('Error while executing custom_main.js:', err);
+}
+
+if (app.commandLine.hasSwitch('manifest')) {
+    manifestJsonFileName = app.commandLine.getSwitchValue('manifest');
+}
+
+if (app.commandLine.hasSwitch('unpackedelectron')) {
+    unpackedelectron = true;
+}
+else if (app.commandLine.hasSwitch('unpackeddotnet')) {
+    unpackeddotnet = true;
+}
+else if (app.commandLine.hasSwitch('dotnetpacked')) {
+    dotnetpacked = true;
+}
+
+if (app.commandLine.hasSwitch('electronforcedport')) {
+    electronforcedport = +app.commandLine.getSwitchValue('electronforcedport');
+}
+
+if (app.commandLine.hasSwitch('electronurl')) {
+    electronUrl = app.commandLine.getSwitchValue('electronurl');
 }
 
 const currentPath = __dirname;
@@ -103,9 +104,44 @@ app.on('will-finish-launching', () => {
 
 const manifestJsonFile = require(manifestJsonFilePath);
 
+// Brings the app back to the foreground: focuses an already existing window or - if
+// all windows have been closed (which keeps the app alive on macOS) - recreates the
+// main window.
+function activateApp() {
+    const windows = BrowserWindow.getAllWindows().filter((window) => !window.isDestroyed());
+
+    if (!windows.length) {
+        return typeof global.recreateMainWindow === 'function' && global.recreateMainWindow();
+    }
+
+    const target = windows.find((window) => window.isVisible()) || windows[0];
+
+    if (target.isMinimized()) {
+        target.restore();
+    }
+
+    if (!target.isVisible()) {
+        target.show();
+    }
+
+    target.focus();
+
+    if (platform() === 'darwin') {
+        // On macOS focusing a window does not necessarily bring the app itself to the front
+        app.focus({ steal: true });
+    }
+
+    return true;
+}
+
 if (manifestJsonFile.singleInstance) {
-    const mainInstance = app.requestSingleInstanceLock();
-    app.on('second-instance', (events, args = []) => {
+    if (!app.requestSingleInstanceLock()) {
+        // Another instance already owns the lock. Exit right away so that neither the
+        // socket bridge nor the .NET backend process of this instance is started.
+        app.exit(0);
+    }
+
+    app.on('second-instance', (event, args = []) => {
         args.forEach((parameter) => {
             const words = parameter.split('=');
 
@@ -116,19 +152,15 @@ if (manifestJsonFile.singleInstance) {
             }
         });
 
-        const windows = BrowserWindow.getAllWindows();
-        if (windows.length) {
-            if (windows[0].isMinimized()) {
-                windows[0].restore();
-            }
-            windows[0].focus();
-        }
+        activateApp();
     });
-
-    if (!mainInstance) {
-        app.quit();
-    }
 }
+
+// On macOS launching an already running app (or clicking its dock icon) does not
+// start a second instance - the 'activate' event is raised instead.
+app.on('activate', () => {
+    activateApp();
+});
 
 // Collect user supplied command line args (excluding those handled by Electron host itself)
 function getForwardedArgs() {
@@ -144,6 +176,7 @@ function getForwardedArgs() {
         if (cleaned.startsWith('remote-debugging-port')) return false;
         // We add /electronPort ourselves later
         if (cleaned.startsWith('electronPort=')) return false;
+        if (cleaned.startsWith('electronHost=')) return false;
         if (cleaned.startsWith('electronWebPort=')) return false;
         return true;
     });
@@ -264,7 +297,6 @@ function startSocketApiBridge(port) {
     // otherwise the Windows Firewall will be triggered
     console.debug('Electron Socket: starting...');
     server = createServer();
-    const host = !port ? '127.0.0.1' : 'localhost';
     let hostHook;
     io = new Server({
         pingTimeout: 60000, // in ms, default is 5000
@@ -272,16 +304,35 @@ function startSocketApiBridge(port) {
     });
     io.attach(server);
 
-    server.listen(port, host);
+    // Never bind to the 'localhost' hostname: it may resolve to ::1 and 127.0.0.1 in any
+    // order, so server and client can end up on different stacks - which costs a failed
+    // connection attempt (or a DNS lookup) on every startup.
+    const hostCandidates = ['127.0.0.1', '::1'];
+    let hostIndex = 0;
+
+    server.on('error', (error) => {
+        const isUnavailable = error.code === 'EADDRNOTAVAIL' || error.code === 'EAFNOSUPPORT' || error.code === 'EINVAL';
+
+        if (isUnavailable && hostIndex + 1 < hostCandidates.length) {
+            console.warn(`Electron Socket: cannot bind to ${hostCandidates[hostIndex]} (${error.code}), falling back to ${hostCandidates[hostIndex + 1]}.`);
+            hostIndex++;
+            server.listen(port, hostCandidates[hostIndex]);
+            return;
+        }
+
+        console.error('Electron Socket: ' + error.message);
+    });
+
+    server.listen(port, hostCandidates[hostIndex]);
     server.on('listening', function () {
         const addr = server.address();
         console.info(`Electron Socket: listening on port ${addr.port} at ${addr.address} using ${authToken}`);
 
         // Now that socket connection is established, we can guarantee port will not be open for portscanner
         if (unpackedelectron) {
-            startAspCoreBackendUnpackaged(addr.port);
+            startAspCoreBackendUnpackaged(addr.port, addr.address);
         } else if (!unpackeddotnet && !dotnetpacked) {
-            startAspCoreBackend(addr.port);
+            startAspCoreBackend(addr.port, addr.address);
         }
     });
 
@@ -385,7 +436,7 @@ function startSocketApiBridge(port) {
     });
 }
 
-function startAspCoreBackend(electronPort) {
+function startAspCoreBackend(electronPort, electronHost) {
     startBackend();
 
     function startBackend() {
@@ -394,6 +445,7 @@ function startAspCoreBackend(electronPort) {
         const parameters = [
             envParam,
             `/electronPort=${electronPort}`,
+            `/electronHost=${electronHost}`,
             `/electronPID=${process.pid}`,
             `/electronAuthToken=${authToken}`,
             // forward user supplied args (avoid duplicate environment)
@@ -416,7 +468,7 @@ function startAspCoreBackend(electronPort) {
     }
 }
 
-function startAspCoreBackendUnpackaged(electronPort) {
+function startAspCoreBackendUnpackaged(electronPort, electronHost) {
     startBackend();
 
     function startBackend() {
@@ -425,6 +477,7 @@ function startAspCoreBackendUnpackaged(electronPort) {
         const parameters = [
             envParam,
             `/electronPort=${electronPort}`,
+            `/electronHost=${electronHost}`,
             `/electronPID=${process.pid}`,
             `/electronAuthToken=${authToken}`,
             ...forwardedArgs.filter(a => !(envParam && a.startsWith('--environment=')))

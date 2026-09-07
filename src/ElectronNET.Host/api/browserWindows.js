@@ -39,7 +39,6 @@ const windows = (global["browserWindows"] =
     global["browserWindows"] || []);
 let readyToShowWindowsIds = [];
 let window;
-let lastOptions;
 let electronSocket;
 const proxyToCredentialsMap = (global["proxyToCredentialsMap"] = global["proxyToCredentialsMap"] || []);
 module.exports = (socket, app) => {
@@ -203,6 +202,18 @@ module.exports = (socket, app) => {
         });
     });
     socket.on("createBrowserWindow", (options, loadUrl) => {
+        createWindow(options, loadUrl, "BrowserWindowCreated");
+    });
+    // Allows the host (main.js) to bring the main window back when the app is activated
+    // again on macOS after all windows have been closed.
+    global["recreateMainWindow"] = () => {
+        if (electron_1.BrowserWindow.getAllWindows().length > 0 || !app["mainWindowOptions"]) {
+            return false;
+        }
+        createWindow(app["mainWindowOptions"], app["mainWindowURL"], "BrowserWindowRecreated");
+        return true;
+    };
+    function createWindow(options, loadUrl, createdEventName) {
         if (options.webPreferences &&
             !("nodeIntegration" in options.webPreferences)) {
             options = {
@@ -226,21 +237,19 @@ module.exports = (socket, app) => {
         delete options.isRunningBlazor;
         // we dont want to recreate the window when watch is ready.
         if (app.commandLine.hasSwitch("watch") &&
-            app["mainWindowURL"] === loadUrl) {
+            app["mainWindowURL"] === loadUrl &&
+            app["mainWindow"] &&
+            !app["mainWindow"].isDestroyed()) {
             window = app["mainWindow"];
-            if (window) {
-                window.reload();
-                synchronizeWindowRegistry();
-                if (!windows.some((entry) => tryGetWindowId(entry) === window.id)) {
-                    windows.push(window);
-                }
-                electronSocket.emit("BrowserWindowCreated", window.id);
-                return;
+            window.reload();
+            synchronizeWindowRegistry();
+            if (!windows.some((entry) => tryGetWindowId(entry) === window.id)) {
+                windows.push(window);
             }
+            electronSocket.emit(createdEventName, window.id);
+            return;
         }
-        else {
-            window = new electron_1.BrowserWindow(options);
-        }
+        window = new electron_1.BrowserWindow(options);
         if (options.proxy) {
             window.webContents.session.setProxy({ proxyRules: options.proxy });
         }
@@ -255,17 +264,9 @@ module.exports = (socket, app) => {
                 readyToShowWindowsIds.push(window.id);
             }
         });
-        lastOptions = options;
         window.on("closed", () => {
             synchronizeWindowRegistry();
             emitBrowserWindowClosed();
-        });
-        app.on("activate", () => {
-            // On macOS it's common to re-create a window in the app when the
-            // dock icon is clicked and there are no other windows open.
-            if (window === null && lastOptions) {
-                window = new electron_1.BrowserWindow(lastOptions);
-            }
         });
         if (loadUrl) {
             // Append authentication token to initial URL if available
@@ -299,10 +300,14 @@ module.exports = (socket, app) => {
         if (app["mainWindowURL"] == undefined || app["mainWindowURL"] == "") {
             app["mainWindowURL"] = loadUrl;
             app["mainWindow"] = window;
+            app["mainWindowOptions"] = options;
+        }
+        else if (app["mainWindowURL"] === loadUrl) {
+            app["mainWindow"] = window;
         }
         windows.push(window);
-        electronSocket.emit("BrowserWindowCreated", window.id);
-    });
+        electronSocket.emit(createdEventName, window.id);
+    }
     socket.on("browserWindowDestroy", (id) => {
         getWindowById(id).destroy();
     });

@@ -37,9 +37,17 @@
         public ProcessRunner(string name)
         {
             this.Name = name;
+            this.ExitWaitTimeout = DefaultExitWaitTimeout;
         }
 
         public event EventHandler<EventArgs> ProcessExited;
+
+        /// <summary>Gets or sets the value <see cref="ExitWaitTimeout"/> is initialized with.</summary>
+        public static int DefaultExitWaitTimeout { get; set; } = 5000;
+
+        /// <summary>Gets or sets the time in milliseconds to wait for the process and its I/O to finish
+        /// after the exited event has been raised. Values of zero or less wait indefinitely.</summary>
+        public int ExitWaitTimeout { get; set; }
 
         public bool IsDisposed { get; private set; }
 
@@ -498,8 +506,17 @@
         {
             try
             {
+                var timeout = this.ExitWaitTimeout;
+
                 // This shouldn't throw here, but the mono process implementation doesn't always behave as it should.
-                this.process.WaitForExit();
+                if (timeout > 0)
+                {
+                    this.process.WaitForExit(timeout);
+                }
+                else
+                {
+                    this.process.WaitForExit();
+                }
             }
             catch (Exception ex)
             {

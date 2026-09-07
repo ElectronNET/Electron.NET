@@ -69,6 +69,15 @@
                 return false;
             }
 
+            // Packaged, if the Electron binary is found where ElectronRootDir points to.
+            var electronExecutable = ElectronNetRuntime.ElectronExecutable;
+
+            if (!string.IsNullOrEmpty(electronExecutable) &&
+                File.Exists(Path.Combine(ElectronRootDirResolver.Resolve(dir).FullName, electronExecutable)))
+            {
+                return false;
+            }
+
             if (dir.GetDirectories().Any(e => e.Name == ".electron"))
             {
                 return true;

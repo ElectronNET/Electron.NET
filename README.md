@@ -23,13 +23,14 @@ While the classic Electron.NET setup (using an ASP.NET host run by the Electron 
 * ElectronNET.Core: [![NuGet](https://img.shields.io/nuget/v/ElectronNET.Core.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.Core.API/)
 * ElectronNET.Core.API: [![NuGet](https://img.shields.io/nuget/v/ElectronNET.Core.API.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.Core.API/)
 * ElectronNET.Core.AspNet: [![NuGet](https://img.shields.io/nuget/v/ElectronNET.Core.AspNet.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.Core.AspNet/)
+* ElectronNET.Core.Templates: [![NuGet](https://img.shields.io/nuget/v/ElectronNET.Core.Templates.svg?style=flat-square)](https://www.nuget.org/packages/ElectronNET.Core.Templates/)
 
 ## 🛠 Requirements to Run
 
 You should have installed:
 
-* .NET 6/8 or later.
-* The minimum base OS is the same as [.NET 6](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md) / [.NET 8](https://github.com/dotnet/core/blob/main/release-notes/8.0/supported-os.md).
+* .NET 8/10 or later.
+* The minimum base OS is the same as [.NET 8](https://github.com/dotnet/core/blob/main/release-notes/8.0/supported-os.md) / [.NET 10](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md).
 * Node.JS using at least [Version 22.x](https://nodejs.org).
 
 ## 👩‍🏫 Usage with ASP.NET
@@ -201,6 +202,8 @@ Alternatively, consider using a GitHub sponsorship for the core maintainers:
 
 - [Gregor Biswanger](https://github.com/sponsors/GregorBiswanger)
 - [Florian Rappl](https://github.com/sponsors/FlorianRappl)
+
+Or just [buy Florian a coffee](https://buymeacoffee.com/florianrappl) :coffee:.
 
 Any support appreciated! 🍻
 

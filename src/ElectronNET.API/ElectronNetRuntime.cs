@@ -15,6 +15,7 @@
         internal const int DefaultSocketPort = 8000;
         internal const int DefaultWebPort = 8001;
         internal const string ElectronPortArgumentName = "electronPort";
+        internal const string ElectronHostArgumentName = "electronHost";
         internal const string ElectronPidArgumentName = "electronPID";
         internal const string ElectronAuthTokenArgumentName = "electronAuthToken";
 
@@ -30,6 +31,11 @@
         public static string ElectronAuthToken { get; internal set; }
 
         public static int? ElectronSocketPort { get; internal set; }
+
+        /// <summary>
+        /// The loopback address the Electron socket bridge is listening on.
+        /// </summary>
+        public static string ElectronSocketHost { get; internal set; }
 
         public static int? AspNetWebPort { get; internal set; }
 

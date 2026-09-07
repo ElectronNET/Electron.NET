@@ -1,0 +1,49 @@
+:root {
+    color-scheme: light dark;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #1b1b1f;
+}
+
+.nav-menu a {
+    color: #d7d7d7;
+    text-decoration: none;
+}
+
+.nav-menu a.active {
+    color: #fff;
+    font-weight: 600;
+}
+
+main {
+    padding: 1.5rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    background-color: #1b6ec2;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #1861ac;
+}
