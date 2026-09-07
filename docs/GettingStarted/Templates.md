@@ -43,7 +43,7 @@ dotnet run
 
 | Option | Values | Default | Description |
 |--------|--------|---------|-------------|
-| `-f`, `--framework` | `net8.0`, `net10.0` | `net8.0` | The target framework of the generated project |
+| `-f`, `--framework` | `net8.0`, `net10.0` | `net10.0` | The target framework of the generated project |
 | `-e`, `--electron-version` | any Electron version | `38.2.2` | The Electron version the app is built against |
 | `-p`, `--port` | port number | `8001` | The port the ASP.NET server uses during development |
 | `--no-restore` | — | — | Skip the automatic `dotnet restore` |
