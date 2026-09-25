@@ -18,7 +18,7 @@
   "dependencies": {
     "dasherize": "^2.0.0",
     "electron-host-hook": "file:./ElectronHostHook",
-    "image-size": "^1.2.1",
+    "image-size": "^2.0.3",
     "electron-updater": "^6.8.9",
     "socket.io": "^4.8.1"
   },
