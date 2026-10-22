@@ -7,6 +7,7 @@
 - Improved migration checks to honor custom output paths and to detect `ProjectGuid` in publish profiles (#946)
 - Fixed single instance handling on macOS (#1040)
 - Fixed slow socket bridge startup by binding to an explicit loopback address (#1103)
+- Fixed local debugging launching the host `main.js` as a script file, which made Electron run its default app and resolve app name and userData to "Electron" instead of the app's `productName` (dev launch now points at the `.electron` app directory)
 - Fixed socket bridge connection when a system proxy is configured (#1105)
 - Fixed electron-builder using the host RID instead of the target RID (#1097)
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm

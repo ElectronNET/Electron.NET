@@ -83,7 +83,10 @@
                     startCmd = Path.Combine(electrondir, "node_modules", "electron", "dist", "Electron.app", "Contents", "MacOS", "Electron");
                 }
 
-                args = $"main.js -unpackeddotnet --trace-warnings -electronforcedport={this.socketPort:D} " + this.extraArguments;
+                // Pass the .electron directory instead of the main.js script file: with a script
+                // file Electron falls back to its default app, whose manifest is named "Electron",
+                // so the default userData folder becomes %APPDATA%\Electron from process startup.
+                args = $". -unpackeddotnet --trace-warnings -electronforcedport={this.socketPort:D} " + this.extraArguments;
                 workingDir = electrondir;
             }
             else
