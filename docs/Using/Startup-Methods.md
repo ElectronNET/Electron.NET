@@ -17,7 +17,9 @@ The framework supports **8 different launch scenarios** covering every combinati
 #### **`-unpackedelectron`** - Electron-first debugging
 ```bash
 # Launch Electron first, which then starts .NET
-node node_modules/electron/cli.js main.js -unpackedelectron
+# ('.' = the .electron dir: Electron then reads its package.json as the app manifest,
+#  so the app name and userData folder resolve correctly instead of defaulting to "Electron")
+node node_modules/electron/cli.js . -unpackedelectron
 ```
 
 #### **`-unpackeddotnet`** - .NET-first debugging
@@ -146,7 +148,7 @@ The image above illustrates how each combination of deployment type, application
   "Electron (unpackaged)": {
     "commandName": "Executable",
     "executablePath": "node",
-    "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron"
+    "commandLineArgs": "node_modules/electron/cli.js . -unpackedelectron"
   }
 }
 ```
