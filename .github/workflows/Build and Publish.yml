@@ -6,7 +6,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
 concurrency:
   group: build-publish-${{ github.ref }}
@@ -23,6 +22,10 @@ jobs:
     timeout-minutes: 10
     name: '2 / Publish'
 
+    permissions:
+      contents: write
+      id-token: write
+
     steps:
     - uses: actions/checkout@v5
 
@@ -34,7 +37,15 @@ jobs:
           8.0.x
           10.0.x
 
+    - name: NuGet login
+      id: nuget-login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
     - name: Build
+      env:
+        NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
       run: |
         if ($env:GITHUB_REF -eq "refs/heads/main") {
           .\build.ps1 -Target Publish
