@@ -12,7 +12,7 @@ jobs:
   publish-wiki:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Remove level 1 headings from Markdown files
         shell: bash
         run: |
