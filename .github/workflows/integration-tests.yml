@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, windows-2025, macos-14, macos-15-intel, macos-26]
+        os: [ubuntu-22.04, ubuntu-24.04, windows-2022, windows-2025, macos-15-intel, macos-26]
         electronVersion: ['30.4.0', '38.2.2']
         include:
           - os: ubuntu-22.04
@@ -26,8 +26,6 @@ jobs:
             rid: win-x64
           - os: windows-2025
             rid: win-x64
-          - os: macos-14
-            rid: osx-arm64
           - os: macos-15-intel
             rid: osx-x64
           - os: macos-26
@@ -72,7 +70,6 @@ jobs:
 
       - name: Run tests (Linux)
         if: runner.os == 'Linux'
-        continue-on-error: true
         timeout-minutes: 15
         run: |
           mkdir -p test-results
@@ -85,7 +82,6 @@ jobs:
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
-        continue-on-error: true
         timeout-minutes: 15
         run: |
           New-Item -ItemType Directory -Force -Path test-results | Out-Null
@@ -93,7 +89,6 @@ jobs:
 
       - name: Run tests (macOS)
         if: runner.os == 'macOS'
-        continue-on-error: true
         timeout-minutes: 15
         run: |
           mkdir -p test-results
@@ -200,16 +195,16 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Save PR Number
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         run: echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Write PR Number to File
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         run: echo "$PR_NUMBER" > pr_number.txt
         shell: bash
 
       - name: Upload PR Number Artifact
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v6
         with:
           name: pr_number
