@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Download CTRF artifact
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           github_token: ${{ github.token }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -26,7 +26,7 @@ jobs:
           path: ctrf
 
       - name: Download PR Number Artifact
-        uses: dawidd6/action-download-artifact@v8
+        uses: dawidd6/action-download-artifact@v17
         with:
           github_token: ${{ github.token }}
           run_id: ${{ github.event.workflow_run.id }}
