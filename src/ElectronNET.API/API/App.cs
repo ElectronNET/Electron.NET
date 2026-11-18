@@ -575,7 +575,7 @@ namespace ElectronNET.API
         }
 
         /// <summary>
-        /// The current application locale. Possible return values are documented <see href="https://www.electronjs.org/docs/api/locales">here</see>.
+        /// The current application locale. Possible return values are documented <see href="https://www.electronjs.org/docs/latest/api/app#appgetlocale">here</see>.
         /// <para/>
         /// Note: When distributing your packaged app, you have to also ship the locales folder.
         /// <para/>
