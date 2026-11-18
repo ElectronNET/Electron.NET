@@ -104,7 +104,7 @@ Jump List settings for the application.
 Jump List settings.
 
 #### 🧊 `Task<string> GetLocaleAsync(CancellationToken cancellationToken = default)`
-The current application locale. Possible return values are documented [here](https://www.electronjs.org/docs/api/locales).
+The current application locale. Possible return values are documented [here](https://www.electronjs.org/docs/latest/api/app#appgetlocale).
 
 Note: When distributing your packaged app, you have to also ship the locales folder.
 
