@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- Icon of the .NET executable itself (Windows only, shown e.g. in Task Manager) -->
+    <ApplicationIcon>Assets\icons\app.ico</ApplicationIcon>
+    <!-- Enable Electron.NET Dev Mode to use the local projects instead of the NuGet packages -->
+    <ElectronNetDevMode>true</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
+
+  <PropertyGroup Label="ElectronNetCommon">
+    <Title>Electron.NET App Icons Sample</Title>
+    <Version>1.0.0</Version>
+    <Product>com.electronnet.app-icons-sample</Product>
+    <Description>Shows how to provide app icons for Windows, Linux and macOS</Description>
+    <Company>Electron.NET</Company>
+    <Copyright>Copyright © 2026, Electron.NET</Copyright>
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <License>MIT</License>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Ship the icons with the .NET app. When publishing, they end up in "bin/Assets/icons",
+         which is where Properties/electron-builder.json picks them up for packaging.
+         At runtime, Program.cs uses them for the window (Windows/Linux) and dock (macOS) icon. -->
+    <None Update="Assets\icons\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+    <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.7.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.7.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+  </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
+
+</Project>

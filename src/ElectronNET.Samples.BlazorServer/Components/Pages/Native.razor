@@ -1,0 +1,120 @@
+@page "/native"
+@inject NativeService Native
+
+<PageTitle>Native Capabilities</PageTitle>
+
+<h1>Native Capabilities</h1>
+
+@if (!Native.IsAvailable)
+{
+    <p class="notice">Not running in Electron - native capabilities are not available in a browser.</p>
+}
+else if (electronVersion is not null)
+{
+    <p>Electron @electronVersion</p>
+}
+
+<section>
+    <h2>Open a file</h2>
+    <p>
+        Electron shows the native dialog and returns the path. The file is then read by .NET with <code>File.ReadAllTextAsync</code> -
+        Blazor Server code already runs with full access to the file system.
+    </p>
+    <p>
+        <button @onclick="OpenFileAsync" disabled="@(!Native.IsAvailable)">Open text file...</button>
+        @if (file is not null)
+        {
+            <button @onclick="ShowInFolderAsync">Show in folder</button>
+        }
+    </p>
+    @if (file is not null)
+    {
+        <p><code>@file.Value.Path</code> (@file.Value.Content.Length characters)</p>
+        <pre class="file-content">@Preview(file.Value.Content)</pre>
+    }
+</section>
+
+<section>
+    <h2>Dialogs and notifications</h2>
+    <p>
+        <button @onclick="ConfirmAsync" disabled="@(!Native.IsAvailable)">Show message box</button>
+        <button @onclick="Notify" disabled="@(!Native.IsAvailable)">Show notification</button>
+    </p>
+    @if (status is not null)
+    {
+        <p class="status">@status</p>
+    }
+</section>
+
+<section>
+    <h2>Clipboard and shell</h2>
+    <p>
+        <input @bind="clipboardText" />
+        <button @onclick="() => Native.CopyToClipboard(clipboardText)" disabled="@(!Native.IsAvailable)">Copy</button>
+        <button @onclick="PasteAsync" disabled="@(!Native.IsAvailable)">Paste</button>
+    </p>
+    <p>
+        <button @onclick="@(() => Native.OpenExternalAsync("https://github.com/ElectronNET/Electron.NET"))" disabled="@(!Native.IsAvailable)">
+            Open GitHub in the default browser
+        </button>
+    </p>
+</section>
+
+@code {
+    private string? electronVersion;
+    private (string Path, string Content)? file;
+    private string? status;
+    private string clipboardText = "Copied from Blazor";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Native.IsAvailable)
+        {
+            electronVersion = await Native.GetElectronVersionAsync();
+        }
+    }
+
+    private async Task OpenFileAsync()
+    {
+        try
+        {
+            file = await Native.PickTextFileAsync() ?? file;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            status = $"Could not read the file: {ex.Message}";
+        }
+    }
+
+    private Task ShowInFolderAsync() =>
+        file is { } f ? Native.ShowInFolderAsync(f.Path) : Task.CompletedTask;
+
+    private async Task ConfirmAsync()
+    {
+        var confirmed = await Native.ConfirmAsync("Do you like this sample?", "The answer is handled in a Blazor component.");
+        status = confirmed ? "Thanks! 🎉" : "Let us know what's missing on GitHub.";
+    }
+
+    private void Notify()
+    {
+        Native.ShowNotification("Hello from Blazor", "Click this notification.", onClick: () =>
+        {
+            // Raised on an Electron.NET thread: re-render via InvokeAsync.
+            _ = InvokeAsync(() =>
+            {
+                status = $"The notification was clicked at {DateTime.Now:T}.";
+                StateHasChanged();
+            });
+        });
+
+        status = "Notification shown.";
+    }
+
+    private async Task PasteAsync()
+    {
+        clipboardText = await Native.ReadClipboardAsync();
+    }
+
+    private static string Preview(string content) =>
+        content.Length > 5000 ? content[..5000] + "\n…" : content;
+}

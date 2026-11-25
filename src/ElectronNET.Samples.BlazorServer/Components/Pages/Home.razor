@@ -1,0 +1,54 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Blazor Server + Electron.NET</h1>
+
+<p>
+    This sample shows how to structure a Blazor Server app that runs in Electron, and how the different parts work together.
+    Everything below runs in a single .NET process:
+</p>
+
+<div class="cards">
+    <div class="card">
+        <h2><NavLink href="interactivity">Interactivity</NavLink></h2>
+        <p>
+            Plain Blazor: components handle events and re-render via the SignalR connection to the Electron window.
+            JS interop covers what only the browser can do. Nothing here depends on Electron.
+        </p>
+        <p><code>Components/Pages/Interactivity.razor</code></p>
+    </div>
+    <div class="card">
+        <h2><NavLink href="window">Window Control</NavLink></h2>
+        <p>
+            Components control the Electron window through <code>WindowService</code>, and window events
+            (focus, maximize) flow back into the UI through <code>AppEvents</code>.
+        </p>
+        <p><code>Desktop/WindowService.cs</code></p>
+    </div>
+    <div class="card">
+        <h2><NavLink href="native">Native Capabilities</NavLink></h2>
+        <p>
+            Native dialogs, notifications, clipboard and shell via <code>NativeService</code>.
+            Files are read directly by .NET - no detour through the renderer.
+        </p>
+        <p><code>Desktop/NativeService.cs</code></p>
+    </div>
+</div>
+
+<h2>How it fits together</h2>
+<pre class="diagram">
+ Electron window (renderer)          .NET process
+┌──────────────────────────┐        ┌───────────────────────────────────────────────┐
+│ HTML rendered by Blazor  │◄──────►│ Components (Pages, Layout)                    │
+│ blazor.web.js            │ SignalR│   │ inject                     ▲ subscribe    │
+└──────────────────────────┘        │   ▼                            │              │
+                                    │ WindowService / NativeService  AppEvents      │
+ Electron main process              │   │ Electron.*                 ▲              │
+┌──────────────────────────┐        │   ▼                            │              │
+│ windows, menus, dialogs, │◄──────►│ Electron.NET API ──── events ──┘              │
+│ notifications, ...       │ socket │ (ElectronStartup: window + application menu)  │
+└──────────────────────────┘        └───────────────────────────────────────────────┘
+</pre>
+
+<p>Try the application menu (e.g., <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>2</kbd>): the click is handled in .NET and turned into a Blazor navigation.</p>

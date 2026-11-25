@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/refs/heads/master/packages/app-builder-lib/scheme.json",
+  "compression": "maximum",
+  "linux": {
+    "target": [
+      "tar.xz"
+    ],
+    "executableArgs": [ "--no-sandbox" ],
+    "artifactName": "${name}-${arch}-${version}.${ext}"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "portable",
+        "arch": "x64"
+      }
+    ]
+  }
+}
