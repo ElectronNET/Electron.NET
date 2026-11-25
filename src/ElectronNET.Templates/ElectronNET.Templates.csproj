@@ -23,7 +23,7 @@
     <!-- The version pinned in the template project files on disk. It is replaced by the
          actual package version while packing, so a template always scaffolds an app that
          references the Electron.NET packages it was shipped with. -->
-    <TemplatePlaceholderVersion>0.6.0</TemplatePlaceholderVersion>
+    <TemplatePlaceholderVersion>0.7.0</TemplatePlaceholderVersion>
     <TemplateProjectFile>templates\blazor\ElectronBlazorApp.csproj</TemplateProjectFile>
     <TemplateProjectPackagePath>content\templates\blazor\ElectronBlazorApp.csproj</TemplateProjectPackagePath>
   </PropertyGroup>
