@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 const fs = __importStar(require("fs"));
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
+const webContentsView_1 = require("./webContentsView");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -374,7 +375,7 @@ module.exports = (socket) => {
         getWindowById(id).webContents.stop();
     });
     socket.on("webContents-insertCSS", (id, isBrowserWindow, path) => {
-        if (isBrowserWindow) {
+        if (isBrowserWindow || id >= 1000000) {
             const browserWindow = getWindowById(id);
             if (browserWindow) {
                 browserWindow.webContents.insertCSS(fs.readFileSync(path, "utf8"));
@@ -536,6 +537,11 @@ module.exports = (socket) => {
         getWindowById(id).webContents.stopFindInPage(action);
     });
     function getWindowById(id) {
+        // WebContentsView ids are offset by 1000000 (see WebContentsView.cs),
+        // BrowserView ids by 1000 (see BrowserView.cs).
+        if (id >= 1000000) {
+            return (0, webContentsView_1.webContentsViewMediateService)(id - 1000000);
+        }
         if (id >= 1000) {
             return (0, browserView_1.browserViewMediateService)(id - 1000);
         }

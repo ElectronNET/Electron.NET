@@ -179,6 +179,20 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Send a message to the WebContentsView renderer process asynchronously via channel, you can also send
+        /// arbitrary arguments. Arguments will be serialized in JSON internally and hence
+        /// no functions or prototype chain will be included. The renderer process handles it by
+        /// listening for channel with ipcRenderer module.
+        /// </summary>
+        /// <param name="webContentsView">WebContentsView with channel.</param>
+        /// <param name="channel">Channelname.</param>
+        /// <param name="data">Arguments data.</param>
+        public void Send(WebContentsView webContentsView, string channel, params object[] data)
+        {
+            BridgeConnector.Socket.Emit("sendToIpcRendererWebContentsView", webContentsView.Id, channel, data);
+        }
+
+        /// <summary>
         /// Adds a handler for an invokeable IPC. This handler will be called
         /// whenever a renderer calls ipcRenderer.invoke(channel, ...args).
         /// </summary>

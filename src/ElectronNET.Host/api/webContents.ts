@@ -3,6 +3,7 @@ import type { Socket } from "net";
 import { BrowserWindow, BrowserView } from "electron";
 
 import { browserViewMediateService } from "./browserView";
+import { webContentsViewMediateService } from "./webContentsView";
 
 let electronSocket: Socket;
 
@@ -501,7 +502,7 @@ export = (socket: Socket) => {
   });
 
   socket.on("webContents-insertCSS", (id, isBrowserWindow, path) => {
-    if (isBrowserWindow) {
+    if (isBrowserWindow || id >= 1000000) {
       const browserWindow = getWindowById(id);
       if (browserWindow) {
         browserWindow.webContents.insertCSS(fs.readFileSync(path, "utf8"));
@@ -744,7 +745,13 @@ export = (socket: Socket) => {
 
   function getWindowById(
     id: number,
-  ): Electron.BrowserWindow | Electron.BrowserView {
+  ): Electron.BrowserWindow | Electron.BrowserView | Electron.WebContentsView {
+    // WebContentsView ids are offset by 1000000 (see WebContentsView.cs),
+    // BrowserView ids by 1000 (see BrowserView.cs).
+    if (id >= 1000000) {
+      return webContentsViewMediateService(id - 1000000);
+    }
+
     if (id >= 1000) {
       return browserViewMediateService(id - 1000);
     }

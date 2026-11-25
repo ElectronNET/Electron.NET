@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const browserView_1 = require("./browserView");
+const webContentsView_1 = require("./webContentsView");
 const windows = (global["browserWindows"] =
     global["browserWindows"] || []);
 let readyToShowWindowsIds = [];
@@ -697,6 +698,18 @@ module.exports = (socket, app) => {
     });
     socket.on("browserWindow-setBrowserView", (id, browserViewId) => {
         getWindowById(id).setBrowserView((0, browserView_1.browserViewMediateService)(browserViewId));
+    });
+    socket.on("browserWindow-addChildView", (id, viewId, index) => {
+        const view = (0, webContentsView_1.webContentsViewMediateService)(viewId);
+        if (view) {
+            getWindowById(id).contentView.addChildView(view, index ?? undefined);
+        }
+    });
+    socket.on("browserWindow-removeChildView", (id, viewId) => {
+        const view = (0, webContentsView_1.webContentsViewMediateService)(viewId);
+        if (view) {
+            getWindowById(id).contentView.removeChildView(view);
+        }
     });
     function getWindowById(id) {
         const runtimeWindow = electron_1.BrowserWindow.fromId(id);
