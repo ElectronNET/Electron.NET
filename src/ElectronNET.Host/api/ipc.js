@@ -1,5 +1,6 @@
 "use strict";
 const electron_1 = require("electron");
+const webContentsView_1 = require("./webContentsView");
 let electronSocket;
 module.exports = (socket) => {
     electronSocket = socket;
@@ -42,6 +43,12 @@ module.exports = (socket) => {
                 break;
             }
         }
+        if (view) {
+            view.webContents.send(channel, ...data);
+        }
+    });
+    socket.on("sendToIpcRendererWebContentsView", (id, channel, data) => {
+        const view = (0, webContentsView_1.webContentsViewMediateService)(id);
         if (view) {
             view.webContents.send(channel, ...data);
         }

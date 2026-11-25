@@ -80,6 +80,16 @@ namespace ElectronNET.API
         private readonly List<BrowserView> _browserViews = new();
 
         /// <summary>
+        /// Gets the web contents views.
+        /// </summary>
+        /// <value>
+        /// The web contents views.
+        /// </value>
+        public IReadOnlyCollection<WebContentsView> WebContentsViews => _webContentsViews.AsReadOnly();
+
+        private readonly List<WebContentsView> _webContentsViews = new();
+
+        /// <summary>
         /// Creates the window asynchronous.
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
@@ -219,6 +229,40 @@ namespace ElectronNET.API
             });
 
             await BridgeConnector.Socket.Emit("createBrowserView", options).ConfigureAwait(false);
+
+            return await tcs.Task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// A WebContentsView can be used to embed additional web content into a BrowserWindow.
+        /// It is the successor of BrowserView.
+        /// </summary>
+        /// <returns></returns>
+        public Task<WebContentsView> CreateWebContentsViewAsync()
+        {
+            return CreateWebContentsViewAsync(new WebContentsViewConstructorOptions());
+        }
+
+        /// <summary>
+        /// A WebContentsView can be used to embed additional web content into a BrowserWindow.
+        /// It is the successor of BrowserView.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<WebContentsView> CreateWebContentsViewAsync(WebContentsViewConstructorOptions options)
+        {
+            var tcs = new TaskCompletionSource<WebContentsView>();
+
+            BridgeConnector.Socket.Once<int>("WebContentsViewCreated", (id) =>
+            {
+                WebContentsView view = new(id);
+
+                _webContentsViews.Add(view);
+
+                tcs.SetResult(view);
+            });
+
+            await BridgeConnector.Socket.Emit("createWebContentsView", options).ConfigureAwait(false);
 
             return await tcs.Task.ConfigureAwait(false);
         }

@@ -12,7 +12,7 @@ const { imageSize } = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let commandLine, browserView;
+let commandLine, browserView, webContentsView;
 let powerMonitor;
 let processInfo;
 let splashScreen;
@@ -388,6 +388,7 @@ function startSocketApiBridge(port) {
         if (screen === undefined) screen = require('./api/screen')(socket);
         if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
         if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
+        if (webContentsView === undefined) webContentsView = require('./api/webContentsView').webContentsViewApi(socket);
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);

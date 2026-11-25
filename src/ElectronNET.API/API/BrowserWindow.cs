@@ -1221,4 +1221,24 @@ public class BrowserWindow : ApiBase
         // This message name does not match the default ApiBase naming convention.
         BridgeConnector.Socket.Emit("browserWindow-setBrowserView", Id, browserView.Id);
     }
+
+    /// <summary>
+    /// Adds a WebContentsView to the content view of this window.
+    /// If the same view is added again, it is moved to the top (or to the given index).
+    /// </summary>
+    /// <param name="view">The view to add.</param>
+    /// <param name="index">Index at which to insert the child view. Defaults to adding the child at the end of the child list.</param>
+    public void AddChildView(WebContentsView view, int? index = null)
+    {
+        BridgeConnector.Socket.Emit("browserWindow-addChildView", Id, view.Id, index);
+    }
+
+    /// <summary>
+    /// Removes a WebContentsView from the content view of this window.
+    /// </summary>
+    /// <param name="view">The view to remove.</param>
+    public void RemoveChildView(WebContentsView view)
+    {
+        BridgeConnector.Socket.Emit("browserWindow-removeChildView", Id, view.Id);
+    }
 }
