@@ -9,6 +9,7 @@
 - Fixed startup failure with host lockfile (#1125) @DYH1319
 - Fixed hanging host when Electron exists before bridge (#1124) @DYH1319
 - Fixed dev mode launches passing the script file instead of the app directory (#1121) @Denny09310
+- Added support for `WebContentsView` as an alternative to `BrowserWindow` (#1131)
 
 # 0.6.0
 
