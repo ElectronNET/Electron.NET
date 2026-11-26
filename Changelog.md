@@ -9,8 +9,11 @@
 - Fixed startup failure with host lockfile (#1125) @DYH1319
 - Fixed hanging host when Electron exists before bridge (#1124) @DYH1319
 - Fixed dev mode launches passing the script file instead of the app directory (#1121) @Denny09310
+- Added `window.electronNET.getPathForFile` to retrieve the path of dropped files in the renderer (#1002)
 - Added support for `WebContentsView` as an alternative to `BrowserWindow` (#1131)
-- Added `Session.SetDownloadPolicy` and the `OnDownloadStarted`, `OnDownloadBlocked` and `OnDownloadDone` events to block or redirect downloads (#434)
+- Added `Enum` converter to respect `EnumMemberAttributeenhancement` (#1132) @AeonSake
+- Added support for file drop (#1134)
+- Added `Session.SetDownloadPolicy` and events (`OnDownloadStarted`, `OnDownloadBlocked` and `OnDownloadDone`) to block or redirect downloads (#434)
 
 # 0.6.0
 
