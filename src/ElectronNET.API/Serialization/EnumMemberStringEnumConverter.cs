@@ -66,14 +66,27 @@ namespace ElectronNET.API.Serialization
                         }
                         throw new JsonException($"Unable to convert \"{text}\" to enum {typeof(TEnum).Name}.");
                     case JsonTokenType.Number:
-                        if (reader.TryGetInt64(out var number))
-                        {
-                            return (TEnum)Enum.ToObject(typeof(TEnum), number);
-                        }
-                        break;
+                        var underlyingType = Enum.GetUnderlyingType(typeof(TEnum));
+                        var numericValue = JsonSerializer.Deserialize(ref reader, underlyingType, options);
+                        return (TEnum)Enum.ToObject(typeof(TEnum), numericValue);
                 }
 
                 throw new JsonException($"Unexpected token {reader.TokenType} when parsing enum {typeof(TEnum).Name}.");
+            }
+
+            public override TEnum ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var text = reader.GetString();
+                if (text != null && (nameToValue.TryGetValue(text, out var value) || Enum.TryParse<TEnum>(text, true, out value)))
+                {
+                    return value;
+                }
+                throw new JsonException($"Unable to convert \"{text}\" to enum {typeof(TEnum).Name}.");
+            }
+
+            public override void WriteAsPropertyName(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
+            {
+                writer.WritePropertyName(valueToName.TryGetValue(value, out var name) ? name : fallbackNames.GetOrAdd(value, v => ConvertName(v.ToString())));
             }
 
             public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
@@ -85,6 +98,13 @@ namespace ElectronNET.API.Serialization
                 }
 
                 // Combined flags or undefined values: fall back to the default enum formatting.
+                var formatted = value.ToString();
+                if (char.IsDigit(formatted[0]) || formatted[0] == '-')
+                {
+                    var underlyingType = Enum.GetUnderlyingType(typeof(TEnum));
+                    JsonSerializer.Serialize(writer, Convert.ChangeType(value, underlyingType), underlyingType, options);
+                    return;
+                }
                 writer.WriteStringValue(fallbackNames.GetOrAdd(value, v => ConvertName(v.ToString())));
             }
 
