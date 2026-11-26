@@ -27,6 +27,7 @@
 - [Package Building](Using/Package-Building.md)
 - [Secure Communication](Using/Secure-Communication.md)
 - [Adding a `custom_main.js`](Using/Custom_main.md)
+- [File Paths (File Drop)](Using/File-Drop.md)
 
 # API Reference
 
