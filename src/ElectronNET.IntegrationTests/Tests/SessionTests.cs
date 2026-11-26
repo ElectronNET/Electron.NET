@@ -152,6 +152,41 @@ namespace ElectronNET.IntegrationTests.Tests
             }
         }
 
+        [IntegrationFact]
+        public async Task Download_policy_blocks_extension_not_in_allow_list()
+        {
+            var session = this.MainWindow.WebContents.Session;
+            var directory = Path.Combine(Path.GetTempPath(), "electronnet-downloads-" + Guid.NewGuid().ToString("N"));
+            var blocked = new TaskCompletionSource<DownloadInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var started = false;
+            Action<DownloadInfo> blockedHandler = info => blocked.TrySetResult(info);
+            Action<DownloadInfo> startedHandler = info => started = true;
+            session.OnDownloadBlocked += blockedHandler;
+            session.OnDownloadStarted += startedHandler;
+
+            try
+            {
+                session.SetDownloadPolicy(new DownloadPolicy { AllowedExtensions = new[] { ".txt" }, SaveDirectory = directory });
+                await this.TriggerDownloadAsync("archive.zip");
+
+                var info = await blocked.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                info.Filename.Should().Be("archive.zip");
+                started.Should().BeFalse();
+                File.Exists(Path.Combine(directory, "archive.zip")).Should().BeFalse();
+            }
+            finally
+            {
+                session.OnDownloadBlocked -= blockedHandler;
+                session.OnDownloadStarted -= startedHandler;
+                session.SetDownloadPolicy(null);
+
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory, true);
+                }
+            }
+        }
+
         private async Task TriggerDownloadAsync(string filename)
         {
             var wc = this.MainWindow.WebContents;

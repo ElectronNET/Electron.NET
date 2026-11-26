@@ -42,8 +42,17 @@ let electronSocket;
 // so the 'will-download' listener must only be attached once per session.
 const downloadStates = new WeakMap();
 // Save paths handed out for downloads that are still running (avoids two concurrent
-// downloads with the same name picking the same target file).
+// downloads with the same name picking the same target file). Keyed by reservationKey.
 const reservedSavePaths = new Set();
+// The session each Electron.NET id registered download events on. Kept independently of
+// the window, so registrations can still be removed after the window is gone.
+const downloadRegistrations = new Map();
+// Windows and macOS volumes are case-insensitive by default: "report.txt" and
+// "REPORT.txt" are the same file there.
+const caseInsensitiveFileSystem = process.platform === "win32" || process.platform === "darwin";
+function reservationKey(filePath) {
+    return caseInsensitiveFileSystem ? filePath.toLowerCase() : filePath;
+}
 function getDownloadState(session) {
     let state = downloadStates.get(session);
     if (!state) {
@@ -89,11 +98,35 @@ function resolveSavePath(policy, filename) {
         const ext = path.extname(name);
         const stem = name.slice(0, name.length - ext.length);
         let counter = 1;
-        while (fs.existsSync(target) || reservedSavePaths.has(target)) {
+        while (fs.existsSync(target) ||
+            reservedSavePaths.has(reservationKey(target))) {
             target = path.join(directory, `${stem} (${counter++})${ext}`);
         }
     }
     return target;
+}
+function registerDownloadListener(id, kind, contents) {
+    if (!contents) {
+        return;
+    }
+    const session = contents.session;
+    getDownloadState(session).listeners[kind]?.add(id);
+    if (!downloadRegistrations.has(id)) {
+        downloadRegistrations.set(id, session);
+        contents.once("destroyed", () => {
+            const listeners = getDownloadState(session).listeners;
+            for (const set of Object.values(listeners)) {
+                set.delete(id);
+            }
+            downloadRegistrations.delete(id);
+        });
+    }
+}
+function unregisterDownloadListener(id, kind) {
+    const session = downloadRegistrations.get(id);
+    if (session) {
+        getDownloadState(session).listeners[kind]?.delete(id);
+    }
 }
 function getDownloadInfo(item) {
     return {
@@ -116,23 +149,27 @@ function handleWillDownload(state, event, item) {
         emitDownloadEvent(state, "blocked", getDownloadInfo(item));
         return;
     }
-    let reservedPath;
+    let reservedKey;
     if (policy?.saveDirectory) {
         try {
-            reservedPath = resolveSavePath(policy, item.getFilename());
-            reservedSavePaths.add(reservedPath);
-            item.setSavePath(reservedPath);
+            const savePath = resolveSavePath(policy, item.getFilename());
+            reservedKey = reservationKey(savePath);
+            reservedSavePaths.add(reservedKey);
+            item.setSavePath(savePath);
         }
         catch (err) {
             // Fall back to Electron's default behavior (save dialog).
             console.error("Could not apply download save directory:", err);
-            reservedPath = undefined;
+            if (reservedKey) {
+                reservedSavePaths.delete(reservedKey);
+            }
+            reservedKey = undefined;
         }
     }
     emitDownloadEvent(state, "started", getDownloadInfo(item));
     item.once("done", (_event, doneState) => {
-        if (reservedPath) {
-            reservedSavePaths.delete(reservedPath);
+        if (reservedKey) {
+            reservedSavePaths.delete(reservedKey);
         }
         emitDownloadEvent(state, "done", {
             ...getDownloadInfo(item),
@@ -344,16 +381,8 @@ module.exports = (socket) => {
         const session = getWindowById(id).webContents.session;
         getDownloadState(session).policy = policy ?? null;
     });
-    socket.on("register-webContents-session-download", (id, kind) => {
-        const session = getWindowById(id).webContents.session;
-        getDownloadState(session).listeners[kind]?.add(id);
-    });
-    socket.on("unregister-webContents-session-download", (id, kind) => {
-        const window = getWindowById(id);
-        if (window) {
-            getDownloadState(window.webContents.session).listeners[kind]?.delete(id);
-        }
-    });
+    socket.on("register-webContents-session-download", (id, kind) => registerDownloadListener(id, kind, getWindowById(id)?.webContents));
+    socket.on("unregister-webContents-session-download", (id, kind) => unregisterDownloadListener(id, kind));
     socket.on("webContents-session-disableNetworkEmulation", (id) => {
         const browserWindow = getWindowById(id);
         browserWindow.webContents.session.disableNetworkEmulation();
