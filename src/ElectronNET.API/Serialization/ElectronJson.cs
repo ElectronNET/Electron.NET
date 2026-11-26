@@ -13,7 +13,7 @@ namespace ElectronNET.API.Serialization
             WriteIndented = false,
             Converters =
             {
-                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                new EnumMemberStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
     }
