@@ -184,6 +184,28 @@ function getForwardedArgs() {
 
 const forwardedArgs = getForwardedArgs();
 
+// Register the Electron.NET host preload (exposing `window.electronNET`, e.g., with
+// `getPathForFile` for file drops) on every session. Using session preloads instead of
+// `webPreferences.preload` keeps user supplied preload scripts working side by side.
+const hostPreloadPath = path.join(__dirname, 'scripts', 'host-preload.js');
+const sessionsWithHostPreload = new WeakSet();
+
+function registerHostPreload(ses) {
+    if (!ses || sessionsWithHostPreload.has(ses)) {
+        return;
+    }
+
+    sessionsWithHostPreload.add(ses);
+
+    try {
+        ses.registerPreloadScript({ type: 'frame', filePath: hostPreloadPath });
+    } catch (err) {
+        console.error('Could not register the Electron.NET host preload script:', err);
+    }
+}
+
+app.on('session-created', registerHostPreload);
+
 app.on('ready', () => {
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
@@ -191,6 +213,9 @@ app.on('ready', () => {
     ////  const pathname = request.url.replace('file:///', '');
     ////  callback(pathname);
     ////});
+
+    // the default session may have been created before the handler above was attached
+    registerHostPreload(require('electron').session.defaultSession);
 
     if (isSplashScreenEnabled()) {
         startSplashScreen();
