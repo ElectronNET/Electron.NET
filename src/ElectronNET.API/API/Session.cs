@@ -145,6 +145,111 @@ namespace ElectronNET.API
         }
 
         /// <summary>
+        /// Sets the rules that decide how this session handles downloads, e.g. to block
+        /// certain file extensions or to store downloads in a directory without showing
+        /// a save dialog. The rules are evaluated synchronously in the Electron host, so
+        /// they take effect for every download. Pass null to restore Electron's default
+        /// behavior.
+        /// <para>
+        /// The policy belongs to the underlying Electron session, which by default is shared
+        /// by all windows.
+        /// </para>
+        /// </summary>
+        /// <param name="policy">The download rules, or null to remove them.</param>
+        public void SetDownloadPolicy(DownloadPolicy policy)
+        {
+            BridgeConnector.Socket.Emit("webContents-session-setDownloadPolicy", Id, policy);
+        }
+
+        /// <summary>
+        /// Emitted when a download that is allowed by the <see cref="DownloadPolicy"/>
+        /// (or any download, if no policy is set) starts.
+        /// </summary>
+        public event Action<DownloadInfo> OnDownloadStarted
+        {
+            add
+            {
+                if (_downloadStarted == null)
+                {
+                    BridgeConnector.Socket.On<DownloadInfo>("webContents-session-download-started" + Id, info => _downloadStarted?.Invoke(info));
+                    BridgeConnector.Socket.Emit("register-webContents-session-download", Id, "started");
+                }
+
+                _downloadStarted += value;
+            }
+            remove
+            {
+                _downloadStarted -= value;
+
+                if (_downloadStarted == null)
+                {
+                    BridgeConnector.Socket.Off("webContents-session-download-started" + Id);
+                    BridgeConnector.Socket.Emit("unregister-webContents-session-download", Id, "started");
+                }
+            }
+        }
+
+        private event Action<DownloadInfo> _downloadStarted;
+
+        /// <summary>
+        /// Emitted when a download was blocked by the <see cref="DownloadPolicy"/>.
+        /// </summary>
+        public event Action<DownloadInfo> OnDownloadBlocked
+        {
+            add
+            {
+                if (_downloadBlocked == null)
+                {
+                    BridgeConnector.Socket.On<DownloadInfo>("webContents-session-download-blocked" + Id, info => _downloadBlocked?.Invoke(info));
+                    BridgeConnector.Socket.Emit("register-webContents-session-download", Id, "blocked");
+                }
+
+                _downloadBlocked += value;
+            }
+            remove
+            {
+                _downloadBlocked -= value;
+
+                if (_downloadBlocked == null)
+                {
+                    BridgeConnector.Socket.Off("webContents-session-download-blocked" + Id);
+                    BridgeConnector.Socket.Emit("unregister-webContents-session-download", Id, "blocked");
+                }
+            }
+        }
+
+        private event Action<DownloadInfo> _downloadBlocked;
+
+        /// <summary>
+        /// Emitted when a download has completed, was cancelled or was interrupted.
+        /// </summary>
+        public event Action<DownloadDoneInfo> OnDownloadDone
+        {
+            add
+            {
+                if (_downloadDone == null)
+                {
+                    BridgeConnector.Socket.On<DownloadDoneInfo>("webContents-session-download-done" + Id, info => _downloadDone?.Invoke(info));
+                    BridgeConnector.Socket.Emit("register-webContents-session-download", Id, "done");
+                }
+
+                _downloadDone += value;
+            }
+            remove
+            {
+                _downloadDone -= value;
+
+                if (_downloadDone == null)
+                {
+                    BridgeConnector.Socket.Off("webContents-session-download-done" + Id);
+                    BridgeConnector.Socket.Emit("unregister-webContents-session-download", Id, "done");
+                }
+            }
+        }
+
+        private event Action<DownloadDoneInfo> _downloadDone;
+
+        /// <summary>
         /// Disables any network emulation already active for the session. Resets to the
         /// original network configuration.
         /// </summary>
