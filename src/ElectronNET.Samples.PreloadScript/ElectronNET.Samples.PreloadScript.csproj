@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- Enable Electron.NET Dev Mode to use the local projects instead of the NuGet packages -->
+    <ElectronNetDevMode>true</ElectronNetDevMode>
+  </PropertyGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.props" Condition="$(ElectronNetDevMode)" />
+
+  <PropertyGroup Label="ElectronNetCommon">
+    <Title>Electron.NET Preload Script Sample</Title>
+    <Version>1.0.0</Version>
+    <Product>com.electronnet.preload-script-sample</Product>
+    <Description>Shows how to inject a preload script and use it for IPC between the web content and the .NET app</Description>
+    <Company>Electron.NET</Company>
+    <Copyright>Copyright © 2026, Electron.NET</Copyright>
+    <ElectronVersion>30.4.0</ElectronVersion>
+    <License>MIT</License>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The preload script is loaded by Electron from disk (not via HTTP), so it must be
+         shipped next to the .NET app instead of being served from wwwroot. -->
+    <None Update="Preload\preload.js" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElectronNET.API\ElectronNET.API.csproj" Condition="$(ElectronNetDevMode)" />
+    <ProjectReference Include="..\ElectronNET.AspNet\ElectronNET.AspNet.csproj" Condition="$(ElectronNetDevMode)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ElectronNET.Core" Version="0.7.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+    <PackageReference Include="ElectronNET.Core.AspNet" Version="0.7.0" Condition="'$(ElectronNetDevMode)' != 'true'" />
+  </ItemGroup>
+
+  <Import Project="..\ElectronNET\build\ElectronNET.Core.targets" Condition="$(ElectronNetDevMode)" />
+
+</Project>

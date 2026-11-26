@@ -1,0 +1,84 @@
+@page "/interactivity"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<PageTitle>Interactivity</PageTitle>
+
+<h1>Interactivity</h1>
+
+<p>
+    This page is plain Blazor and works the same in Electron and in a browser. Event handlers run in .NET;
+    Blazor sends the resulting DOM changes to the window.
+</p>
+
+<section>
+    <h2>Events and data binding</h2>
+    <p>
+        <button @onclick="() => count++">Clicked @count times</button>
+    </p>
+    <p>
+        <input @bind="name" @bind:event="oninput" placeholder="Type your name" />
+        @if (!string.IsNullOrWhiteSpace(name))
+        {
+            <span> Hello, @name!</span>
+        }
+    </p>
+</section>
+
+<section>
+    <h2>JavaScript interop</h2>
+    <p>
+        Some information only exists in the page. A small JS module (<code>wwwroot/js/interop.js</code>) is loaded
+        with JS interop to read it.
+    </p>
+    <p>
+        <button @onclick="ReadViewportAsync" disabled="@(module is null)">Read viewport</button>
+    </p>
+    @if (viewport is not null)
+    {
+        <p>Viewport: @viewport.Width × @viewport.Height px, device pixel ratio @viewport.PixelRatio, user agent:</p>
+        <pre>@viewport.UserAgent</pre>
+    }
+</section>
+
+@code {
+    private int count;
+    private string? name;
+    private IJSObjectReference? module;
+    private ViewportInfo? viewport;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // JS interop is only possible once the component is rendered interactively.
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/interop.js");
+            StateHasChanged();
+        }
+    }
+
+    private async Task ReadViewportAsync()
+    {
+        if (module is not null)
+        {
+            viewport = await module.InvokeAsync<ViewportInfo>("getViewportInfo");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The window was closed or reloaded - nothing to clean up.
+            }
+        }
+    }
+
+    private sealed record ViewportInfo(int Width, int Height, double PixelRatio, string UserAgent);
+}

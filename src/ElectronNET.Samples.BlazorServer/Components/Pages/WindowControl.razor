@@ -1,0 +1,83 @@
+@page "/window"
+@implements IDisposable
+@inject WindowService Window
+@inject AppEvents Events
+
+<PageTitle>Window Control</PageTitle>
+
+<h1>Window Control</h1>
+
+@if (!Window.IsAvailable)
+{
+    <p class="notice">Not running in Electron - the window cannot be controlled from a browser.</p>
+}
+
+<section>
+    <h2>Blazor &rarr; Electron</h2>
+    <p>The buttons call <code>WindowService</code>, which uses the Electron.NET <code>BrowserWindow</code> API.</p>
+
+    <p>
+        <input @bind="title" placeholder="Window title" />
+        <button @onclick="() => Window.SetTitle(title)" disabled="@(!Window.IsAvailable)">Set title</button>
+    </p>
+    <p>
+        <button @onclick="Window.Minimize" disabled="@(!Window.IsAvailable)">Minimize</button>
+        <button @onclick="Window.ToggleMaximize" disabled="@(!Window.IsAvailable)">@(Window.IsMaximized ? "Restore" : "Maximize")</button>
+        <button @onclick="Window.ToggleAlwaysOnTop" disabled="@(!Window.IsAvailable)">@(Window.IsAlwaysOnTop ? "Disable" : "Enable") always on top</button>
+    </p>
+    <p>
+        <label>
+            Taskbar / dock progress: @progress %
+            <input type="range" min="0" max="100" @bind="progress" @bind:event="oninput" @bind:after="UpdateProgress" disabled="@(!Window.IsAvailable)" />
+        </label>
+        <button @onclick="ClearProgress" disabled="@(!Window.IsAvailable)">Clear</button>
+    </p>
+</section>
+
+<section>
+    <h2>Electron &rarr; Blazor</h2>
+    <p>
+        Window events are forwarded through <code>AppEvents</code>. Maximize the window with its title bar,
+        or click into another app, and watch this table update.
+    </p>
+    <table>
+        <tr><th>Maximized</th><td>@Window.IsMaximized</td></tr>
+        <tr><th>Focused</th><td>@Window.IsFocused</td></tr>
+        <tr><th>Always on top</th><td>@Window.IsAlwaysOnTop</td></tr>
+        <tr><th>Events received</th><td>@eventCount</td></tr>
+    </table>
+</section>
+
+@code {
+    private string title = "Blazor Server Sample";
+    private int progress;
+    private int eventCount;
+
+    protected override void OnInitialized()
+    {
+        Events.WindowStateChanged += OnWindowStateChanged;
+    }
+
+    private void OnWindowStateChanged()
+    {
+        // Raised on an Electron.NET thread: re-render via InvokeAsync.
+        _ = InvokeAsync(() =>
+        {
+            eventCount++;
+            StateHasChanged();
+        });
+    }
+
+    private void UpdateProgress() => Window.SetProgress(progress / 100.0);
+
+    private void ClearProgress()
+    {
+        progress = 0;
+        Window.SetProgress(-1);
+    }
+
+    public void Dispose()
+    {
+        Events.WindowStateChanged -= OnWindowStateChanged;
+    }
+}

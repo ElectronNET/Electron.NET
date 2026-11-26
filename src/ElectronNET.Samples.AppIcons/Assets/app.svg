@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Source artwork of the sample icon. The files in Assets/icons were rendered from this design. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5" />
+      <stop offset="1" stop-color="#06B6D4" />
+    </linearGradient>
+    <mask id="gap">
+      <rect width="1024" height="1024" fill="#fff" />
+      <circle cx="674.6" cy="349.4" r="96" fill="#000" />
+    </mask>
+  </defs>
+  <rect x="80" y="80" width="864" height="864" rx="190" fill="url(#bg)" />
+  <circle cx="512" cy="512" r="230" fill="none" stroke="#fff" stroke-width="60" mask="url(#gap)" />
+  <circle cx="512" cy="512" r="92" fill="#fff" />
+  <circle cx="674.6" cy="349.4" r="64" fill="#fff" />
+</svg>

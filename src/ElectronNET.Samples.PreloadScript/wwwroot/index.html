@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'" />
+    <title>Preload Script Sample</title>
+    <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+    <h1>Preload Script Sample</h1>
+    <p>
+        The window was created with a preload script (<code>Preload/preload.js</code>) that exposes a small
+        <code>window.dotnet</code> API via <code>contextBridge</code>. Node.js integration is disabled and
+        the context is isolated.
+    </p>
+
+    <p id="status" class="status">Checking for the preload script...</p>
+
+    <section>
+        <h2>1. Page &rarr; .NET &rarr; Page (send / reply)</h2>
+        <form id="greet-form">
+            <input id="name" placeholder="Your name" autocomplete="off" />
+            <button type="submit">Greet</button>
+        </form>
+        <output id="greeting"></output>
+    </section>
+
+    <section>
+        <h2>2. Request / response (invoke / handle)</h2>
+        <button id="runtime-info">Get .NET runtime info</button>
+        <pre id="runtime-info-result"></pre>
+
+        <form id="add-form">
+            <input id="a" type="number" value="20" />
+            +
+            <input id="b" type="number" value="22" />
+            <button type="submit">Add in .NET</button>
+            <output id="sum"></output>
+        </form>
+    </section>
+
+    <section>
+        <h2>3. .NET &rarr; Page (push)</h2>
+        <p>The .NET timer says it is <strong id="clock">&hellip;</strong></p>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>

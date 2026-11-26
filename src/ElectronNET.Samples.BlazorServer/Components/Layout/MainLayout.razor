@@ -1,0 +1,47 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject AppEvents Events
+@inject NavigationManager Navigation
+@inject WindowService Window
+
+<div class="page">
+    <nav class="sidebar">
+        <div class="brand">Blazor Server<br /><small>with Electron.NET</small></div>
+        <NavLink href="" Match="NavLinkMatch.All">Home</NavLink>
+        <NavLink href="interactivity">Interactivity</NavLink>
+        <NavLink href="window">Window Control</NavLink>
+        <NavLink href="native">Native Capabilities</NavLink>
+        <div class="sidebar-footer">
+            @(Window.IsAvailable ? "Running in Electron" : "Running in a browser")
+        </div>
+    </nav>
+
+    <main class="content">
+        @Body
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Electron -> Blazor: the application menu asks for navigation (see Desktop/ElectronStartup.cs).
+        Events.NavigationRequested += OnNavigationRequested;
+    }
+
+    private void OnNavigationRequested(string uri)
+    {
+        // The event is raised on an Electron.NET thread - switch to this circuit's renderer first.
+        _ = InvokeAsync(() => Navigation.NavigateTo(uri));
+    }
+
+    public void Dispose()
+    {
+        Events.NavigationRequested -= OnNavigationRequested;
+    }
+}

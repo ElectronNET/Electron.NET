@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/refs/heads/master/packages/app-builder-lib/scheme.json",
+  "compression": "maximum",
+  "win": {
+    "target": [
+      {
+        "target": "portable",
+        "arch": "x64"
+      }
+    ],
+    "icon": "bin/Assets/icons/app.ico"
+  },
+  "linux": {
+    "target": [
+      "AppImage",
+      "tar.xz"
+    ],
+    "executableArgs": [ "--no-sandbox" ],
+    "icon": "bin/Assets/icons/linux",
+    "category": "Utility",
+    "artifactName": "${name}-${arch}-${version}.${ext}"
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ],
+    "icon": "bin/Assets/icons/app.icns"
+  }
+}
