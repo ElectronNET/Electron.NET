@@ -84,5 +84,5 @@ public sealed class NativeService
 
     public Task ShowInFolderAsync(string path) => Electron.Shell.ShowItemInFolderAsync(path);
 
-    public Task<string> GetElectronVersionAsync() => Electron.App.GetVersionAsync();
+    public async Task<string> GetElectronVersionAsync() => (await Electron.Process.VersionsAsync).Electron;
 }

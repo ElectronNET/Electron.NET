@@ -49,7 +49,7 @@ else if (electronVersion is not null)
 <section>
     <h2>Clipboard and shell</h2>
     <p>
-        <input @bind="clipboardText" />
+        <input @bind="clipboardText" aria-label="Clipboard text" />
         <button @onclick="() => Native.CopyToClipboard(clipboardText)" disabled="@(!Native.IsAvailable)">Copy</button>
         <button @onclick="PasteAsync" disabled="@(!Native.IsAvailable)">Paste</button>
     </p>

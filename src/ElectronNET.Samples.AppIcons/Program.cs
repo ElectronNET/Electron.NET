@@ -15,7 +15,7 @@ builder.WebHost.UseElectron(args, async () =>
     {
         Width = 800,
         Height = 600,
-        Show = false,
+        Show = true,
         Title = "App Icons Sample",
     };
 
