@@ -56,6 +56,8 @@ Most parts in the Electron.NET project are fairly straight forward. Among these 
 7. Update the documentation to reflect any changes. (or document such changes in the original issue)
 8. Push to your fork or push your issue-specific branch to the main repository, then submit a pull request against `develop`.
 
+PR validation runs integration tests on Linux, Windows, and macOS (Intel and ARM64). A failing test marks its matrix job as failed; test results are still uploaded and aggregated, and the PR comment is published even when tests fail. Failed matrix jobs are automatically retried once.
+
 Just to illustrate the git workflow for Electron.NET a little bit more we've added the following graphs.
 
 Initially, Electron.NET starts at the `main` branch. This branch should contain the latest stable (or released) version.

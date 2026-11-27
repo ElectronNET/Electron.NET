@@ -1,3 +1,22 @@
+# 0.7.0
+
+## ElectronNET.Core
+
+- Updated dependencies
+- Updated infrastructure (#1127, #1129) @icnocop
+- Improved documentation (#1130) @farisbasha
+- Fixed typo in documentation (#1126) @icnocop
+- Fixed startup failure with host lockfile (#1125) @DYH1319
+- Fixed hanging host when Electron exists before bridge (#1124) @DYH1319
+- Fixed dev mode launches passing the script file instead of the app directory (#1121) @Denny09310
+- Added `window.electronNET.getPathForFile` to retrieve the path of dropped files in the renderer (#1002)
+- Added support for `WebContentsView` as an alternative to `BrowserWindow` (#1131)
+- Added `WebContentsView.DestroyAsync` / `Dispose` to close a view's web contents and release its resources
+- Added `WindowManager.MainWindowRecreated` event, raised when the main window is recreated on macOS activation
+- Added `Enum` converter to respect `EnumMemberAttributeenhancement` (#1132) @AeonSake
+- Added support for file drop (#1134)
+- Added `Session.SetDownloadPolicy` and events (`OnDownloadStarted`, `OnDownloadBlocked` and `OnDownloadDone`) to block or redirect downloads (#434)
+
 # 0.6.0
 
 ## ElectronNET.Core
@@ -7,6 +26,7 @@
 - Improved migration checks to honor custom output paths and to detect `ProjectGuid` in publish profiles (#946)
 - Fixed single instance handling on macOS (#1040)
 - Fixed slow socket bridge startup by binding to an explicit loopback address (#1103)
+- Fixed local debugging launching the host `main.js` as a script file, which made Electron run its default app and resolve app name and userData to "Electron" instead of the app's `productName` (dev launch now points at the `.electron` app directory)
 - Fixed socket bridge connection when a system proxy is configured (#1105)
 - Fixed electron-builder using the host RID instead of the target RID (#1097)
 - Fixed cross-compilation behavior on same platform (#1098) @epsnm

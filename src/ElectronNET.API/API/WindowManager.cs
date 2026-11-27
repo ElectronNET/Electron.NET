@@ -80,6 +80,25 @@ namespace ElectronNET.API
         private readonly List<BrowserView> _browserViews = new();
 
         /// <summary>
+        /// Gets the web contents views.
+        /// </summary>
+        /// <value>
+        /// The web contents views.
+        /// </value>
+        public IReadOnlyCollection<WebContentsView> WebContentsViews
+        {
+            get
+            {
+                lock (_webContentsViews)
+                {
+                    return _webContentsViews.ToArray();
+                }
+            }
+        }
+
+        private readonly List<WebContentsView> _webContentsViews = new();
+
+        /// <summary>
         /// Creates the window asynchronous.
         /// </summary>
         /// <param name="loadUrl">The load URL.</param>
@@ -162,12 +181,24 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Emitted when Electron recreated the main window, e.g. when the app is activated again on macOS
+        /// after all of its windows were closed. The startup callback passed to <c>UseElectron</c> is not
+        /// run again in this case, so use this event to (re)wire anything that depends on the main window.
+        /// </summary>
+        public event Action<BrowserWindow> MainWindowRecreated;
+
         private void HandleBrowserWindowRecreated(int id)
         {
-            if (_browserWindows.All(window => window.Id != id))
+            var window = _browserWindows.FirstOrDefault(entry => entry.Id == id);
+
+            if (window == null)
             {
-                _browserWindows.Add(new BrowserWindow(id));
+                window = new BrowserWindow(id);
+                _browserWindows.Add(window);
             }
+
+            MainWindowRecreated?.Invoke(window);
         }
 
         private void HandleBrowserWindowClosed(int[] ids)
@@ -221,6 +252,61 @@ namespace ElectronNET.API
             await BridgeConnector.Socket.Emit("createBrowserView", options).ConfigureAwait(false);
 
             return await tcs.Task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// A WebContentsView can be used to embed additional web content into a BrowserWindow.
+        /// It is the successor of BrowserView.
+        /// </summary>
+        /// <returns></returns>
+        public Task<WebContentsView> CreateWebContentsViewAsync()
+        {
+            return CreateWebContentsViewAsync(new WebContentsViewConstructorOptions());
+        }
+
+        /// <summary>
+        /// A WebContentsView can be used to embed additional web content into a BrowserWindow.
+        /// It is the successor of BrowserView.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<WebContentsView> CreateWebContentsViewAsync(WebContentsViewConstructorOptions options)
+        {
+            await WebContentsViewCreationLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var tcs = new TaskCompletionSource<WebContentsView>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                BridgeConnector.Socket.Once<int>("WebContentsViewCreated", (id) =>
+                {
+                    WebContentsView view = new(id);
+
+                    lock (_webContentsViews)
+                    {
+                        _webContentsViews.Add(view);
+                    }
+
+                    tcs.SetResult(view);
+                });
+
+                await BridgeConnector.Socket.Emit("createWebContentsView", options).ConfigureAwait(false);
+
+                return await tcs.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                WebContentsViewCreationLock.Release();
+            }
+        }
+
+        private static readonly System.Threading.SemaphoreSlim WebContentsViewCreationLock = new(1, 1);
+
+        internal void RemoveWebContentsView(WebContentsView view)
+        {
+            lock (_webContentsViews)
+            {
+                _webContentsViews.Remove(view);
+            }
         }
     }
 }

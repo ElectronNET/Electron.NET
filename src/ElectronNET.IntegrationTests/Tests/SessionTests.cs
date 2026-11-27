@@ -97,5 +97,104 @@ namespace ElectronNET.IntegrationTests.Tests
             ua.Should().NotBeNullOrWhiteSpace();
             ua.Should().Contain("IntegrationAgent/1.0");
         }
+
+        [IntegrationFact]
+        public async Task Download_policy_blocks_extension()
+        {
+            var session = this.MainWindow.WebContents.Session;
+            var blocked = new TaskCompletionSource<DownloadInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Action<DownloadInfo> handler = info => blocked.TrySetResult(info);
+            session.OnDownloadBlocked += handler;
+
+            try
+            {
+                session.SetDownloadPolicy(new DownloadPolicy { BlockedExtensions = new[] { "exe" } });
+                await this.TriggerDownloadAsync("malware.EXE");
+
+                var info = await blocked.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                info.Filename.Should().Be("malware.EXE");
+            }
+            finally
+            {
+                session.OnDownloadBlocked -= handler;
+                session.SetDownloadPolicy(null);
+            }
+        }
+
+        [IntegrationFact]
+        public async Task Download_policy_saves_to_directory()
+        {
+            var session = this.MainWindow.WebContents.Session;
+            var directory = Path.Combine(Path.GetTempPath(), "electronnet-downloads-" + Guid.NewGuid().ToString("N"));
+            var done = new TaskCompletionSource<DownloadDoneInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Action<DownloadDoneInfo> handler = info => done.TrySetResult(info);
+            session.OnDownloadDone += handler;
+
+            try
+            {
+                session.SetDownloadPolicy(new DownloadPolicy { AllowedExtensions = new[] { ".txt" }, SaveDirectory = directory });
+                await this.TriggerDownloadAsync("hello.txt");
+
+                var info = await done.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                info.State.Should().Be(DownloadDoneState.Completed);
+                info.SavePath.Should().Be(Path.Combine(Path.GetFullPath(directory), "hello.txt"));
+                File.ReadAllText(info.SavePath).Should().Be("hello");
+            }
+            finally
+            {
+                session.OnDownloadDone -= handler;
+                session.SetDownloadPolicy(null);
+
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory, true);
+                }
+            }
+        }
+
+        [IntegrationFact]
+        public async Task Download_policy_blocks_extension_not_in_allow_list()
+        {
+            var session = this.MainWindow.WebContents.Session;
+            var directory = Path.Combine(Path.GetTempPath(), "electronnet-downloads-" + Guid.NewGuid().ToString("N"));
+            var blocked = new TaskCompletionSource<DownloadInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var started = false;
+            Action<DownloadInfo> blockedHandler = info => blocked.TrySetResult(info);
+            Action<DownloadInfo> startedHandler = info => started = true;
+            session.OnDownloadBlocked += blockedHandler;
+            session.OnDownloadStarted += startedHandler;
+
+            try
+            {
+                session.SetDownloadPolicy(new DownloadPolicy { AllowedExtensions = new[] { ".txt" }, SaveDirectory = directory });
+                await this.TriggerDownloadAsync("archive.zip");
+
+                var info = await blocked.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                info.Filename.Should().Be("archive.zip");
+                started.Should().BeFalse();
+                File.Exists(Path.Combine(directory, "archive.zip")).Should().BeFalse();
+            }
+            finally
+            {
+                session.OnDownloadBlocked -= blockedHandler;
+                session.OnDownloadStarted -= startedHandler;
+                session.SetDownloadPolicy(null);
+
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory, true);
+                }
+            }
+        }
+
+        private async Task TriggerDownloadAsync(string filename)
+        {
+            var wc = this.MainWindow.WebContents;
+            await wc.LoadURLAsync("about:blank");
+            await wc.ExecuteJavaScriptAsync<string>(
+                "(() => { const a = document.createElement('a');" +
+                " a.href = URL.createObjectURL(new Blob(['hello'], { type: 'text/plain' }));" +
+                $" a.download = '{filename}'; document.body.appendChild(a); a.click(); return 'ok'; }})()");
+        }
     }
 }

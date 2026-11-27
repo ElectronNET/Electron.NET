@@ -12,7 +12,7 @@ const { imageSize } = require('image-size');
 let io, server, browserWindows, ipc, apiProcess, loadURL;
 let appApi, menu, dialogApi, notification, tray, webContents;
 let globalShortcut, shellApi, screen, clipboard, autoUpdater;
-let commandLine, browserView;
+let commandLine, browserView, webContentsView;
 let powerMonitor;
 let processInfo;
 let splashScreen;
@@ -184,6 +184,32 @@ function getForwardedArgs() {
 
 const forwardedArgs = getForwardedArgs();
 
+// Register the Electron.NET host preload (exposing `window.electronNET`, e.g., with
+// `getPathForFile` for file drops) on every session. Using session preloads instead of
+// `webPreferences.preload` keeps user supplied preload scripts working side by side.
+const hostPreloadPath = path.join(__dirname, 'scripts', 'host-preload.js');
+const sessionsWithHostPreload = new WeakSet();
+
+function registerHostPreload(ses) {
+    if (!ses || sessionsWithHostPreload.has(ses)) {
+        return;
+    }
+
+    sessionsWithHostPreload.add(ses);
+
+    try {
+        if (typeof ses.registerPreloadScript === 'function') {
+            ses.registerPreloadScript({ type: 'frame', filePath: hostPreloadPath });
+        } else {
+            ses.setPreloads([...ses.getPreloads(), hostPreloadPath]);
+        }
+    } catch (err) {
+        console.error('Could not register the Electron.NET host preload script:', err);
+    }
+}
+
+app.on('session-created', registerHostPreload);
+
 app.on('ready', () => {
     // Fix ERR_UNKNOWN_URL_SCHEME using file protocol
     // https://github.com/electron/electron/issues/23757
@@ -191,6 +217,9 @@ app.on('ready', () => {
     ////  const pathname = request.url.replace('file:///', '');
     ////  callback(pathname);
     ////});
+
+    // the default session may have been created before the handler above was attached
+    registerHostPreload(require('electron').session.defaultSession);
 
     if (isSplashScreenEnabled()) {
         startSplashScreen();
@@ -388,6 +417,7 @@ function startSocketApiBridge(port) {
         if (screen === undefined) screen = require('./api/screen')(socket);
         if (clipboard === undefined) clipboard = require('./api/clipboard')(socket);
         if (browserView === undefined) browserView = require('./api/browserView').browserViewApi(socket);
+        if (webContentsView === undefined) webContentsView = require('./api/webContentsView').webContentsViewApi(socket);
         if (powerMonitor === undefined) powerMonitor = require('./api/powerMonitor')(socket);
         if (nativeTheme === undefined) nativeTheme = require('./api/nativeTheme')(socket);
         if (dock === undefined) dock = require('./api/dock')(socket);

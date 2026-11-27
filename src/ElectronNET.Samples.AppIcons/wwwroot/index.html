@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App Icons Sample</title>
+    <style>
+        :root { color-scheme: light dark; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+        body { max-width: 720px; margin: 0 auto; padding: 1.5rem; line-height: 1.5; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #8884; vertical-align: top; }
+        code { font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>App Icons Sample</h1>
+    <p>
+        Look at the window, the taskbar / dock and - after packaging - the installer and executable:
+        they should all show the sample icon instead of the default Electron icon.
+    </p>
+
+    <table>
+        <thead>
+            <tr><th>Platform</th><th>Packaged app (electron-builder)</th><th>Runtime (Program.cs)</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Windows</td>
+                <td><code>Assets/icons/app.ico</code></td>
+                <td>Window icon <code>app.ico</code></td>
+            </tr>
+            <tr>
+                <td>Linux</td>
+                <td><code>Assets/icons/linux/*.png</code></td>
+                <td>Window icon <code>linux/512x512.png</code></td>
+            </tr>
+            <tr>
+                <td>macOS</td>
+                <td><code>Assets/icons/app.icns</code></td>
+                <td>Dock icon <code>linux/512x512.png</code></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

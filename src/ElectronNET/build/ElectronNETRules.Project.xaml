@@ -470,6 +470,46 @@
     <EnumValue Name="42.3.3" DisplayName="42.3.3" />
     <EnumValue Name="42.4.0" DisplayName="42.4.0" />
     <EnumValue Name="42.4.1" DisplayName="42.4.1" />
+    <EnumValue Name="42.11.16" DisplayName="42.11.16" />
+    <EnumValue Name="42.11.17" DisplayName="42.11.17" />
+    <EnumValue Name="42.11.18" DisplayName="42.11.18" />
+    <EnumValue Name="43.8.5" DisplayName="43.8.5" />
+    <EnumValue Name="43.8.6" DisplayName="43.8.6" />
+    <EnumValue Name="43.8.7" DisplayName="43.8.7" />
+    <EnumValue Name="43.8.2" DisplayName="43.8.2" />
+    <EnumValue Name="43.8.3" DisplayName="43.8.3" />
+    <EnumValue Name="43.8.4" DisplayName="43.8.4" />
+    <EnumValue Name="43.8.8" DisplayName="43.8.8" />
+    <EnumValue Name="43.8.9" DisplayName="43.8.9" />
+    <EnumValue Name="43.8.10" DisplayName="43.8.10" />
+    <EnumValue Name="43.8.11" DisplayName="43.8.11" />
+    <EnumValue Name="43.8.12" DisplayName="43.8.12" />
+    <EnumValue Name="43.8.13" DisplayName="43.8.13" />
+    <EnumValue Name="44.9.2" DisplayName="44.9.2" />
+    <EnumValue Name="44.9.3" DisplayName="44.9.3" />
+    <EnumValue Name="44.10.0" DisplayName="44.10.0" />
+    <EnumValue Name="44.10.1" DisplayName="44.10.1" />
+    <EnumValue Name="44.10.2" DisplayName="44.10.2" />
+    <EnumValue Name="44.11.0" DisplayName="44.11.0" />
+    <EnumValue Name="44.11.1" DisplayName="44.11.1" />
+    <EnumValue Name="44.11.2" DisplayName="44.11.2" />
+    <EnumValue Name="44.11.3" DisplayName="44.11.3" />
+    <EnumValue Name="44.11.4" DisplayName="44.11.4" />
+    <EnumValue Name="44.11.5" DisplayName="44.11.5" />
+    <EnumValue Name="44.11.6" DisplayName="44.11.6" />
+    <EnumValue Name="45.0.0" DisplayName="45.0.0" />
+    <EnumValue Name="45.1.0" DisplayName="45.1.0" />
+    <EnumValue Name="45.2.0" DisplayName="45.2.0" />
+    <EnumValue Name="45.2.1" DisplayName="45.2.1" />
+    <EnumValue Name="45.2.2" DisplayName="45.2.2" />
+    <EnumValue Name="45.2.3" DisplayName="45.2.3" />
+    <EnumValue Name="45.3.0" DisplayName="45.3.0" />
+    <EnumValue Name="45.3.1" DisplayName="45.3.1" />
+    <EnumValue Name="45.3.2" DisplayName="45.3.2" />
+    <EnumValue Name="45.3.3" DisplayName="45.3.3" />
+    <EnumValue Name="45.3.4" DisplayName="45.3.4" />
+    <EnumValue Name="45.4.1" DisplayName="45.4.1" />
+    <EnumValue Name="45.5.0" DisplayName="45.5.0" />
   </EnumProperty>
 
   <EnumProperty Name="ElectronBuilderVersion"

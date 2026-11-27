@@ -3,6 +3,7 @@ import type { Socket } from "net";
 import { BrowserWindow, Menu } from "electron";
 
 import { browserViewMediateService } from "./browserView";
+import { webContentsViewMediateService } from "./webContentsView";
 
 const windows: Electron.BrowserWindow[] = (global["browserWindows"] =
   global["browserWindows"] || []) as Electron.BrowserWindow[];
@@ -909,6 +910,20 @@ export = (socket: Socket, app: Electron.App) => {
 
   socket.on("browserWindow-setBrowserView", (id, browserViewId) => {
     getWindowById(id).setBrowserView(browserViewMediateService(browserViewId));
+  });
+
+  socket.on("browserWindow-addChildView", (id, viewId, index) => {
+    const view = webContentsViewMediateService(viewId);
+    if (view) {
+      getWindowById(id).contentView.addChildView(view, index ?? undefined);
+    }
+  });
+
+  socket.on("browserWindow-removeChildView", (id, viewId) => {
+    const view = webContentsViewMediateService(viewId);
+    if (view) {
+      getWindowById(id).contentView.removeChildView(view);
+    }
   });
 
   function getWindowById(id: number): Electron.BrowserWindow {

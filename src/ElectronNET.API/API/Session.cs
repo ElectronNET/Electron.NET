@@ -29,6 +29,9 @@ namespace ElectronNET.API
             Id = id;
             Cookies = new Cookies(id);
             WebRequest = new WebRequest(id);
+            _downloadStarted = new DownloadEvent<DownloadInfo>(id, "started");
+            _downloadBlocked = new DownloadEvent<DownloadInfo>(id, "blocked");
+            _downloadDone = new DownloadEvent<DownloadDoneInfo>(id, "done");
         }
 
         /// <summary>
@@ -142,6 +145,126 @@ namespace ElectronNET.API
         public void CreateInterruptedDownload(CreateInterruptedDownloadOptions options)
         {
             BridgeConnector.Socket.Emit("webContents-session-createInterruptedDownload", Id, options);
+        }
+
+        /// <summary>
+        /// Sets the rules that decide how this session handles downloads, e.g. to block
+        /// certain file extensions or to store downloads in a directory without showing
+        /// a save dialog. The rules are evaluated synchronously in the Electron host, so
+        /// they take effect for every download. Pass null to restore Electron's default
+        /// behavior.
+        /// <para>
+        /// The policy belongs to the underlying Electron session, which by default is shared
+        /// by all windows.
+        /// </para>
+        /// </summary>
+        /// <param name="policy">The download rules, or null to remove them.</param>
+        public void SetDownloadPolicy(DownloadPolicy policy)
+        {
+            BridgeConnector.Socket.Emit("webContents-session-setDownloadPolicy", Id, policy);
+        }
+
+        /// <summary>
+        /// Emitted when a download that is allowed by the <see cref="DownloadPolicy"/>
+        /// (or any download, if no policy is set) starts.
+        /// </summary>
+        public event Action<DownloadInfo> OnDownloadStarted
+        {
+            add => _downloadStarted.Add(value);
+            remove => _downloadStarted.Remove(value);
+        }
+
+        /// <summary>
+        /// Emitted when a download was blocked by the <see cref="DownloadPolicy"/>.
+        /// </summary>
+        public event Action<DownloadInfo> OnDownloadBlocked
+        {
+            add => _downloadBlocked.Add(value);
+            remove => _downloadBlocked.Remove(value);
+        }
+
+        /// <summary>
+        /// Emitted when a download has completed, was cancelled or was interrupted.
+        /// </summary>
+        public event Action<DownloadDoneInfo> OnDownloadDone
+        {
+            add => _downloadDone.Add(value);
+            remove => _downloadDone.Remove(value);
+        }
+
+        private readonly DownloadEvent<DownloadInfo> _downloadStarted;
+        private readonly DownloadEvent<DownloadInfo> _downloadBlocked;
+        private readonly DownloadEvent<DownloadDoneInfo> _downloadDone;
+
+        /// <summary>
+        /// Keeps the .NET handlers of one download event and its bridge registration in sync.
+        /// Handler changes and (un)registration happen under one lock, so a concurrent
+        /// subscribe can never end up without a socket listener or host subscription.
+        /// </summary>
+        private sealed class DownloadEvent<T>
+        {
+            private readonly object _lock = new object();
+            private readonly int _id;
+            private readonly string _kind;
+            private Action<T> _handlers;
+
+            public DownloadEvent(int id, string kind)
+            {
+                _id = id;
+                _kind = kind;
+            }
+
+            private string EventName => $"webContents-session-download-{_kind}{_id}";
+
+            public void Add(Action<T> value)
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                lock (_lock)
+                {
+                    if (_handlers == null)
+                    {
+                        BridgeConnector.Socket.On<T>(EventName, Invoke);
+                        BridgeConnector.Socket.Emit("register-webContents-session-download", _id, _kind);
+                    }
+
+                    _handlers += value;
+                }
+            }
+
+            public void Remove(Action<T> value)
+            {
+                lock (_lock)
+                {
+                    if (_handlers == null)
+                    {
+                        return;
+                    }
+
+                    _handlers -= value;
+
+                    if (_handlers == null)
+                    {
+                        BridgeConnector.Socket.Off(EventName);
+                        BridgeConnector.Socket.Emit("unregister-webContents-session-download", _id, _kind);
+                    }
+                }
+            }
+
+            private void Invoke(T info)
+            {
+                Action<T> handlers;
+
+                lock (_lock)
+                {
+                    handlers = _handlers;
+                }
+
+                handlers?.Invoke(info);
+            }
         }
 
         /// <summary>

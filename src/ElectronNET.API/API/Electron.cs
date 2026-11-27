@@ -186,7 +186,7 @@
         }
 
         /// <summary>
-        /// Electeon extensions to the Nodejs process object.
+        /// Electron extensions to the Nodejs process object.
         /// </summary>
         public static Process Process
         {

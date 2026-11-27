@@ -51,6 +51,19 @@
             return Task.CompletedTask;
         }
 
+        public override async Task Stop()
+        {
+            await base.Stop().ConfigureAwait(false);
+
+            // A socket that never connected never raises BridgeDisconnected, so without this the bridge stays in
+            // Stopping forever. That happens when Electron exits before the bridge connects (e.g. it lost the
+            // single-instance lock), and the runtime controller then never reaches Stopped, hanging the .NET host.
+            if (this.State < LifetimeState.Stopped)
+            {
+                this.TransitionState(LifetimeState.Stopped);
+            }
+        }
+
         private void Connect()
         {
             this.socket.Connect();

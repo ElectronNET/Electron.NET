@@ -23,10 +23,6 @@
     <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="SocketIOClient" Version="3.1.2" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.22" />
     <PackageReference Include="System.Text.Json" Version="8.0.6" Condition=" '$(TargetFramework)' == 'net6.0' " />

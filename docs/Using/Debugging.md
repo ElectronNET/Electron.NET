@@ -40,7 +40,7 @@ Debug the Electron process when you need to inspect native Electron APIs:
     "Electron (unpackaged)": {
       "commandName": "Executable",
       "executablePath": "node",
-      "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron",
+      "commandLineArgs": "node_modules/electron/cli.js . -unpackedelectron",
       "workingDirectory": "$(TargetDir).electron",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -99,7 +99,7 @@ Add the debugging profiles to `Properties/launchSettings.json`:
     "Electron (unpackaged)": {
       "commandName": "Executable",
       "executablePath": "node",
-      "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron",
+      "commandLineArgs": "node_modules/electron/cli.js . -unpackedelectron",
       "workingDirectory": "$(TargetDir).electron",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

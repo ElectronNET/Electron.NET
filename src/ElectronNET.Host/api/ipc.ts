@@ -1,5 +1,6 @@
 import type { Socket } from "net";
 import { ipcMain, BrowserWindow, BrowserView, Menu } from "electron";
+import { webContentsViewMediateService } from "./webContentsView";
 
 let electronSocket: Socket;
 
@@ -51,6 +52,14 @@ export = (socket: Socket) => {
         break;
       }
     }
+
+    if (view) {
+      view.webContents.send(channel, ...data);
+    }
+  });
+
+  socket.on("sendToIpcRendererWebContentsView", (id, channel, data) => {
+    const view = webContentsViewMediateService(id);
 
     if (view) {
       view.webContents.send(channel, ...data);

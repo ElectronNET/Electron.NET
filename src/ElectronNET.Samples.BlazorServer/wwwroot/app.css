@@ -1,0 +1,157 @@
+:root {
+    color-scheme: light dark;
+    --accent: #4f46e5;
+    --border: #8884;
+    --muted: #8881;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+.page {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 220px;
+    flex-shrink: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+    background: linear-gradient(160deg, #4f46e5, #06b6d4);
+    color: #fff;
+}
+
+.sidebar .brand {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+}
+
+.sidebar a:hover {
+    background: #fff2;
+}
+
+.sidebar a.active {
+    background: #fff3;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.content {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    max-width: 960px;
+}
+
+h1:focus {
+    outline: none;
+}
+
+section, .card {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+section h2, .card h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    margin: 0;
+}
+
+.card a {
+    color: var(--accent);
+}
+
+button {
+    padding: 0.35rem 0.8rem;
+    margin-right: 0.25rem;
+}
+
+pre {
+    background: var(--muted);
+    padding: 0.75rem;
+    border-radius: 6px;
+    overflow: auto;
+}
+
+pre.diagram {
+    font-size: 0.8rem;
+    line-height: 1.25;
+}
+
+pre.file-content {
+    max-height: 320px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 0.3rem 1rem 0.3rem 0;
+}
+
+.notice {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: #f59e0b33;
+}
+
+.status {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: #2e7d3233;
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6rem 1.25rem;
+    background: lightyellow;
+    color: #000;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

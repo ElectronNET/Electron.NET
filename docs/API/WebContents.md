@@ -487,6 +487,25 @@ webContents.OnMediaStartedPlaying += () => Console.WriteLine("Media playing");
 webContents.OnMediaPaused += () => Console.WriteLine("Media paused");
 ```
 
+### Controlling Downloads
+
+`Session.SetDownloadPolicy` blocks downloads by file extension and can store allowed downloads in a fixed directory without a save dialog. The rules are evaluated inside the Electron host, so they apply to every download without a round trip to .NET. The policy belongs to the underlying Electron session, which by default is shared by all windows. Pass `null` to restore the default behavior.
+
+```csharp
+var session = browserWindow.WebContents.Session;
+
+session.SetDownloadPolicy(new DownloadPolicy
+{
+    BlockedExtensions = new[] { ".exe", ".msi", ".bat" },
+    // AllowedExtensions = new[] { ".pdf" },  // optional allow-list
+    SaveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+});
+
+session.OnDownloadBlocked += info => Console.WriteLine($"Blocked {info.Filename}");
+session.OnDownloadStarted += info => Console.WriteLine($"Saving {info.Filename} to {info.SavePath}");
+session.OnDownloadDone += info => Console.WriteLine($"{info.Filename}: {info.State}");
+```
+
 ## Related APIs
 
 - [Electron.WindowManager](WindowManager.md) - Windows containing web contents
