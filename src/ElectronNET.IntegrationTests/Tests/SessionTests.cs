@@ -194,7 +194,7 @@ namespace ElectronNET.IntegrationTests.Tests
             await wc.ExecuteJavaScriptAsync<string>(
                 "(() => { const a = document.createElement('a');" +
                 " a.href = URL.createObjectURL(new Blob(['hello'], { type: 'text/plain' }));" +
-                $" a.download = '{filename}'; document.body.appendChild(a); a.click(); return 'ok'; })()");
+                $" a.download = '{filename}'; document.body.appendChild(a); a.click(); return 'ok'; }})()");
         }
     }
 }
