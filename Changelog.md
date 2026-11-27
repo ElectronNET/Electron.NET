@@ -11,6 +11,8 @@
 - Fixed dev mode launches passing the script file instead of the app directory (#1121) @Denny09310
 - Added `window.electronNET.getPathForFile` to retrieve the path of dropped files in the renderer (#1002)
 - Added support for `WebContentsView` as an alternative to `BrowserWindow` (#1131)
+- Added `WebContentsView.DestroyAsync` / `Dispose` to close a view's web contents and release its resources
+- Added `WindowManager.MainWindowRecreated` event, raised when the main window is recreated on macOS activation
 - Added `Enum` converter to respect `EnumMemberAttributeenhancement` (#1132) @AeonSake
 - Added support for file drop (#1134)
 - Added `Session.SetDownloadPolicy` and events (`OnDownloadStarted`, `OnDownloadBlocked` and `OnDownloadDone`) to block or redirect downloads (#434)

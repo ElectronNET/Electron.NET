@@ -12,6 +12,7 @@ namespace ElectronNET.Samples.BlazorServer.Desktop;
 /// </remarks>
 public sealed class WindowService(AppEvents events)
 {
+    private readonly object sync = new();
     private BrowserWindow? window;
 
     public bool IsAvailable => this.window is not null;
@@ -23,18 +24,37 @@ public sealed class WindowService(AppEvents events)
     public bool IsAlwaysOnTop { get; private set; }
 
     /// <summary>
-    /// Called once by <see cref="ElectronStartup"/> after the main window was created.
+    /// Called by <see cref="ElectronStartup"/> whenever the main window was created - initially and
+    /// again when Electron recreates it (macOS: app activated after its last window was closed).
     /// </summary>
     public void Attach(BrowserWindow mainWindow)
     {
-        this.window = mainWindow;
+        lock (this.sync)
+        {
+            if (ReferenceEquals(this.window, mainWindow))
+            {
+                return;
+            }
 
-        // Electron -> .NET: keep our state in sync and forward it to the UI.
-        mainWindow.OnMaximize += () => this.Update(() => this.IsMaximized = true);
-        mainWindow.OnUnmaximize += () => this.Update(() => this.IsMaximized = false);
-        mainWindow.OnFocus += () => this.Update(() => this.IsFocused = true);
-        mainWindow.OnBlur += () => this.Update(() => this.IsFocused = false);
-        mainWindow.OnClosed += () => this.window = null;
+            this.DetachCore();
+
+            this.window = mainWindow;
+
+            // A new window always starts out in its default state.
+            this.IsMaximized = false;
+            this.IsFocused = true;
+            this.IsAlwaysOnTop = false;
+
+            // Electron -> .NET: keep our state in sync and forward it to the UI.
+            mainWindow.OnMaximize += this.HandleMaximize;
+            mainWindow.OnUnmaximize += this.HandleUnmaximize;
+            mainWindow.OnFocus += this.HandleFocus;
+            mainWindow.OnBlur += this.HandleBlur;
+            mainWindow.OnClosed += this.HandleClosed;
+        }
+
+        // Let the UI pick up the (re)attached window, e.g. to enable the Window Control buttons again.
+        events.NotifyWindowStateChanged();
     }
 
     public void SetTitle(string title) => this.window?.SetTitle(title);
@@ -69,6 +89,43 @@ public sealed class WindowService(AppEvents events)
     /// Shows progress in the taskbar (Windows / Linux) or dock (macOS). Use a negative value to remove it.
     /// </summary>
     public void SetProgress(double progress) => this.window?.SetProgressBar(progress);
+
+    private void HandleMaximize() => this.Update(() => this.IsMaximized = true);
+
+    private void HandleUnmaximize() => this.Update(() => this.IsMaximized = false);
+
+    private void HandleFocus() => this.Update(() => this.IsFocused = true);
+
+    private void HandleBlur() => this.Update(() => this.IsFocused = false);
+
+    private void HandleClosed()
+    {
+        lock (this.sync)
+        {
+            this.DetachCore();
+        }
+
+        events.NotifyWindowStateChanged();
+    }
+
+    /// <summary>
+    /// Unsubscribes from the current window (if any). Must be called while holding <see cref="sync"/>.
+    /// </summary>
+    private void DetachCore()
+    {
+        if (this.window is not { } previous)
+        {
+            return;
+        }
+
+        previous.OnMaximize -= this.HandleMaximize;
+        previous.OnUnmaximize -= this.HandleUnmaximize;
+        previous.OnFocus -= this.HandleFocus;
+        previous.OnBlur -= this.HandleBlur;
+        previous.OnClosed -= this.HandleClosed;
+
+        this.window = null;
+    }
 
     private void Update(Action change)
     {

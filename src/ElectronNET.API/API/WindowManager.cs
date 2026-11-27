@@ -85,7 +85,16 @@ namespace ElectronNET.API
         /// <value>
         /// The web contents views.
         /// </value>
-        public IReadOnlyCollection<WebContentsView> WebContentsViews => _webContentsViews.AsReadOnly();
+        public IReadOnlyCollection<WebContentsView> WebContentsViews
+        {
+            get
+            {
+                lock (_webContentsViews)
+                {
+                    return _webContentsViews.ToArray();
+                }
+            }
+        }
 
         private readonly List<WebContentsView> _webContentsViews = new();
 
@@ -172,12 +181,24 @@ namespace ElectronNET.API
             }
         }
 
+        /// <summary>
+        /// Emitted when Electron recreated the main window, e.g. when the app is activated again on macOS
+        /// after all of its windows were closed. The startup callback passed to <c>UseElectron</c> is not
+        /// run again in this case, so use this event to (re)wire anything that depends on the main window.
+        /// </summary>
+        public event Action<BrowserWindow> MainWindowRecreated;
+
         private void HandleBrowserWindowRecreated(int id)
         {
-            if (_browserWindows.All(window => window.Id != id))
+            var window = _browserWindows.FirstOrDefault(entry => entry.Id == id);
+
+            if (window == null)
             {
-                _browserWindows.Add(new BrowserWindow(id));
+                window = new BrowserWindow(id);
+                _browserWindows.Add(window);
             }
+
+            MainWindowRecreated?.Invoke(window);
         }
 
         private void HandleBrowserWindowClosed(int[] ids)
@@ -260,7 +281,10 @@ namespace ElectronNET.API
                 {
                     WebContentsView view = new(id);
 
-                    _webContentsViews.Add(view);
+                    lock (_webContentsViews)
+                    {
+                        _webContentsViews.Add(view);
+                    }
 
                     tcs.SetResult(view);
                 });
@@ -276,5 +300,13 @@ namespace ElectronNET.API
         }
 
         private static readonly System.Threading.SemaphoreSlim WebContentsViewCreationLock = new(1, 1);
+
+        internal void RemoveWebContentsView(WebContentsView view)
+        {
+            lock (_webContentsViews)
+            {
+                _webContentsViews.Remove(view);
+            }
+        }
     }
 }

@@ -28,13 +28,23 @@ public static class ElectronStartup
         };
 
         var window = await Electron.WindowManager.CreateWindowAsync(options);
+        ConfigureMainWindow(window, windowService);
 
+        // On macOS the app stays alive when its last window is closed. Activating it again (e.g. via the
+        // dock icon) makes Electron recreate the main window - without running this startup callback
+        // again. Wire the new window up the same way as the original one.
+        Electron.WindowManager.MainWindowRecreated += recreated => ConfigureMainWindow(recreated, windowService);
+
+        Electron.Menu.SetApplicationMenu(CreateMenu(events));
+    }
+
+    private static void ConfigureMainWindow(BrowserWindow window, WindowService windowService)
+    {
+        // The window is created hidden (Show = false) to avoid a white flash before the page is rendered.
         window.OnReadyToShow += () => window.Show();
 
         // Hand the window to the service that the Blazor components use for "Electron control".
         windowService.Attach(window);
-
-        Electron.Menu.SetApplicationMenu(CreateMenu(events));
     }
 
     private static MenuItem[] CreateMenu(AppEvents events)

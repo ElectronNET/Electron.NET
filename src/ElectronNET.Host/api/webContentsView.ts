@@ -1,5 +1,5 @@
 import type { Socket } from "net";
-import { WebContentsView } from "electron";
+import { BrowserWindow, WebContentsView } from "electron";
 
 const webContentsViews: WebContentsView[] = (global["webContentsViews"] =
   global["webContentsViews"] || []) as WebContentsView[];
@@ -28,7 +28,8 @@ const webContentsViewApi = (socket: Socket) => {
 
     const { proxy, proxyCredentials, ...viewOptions } = options;
     const view = new WebContentsView(viewOptions);
-    view["id"] = webContentsViews.length + 1;
+    // Ids must stay unique even after views were destroyed and removed from the registry.
+    view["id"] = global["webContentsViewNextId"] = (global["webContentsViewNextId"] || 0) + 1;
 
     if (proxy) {
       view.webContents.session.setProxy({ proxyRules: proxy });
@@ -39,14 +40,29 @@ const webContentsViewApi = (socket: Socket) => {
     }
 
     webContentsViews.push(view);
+    // Drop the registry entry whenever the web contents go away (explicitly or otherwise).
+    view.webContents.once("destroyed", () => removeWebContentsView(view));
 
     electronSocket.emit("WebContentsViewCreated", view["id"]);
   });
 
-  socket.on("webContentsView-getBounds", (id) => {
+  socket.on("webContentsView-getBounds", (id, requestId) => {
     const bounds = getWebContentsViewById(id)?.getBounds();
 
-    electronSocket.emit("webContentsView-getBounds-completed", bounds);
+    // The request id correlates the response with exactly one pending .NET call.
+    electronSocket.emit("webContentsView-getBounds-completed" + requestId, bounds);
+  });
+
+  socket.on("webContentsView-destroy", (id, requestId) => {
+    const view = getWebContentsViewById(id);
+
+    if (view) {
+      destroyWebContentsView(view);
+    }
+
+    if (requestId) {
+      electronSocket.emit("webContentsView-destroy-completed" + requestId);
+    }
   });
 
   socket.on("webContentsView-setBounds", (id, bounds) => {
@@ -84,6 +100,37 @@ const webContentsViewApi = (socket: Socket) => {
 const webContentsViewMediateService = (id: number): WebContentsView => {
   return getWebContentsViewById(id);
 };
+
+function destroyWebContentsView(view: WebContentsView) {
+  // Detach the view from every window it is attached to...
+  for (const window of BrowserWindow.getAllWindows()) {
+    if (!window.isDestroyed() && window.contentView.children.includes(view)) {
+      window.contentView.removeChildView(view);
+    }
+  }
+
+  // ...and explicitly close its web contents: views are not garbage collected
+  // and keep their renderer alive until the web contents are closed.
+  const webContents = view.webContents;
+
+  if (webContents && !webContents.isDestroyed()) {
+    if (typeof webContents.close === "function") {
+      webContents.close();
+    } else {
+      (webContents as any).destroy?.();
+    }
+  }
+
+  removeWebContentsView(view);
+}
+
+function removeWebContentsView(view: WebContentsView) {
+  const index = webContentsViews.indexOf(view);
+
+  if (index >= 0) {
+    webContentsViews.splice(index, 1);
+  }
+}
 
 function getWebContentsViewById(id: number): WebContentsView {
   for (let index = 0; index < webContentsViews.length; index++) {

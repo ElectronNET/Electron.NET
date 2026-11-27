@@ -22,7 +22,8 @@ const webContentsViewApi = (socket) => {
         }
         const { proxy, proxyCredentials, ...viewOptions } = options;
         const view = new electron_1.WebContentsView(viewOptions);
-        view["id"] = webContentsViews.length + 1;
+        // Ids must stay unique even after views were destroyed and removed from the registry.
+        view["id"] = global["webContentsViewNextId"] = (global["webContentsViewNextId"] || 0) + 1;
         if (proxy) {
             view.webContents.session.setProxy({ proxyRules: proxy });
         }
@@ -30,11 +31,23 @@ const webContentsViewApi = (socket) => {
             proxyToCredentialsMap[proxy] = proxyCredentials;
         }
         webContentsViews.push(view);
+        // Drop the registry entry whenever the web contents go away (explicitly or otherwise).
+        view.webContents.once("destroyed", () => removeWebContentsView(view));
         electronSocket.emit("WebContentsViewCreated", view["id"]);
     });
-    socket.on("webContentsView-getBounds", (id) => {
+    socket.on("webContentsView-getBounds", (id, requestId) => {
         const bounds = getWebContentsViewById(id)?.getBounds();
-        electronSocket.emit("webContentsView-getBounds-completed", bounds);
+        // The request id correlates the response with exactly one pending .NET call.
+        electronSocket.emit("webContentsView-getBounds-completed" + requestId, bounds);
+    });
+    socket.on("webContentsView-destroy", (id, requestId) => {
+        const view = getWebContentsViewById(id);
+        if (view) {
+            destroyWebContentsView(view);
+        }
+        if (requestId) {
+            electronSocket.emit("webContentsView-destroy-completed" + requestId);
+        }
     });
     socket.on("webContentsView-setBounds", (id, bounds) => {
         getWebContentsViewById(id)?.setBounds(bounds);
@@ -67,6 +80,32 @@ const webContentsViewMediateService = (id) => {
     return getWebContentsViewById(id);
 };
 exports.webContentsViewMediateService = webContentsViewMediateService;
+function destroyWebContentsView(view) {
+    // Detach the view from every window it is attached to...
+    for (const window of electron_1.BrowserWindow.getAllWindows()) {
+        if (!window.isDestroyed() && window.contentView.children.includes(view)) {
+            window.contentView.removeChildView(view);
+        }
+    }
+    // ...and explicitly close its web contents: views are not garbage collected
+    // and keep their renderer alive until the web contents are closed.
+    const webContents = view.webContents;
+    if (webContents && !webContents.isDestroyed()) {
+        if (typeof webContents.close === "function") {
+            webContents.close();
+        }
+        else {
+            webContents.destroy?.();
+        }
+    }
+    removeWebContentsView(view);
+}
+function removeWebContentsView(view) {
+    const index = webContentsViews.indexOf(view);
+    if (index >= 0) {
+        webContentsViews.splice(index, 1);
+    }
+}
 function getWebContentsViewById(id) {
     for (let index = 0; index < webContentsViews.length; index++) {
         const item = webContentsViews[index];
