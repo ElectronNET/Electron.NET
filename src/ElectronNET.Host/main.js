@@ -198,7 +198,11 @@ function registerHostPreload(ses) {
     sessionsWithHostPreload.add(ses);
 
     try {
-        ses.registerPreloadScript({ type: 'frame', filePath: hostPreloadPath });
+        if (typeof ses.registerPreloadScript === 'function') {
+            ses.registerPreloadScript({ type: 'frame', filePath: hostPreloadPath });
+        } else {
+            ses.setPreloads([...ses.getPreloads(), hostPreloadPath]);
+        }
     } catch (err) {
         console.error('Could not register the Electron.NET host preload script:', err);
     }

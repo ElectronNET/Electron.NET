@@ -251,20 +251,30 @@ namespace ElectronNET.API
         /// <returns></returns>
         public async Task<WebContentsView> CreateWebContentsViewAsync(WebContentsViewConstructorOptions options)
         {
-            var tcs = new TaskCompletionSource<WebContentsView>();
-
-            BridgeConnector.Socket.Once<int>("WebContentsViewCreated", (id) =>
+            await WebContentsViewCreationLock.WaitAsync().ConfigureAwait(false);
+            try
             {
-                WebContentsView view = new(id);
+                var tcs = new TaskCompletionSource<WebContentsView>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-                _webContentsViews.Add(view);
+                BridgeConnector.Socket.Once<int>("WebContentsViewCreated", (id) =>
+                {
+                    WebContentsView view = new(id);
 
-                tcs.SetResult(view);
-            });
+                    _webContentsViews.Add(view);
 
-            await BridgeConnector.Socket.Emit("createWebContentsView", options).ConfigureAwait(false);
+                    tcs.SetResult(view);
+                });
 
-            return await tcs.Task.ConfigureAwait(false);
+                await BridgeConnector.Socket.Emit("createWebContentsView", options).ConfigureAwait(false);
+
+                return await tcs.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                WebContentsViewCreationLock.Release();
+            }
         }
+
+        private static readonly System.Threading.SemaphoreSlim WebContentsViewCreationLock = new(1, 1);
     }
 }
